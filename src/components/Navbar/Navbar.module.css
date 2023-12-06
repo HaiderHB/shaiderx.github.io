@@ -54,10 +54,8 @@
   position: relative;
   top: calc(var(--spaceM) * -1);
 }
-
 .navLink {
   padding: var(--spaceM);
-  color: rgb(var(--rgbText) / 0.8);
   font-weight: var(--fontWeightMedium);
   font-size: var(--headerNavFontSize);
   text-decoration: none;
@@ -98,6 +96,14 @@
     transform: scaleX(1);
     transform-origin: left;
   }
+}
+
+.blueText {
+  color: rgb(var(--rgbAccent) / 0.8); /* or the specific shade of blue you want */
+}
+
+.normalText {
+  color: rgb(var(--rgbText) / 0.8);
 }
 
 .navIcons {

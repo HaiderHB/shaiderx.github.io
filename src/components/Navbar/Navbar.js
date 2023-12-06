@@ -145,7 +145,7 @@ export const Navbar = () => {
         <a
           data-navbar-item
           className={styles.logo}
-          aria-label="Hamish Williams, Designer"
+          aria-label="Haider Bokhari, Developer"
           onClick={handleMobileNavClick}
         >
           <Monogram highlight />
@@ -154,11 +154,13 @@ export const Navbar = () => {
       <NavToggle onClick={() => dispatch({ type: 'toggleMenu' })} menuOpen={menuOpen} />
       <nav className={styles.nav}>
         <div className={styles.navList}>
-          {navLinks.map(({ label, pathname }) => (
+          {navLinks.map(({ label, pathname, blue }) => (
             <RouterLink href={pathname} scroll={false} key={label}>
               <a
                 data-navbar-item
-                className={styles.navLink}
+                className={`${styles.navLink} ${
+                  blue ? styles.blueText : styles.normalText
+                }`}
                 aria-current={getCurrent(pathname)}
                 onClick={handleNavItemClick}
               >
