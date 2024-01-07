@@ -9,12 +9,12 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './Home.module.css';
 import Skills from './Skills';
 
-import gamestackTexture2Large from 'assets/gamestack-list-large.jpg';
+import grx1Large from 'assets/grx1Large.png';
+import grx1 from 'assets/grx1.png';
+import grx2Large from 'assets/grx2Large.png';
+import grx2 from 'assets/grx2.png';
 import gamestackTexture2Placeholder from 'assets/gamestack-list-placeholder.jpg';
-import gamestackTexture2 from 'assets/gamestack-list.jpg';
-import gamestackTextureLarge from 'assets/gamestack-login-large.jpg';
 import gamestackTexturePlaceholder from 'assets/gamestack-login-placeholder.jpg';
-import gamestackTexture from 'assets/gamestack-login.jpg';
 
 const disciplines = [
   'AI Specialist',
@@ -30,13 +30,13 @@ const skillsArray = [
   'React',
   'JavaScript',
   'Vue.js',
+  'Supabase',
   'HTML',
   'CSS',
   'C#',
   'Unity',
   'Git',
   'C',
-  'Game Design',
 ];
 
 export const Home = () => {
@@ -131,18 +131,18 @@ export const Home = () => {
         index={2}
         title="Video game progress tracking"
         description="Design and development for a video game tracking app built in React Native"
-        buttonText="View website"
-        buttonLink="https://gamestack.hamishw.com"
+        buttonText="View Trailer"
+        buttonLink="https://www.youtube.com/watch?v=7UOMfTYkKoQ"
         model={{
           type: 'phoneh',
           alt: 'App login screen',
           textures: [
             {
-              srcSet: [gamestackTexture, gamestackTextureLarge],
+              srcSet: [grx1, grx1Large],
               placeholder: gamestackTexturePlaceholder,
             },
             {
-              srcSet: [gamestackTexture2, gamestackTexture2Large],
+              srcSet: [grx2, grx1Large],
               placeholder: gamestackTexture2Placeholder,
             },
           ],
