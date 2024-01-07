@@ -17,6 +17,8 @@ import gamestackTexture2Placeholder from 'assets/gamestack-list-placeholder.jpg'
 import gamestackTexturePlaceholder from 'assets/gamestack-login-placeholder.jpg';
 import Experience from './Experience';
 
+import CustomMouseTrail from './Mouse';
+
 //Credit to hamishw - HAMISH WILLIAMS
 
 const disciplines = [
@@ -90,6 +92,7 @@ export const Home = () => {
 
   return (
     <div className={styles.home}>
+      <CustomMouseTrail />
       <Meta
         title="Developer"
         description="Developer portfolio of Haider Bokhari — a fullstack developer working on web & mobile
