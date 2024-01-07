@@ -15,8 +15,8 @@
 
 .card {
   background: #191c29;
-  width: calc(30vh / 1.5);
-  height: 30vh;
+  width: calc(20vh / 1.5);
+  height: 20vh;
   padding: 20px;
   position: relative;
   border-radius: 6px;
@@ -24,7 +24,7 @@
   align-items: center;
   text-align: center;
   display: flex;
-  font-size: 1em;
+  font-size: 1.5vh;
   color: rgb(88, 199, 250);
   cursor: pointer;
   --rotate: 132deg; /* Custom property defined within the class */

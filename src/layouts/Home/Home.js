@@ -17,7 +17,20 @@ const disciplines = [
   'Student',
 ];
 
-const skillsArray = ['HTML', 'CSS', 'JavaScript', 'React'];
+const skillsArray = [
+  'Python',
+  'Next.js',
+  'React',
+  'JavaScript',
+  'Vue.js',
+  'HTML',
+  'CSS',
+  'C#',
+  'Unity',
+  'Git',
+  'C',
+  'Game Design',
+];
 
 export const Home = () => {
   const [visibleSections, setVisibleSections] = useState([]);
