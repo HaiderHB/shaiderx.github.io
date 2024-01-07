@@ -9,6 +9,13 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './Home.module.css';
 import Skills from './Skills';
 
+import gamestackTexture2Large from 'assets/gamestack-list-large.jpg';
+import gamestackTexture2Placeholder from 'assets/gamestack-list-placeholder.jpg';
+import gamestackTexture2 from 'assets/gamestack-list.jpg';
+import gamestackTextureLarge from 'assets/gamestack-login-large.jpg';
+import gamestackTexturePlaceholder from 'assets/gamestack-login-placeholder.jpg';
+import gamestackTexture from 'assets/gamestack-login.jpg';
+
 const disciplines = [
   'AI Specialist',
   'Full Stack Dev',
@@ -37,13 +44,13 @@ export const Home = () => {
   const [scrollIndicatorHidden, setScrollIndicatorHidden] = useState(false);
   const intro = useRef();
   const projectOne = useRef();
-  // const projectTwo = useRef();
+  const projectTwo = useRef();
   // const projectThree = useRef();
   const details = useRef();
   const skills = useRef();
 
   useEffect(() => {
-    const sections = [intro, details, projectOne, skills];
+    const sections = [intro, details, projectOne, projectTwo, skills];
 
     const sectionObserver = new IntersectionObserver(
       (entries, observer) => {
@@ -116,8 +123,7 @@ export const Home = () => {
           ],
         }}
       />
-      <Skills sectionRef={skills} words={skillsArray} />
-      {/* <ProjectSummary
+      <ProjectSummary
         id="project-2"
         alternate
         sectionRef={projectTwo}
@@ -128,7 +134,7 @@ export const Home = () => {
         buttonText="View website"
         buttonLink="https://gamestack.hamishw.com"
         model={{
-          type: 'phone',
+          type: 'phoneh',
           alt: 'App login screen',
           textures: [
             {
@@ -141,7 +147,8 @@ export const Home = () => {
             },
           ],
         }}
-      /> */}
+      />
+      <Skills sectionRef={skills} words={skillsArray} />
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import iphone11 from 'assets/iphone-11.glb';
+import iphone11h from 'assets/iphone-11-hor.glb';
 import macbookPro from 'assets/macbook-pro.glb';
 
 export const ModelAnimationType = {
@@ -9,6 +10,13 @@ export const ModelAnimationType = {
 export const deviceModels = {
   phone: {
     url: iphone11,
+    width: 374,
+    height: 512,
+    position: { x: 0, y: 0, z: 0 },
+    animation: ModelAnimationType.SpringUp,
+  },
+  phoneh: {
+    url: iphone11h,
     width: 374,
     height: 512,
     position: { x: 0, y: 0, z: 0 },
