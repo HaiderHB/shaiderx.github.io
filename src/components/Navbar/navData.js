@@ -8,6 +8,10 @@ export const navLinks = [
     pathname: '/#project-1',
   },
   {
+    label: 'Skills',
+    pathname: '/#skills',
+  },
+  {
     label: 'Contact',
     pathname: '/contact',
   },

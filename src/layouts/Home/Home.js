@@ -1,9 +1,3 @@
-import gamestackTexture2Large from 'assets/gamestack-list-large.jpg';
-import gamestackTexture2Placeholder from 'assets/gamestack-list-placeholder.jpg';
-import gamestackTexture2 from 'assets/gamestack-list.jpg';
-import gamestackTextureLarge from 'assets/gamestack-login-large.jpg';
-import gamestackTexturePlaceholder from 'assets/gamestack-login-placeholder.jpg';
-import gamestackTexture from 'assets/gamestack-login.jpg';
 import eloquateLg from 'assets/Eloquate-large.png';
 import sprTexturePlaceholder from 'assets/spr-lesson-builder-dark-placeholder.jpg';
 import eloquateMd from 'assets/Eloquate-med.png';
@@ -13,6 +7,7 @@ import { Profile } from 'layouts/Home/Profile';
 import { ProjectSummary } from 'layouts/Home/ProjectSummary';
 import { useEffect, useRef, useState } from 'react';
 import styles from './Home.module.css';
+import Skills from './Skills';
 
 const disciplines = [
   'AI Specialist',
@@ -22,6 +17,8 @@ const disciplines = [
   'Student',
 ];
 
+const skillsArray = ['HTML', 'CSS', 'JavaScript', 'React'];
+
 export const Home = () => {
   const [visibleSections, setVisibleSections] = useState([]);
   const [scrollIndicatorHidden, setScrollIndicatorHidden] = useState(false);
@@ -30,9 +27,10 @@ export const Home = () => {
   // const projectTwo = useRef();
   // const projectThree = useRef();
   const details = useRef();
+  const skills = useRef();
 
   useEffect(() => {
-    const sections = [intro, details, projectOne];
+    const sections = [intro, details, projectOne, skills];
 
     const sectionObserver = new IntersectionObserver(
       (entries, observer) => {
@@ -105,6 +103,7 @@ export const Home = () => {
           ],
         }}
       />
+      <Skills sectionRef={skills} words={skillsArray} />
       {/* <ProjectSummary
         id="project-2"
         alternate
