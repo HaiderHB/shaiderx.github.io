@@ -15,6 +15,9 @@ import grx2Large from 'assets/grx2Large.png';
 import grx2 from 'assets/grx2.png';
 import gamestackTexture2Placeholder from 'assets/gamestack-list-placeholder.jpg';
 import gamestackTexturePlaceholder from 'assets/gamestack-login-placeholder.jpg';
+import Experience from './Experience';
+
+//Credit to hamishw - HAMISH WILLIAMS
 
 const disciplines = [
   'AI Specialist',
@@ -45,12 +48,12 @@ export const Home = () => {
   const intro = useRef();
   const projectOne = useRef();
   const projectTwo = useRef();
-  // const projectThree = useRef();
+  const experience = useRef();
   const details = useRef();
   const skills = useRef();
 
   useEffect(() => {
-    const sections = [intro, details, projectOne, projectTwo, skills];
+    const sections = [intro, details, experience, projectOne, projectTwo, skills];
 
     const sectionObserver = new IntersectionObserver(
       (entries, observer) => {
@@ -103,6 +106,7 @@ export const Home = () => {
         visible={visibleSections.includes(details.current)}
         id="details"
       />
+      <Experience sectionRef={experience} />
       <ProjectSummary
         id="project-1"
         sectionRef={projectOne}

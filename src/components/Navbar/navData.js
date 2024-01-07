@@ -4,6 +4,10 @@ export const navLinks = [
     pathname: '/#details',
   },
   {
+    label: 'Experience',
+    pathname: '/#experience',
+  },
+  {
     label: 'Projects',
     pathname: '/#project-1',
   },
