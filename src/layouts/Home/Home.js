@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './Home.module.css';
 import Skills from './Skills';
 import MoreProjects from './MoreProjects';
+import { Testimonials, Card } from './Testimonials'; // Adjust the path based on your project structure
 
 import grx1Large from 'assets/grx1Large.png';
 import grx1 from 'assets/grx1.png';
@@ -157,6 +158,14 @@ export const Home = () => {
         }}
       />
       <MoreProjects />
+      <Testimonials>
+        {[...new Array(5)].map((_, i) => (
+          <Card
+            title={'Card ' + (i + 1)}
+            content="Lorem ipsum dolor sit amet, consectetur adipiscing elit..."
+          />
+        ))}
+      </Testimonials>
       <Skills sectionRef={skills} words={skillsArray} />
     </div>
   );
