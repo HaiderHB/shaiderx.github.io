@@ -8,6 +8,7 @@ import { ProjectSummary } from 'layouts/Home/ProjectSummary';
 import { useEffect, useRef, useState } from 'react';
 import styles from './Home.module.css';
 import Skills from './Skills';
+import MoreProjects from './MoreProjects';
 
 import grx1Large from 'assets/grx1Large.png';
 import grx1 from 'assets/grx1.png';
@@ -155,6 +156,7 @@ export const Home = () => {
           ],
         }}
       />
+      <MoreProjects />
       <Skills sectionRef={skills} words={skillsArray} />
     </div>
   );
