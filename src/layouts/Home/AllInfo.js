@@ -4,6 +4,17 @@ import immican from 'assets/logos/immican.png';
 import ecomtent from 'assets/logos/ecomtent.png';
 import omnia from 'assets/logos/omnia.png';
 
+export const resumeURL =
+  'https://drive.google.com/file/d/1xTPM2psIVVVr-n2NeNelN9-5OmTmMHlH/view';
+
+export const disciplines = [
+  'AI Specialist',
+  'Full Stack Dev',
+  'App Developer',
+  'Game Dev',
+  'Student',
+];
+
 export const experiences = [
   {
     title: 'Job Title 1',
@@ -47,43 +58,6 @@ export const experiences = [
   },
 ];
 
-export const disciplines = [
-  'AI Specialist',
-  'Full Stack Dev',
-  'App Developer',
-  'Game Dev',
-  'Student',
-];
-
-export const testimonialData = [
-  {
-    name: 'Alex Johnson',
-    company: 'WebTech Inc.',
-    review: 'Absolutely wonderful experience! The team was efficient and professional.',
-    image: 'https://via.placeholder.com/80',
-  },
-  {
-    name: 'Samantha Bloom',
-    company: 'DesignX',
-    review: 'Innovative solutions and a dynamic approach to design. Highly recommended!',
-    image: 'https://via.placeholder.com/80',
-  },
-  {
-    name: 'Michael Lee',
-    company: 'CodeCrafters',
-    review:
-      'Outstanding service and support. They went above and beyond to meet our needs.',
-    image: 'https://via.placeholder.com/80',
-  },
-  {
-    name: 'Jessica Tan',
-    company: 'TechSphere',
-    review:
-      'A great partnership that led to creating truly unique and engaging experiences.',
-    image: 'https://via.placeholder.com/80',
-  },
-];
-
 export const projects = [
   {
     title: 'Append App',
@@ -99,6 +73,41 @@ export const projects = [
     title: 'Game Dev Lead',
     details:
       'Led a team of 5 developers in designing a Unity-based mobile game, delegating tasks, organizing meetings, and setting deadlines to ensure project success.',
+  },
+];
+
+export const testimonialData = [
+  {
+    name: 'Taylor Leedahl',
+    company: 'Owner at TinyHorse',
+    review:
+      "It's been a joy to work with Haider. He demonstrated a deep understanding of the tools he uses: he thought and communicated quickly about how his skills could help achieve ideas, he delivered drafts in a very reasonable timeline!",
+    image:
+      'https://media.licdn.com/dms/image/C5603AQH7FQqevMWPGg/profile-displayphoto-shrink_200_200/0/1517480511432?e=1710374400&v=beta&t=6eiykGOCxxjuj4qbODrjJwsi_m02KOkWUbxAeKLTz4c',
+  },
+  {
+    name: 'Kyle Lacroix',
+    company: 'Co-Founder at Blue Guardian',
+    review:
+      'Haider was an invaluable asset to our website project. His creativity, technical expertise, and proactive approach were exceptional. Highly recommended for his outstanding work ethic and talent.',
+    image:
+      'https://media.licdn.com/dms/image/C4D03AQEuOKPlOiPH3g/profile-displayphoto-shrink_800_800/0/1604442994882?e=2147483647&v=beta&t=sQ1HqUZ68dlkKHozYwr0JFierhTUjn2DkZkUx8U8Drg',
+  },
+  {
+    name: 'Matt Karakilic',
+    company: 'Director at Omnia Consulting',
+    review:
+      "Haider's willingness to step into unfamiliar territory and master a skill that once intimidated him was impressive. He demonstrated a high level of adaptability and technical proficiency.",
+    image:
+      'https://adplist-bucket.s3.amazonaws.com/media/profile_photos/1471371d465f4845987ba45d89bd8a38D71JB.webp',
+  },
+  {
+    name: 'Saad Khan',
+    company: 'CEO & Founder at ImmiCan',
+    review:
+      'Great guy to work with. Clear concise understanding of the project with an action taking approach. It would be my honor and privilege to work with him again',
+    image:
+      'https://media.licdn.com/dms/image/D5603AQEPX5m3eZIh5A/profile-displayphoto-shrink_200_200/0/1702181465430?e=1710374400&v=beta&t=xfgxzS8b4_tW8Pzs_TWx6t00dQuyKGmfP03FgMWDGjA',
   },
 ];
 

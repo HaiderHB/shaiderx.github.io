@@ -1,8 +1,10 @@
+import { resumeURL } from 'layouts/Home/AllInfo.js';
+
 export const navLinks = [
-  {
-    label: 'Details',
-    pathname: '/#details',
-  },
+  // {
+  //   label: 'Details',
+  //   pathname: '/#details',
+  // },
   {
     label: 'Experience',
     pathname: '/#experience',
@@ -25,7 +27,7 @@ export const navLinks = [
   },
   {
     label: 'Resume',
-    pathname: 'https://drive.google.com/file/d/1xTPM2psIVVVr-n2NeNelN9-5OmTmMHlH/view',
+    pathname: resumeURL,
     blue: true,
   },
 ];
