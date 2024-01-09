@@ -9,12 +9,11 @@ import styles from './Home.module.css';
 import Skills from './Skills';
 import MoreProjects from './MoreProjects';
 import { Testimonials, Card } from './Testimonials'; // Adjust the path based on your project structure
-
-import grx1Large from 'assets/grx1Large.png';
-import grx1 from 'assets/grx1.png';
-import grx2 from 'assets/grx2.png';
-import gamestackTexture2Placeholder from 'assets/gamestack-list-placeholder.jpg';
-import gamestackTexturePlaceholder from 'assets/gamestack-login-placeholder.jpg';
+import grx1Large from '../../assets/grx1Large.png';
+import grx1 from '../../assets/grx1.png';
+import grx2 from '../../assets/grx2.png';
+import gamestackTexture2Placeholder from '../../assets/gamestack-list-placeholder.jpg';
+import gamestackTexturePlaceholder from '../../assets/gamestack-login-placeholder.jpg';
 import Experience from './Experience';
 
 import CustomMouseTrail from './Mouse';

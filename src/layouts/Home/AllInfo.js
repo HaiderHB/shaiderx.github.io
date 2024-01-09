@@ -1,9 +1,9 @@
-import tinyhorse from 'assets/logos/tinyhorse.jpg';
-import phc from 'assets/logos/phc.png';
-import immican from 'assets/logos/immican.png';
-import ecomtent from 'assets/logos/ecomtent.png';
-import omnia from 'assets/logos/omnia.png';
-import wali from 'assets/logos/wali.png';
+import tinyhorse from '../../assets/logos/tinyhorse.jpg';
+import phc from '../../assets/logos/phc.png';
+import immican from '../../assets/logos/immican.png';
+import ecomtent from '../../assets/logos/ecomtent.png';
+import omnia from '../../assets/logos/omnia.png';
+import wali from '../../assets/logos/wali.png';
 
 export const resumeURL =
   'https://drive.google.com/file/d/1xTPM2psIVVVr-n2NeNelN9-5OmTmMHlH/view';
