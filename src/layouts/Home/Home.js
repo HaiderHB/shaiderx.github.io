@@ -46,6 +46,35 @@ const skillsArray = [
   'C',
 ];
 
+const testimonialData = [
+  {
+    name: 'Alex Johnson',
+    company: 'WebTech Inc.',
+    review: 'Absolutely wonderful experience! The team was efficient and professional.',
+    image: 'https://via.placeholder.com/80',
+  },
+  {
+    name: 'Samantha Bloom',
+    company: 'DesignX',
+    review: 'Innovative solutions and a dynamic approach to design. Highly recommended!',
+    image: 'https://via.placeholder.com/80',
+  },
+  {
+    name: 'Michael Lee',
+    company: 'CodeCrafters',
+    review:
+      'Outstanding service and support. They went above and beyond to meet our needs.',
+    image: 'https://via.placeholder.com/80',
+  },
+  {
+    name: 'Jessica Tan',
+    company: 'TechSphere',
+    review:
+      'A great partnership that led to creating truly unique and engaging experiences.',
+    image: 'https://via.placeholder.com/80',
+  },
+];
+
 export const Home = () => {
   const [visibleSections, setVisibleSections] = useState([]);
   const [scrollIndicatorHidden, setScrollIndicatorHidden] = useState(false);
@@ -159,13 +188,17 @@ export const Home = () => {
       />
       <MoreProjects />
       <Testimonials>
-        {[...new Array(4)].map((_, i) => (
+        {testimonialData.map((testimonial, i) => (
           <Card
-            title={'Card ' + (i + 1)}
-            content="Lorem ipsum dolor sit amet, consectetur adipiscing elit..."
+            key={i}
+            name={testimonial.name}
+            company={testimonial.company}
+            review={testimonial.review}
+            image={testimonial.image}
           />
         ))}
       </Testimonials>
+
       <Skills sectionRef={skills} words={skillsArray} />
     </div>
   );
