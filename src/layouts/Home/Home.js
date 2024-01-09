@@ -12,7 +12,6 @@ import { Testimonials, Card } from './Testimonials'; // Adjust the path based on
 
 import grx1Large from 'assets/grx1Large.png';
 import grx1 from 'assets/grx1.png';
-import grx2Large from 'assets/grx2Large.png';
 import grx2 from 'assets/grx2.png';
 import gamestackTexture2Placeholder from 'assets/gamestack-list-placeholder.jpg';
 import gamestackTexturePlaceholder from 'assets/gamestack-login-placeholder.jpg';
