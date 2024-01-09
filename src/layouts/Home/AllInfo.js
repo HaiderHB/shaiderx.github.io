@@ -3,6 +3,7 @@ import phc from 'assets/logos/phc.png';
 import immican from 'assets/logos/immican.png';
 import ecomtent from 'assets/logos/ecomtent.png';
 import omnia from 'assets/logos/omnia.png';
+import wali from 'assets/logos/wali.png';
 
 export const resumeURL =
   'https://drive.google.com/file/d/1xTPM2psIVVVr-n2NeNelN9-5OmTmMHlH/view';
@@ -17,44 +18,58 @@ export const disciplines = [
 
 export const experiences = [
   {
-    title: 'Job Title 1',
-    company: 'Company 1',
-    years: '2020 - Present',
-    mainTech: ['React', 'Node.js'],
-    description: 'Description for Job Title 1 at Company 1.',
+    title: 'Full Stack Developer',
+    company: 'Ecomtent',
+    years: 'Dec 2024 - Current',
+    mainTech: ['Next.js', 'AWS', 'React', 'Node.js'],
+    description:
+      'Focused on full-stack development with a backend emphasis, integrated AI models with frontend, and worked with AWS Lambda, NodeJS/Python, and MLOps.',
     logo: ecomtent,
   },
   {
-    title: 'Job Title 1',
-    company: 'Company 1',
-    years: '2020 - Present',
-    mainTech: ['React', 'Node.js'],
-    description: 'Description for Job Title 1 at Company 1.',
+    title: 'AI Engineer',
+    company: 'Tiny Horse',
+    years: 'Dec 2024 (Contract)',
+    mainTech: ['Python', 'Node.js', 'React', 'Supabase'],
+    description:
+      'Created custom AI applications to help automate and streamline business processes.',
     logo: tinyhorse,
   },
   {
-    title: 'Job Title 1',
-    company: 'Company 1',
-    years: '2020 - Present',
-    mainTech: ['React', 'Node.js'],
-    description: 'Description for Job Title 1 at Company 1.',
+    title: 'AI Engineer',
+    company: 'ImmiCan',
+    years: 'Dec 2024 (Contract)',
+    mainTech: ['React', 'Python', 'Flask', 'Node.js'],
+    description:
+      'Trained and created custom AI chatbot with multimodal functionality to meet employer needs.',
     logo: immican,
   },
   {
-    title: 'Job Title 1',
-    company: 'Company 1',
-    years: '2020 - Present',
+    title: 'QA Tester',
+    company: 'Omnia Consulting',
+    years: 'Dec 2024 (Contract)',
     mainTech: ['React', 'Node.js'],
-    description: 'Description for Job Title 1 at Company 1.',
+    description:
+      'Implemented Unit testing and integration testing to ensure website stability. Tests included various pages, user profiles, and authentication.',
     logo: omnia,
   },
   {
-    title: 'Job Title 1',
-    company: 'Company 1',
-    years: '2020 - Present',
-    mainTech: ['React', 'Node.js'],
-    description: 'Description for Job Title 1 at Company 1.',
+    title: 'Software Development Intern',
+    company: 'Project: Humam City',
+    years: 'Jan 2024 - March 2024',
+    mainTech: ['React Native', 'Python'],
+    description:
+      'Developed and integrated user network features including login and messaging, along with API integrations using React Native and Python.',
     logo: phc,
+  },
+  {
+    title: 'App Developer Intern',
+    company: 'Wali Ul Asr',
+    years: 'June 2019 - Sep 2019',
+    mainTech: ['React', 'Node.js'],
+    description:
+      'Translated client needs into app features, collaborated in a team for specifications and design, ensured quality through testing, and solved complex bugs.',
+    logo: wali,
   },
 ];
 

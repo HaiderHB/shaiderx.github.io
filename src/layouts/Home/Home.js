@@ -130,8 +130,8 @@ export const Home = () => {
         sectionRef={projectTwo}
         visible={visibleSections.includes(projectTwo.current)}
         index={2}
-        title="Video game progress tracking"
-        description="Design and development for a video game tracking app built in React Native"
+        title="Galaxy Royale - Puzzle Strategy Game"
+        description="Fully self taught and self made mobile game. Recognized by Google for high potential and uniqueness."
         buttonText="View Trailer"
         buttonLink="https://www.youtube.com/watch?v=7UOMfTYkKoQ"
         model={{
