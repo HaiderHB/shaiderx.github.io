@@ -40,8 +40,8 @@ export const Contact = () => {
             <div className={styles.rightColumn}>
               <div className={styles.textBlock}>
                 <h2 className={styles.secondaryTitle}>
-                  Whether you have any questions or just want to say hi, I'll be happy to
-                  hear from you!
+                  Whether you have any questions or just want to say hi, I&apos;ll be
+                  happy to hear from you!
                 </h2>
               </div>
               <div className={styles.textBlock}></div>
