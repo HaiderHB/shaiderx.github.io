@@ -11,6 +11,7 @@ import { cssProps, media, msToNum, numToMs } from 'utils/style';
 import { NavToggle } from './NavToggle';
 import styles from './Navbar.module.css';
 import { ThemeToggle } from './ThemeToggle';
+import { MouseToggle } from './MouseToggle';
 import { navLinks, socialLinks } from './navData';
 
 export const Navbar = () => {
@@ -193,10 +194,12 @@ export const Navbar = () => {
             ))}
             <NavbarIcons />
             <ThemeToggle isMobile />
+            {/* <MouseToggle isMobile /> */}
           </nav>
         )}
       </Transition>
       {!isMobile && <ThemeToggle data-navbar-item />}
+      {/* {!isMobile && <MouseToggle data-navbar-item />} */}
     </header>
   );
 };

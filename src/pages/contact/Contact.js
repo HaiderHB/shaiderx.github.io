@@ -1,8 +1,9 @@
 import { MdContentCopy } from 'react-icons/md';
 import React, { useState } from 'react';
 import styles from './Contact.module.css'; // Ensure the CSS module is updated accordingly
-import GraphicCanvas from './GraphicCanvas';
+import Graphic from './Graphic';
 import eye from 'assets/eye.png';
+import CustomMouseTrail from '../../layouts/Home/Mouse';
 
 export const Contact = () => {
   const [copied, setCopied] = useState(false);
@@ -15,7 +16,8 @@ export const Contact = () => {
 
   return (
     <div>
-      {/* <GraphicCanvas /> */}
+      <CustomMouseTrail />
+      {/* <Graphic /> */}
       <div className={styles.contact}>
         <div className={styles.container}>
           <div className={styles.flexWrap}>
