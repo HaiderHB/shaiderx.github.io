@@ -6,64 +6,9 @@ import {
 import 'react-vertical-timeline-component/style.min.css';
 import { Section } from 'components/Section';
 
-import tinyhorse from 'assets/logos/tinyhorse.jpg';
-import phc from 'assets/logos/phc.png';
-import immican from 'assets/logos/immican.png';
-import ecomtent from 'assets/logos/ecomtent.png';
-import omnia from 'assets/logos/omnia.png';
-
 class Experience extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      experiences: [
-        {
-          title: 'Job Title 1',
-          company: 'Company 1',
-          years: '2020 - Present',
-          mainTech: ['React', 'Node.js'],
-          description: 'Description for Job Title 1 at Company 1.',
-          logo: ecomtent,
-        },
-        {
-          title: 'Job Title 1',
-          company: 'Company 1',
-          years: '2020 - Present',
-          mainTech: ['React', 'Node.js'],
-          description: 'Description for Job Title 1 at Company 1.',
-          logo: tinyhorse,
-        },
-        {
-          title: 'Job Title 1',
-          company: 'Company 1',
-          years: '2020 - Present',
-          mainTech: ['React', 'Node.js'],
-          description: 'Description for Job Title 1 at Company 1.',
-          logo: immican,
-        },
-        {
-          title: 'Job Title 1',
-          company: 'Company 1',
-          years: '2020 - Present',
-          mainTech: ['React', 'Node.js'],
-          description: 'Description for Job Title 1 at Company 1.',
-          logo: omnia,
-        },
-        {
-          title: 'Job Title 1',
-          company: 'Company 1',
-          years: '2020 - Present',
-          mainTech: ['React', 'Node.js'],
-          description: 'Description for Job Title 1 at Company 1.',
-          logo: phc,
-        },
-      ],
-    };
-  }
-
   render() {
-    const { experiences } = this.state;
-    const { sectionRef } = this.props;
+    const { experiences, sectionRef } = this.props;
 
     const work = experiences.map((work, i) => {
       const mainTech = work.mainTech.map((technology, i) => {

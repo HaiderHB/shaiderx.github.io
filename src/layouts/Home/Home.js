@@ -20,60 +20,15 @@ import gamestackTexturePlaceholder from 'assets/gamestack-login-placeholder.jpg'
 import Experience from './Experience';
 
 import CustomMouseTrail from './Mouse';
+import {
+  disciplines,
+  skillsArray,
+  testimonialData,
+  projects,
+  experiences,
+} from './AllInfo';
 
 //Credit to hamishw - HAMISH WILLIAMS
-
-const disciplines = [
-  'AI Specialist',
-  'Full Stack Dev',
-  'App Developer',
-  'Game Dev',
-  'Student',
-];
-
-const skillsArray = [
-  'Python',
-  'Next.js',
-  'React',
-  'JavaScript',
-  'Vue.js',
-  'Supabase',
-  'HTML',
-  'CSS',
-  'C#',
-  'Unity',
-  'Git',
-  'C',
-];
-
-const testimonialData = [
-  {
-    name: 'Alex Johnson',
-    company: 'WebTech Inc.',
-    review: 'Absolutely wonderful experience! The team was efficient and professional.',
-    image: 'https://via.placeholder.com/80',
-  },
-  {
-    name: 'Samantha Bloom',
-    company: 'DesignX',
-    review: 'Innovative solutions and a dynamic approach to design. Highly recommended!',
-    image: 'https://via.placeholder.com/80',
-  },
-  {
-    name: 'Michael Lee',
-    company: 'CodeCrafters',
-    review:
-      'Outstanding service and support. They went above and beyond to meet our needs.',
-    image: 'https://via.placeholder.com/80',
-  },
-  {
-    name: 'Jessica Tan',
-    company: 'TechSphere',
-    review:
-      'A great partnership that led to creating truly unique and engaging experiences.',
-    image: 'https://via.placeholder.com/80',
-  },
-];
 
 export const Home = () => {
   const [visibleSections, setVisibleSections] = useState([]);
@@ -83,10 +38,19 @@ export const Home = () => {
   const projectTwo = useRef();
   const experience = useRef();
   const details = useRef();
+  const testimonials = useRef();
   const skills = useRef();
 
   useEffect(() => {
-    const sections = [intro, details, experience, projectOne, projectTwo, skills];
+    const sections = [
+      intro,
+      details,
+      experience,
+      projectOne,
+      projectTwo,
+      testimonials,
+      skills,
+    ];
 
     const sectionObserver = new IntersectionObserver(
       (entries, observer) => {
@@ -140,7 +104,7 @@ export const Home = () => {
         visible={visibleSections.includes(details.current)}
         id="details"
       />
-      <Experience sectionRef={experience} />
+      <Experience sectionRef={experience} experiences={experiences} />
       <ProjectSummary
         id="project-1"
         sectionRef={projectOne}
@@ -186,8 +150,8 @@ export const Home = () => {
           ],
         }}
       />
-      <MoreProjects />
-      <Testimonials>
+      <MoreProjects projects={projects} />
+      <Testimonials sectionRef={testimonials}>
         {testimonialData.map((testimonial, i) => (
           <Card
             key={i}

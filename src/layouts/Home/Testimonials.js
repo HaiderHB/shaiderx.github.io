@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TiChevronLeftOutline, TiChevronRightOutline } from 'react-icons/ti';
 import styles from './Testimonials.module.css';
 import { FaStar } from 'react-icons/fa'; // FontAwesome star icon
+import { Section } from 'components/Section';
 
 const MAX_VISIBILITY = 3;
 
@@ -21,7 +22,7 @@ export const Card = ({ company, name, review, image }) => (
   </div>
 );
 
-export const Testimonials = ({ children }) => {
+export const Testimonials = ({ children, sectionRef }) => {
   const [active, setActive] = useState(1);
   const count = React.Children.count(children);
   const cardRefs = useRef([]);
@@ -69,31 +70,39 @@ export const Testimonials = ({ children }) => {
   };
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.carousel}>
-        <button className={`${styles.nav} ${styles.navLeft}`} onClick={goToPrevious}>
-          <TiChevronLeftOutline />
-        </button>
-        {React.Children.map(children, (child, i) => (
-          <div
-            ref={el => (cardRefs.current[i] = el)}
-            className={`${styles.cardContainer} ${i === active ? styles.active : ''}`}
-            style={{
-              '--offset': (active - i) / 3,
-              '--direction': Math.sign(active - i),
-              '--abs-offset': Math.abs(active - i) / 3,
-              'pointer-events': active === i ? 'auto' : 'none',
-              opacity: Math.abs(active - i) < MAX_VISIBILITY ? '1' : '0',
-              display: Math.abs(active - i) < MAX_VISIBILITY ? 'block' : 'none',
-            }}
-          >
-            {child}
-          </div>
-        ))}
-        <button className={`${styles.nav} ${styles.navRight}`} onClick={goToNext}>
-          <TiChevronRightOutline />
-        </button>
+    <Section
+      as="section"
+      ref={sectionRef}
+      id={'testimonials'}
+      aria-labelledby={'testimonials'}
+      tabIndex={-1}
+    >
+      <div className={styles.wrapper}>
+        <div className={styles.carousel}>
+          <button className={`${styles.nav} ${styles.navLeft}`} onClick={goToPrevious}>
+            <TiChevronLeftOutline />
+          </button>
+          {React.Children.map(children, (child, i) => (
+            <div
+              ref={el => (cardRefs.current[i] = el)}
+              className={`${styles.cardContainer} ${i === active ? styles.active : ''}`}
+              style={{
+                '--offset': (active - i) / 3,
+                '--direction': Math.sign(active - i),
+                '--abs-offset': Math.abs(active - i) / 3,
+                'pointer-events': active === i ? 'auto' : 'none',
+                opacity: Math.abs(active - i) < MAX_VISIBILITY ? '1' : '0',
+                display: Math.abs(active - i) < MAX_VISIBILITY ? 'block' : 'none',
+              }}
+            >
+              {child}
+            </div>
+          ))}
+          <button className={`${styles.nav} ${styles.navRight}`} onClick={goToNext}>
+            <TiChevronRightOutline />
+          </button>
+        </div>
       </div>
-    </div>
+    </Section>
   );
 };
