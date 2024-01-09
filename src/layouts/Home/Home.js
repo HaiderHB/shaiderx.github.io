@@ -1,5 +1,4 @@
 import eloquateLg from 'assets/Eloquate-large.png';
-import sprTexturePlaceholder from 'assets/spr-lesson-builder-dark-placeholder.jpg';
 import eloquateMd from 'assets/Eloquate-med.png';
 import { Meta } from 'components/Meta';
 import { Intro } from 'layouts/Home/Intro';
@@ -120,7 +119,7 @@ export const Home = () => {
           textures: [
             {
               srcSet: [eloquateMd, eloquateLg],
-              placeholder: sprTexturePlaceholder,
+              placeholder: eloquateMd,
             },
           ],
         }}
