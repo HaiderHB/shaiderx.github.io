@@ -1,6 +1,6 @@
 .contact {
-  --formHeight: 530px;
-
+  position: relative; /* This makes z-index effective */
+  z-index: 1; /* Higher than canvas */
   display: grid;
   grid-template-rows: 1fr auto;
   grid-template-columns: 100%;
@@ -9,295 +9,154 @@
   align-items: center;
   min-height: 100vh;
   width: 100%;
-
-  @media (--mediaMobile) {
-    padding-top: 0;
-  }
 }
 
-.form {
+.canvas {
+  position: fixed; /* Changed from absolute to fixed */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Ensure it's behind the contact content */
+}
+
+.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2; /* Behind the canvas */
+}
+
+.copyIcon {
+  cursor: pointer;
+  vertical-align: middle; /* Align with the email text */
+}
+
+.container {
   grid-area: 1 / 1;
   max-width: var(--maxWidthS);
   width: 100%;
-  padding: var(--space2XL) 0;
-
-  @media (--mediaMobile) {
-    padding: var(--space5XL) 0 var(--space2XL);
-    align-self: flex-start;
-  }
+  padding: var(--space2XL) var(--spaceM); /* Added horizontal padding */
 }
 
-.title {
-  margin-bottom: var(--space2XL);
-  transition-property: opacity;
-  transition-timing-function: var(--bezierFastoutSlowin);
-  transition-duration: var(--durationXL);
-  transition-delay: var(--delay);
-  opacity: 0;
-
-  @media (--mediaUseMotion) {
-    transition-property: transform, opacity;
-    transform: translate3d(0, var(--space5XL), 0);
-  }
-
-  &[data-status='entering'],
-  &[data-status='entered'] {
-    transform: none;
-    opacity: 1;
-  }
-
-  &[data-status='exiting'] {
-    transition-duration: var(--durationM);
-    transition-delay: 0s;
-    opacity: 0;
-
-    @media (--mediaUseMotion) {
-      transform: translate3d(0, calc(var(--space2XL) * -1), 0);
-    }
-  }
-}
-
-.divider {
-  margin-bottom: var(--space3XL);
-  transition-property: opacity;
-  transition-timing-function: var(--bezierFastoutSlowin);
-  transition-duration: var(--durationXL);
-  transition-delay: var(--delay);
-  opacity: 0;
-
-  @media (--mediaUseMotion) {
-    transition-property: transform, opacity;
-    transform: translate3d(0, var(--space5XL), 0);
-  }
-
-  &[data-status='entering'],
-  &[data-status='entered'] {
-    transform: none;
-    opacity: 1;
-  }
-
-  &[data-hidden='true'] {
-    opacity: 0;
-
-    @media (--mediaUseMotion) {
-      transform: translate3d(0, var(--space5XL), 0);
-    }
-  }
-
-  &[data-status='exiting'] {
-    transition-duration: var(--durationM);
-    transition-delay: 0s;
-    opacity: 0;
-
-    @media (--mediaUseMotion) {
-      transform: translate3d(0, calc(var(--space2XL) * -1), 0);
-    }
-  }
-}
-
-.input {
-  transition-property: opacity;
-  transition-timing-function: var(--bezierFastoutSlowin);
-  transition-duration: var(--durationXL);
-  transition-delay: var(--delay);
-  opacity: 0;
-
-  @media (--mediaUseMotion) {
-    transition-property: transform, opacity;
-    transform: translate3d(0, var(--space3XL), 0);
-  }
-
-  & + & {
-    margin-top: var(--spaceXL);
-  }
-
-  &[data-status='entering'],
-  &[data-status='entered'] {
-    transform: none;
-    opacity: 1;
-  }
-
-  &[data-hidden='true'] {
-    opacity: 0;
-
-    @media (--mediaUseMotion) {
-      transform: translate3d(0, var(--space3XL), 0);
-      transform: none;
-    }
-  }
-
-  &[data-status='exiting'] {
-    transition-duration: var(--durationM);
-    transition-delay: 0s;
-    opacity: 0;
-
-    @media (--mediaUseMotion) {
-      transform: translate3d(0, calc(var(--space2XL) * -1), 0);
-    }
-  }
-}
-
-.button {
-  --buttonLoaderDelay: var(--durationL);
-
-  margin-top: calc(var(--spaceXL) * 2);
-  transition-property: opacity;
-  transition-timing-function: var(--bezierFastoutSlowin);
-  transition-delay: var(--delay);
-  transition-duration: var(--durationXL);
-  opacity: 0;
-  justify-self: flex-start;
-
-  @media (--mediaUseMotion) {
-    transition-property: transform, opacity;
-    transform: translate3d(0, var(--space3XL), 0);
-  }
-
-  &[data-status='entered'] {
-    transition-delay: 0ms;
-    transition-duration: var(--durationM);
-  }
-
-  &[data-sending='true'] {
-    & svg {
-      transition: transform var(--bezierFastoutSlowin) var(--durationXL),
-        opacity var(--durationS) ease var(--durationS);
-      transform: translate3d(var(--space5XL), 0, 0);
-      opacity: 0;
-
-      @media (--mediaReduceMotion) {
-        transition-property: opacity;
-        transform: none;
-      }
-    }
-  }
-
-  &[data-status='entering'],
-  &[data-status='entered'] {
-    opacity: 1;
-  }
-
-  &[data-status='entering']:not(:hover),
-  &[data-status='entered']:not(:hover),
-  &[data-status='entering']:hover {
-    transform: none;
-  }
-
-  &[data-status='exiting'] {
-    transition-duration: var(--durationM);
-    transition-delay: 0s;
-    opacity: 0;
-
-    @media (--mediaUseMotion) {
-      transform: translate3d(0, calc(var(--space2XL) * -1), 0);
-    }
-  }
-}
-
-.complete {
-  grid-area: 1 / 1;
+.flexWrap {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  margin: -16px; /* Negative margin for gutters */
+}
+
+.leftColumn,
+.rightColumn {
+  padding: 16px; /* Padding for gutters */
+  width: 100%;
+  box-sizing: border-box; /* Ensures padding is included in width */
+}
+
+@media (min-width: 1024px) {
+  .leftColumn,
+  .rightColumn {
+    width: calc(50% - 32px); /* Adjust width to include gutters */
+  }
+
+  .container {
+    max-width: var(--maxWidthL); /* Adjust the max-width for larger screens */
+  }
+}
+
+.titleContainer {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  padding: var(--spaceXL) var(--spaceM);
-  text-align: center;
-  inset: 0;
+  margin-bottom: 16px;
 }
 
-.completeTitle {
-  margin: 0;
-  transition-property: opacity;
-  transition-timing-function: var(--bezierFastoutSlowin);
-  transition-duration: var(--durationXL);
-  transition-delay: var(--delay);
-  opacity: 0;
-
-  @media (--mediaUseMotion) {
-    transition-property: transform, opacity;
-    transform: translate3d(0, var(--space3XL), 0);
-  }
-
-  &[data-status='entered'] {
-    transform: none;
-    opacity: 1;
-  }
+.image {
+  margin-right: 16px;
+  width: 100px;
 }
 
-.completeText {
-  margin-top: var(--spaceM);
-  transition-property: opacity;
-  transition-timing-function: var(--bezierFastoutSlowin);
-  transition-duration: var(--durationXL);
-  transition-delay: var(--delay);
-  opacity: 0;
-
-  @media (--mediaUseMotion) {
-    transition-property: transform, opacity;
-    transform: translate3d(0, var(--space3XL), 0);
-  }
-
-  &[data-status='entered'] {
-    transform: none;
-    opacity: 1;
-  }
+.mainTitle {
+  font-size: 72px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 5px;
 }
 
-.completeButton {
-  margin-top: var(--spaceL);
-  transition-property: opacity;
-  transition-timing-function: var(--bezierFastoutSlowin);
-  transition-duration: var(--durationXL);
-  transition-delay: var(--delay);
-  opacity: 0;
-
-  @media (--mediaUseMotion) {
-    transition-property: transform, opacity;
-    transform: translate3d(0, var(--space3XL), 0);
-  }
-
-  &[data-status='entered'] {
-    opacity: 1;
-
-    &:not(:hover) {
-      transform: none;
-    }
-  }
+.emailText {
+  font-size: 24px;
+  cursor: pointer;
+  display: inline-block; /* Changed to inline-block */
+  margin-right: 10px; /* Space between email and copy icon */
 }
 
-.formError {
-  color: rgb(var(--rgbError));
-  overflow: hidden;
-  height: var(--height);
-
-  @media (--mediaUseMotion) {
-    transition-property: height;
-    transition-duration: var(--durationM);
-    transition-timing-function: var(--bezierFastoutSlowin);
-  }
+.horizontalLine {
+  border-top: 2px solid black;
 }
 
-.formErrorContent {
-  padding-top: var(--spaceXL);
+.textBlock {
+  margin-bottom: 32px;
 }
 
-.formErrorMessage {
+.secondaryTitle {
+  font-size: 30px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.tertiaryTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+/* New styles for social links */
+.socialLinks {
+  display: flex; /* Display links side by side */
+  gap: 20px; /* Space between links */
+}
+
+.socialLink {
+  color: inherit; /* Prevent default blue color */
+  text-decoration: none; /* Remove underline */
+}
+
+/* Optional: Style for hover effect on social links */
+.socialLink:hover {
+  text-decoration: underline;
+}
+
+.contact a {
+  color: inherit; /* To avoid the default blue color */
+  text-decoration: none; /* To remove underline */
+}
+
+.contact a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+.emailSection {
   display: flex;
-  padding: var(--spaceM);
-  line-height: 24px;
-  background-color: rgb(var(--rgbError) / 0.1);
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+  align-items: center;
 }
 
-.formErrorIcon {
-  flex: 0 0 auto;
-  margin-right: var(--spaceS);
+.emailLink {
+  margin-right: 10px; /* Space between email and icon */
+  font-size: 1.8em; /* Increase the font size */
 }
 
-.footer {
-  opacity: 0;
+.copyIcon {
+  cursor: pointer;
+  font-size: 1.4em; /* Increase the font size */
+}
 
-  &:global {
-    animation: fadeIn var(--durationL) ease var(--durationXL) forwards;
-  }
+.copiedPopup {
+  margin-left: 10px;
+  color: green; /* Choose a color that stands out */
+  font-size: 0.85em;
+  /* You can add more styling like background, border, etc. */
 }

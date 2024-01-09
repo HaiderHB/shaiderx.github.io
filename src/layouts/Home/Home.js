@@ -159,7 +159,7 @@ export const Home = () => {
       />
       <MoreProjects />
       <Testimonials>
-        {[...new Array(5)].map((_, i) => (
+        {[...new Array(4)].map((_, i) => (
           <Card
             title={'Card ' + (i + 1)}
             content="Lorem ipsum dolor sit amet, consectetur adipiscing elit..."
