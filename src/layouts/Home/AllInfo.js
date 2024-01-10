@@ -21,7 +21,7 @@ export const experiences = [
     title: 'Full Stack Developer',
     company: 'Ecomtent',
     years: 'Dec 2024 - Current',
-    mainTech: ['Next.js', 'AWS', 'React', 'Node.js'],
+    mainTech: ['Next.js', 'AWS', 'React', 'Node.js', 'Python'],
     description:
       'Focused on full-stack development with a backend emphasis, integrated AI models with frontend, and worked with AWS Lambda, NodeJS/Python, and MLOps.',
     logo: ecomtent,
@@ -30,7 +30,7 @@ export const experiences = [
     title: 'AI Engineer',
     company: 'Tiny Horse',
     years: 'Dec 2024 (Contract)',
-    mainTech: ['Python', 'Node.js', 'React', 'Supabase'],
+    mainTech: ['Python', 'Node.js', 'React', 'Supabase', 'Shopify'],
     description:
       'Created custom AI applications to help automate and streamline business processes.',
     logo: tinyhorse,
@@ -39,7 +39,7 @@ export const experiences = [
     title: 'AI Engineer',
     company: 'ImmiCan',
     years: 'Dec 2024 (Contract)',
-    mainTech: ['React', 'Python', 'Flask', 'Node.js'],
+    mainTech: ['React', 'Python', 'Flask', 'Node.js', 'Vercel'],
     description:
       'Trained and created custom AI chatbot with multimodal functionality to meet employer needs.',
     logo: immican,
@@ -48,7 +48,7 @@ export const experiences = [
     title: 'QA Tester',
     company: 'Omnia Consulting',
     years: 'Dec 2024 (Contract)',
-    mainTech: ['React', 'Node.js'],
+    mainTech: ['React', 'Node.js', 'Vite', 'Vitest'],
     description:
       'Implemented Unit testing and integration testing to ensure website stability. Tests included various pages, user profiles, and authentication.',
     logo: omnia,
@@ -131,6 +131,7 @@ export const skillsArray = [
   'Next.js',
   'React',
   'JavaScript',
+  'AWS',
   'Vue.js',
   'Supabase',
   'HTML',
