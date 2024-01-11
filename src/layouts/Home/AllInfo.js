@@ -6,7 +6,7 @@ import omnia from '../../assets/logos/omnia.png';
 import wali from '../../assets/logos/wali.png';
 
 export const resumeURL =
-  'https://drive.google.com/file/d/1xTPM2psIVVVr-n2NeNelN9-5OmTmMHlH/view';
+  'https://drive.google.com/file/d/1ylKc3s7npwJxBhUsLxWaPV0BotdahlYI/view';
 
 export const disciplines = [
   'AI Specialist',
