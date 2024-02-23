@@ -69,8 +69,8 @@ export const Testimonials = ({ children, sectionRef }) => {
     const y = e.clientY - rect.top; // Y position within the element
     // Calculate rotation based on mouse position
     const limits = 15.0;
-    const rotateY = offsetX * (limits * 2) - limits;
-    const rotateX = offsetY * (limits * 2) - limits;
+    const rotateY = 1 * (limits * 2) - limits;
+    const rotateX = 1 * (limits * 2) - limits;
     // Apply 3D rotation
     card.style.transform = `perspective(1000px) rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
   };
