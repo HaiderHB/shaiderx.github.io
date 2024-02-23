@@ -14,7 +14,7 @@ import { Transition } from 'components/Transition';
 import { Fragment, useState } from 'react';
 import { media } from 'utils/style';
 import styles from './Profile.module.css';
-import profileText from './AllInfo.js';
+import { profileText } from './AllInfo.js';
 
 
 export const ProfileText = ({ visible, titleId }) => (
