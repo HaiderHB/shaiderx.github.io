@@ -8,25 +8,18 @@ import wali from '../../assets/logos/wali.png';
 export const resumeURL =
   'https://drive.google.com/file/d/1ylKc3s7npwJxBhUsLxWaPV0BotdahlYI/view';
 
-export const ProfileText = ({ visible, titleId }) => (
-  <Fragment>
-    <Heading className={styles.title} data-visible={visible} level={3} id={titleId}>
-      <DecoderText text="Hi there" start={visible} delay={500} />
-    </Heading>
-    <Text className={styles.description} data-visible={visible} size="l" as="p">
-      I’m Haider, a self motivated Full-Stack developer and AI Specialist.
-      Driven by a passion for artificial intelligence, SaaS, and startups. Drawn towards innovation
-      and challenging conventional approaches to discover new and creative ways to solve problems using software.
-      Experienced in multiple coding languages, aswell as mobile and game development. 
-      Currently studying computer science student at the University of Toronto, specializing in AI.
-    </Text>
-    <Text className={styles.description} data-visible={visible} size="l" as="p">
-      Committed to continuous growth to become the best version of myself. 
-      Activley seeking challenges and growth opportunities to help me learn and improve. 
-      Extracurricular hobbies include boxing, reading, weightlifting, and gaming.
-    </Text>
-  </Fragment>
-);
+
+export const profileText = {
+  greeting: "Hi there",
+  description: `I’m Haider, a self-motivated Full-Stack developer and AI Specialist.
+  Driven by a passion for artificial intelligence, SaaS, and startups. Drawn towards innovation
+  and challenging conventional approaches to discover new and creative ways to solve problems using software.
+  Experienced in multiple coding languages, as well as mobile and game development. 
+  Currently studying computer science at the University of Toronto, specializing in AI.`,
+  extra: `Committed to continuous growth to become the best version of myself. 
+  Actively seeking challenges and growth opportunities to help me learn and improve. 
+  Extracurricular hobbies include boxing, reading, weightlifting, and gaming.`,
+};
 
 export const disciplines = [
   'AI Specialist',

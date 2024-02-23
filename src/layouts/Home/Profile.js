@@ -14,7 +14,22 @@ import { Transition } from 'components/Transition';
 import { Fragment, useState } from 'react';
 import { media } from 'utils/style';
 import styles from './Profile.module.css';
-import { ProfileText } from 'layouts/Home/AllInfo.js';
+import profileText from './AllInfo.js';
+
+
+export const ProfileText = ({ visible, titleId }) => (
+  <Fragment>
+    <Heading className={styles.title} data-visible={visible} level={3} id={titleId}>
+      <DecoderText text={profileText.greeting} start={visible} delay={500} />
+    </Heading>
+    <Text className={styles.description} data-visible={visible} size="l" as="p">
+      {profileText.description}
+    </Text>
+    <Text className={styles.description} data-visible={visible} size="l" as="p">
+      {profileText.extra}
+    </Text>
+  </Fragment>
+);
 
 // example desc:
 {
