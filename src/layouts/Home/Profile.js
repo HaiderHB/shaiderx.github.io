@@ -14,24 +14,7 @@ import { Transition } from 'components/Transition';
 import { Fragment, useState } from 'react';
 import { media } from 'utils/style';
 import styles from './Profile.module.css';
-
-const ProfileText = ({ visible, titleId }) => (
-  <Fragment>
-    <Heading className={styles.title} data-visible={visible} level={3} id={titleId}>
-      <DecoderText text="Hi there" start={visible} delay={500} />
-    </Heading>
-    <Text className={styles.description} data-visible={visible} size="l" as="p">
-      I’m Haider, A result-oriented undergraduate student passionate about the
-      intersections of artificial intelligence, game design, and software development.
-      Experienced in multiple coding languages, Unity Game Design, as well as web and app
-      development.
-    </Text>
-    <Text className={styles.description} data-visible={visible} size="l" as="p">
-      Always eager to grow and improve in any way possible to be the best version of
-      myself. Extracurricular hobbies include boxing, reading, weightlifting, and gaming.
-    </Text>
-  </Fragment>
-);
+import { ProfileText } from 'layouts/Home/AllInfo.js';
 
 // example desc:
 {
