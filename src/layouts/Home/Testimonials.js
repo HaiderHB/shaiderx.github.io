@@ -62,18 +62,23 @@ export const Testimonials = ({ children, sectionRef }) => {
    * @param {Object} e - Mouse event
    */
   const handleMouseMove = e => {
-    const card = e.currentTarget;
-    const rect = card.getBoundingClientRect();
-    // Calculate position of the mouse within the card
-    const x = e.clientX - rect.left; // X position within the element
-    const y = e.clientY - rect.top; // Y position within the element
-    // Calculate rotation based on mouse position
-    const limits = 15.0;
-    const rotateY = x * (limits * 2) - limits;
-    const rotateX = y * (limits * 2) - limits;
-    // Apply 3D rotation
-    card.style.transform = `perspective(1000px) rotateX(${-rotateX}deg) rotateY(${rotateY}deg)`;
+      const card = e.currentTarget;
+      const rect = card.getBoundingClientRect();
+      // Calculate the center of the card
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      // Calculate position of the mouse relative to the center of the card
+      const x = e.clientX - centerX; // X position from the center
+      const y = e.clientY - centerY; // Y position from the center
+      // Calculate rotation angles, ensuring that the rotation is more subtle
+      const rotationRatio = 20; // Increase or decrease for more/less "tilt"
+      const rotateY = (x / rect.width) * rotationRatio;
+      const rotateX = -(y / rect.height) * rotationRatio;
+      // Apply 3D rotation with smoother transition and perspective
+      card.style.transition = 'transform 0.1s'; // Smooth transition for rotation
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   };
+
 
   /**
    * Resets card style on mouse leave
@@ -81,7 +86,9 @@ export const Testimonials = ({ children, sectionRef }) => {
    */
   const handleMouseLeave = e => {
     const card = e.currentTarget;
-    card.style.transform = ''; // Reset transform
+    // Reset transform with transition for smooth effect
+    card.style.transition = 'transform 0.5s'; // Smooth transition back to initial state
+    card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
   };
 
   /**
