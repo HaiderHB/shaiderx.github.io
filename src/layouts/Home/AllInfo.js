@@ -33,16 +33,16 @@ export const experiences = [
   {
     title: 'Full Stack Developer Intern',
     company: 'Ecomtent',
-    years: 'Dec 2024 - Current',
+    years: 'Dec 2023 - Current',
     mainTech: ['Next.js', 'AWS', 'React', 'Node.js', 'Python'],
     description:
       'Focused on full-stack development with a backend emphasis, integrated AI models with frontend, and worked with AWS Lambda, NodeJS/Python, and MLOps.',
     logo: ecomtent,
   },
   {
-    title: 'AI Engineer',
+    title: 'AI Automation Engineer',
     company: 'Tiny Horse',
-    years: 'Dec 2024 (Contract)',
+    years: 'Dec 2023 (Contract)',
     mainTech: ['Python', 'Node.js', 'React', 'Supabase', 'Shopify'],
     description:
       'Created custom AI applications to help automate and streamline business processes.',
@@ -51,7 +51,7 @@ export const experiences = [
   {
     title: 'AI Engineer',
     company: 'ImmiCan',
-    years: 'Dec 2024 (Contract)',
+    years: 'Dec 2023 (Contract)',
     mainTech: ['React', 'Python', 'Flask', 'Node.js', 'Vercel'],
     description:
       'Trained and created custom AI chatbot with multimodal functionality to meet employer needs.',
@@ -60,7 +60,7 @@ export const experiences = [
   {
     title: 'QA Tester',
     company: 'Omnia Consulting',
-    years: 'Dec 2024 (Contract)',
+    years: 'Dec 2023 (Contract)',
     mainTech: ['React', 'Node.js', 'Vite', 'Vitest'],
     description:
       'Implemented Unit testing and integration testing to ensure website stability. Tests included various pages, user profiles, and authentication.',
@@ -69,7 +69,7 @@ export const experiences = [
   {
     title: 'Software Development Intern',
     company: 'Project: Humam City',
-    years: 'Jan 2024 - March 2024',
+    years: 'Jan 2023 - March 2023',
     mainTech: ['React Native', 'Python'],
     description:
       'Developed and integrated user network features including login and messaging, along with API integrations using React Native and Python.',
