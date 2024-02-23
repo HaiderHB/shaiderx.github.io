@@ -18,7 +18,7 @@ export const disciplines = [
 
 export const experiences = [
   {
-    title: 'Full Stack Developer',
+    title: 'Full Stack Developer Intern',
     company: 'Ecomtent',
     years: 'Dec 2024 - Current',
     mainTech: ['Next.js', 'AWS', 'React', 'Node.js', 'Python'],
@@ -27,7 +27,7 @@ export const experiences = [
     logo: ecomtent,
   },
   {
-    title: 'AI Engineer',
+    title: 'AI Engineer Intern',
     company: 'Tiny Horse',
     years: 'Dec 2024 (Contract)',
     mainTech: ['Python', 'Node.js', 'React', 'Supabase', 'Shopify'],
@@ -36,7 +36,7 @@ export const experiences = [
     logo: tinyhorse,
   },
   {
-    title: 'AI Engineer',
+    title: 'AI Engineer Intern',
     company: 'ImmiCan',
     years: 'Dec 2024 (Contract)',
     mainTech: ['React', 'Python', 'Flask', 'Node.js', 'Vercel'],
@@ -45,7 +45,7 @@ export const experiences = [
     logo: immican,
   },
   {
-    title: 'QA Tester',
+    title: 'QA Tester Intern',
     company: 'Omnia Consulting',
     years: 'Dec 2024 (Contract)',
     mainTech: ['React', 'Node.js', 'Vite', 'Vitest'],
