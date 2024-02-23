@@ -40,7 +40,7 @@ export const experiences = [
     logo: ecomtent,
   },
   {
-    title: 'AI Engineer Intern',
+    title: 'AI Engineer',
     company: 'Tiny Horse',
     years: 'Dec 2024 (Contract)',
     mainTech: ['Python', 'Node.js', 'React', 'Supabase', 'Shopify'],
@@ -49,7 +49,7 @@ export const experiences = [
     logo: tinyhorse,
   },
   {
-    title: 'AI Engineer Intern',
+    title: 'AI Engineer',
     company: 'ImmiCan',
     years: 'Dec 2024 (Contract)',
     mainTech: ['React', 'Python', 'Flask', 'Node.js', 'Vercel'],
@@ -58,7 +58,7 @@ export const experiences = [
     logo: immican,
   },
   {
-    title: 'QA Tester Intern',
+    title: 'QA Tester',
     company: 'Omnia Consulting',
     years: 'Dec 2024 (Contract)',
     mainTech: ['React', 'Node.js', 'Vite', 'Vitest'],
