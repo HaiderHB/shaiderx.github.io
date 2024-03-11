@@ -42,7 +42,7 @@ export const experiences = [
   {
     title: 'AI Automation Engineer',
     company: 'Tiny Horse',
-    years: 'Dec 2023 (Contract)',
+    years: 'Dec 2023 - Feb 2024 (Contract)',
     mainTech: ['Python', 'Node.js', 'React', 'Supabase', 'Shopify'],
     description:
       'Created custom AI applications to help automate and streamline business processes.',
