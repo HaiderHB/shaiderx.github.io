@@ -1,9 +1,10 @@
 /* Add a wrapper style for centering */
 .wrapper {
+  padding-top: 0px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 80vh; /* Adjust height as needed */
+  height: 60vh; /* Adjust height as needed */
 }
 
 .carousel {

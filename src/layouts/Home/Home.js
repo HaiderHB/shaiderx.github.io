@@ -15,6 +15,7 @@ import grx2 from '../../assets/grx2.png';
 import gamestackTexture2Placeholder from '../../assets/gamestack-list-placeholder.jpg';
 import gamestackTexturePlaceholder from '../../assets/gamestack-login-placeholder.jpg';
 import Experience from './Experience';
+import Header from './Header';
 
 import CustomMouseTrail from './Mouse';
 import {
@@ -101,7 +102,9 @@ export const Home = () => {
         visible={visibleSections.includes(details.current)}
         id="details"
       />
+      <Header text="Experience" topSpacing={0} bottomSpacing={70} />
       <Experience sectionRef={experience} experiences={experiences} />
+      <Header text="Main Projects" topSpacing={150} bottomSpacing={-20} />
       <ProjectSummary
         id="project-1"
         sectionRef={projectOne}
@@ -147,7 +150,9 @@ export const Home = () => {
           ],
         }}
       />
+      <Header text="Additional Projects" topSpacing={0} bottomSpacing={90} />
       <MoreProjects projects={projects} />
+      <Header text="Testimonials" topSpacing={90} bottomSpacing={0} />
       <Testimonials sectionRef={testimonials}>
         {testimonialData.map((testimonial, i) => (
           <Card
@@ -160,6 +165,7 @@ export const Home = () => {
         ))}
       </Testimonials>
 
+      <Header text="Skills" topSpacing={60} bottomSpacing={60} />
       <Skills sectionRef={skills} words={skillsArray} />
     </div>
   );
