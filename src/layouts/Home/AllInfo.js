@@ -38,7 +38,7 @@ export const experiences = [
   {
     title: 'AI Automation Engineer',
     company: 'ZenithGen',
-    years: 'April 2024 - May 2024',
+    years: 'April 2024 - May 2024 (Contract)',
     mainTech: ['Python', 'Flask', "AWS", 'Javascript', "HTML", "CSS"],
     description:
       'Engineered an advanced AI automation tool for a social media agency, implementing algorithms and automations that brought in millions of additional monthly views.',
