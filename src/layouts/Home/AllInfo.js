@@ -177,6 +177,7 @@ export const skillsArray = [
   "Node.js",
   'JavaScript',
   'AWS',
+  'Docker',
   'Vue.js',
   'Supabase',
   'Firebase',
