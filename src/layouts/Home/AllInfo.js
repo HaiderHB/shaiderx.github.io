@@ -7,6 +7,8 @@ import wali from '../../assets/logos/wali.png';
 import zenith from '../../assets/logos/zenith.png';
 import pashmotors from '../../assets/logos/pashmotors.png';
 import selfjustice from '../../assets/logos/selfjustice.jpg';
+import simulence from '../../assets/logos/simulence.jpg';
+
 
 // For profile pic change src/assets/profile.png and /profile-large.png 
 
@@ -106,6 +108,15 @@ export const experiences = [
     description:
       'Developed and integrated user network features including login and messaging, along with API integrations using React Native and Python.',
     logo: phc,
+  },
+  {
+    title: 'Full Stack Developer Intern',
+    company: 'Simulence',
+    years: 'Sep 2022 - Dec 2022',
+    mainTech: ['Vue.js', 'Firestore', 'React', 'Node.js'],
+    description:
+      'Contributed to backend development by creating API calls and integrating databases using Firestore.js. Effectively collaborated in an agile environment with a team of over 10 members, actively participating in meetings and demos. Utilized Vue.js to design and implement responsive, interactive user interfaces.',
+    logo: simulence,
   },
   {
     title: 'App Developer Intern',
