@@ -31,14 +31,14 @@ export const disciplines = [
   'Full Stack Dev',
   'App Developer',
   'Game Dev',
-  'Student',
+  'Startup Enthusiast',
 ];
 
 export const experiences = [
   {
     title: 'AI Automation Engineer',
     company: 'ZenithGen',
-    years: 'April 2024 - May 2024 (Contract)',
+    years: 'May 2024 (Contract)',
     mainTech: ['Python', 'Flask', "AWS", "Docker", 'TypeScript', "HTML", "CSS"],
     description:
       'Engineered an advanced AI automation tool for a social media agency, implementing algorithms and automations that brought in millions of additional monthly views.',
@@ -184,6 +184,7 @@ export const skillsArray = [
   'React.js',
   "Flask",
   "Node.js",
+  'TypeScript',
   'JavaScript',
   'AWS',
   'Docker',
