@@ -43,7 +43,7 @@ export const experiences = [
     years: 'May 2024 (Contract)',
     mainTech: ['Python', 'Flask', "AWS", "Docker", 'TypeScript', "HTML", "CSS"],
     description:
-      'Engineered an advanced AI automation tool for a social media agency, implementing algorithms and automations that brought in over 100k additional monthly views.',
+      'Engineered an advanced AI automation tool for a social media agency, implementing algorithms and automations that brought in millions of additional monthly views.',
     logo: zenith,
   },
   {
