@@ -39,7 +39,7 @@ export const experiences = [
     title: 'AI Automation Engineer',
     company: 'ZenithGen',
     years: 'April 2024 - May 2024 (Contract)',
-    mainTech: ['Python', 'Flask', "AWS", 'Javascript', "HTML", "CSS"],
+    mainTech: ['Python', 'Flask', "AWS", "Docker", 'TypeScript', "HTML", "CSS"],
     description:
       'Engineered an advanced AI automation tool for a social media agency, implementing algorithms and automations that brought in millions of additional monthly views.',
     logo: zenith,
@@ -109,11 +109,20 @@ export const experiences = [
   },
   {
     title: 'App Developer Intern',
-    company: 'Wali Ul Asr',
+    company: 'Wali Ul Asr Learning Institute',
     years: 'June 2019 - Sep 2019',
-    mainTech: ['React', 'Node.js'],
+    mainTech: ['Python', 'Bash', 'React Native', 'Node.js'],
     description:
-      'Translated client needs into app features, collaborated in a team for specifications and design, ensured quality through testing, and solved complex bugs.',
+    "Developed and implemented app features based on client requirements using Python, Bash, React Native, and Node.js. Collaborated closely with the team to define specifications and design robust solutions. Conducted thorough testing to ensure high quality and reliability, and efficiently resolved complex bugs to enhance the user experience.",
+    logo: wali,
+  },
+  {
+    title: 'Web Developer Intern',
+    company: 'Wali Ul Asr Learning Institute',
+    years: 'June 2018 - Sep 2018',
+    mainTech: ['React', 'Node.js', 'Javascript', 'Python'],
+    description:
+    "Transformed client needs into web application features using React, Node.js, JavaScript, and Python. Worked collaboratively within a team to establish specifications and design efficient solutions. Ensured product quality through rigorous testing processes and successfully addressed complex bugs to improve overall functionality.",
     logo: wali,
   },
 ];
