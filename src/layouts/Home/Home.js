@@ -1,5 +1,7 @@
 import eloquateLg from 'assets/Eloquate-large.png';
 import eloquateMd from 'assets/Eloquate-med.png';
+import stonksMd from 'assets/stonksMd.png';
+import stonksLg from 'assets/stonksLrg.png';
 import { Meta } from 'components/Meta';
 import { Intro } from 'layouts/Home/Intro';
 import { Profile } from 'layouts/Home/Profile';
@@ -34,6 +36,7 @@ export const Home = () => {
   const intro = useRef();
   const projectOne = useRef();
   const projectTwo = useRef();
+  const projectThree = useRef();
   const experience = useRef();
   const details = useRef();
   const testimonials = useRef();
@@ -46,6 +49,7 @@ export const Home = () => {
       experience,
       projectOne,
       projectTwo,
+      projectThree,
       testimonials,
       skills,
     ];
@@ -127,9 +131,29 @@ export const Home = () => {
       />
       <ProjectSummary
         id="project-2"
-        alternate
         sectionRef={projectTwo}
         visible={visibleSections.includes(projectTwo.current)}
+        index={1}
+        title="Demo live streaming app"
+        description="Demo twitch replica app built using Next.js and Supabase in 1 day."
+        buttonText="View project"
+        buttonLink="https://stonks-fullstack-application.vercel.app"
+        model={{
+          type: 'laptop',
+          alt: 'Stonks',
+          textures: [
+            {
+              srcSet: [stonksMd, stonksLg],
+              placeholder: stonksMd,
+            },
+          ],
+        }}
+      />
+      <ProjectSummary
+        id="project-3"
+        alternate
+        sectionRef={projectThree}
+        visible={visibleSections.includes(projectThree.current)}
         index={2}
         title="Galaxy Royale - Puzzle Strategy Game"
         description="Fully self taught and self made mobile game. Recognized by Google for high potential and uniqueness."
