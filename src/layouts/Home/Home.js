@@ -131,29 +131,9 @@ export const Home = () => {
       />
       <ProjectSummary
         id="project-2"
+        alternate
         sectionRef={projectTwo}
         visible={visibleSections.includes(projectTwo.current)}
-        index={1}
-        title="Demo live streaming app"
-        description="Demo twitch replica app built using Next.js and Supabase in 1 day."
-        buttonText="View project"
-        buttonLink="https://stonks-fullstack-application.vercel.app"
-        model={{
-          type: 'laptop',
-          alt: 'Stonks',
-          textures: [
-            {
-              srcSet: [stonksMd, stonksLg],
-              placeholder: stonksMd,
-            },
-          ],
-        }}
-      />
-      <ProjectSummary
-        id="project-3"
-        alternate
-        sectionRef={projectThree}
-        visible={visibleSections.includes(projectThree.current)}
         index={2}
         title="Galaxy Royale - Puzzle Strategy Game"
         description="Fully self taught and self made mobile game. Recognized by Google for high potential and uniqueness."
@@ -170,6 +150,26 @@ export const Home = () => {
             {
               srcSet: [grx2, grx1Large],
               placeholder: gamestackTexture2Placeholder,
+            },
+          ],
+        }}
+      />
+      <ProjectSummary
+        id="project-3"
+        sectionRef={projectThree}
+        visible={visibleSections.includes(projectThree.current)}
+        index={3}
+        title="Demo live streaming app"
+        description="Demo twitch replica app built using Next.js and Supabase in 1 day."
+        buttonText="View project"
+        buttonLink="https://stonks-fullstack-application.vercel.app"
+        model={{
+          type: 'laptop',
+          alt: 'Stonks',
+          textures: [
+            {
+              srcSet: [stonksMd, stonksLg],
+              placeholder: stonksMd,
             },
           ],
         }}
