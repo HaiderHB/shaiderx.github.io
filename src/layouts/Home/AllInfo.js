@@ -38,6 +38,15 @@ export const disciplines = [
 
 export const experiences = [
   {
+    title: 'AI Developer',
+    company: 'WorkReducer.com',
+    years: 'Apr 2024 - Jul 2024 (Contract)',
+    mainTech: ['Python', 'Flask', "AWS", "LLMs", 'Prompt Engineering', "React", "Next.js"],
+    description:
+      'Developed AI automations and features for an agency serving various clients, prioritizing speed and efficiency. Utilized advanced prompt engineering techniques, including few-shot prompting, chain of thought, self-consistency, and more.',
+    logo: simulence,
+  },
+  {
     title: 'AI Automation Engineer',
     company: 'ZenithGen',
     years: 'May 2024 (Contract)',
