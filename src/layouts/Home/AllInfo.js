@@ -18,11 +18,12 @@ export const resumeURL =
 
 export const profileText = {
   greeting: "Hi there",
-  description: `I’m Haider, a self-motivated Full-Stack developer and AI Specialist.
+  description: `I’m Haider, a startup enthusiast, Full-Stack developer, and AI Specialist.
   Driven by a passion for artificial intelligence, SaaS, and startups. Drawn towards innovation
   and challenging conventional approaches to discover new and creative ways to solve problems using software.
-  Experienced in multiple coding languages, as well as mobile and game development. 
-  Currently studying computer science at the University of Toronto, specializing in AI.`,
+  Extensive experience working with AI and LLMs, including building AI agents and designing complex workflows 
+  to automate challenging business tasks. Also proficient in multiple programming languages, with additional 
+  experience in mobile and game development. Holding an AI Specialist degree from the University of Toronto.`,
   extra: `Committed to continuous growth to become the best version of myself. 
   Actively seeking challenges and growth opportunities to help me learn and improve. 
   Extracurricular hobbies include boxing, reading, weightlifting, and gaming.`,
@@ -31,12 +32,21 @@ export const profileText = {
 export const disciplines = [
   'AI Specialist',
   'Full Stack Dev',
+  'Startup Enthusiast',
   'App Developer',
   'Game Dev',
-  'Startup Enthusiast',
 ];
 
 export const experiences = [
+  {
+    title: 'Fullstack AI Developer',
+    company: 'Topline Pro (YC W21)',
+    years: 'Oct 2024 - Current',
+    mainTech: ['Python', 'Django', "LLMs", 'Prompt Engineering', "React", "Next.js"],
+    description:
+      'Developing full stack solutions with heavy AI integrations for YC backed startup. Won hackathon by building AI agent to automate invoice creation.',
+    logo: tinyhorse,
+  },
   {
     title: 'AI Developer',
     company: 'WorkReducer.com',
@@ -148,6 +158,11 @@ export const experiences = [
 ];
 
 export const projects = [
+  {
+    title: 'Social Flows',
+    details:
+      'AI App for content creators to easily convert content to be suitable to post on any social media using LLMs.',
+  },
   {
     title: 'Append App',
     details:
