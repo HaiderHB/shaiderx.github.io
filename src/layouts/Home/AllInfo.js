@@ -8,6 +8,8 @@ import zenith from '../../assets/logos/zenith.png';
 import pashmotors from '../../assets/logos/pashmotors.png';
 import selfjustice from '../../assets/logos/selfjustice.jpg';
 import simulence from '../../assets/logos/simulence.jpg';
+import topline from '../../assets/logos/topline.png';
+
 
 
 // For profile pic change src/assets/profile.png and /profile-large.png 
@@ -45,7 +47,7 @@ export const experiences = [
     mainTech: ['Python', 'Django', "LLMs", 'Prompt Engineering', "React", "Next.js"],
     description:
       'Developing full stack solutions with heavy AI integrations for YC backed startup. Won hackathon by building AI agent to automate invoice creation.',
-    logo: tinyhorse,
+    logo: topline,
   },
   {
     title: 'AI Developer',
