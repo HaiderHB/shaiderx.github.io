@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { TiChevronLeftOutline, TiChevronRightOutline } from 'react-icons/ti';
 import styles from './Testimonials.module.css';
-import { FaStar } from 'react-icons/fa'; // Importing FontAwesome star icon for rating display
+import { FaStar } from 'react-icons/fa';
 import { Section } from 'components/Section';
+import profileImgPlaceholder from 'assets/profile-placeholder.jpg';
 
 const MAX_VISIBILITY = 3; // Maximum number of testimonials visible at once
 
@@ -10,10 +11,21 @@ const MAX_VISIBILITY = 3; // Maximum number of testimonials visible at once
  * Card component representing a single testimonial
  * @param {Object} props - Contains company, name, review, and image for the testimonial
  */
-export const Card = ({ company, name, review, image }) => (
+export const Card = ({ company, name, review, image }) => {
+  const [imgSrc, setImgSrc] = useState(image || profileImgPlaceholder);
+
+  const handleImgError = () => {
+    setImgSrc(profileImgPlaceholder);
+  };
+
+  return (
   <div className={styles.card}>
-    {/* Profile image */}
-    <img src={image} alt={`${name}'s profile`} className={styles.profileImage} />
+    <img
+      src={imgSrc}
+      alt={`${name}'s profile`}
+      className={styles.profileImage}
+      onError={handleImgError}
+    />
     {/* User's name */}
     <h3 className={styles.profileName}>{name}</h3>
     {/* Company name */}
@@ -29,7 +41,8 @@ export const Card = ({ company, name, review, image }) => (
     {/* User's review */}
     <p className={styles.review}>{review}</p>
   </div>
-);
+  );
+};
 
 /**
  * Testimonials component that displays and controls the testimonial cards
