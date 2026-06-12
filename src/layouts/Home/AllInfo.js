@@ -217,6 +217,8 @@ export const testimonialData = [
 
 export const skillsArray = [
   'Python',
+  'AI/ML',
+  'NLP',
   'Next.js',
   'React.js',
   "Flask",
