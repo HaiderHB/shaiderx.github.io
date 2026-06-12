@@ -5,6 +5,8 @@ import { FaStar } from 'react-icons/fa';
 import { Section } from 'components/Section';
 import profileImgPlaceholder from 'assets/profile-placeholder.jpg';
 
+const defaultProfileImage = profileImgPlaceholder.src;
+
 const MAX_VISIBILITY = 3; // Maximum number of testimonials visible at once
 
 /**
@@ -12,10 +14,10 @@ const MAX_VISIBILITY = 3; // Maximum number of testimonials visible at once
  * @param {Object} props - Contains company, name, review, and image for the testimonial
  */
 export const Card = ({ company, name, review, image }) => {
-  const [imgSrc, setImgSrc] = useState(image || profileImgPlaceholder);
+  const [imgSrc, setImgSrc] = useState(image || defaultProfileImage);
 
   const handleImgError = () => {
-    setImgSrc(profileImgPlaceholder);
+    setImgSrc(prev => (prev === defaultProfileImage ? prev : defaultProfileImage));
   };
 
   return (
