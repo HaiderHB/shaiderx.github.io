@@ -7,6 +7,9 @@ const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TO
 
 export const hasDurableStore = Boolean(url && token);
 
+// Every key is namespaced, so the demos can safely share a Redis database with another app.
+const PREFIX = process.env.DEMO_STORE_PREFIX ?? 'demos:';
+
 const memory = new Map(); // key -> { value, expiresAt }
 
 function pruneMemory(now) {
@@ -15,6 +18,7 @@ function pruneMemory(now) {
 }
 
 async function pipeline(commands) {
+  commands = commands.map(([name, key, ...args]) => [name, `${PREFIX}${key}`, ...args]);
   const response = await fetch(`${url}/pipeline`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
