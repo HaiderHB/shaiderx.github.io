@@ -53,7 +53,8 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next export -o build/",
+    "build": "next build",
+    "export": "next build && next export -o build/",
     "build:storybook": "build-storybook -o build-storybook && node scripts/draco-storybook",
     "start": "next start",
     "test": "echo 'write some tests'",
@@ -74,6 +75,6 @@
   },
   "engines": {
     "npm": ">=8.6.0",
-    "node": ">=18.0.0"
+    "node": "22.x"
   }
 }
