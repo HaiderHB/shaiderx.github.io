@@ -2,6 +2,14 @@ module.exports = {
   reactStrictMode: true,
   trailingSlash: true,
   pageExtensions: ['page.js', 'api.js'],
+  // Company demos at /demo/<company> are unlisted: keep them out of search results.
+  async headers() {
+    const noindex = [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }];
+    return [
+      { source: '/demo/:path*', headers: noindex },
+      { source: '/api/demo/:path*', headers: noindex },
+    ];
+  },
     images: {
     domains: ['example.com'], // List of domains where images are hosted
     deviceSizes: [640, 768, 1024, 1280, 1600], // Array of sizes for responsive images

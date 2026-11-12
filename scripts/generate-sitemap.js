@@ -39,6 +39,7 @@ async function generateSitemap() {
     'src/pages/**/*{.page.js,.page.mdx}',
     '!src/pages/_*.js',
     '!src/pages/api',
+    '!src/pages/demo',
   ]);
   // Posts are only listed when an /articles route exists; otherwise they would 404.
   const hasArticles = fs.existsSync('src/pages/articles');

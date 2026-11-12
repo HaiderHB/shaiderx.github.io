@@ -1,0 +1,58 @@
+.panel {
+  display: grid;
+  gap: var(--spaceS);
+  padding: var(--spaceL);
+  border: 1px solid rgb(var(--rgbText) / 0.15);
+  border-radius: 8px;
+  background: rgb(var(--rgbText) / 0.03);
+}
+
+.label {
+  font-size: var(--fontSizeBodyS);
+  color: rgb(var(--rgbText) / 0.8);
+}
+
+.input {
+  width: 100%;
+  font: inherit;
+  font-size: var(--fontSizeBodyS);
+  color: rgb(var(--rgbText));
+  background: rgb(var(--rgbBackground));
+  border: 1px solid rgb(var(--rgbText) / 0.2);
+  border-radius: 6px;
+  padding: var(--spaceS);
+  resize: vertical;
+}
+
+.button {
+  justify-self: start;
+  font: inherit;
+  font-size: var(--fontSizeBodyS);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbBackground));
+  background: rgb(var(--rgbPrimary));
+  border: 0;
+  border-radius: 6px;
+  padding: var(--spaceS) var(--spaceL);
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.error {
+  color: rgb(var(--rgbError, 255 100 100));
+  margin-top: var(--spaceM);
+}
+
+.output {
+  margin-top: var(--spaceL);
+  padding: var(--spaceL);
+  border-radius: 8px;
+  background: rgb(var(--rgbText) / 0.06);
+  font-size: var(--fontSizeBodyS);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}

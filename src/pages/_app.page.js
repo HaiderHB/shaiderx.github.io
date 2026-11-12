@@ -28,6 +28,8 @@ const App = ({ Component, pageProps }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { route, asPath } = useRouter();
   const canonicalRoute = route === '/' ? '' : `${asPath}`;
+  // Company demos (/demo/<company>) are standalone pages without the portfolio nav
+  const isDemo = route === '/demo' || route.startsWith('/demo/');
   useFoucFix();
 
   useEffect(() => {
@@ -57,7 +59,7 @@ const App = ({ Component, pageProps }) => {
             >
               Skip to main content
             </VisuallyHidden>
-            <Navbar />
+            {!isDemo && <Navbar />}
             <main className={styles.app} tabIndex={-1} id="MainContent">
               <AnimatePresence exitBeforeEnter>
                 <m.div
