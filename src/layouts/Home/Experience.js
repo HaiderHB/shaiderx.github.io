@@ -13,7 +13,7 @@ class Experience extends Component {
     const work = experiences.map((work, i) => {
       const mainTech = work.mainTech.map((technology, i) => {
         return (
-          <span key={i} style={{ marginRight: '10px', color: 'black' }}>
+          <span key={i} style={{ marginRight: '10px', color: 'black', whiteSpace: 'nowrap' }}>
             {technology}
           </span>
         );
@@ -40,7 +40,22 @@ class Experience extends Component {
           />
         </div>
       ) : (
-        <i className="fab fa-angular experience-icon"></i>
+        <div
+          aria-hidden
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            width: '100%',
+            fontWeight: 700,
+            fontSize: '1rem',
+            letterSpacing: '0.02em',
+            color: '#111',
+          }}
+        >
+          {work.initials || work.company.slice(0, 2).toUpperCase()}
+        </div>
       );
 
       return (
@@ -51,7 +66,16 @@ class Experience extends Component {
           icon={icon}
           key={i}
         >
-          <div style={{ textAlign: 'left', marginBottom: '4px', color: 'black' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              rowGap: '2px',
+              textAlign: 'left',
+              marginBottom: '4px',
+              color: 'black',
+            }}
+          >
             {mainTech}
           </div>
           <h3

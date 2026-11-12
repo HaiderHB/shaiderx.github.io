@@ -91,9 +91,8 @@ export const Home = () => {
     <div className={styles.home}>
       <CustomMouseTrail />
       <Meta
-        title="Developer"
-        description="Developer portfolio of Haider Bokhari — a fullstack developer working on web & mobile
-          apps with a focus on AI."
+        title="AI Engineer"
+        description="Portfolio of Haider Bokhari, an AI engineer and full-stack developer building LLM agents, realtime voice AI and production web apps."
       />
       <Intro
         id="intro"

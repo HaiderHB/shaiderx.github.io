@@ -65,6 +65,15 @@
   display: inline-flex;
   align-items: center;
 
+  /* Six sidebar links overflow into the social icons on shorter laptop screens */
+  @media (max-height: 900px) {
+    padding: var(--spaceM) var(--spaceS);
+  }
+
+  @media (max-height: 740px) {
+    padding: var(--spaceS) var(--spaceXS);
+  }
+
   &:hover,
   &:active,
   &:focus,

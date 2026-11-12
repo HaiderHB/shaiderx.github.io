@@ -40,7 +40,7 @@ export const socialLinks = [
   },
   {
     label: 'Github',
-    url: 'https://github.com/haiderhb',
+    url: 'https://github.com/HaiderHB',
     icon: 'github',
   },
 ];

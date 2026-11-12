@@ -1,165 +1,104 @@
-import tinyhorse from '../../assets/logos/tinyhorse.jpg';
 import phc from '../../assets/logos/phc.png';
-import immican from '../../assets/logos/immican.png';
 import ecomtent from '../../assets/logos/ecomtent.png';
-import omnia from '../../assets/logos/omnia.png';
 import wali from '../../assets/logos/wali.png';
-import zenith from '../../assets/logos/zenith.png';
-import pashmotors from '../../assets/logos/pashmotors.png';
-import selfjustice from '../../assets/logos/selfjustice.jpg';
 import simulence from '../../assets/logos/simulence.jpg';
 import topline from '../../assets/logos/topline.png';
 
+// Content here mirrors the resume (public/Haider_Bokhari_Resume.pdf).
+// When the resume changes, update both so dates and titles stay consistent.
 
+// For profile pic change src/assets/profile.png and /profile-large.png
 
-// For profile pic change src/assets/profile.png and /profile-large.png 
-
-export const resumeURL =
-  'https://drive.google.com/file/d/1xTPM2psIVVVr-n2NeNelN9-5OmTmMHlH/view';
-
+export const resumeURL = '/Haider_Bokhari_Resume.pdf';
 
 export const profileText = {
-  greeting: "Hi there",
-  description: `I’m Haider, a startup enthusiast, Full-Stack developer, and AI Specialist.
-  Driven by a passion for artificial intelligence, SaaS, and startups. Drawn towards innovation
-  and challenging conventional approaches to discover new and creative ways to solve problems using software.
-  Extensive experience working with AI and LLMs, including building AI agents and designing complex workflows 
-  to automate challenging business tasks. Also proficient in multiple programming languages, with additional 
-  experience in mobile and game development. Holding an AI Specialist degree from the University of Toronto.`,
-  extra: `Committed to continuous growth to become the best version of myself. 
-  Actively seeking challenges and growth opportunities to help me learn and improve. 
-  Extracurricular hobbies include boxing, reading, weightlifting, and gaming.`,
+  greeting: 'Hi there',
+  description: `I’m Haider, an AI engineer and full-stack developer based in Ontario, Canada.
+  For 3+ years I’ve been shipping LLM-powered products: AI agents with tool calling and RAG,
+  realtime and voice AI, and the production web apps around them. Right now I’m building AI
+  features at Arctic Wolf. Before that I was at Topline Pro (YC W21), and before that I reported
+  to the CTO of Ecomtent, an eBay-backed AI startup whose tool drove $1M+ in sales.
+  I’ve won 1st place at two company hackathons, and I studied Computer Science (AI) at the
+  University of Toronto.`,
+  extra: `I like working close to the product and the people using it, and I’m happiest
+  turning a rough idea into a working demo fast. Outside of code: boxing, reading,
+  weightlifting, and gaming.`,
 };
 
-export const disciplines = [
-  'AI Specialist',
-  'Full Stack Dev',
-  'Startup Enthusiast',
-  'App Developer',
-  'Game Dev',
-];
+export const disciplines = ['Full Stack Dev', 'LLM Agents', 'Voice AI', 'App Developer'];
 
 export const experiences = [
   {
-    title: 'Fullstack AI Developer',
-    company: 'Topline Pro (YC W21)',
-    years: 'Oct 2024 - Current',
-    mainTech: ['Python', 'Django', "LLMs", 'Prompt Engineering', "React", "Next.js"],
+    title: 'Full Stack Engineer',
+    company: 'Arctic Wolf',
+    years: 'Jun 2025 - Present',
+    mainTech: ['Python', 'TypeScript', 'React', 'AWS Lambda', 'LLM Agents', 'RAG'],
     description:
-      'Developing full stack solutions with heavy AI integrations for YC backed startup. Won hackathon by building AI agent to automate invoice creation.',
+      'Building AI features for a cybersecurity platform. Won 1st place at the internal hackathon with an AI agent prototype (LLM backend and demo UI). Run LLM agent workflows (tool calling, RAG) on event-driven AWS Lambda, designed guardrails (schema-validated outputs, model fallbacks, prompt regression tests), added CloudWatch observability to AI services, and built streaming React/TypeScript UIs that render agent steps token by token.',
+    initials: 'AW',
+  },
+  {
+    title: 'Full Stack Engineer',
+    company: 'Topline Pro (YC W21)',
+    years: 'Sep 2024 - Mar 2025',
+    mainTech: ['Python', 'Django', 'React', 'Next.js', 'LLMs'],
+    description:
+      'Led end-to-end development of a new AI agent that improved task efficiency by 40%. Built SPA and SSR apps in React and Next.js that cut page load time by 30%, optimized Django ORM queries on critical endpoints, and won 1st place at the company hackathon with an AI workflow automation tool.',
     logo: topline,
   },
   {
     title: 'AI Developer',
-    company: 'WorkReducer.com',
-    years: 'Apr 2024 - Jul 2024 (Contract)',
-    mainTech: ['Python', 'Flask', "AWS", "LLMs", 'Prompt Engineering', "React", "Next.js"],
-    description:
-      'Developed AI automations and features for an agency serving various clients, prioritizing speed and efficiency. Utilized advanced prompt engineering techniques, including few-shot prompting, chain of thought, self-consistency, and more.',
-    logo: simulence,
-  },
-  {
-    title: 'AI Automation Engineer',
-    company: 'ZenithGen',
-    years: 'May 2024 (Contract)',
-    mainTech: ['Python', 'Flask', "AWS", "Docker", 'TypeScript', "HTML", "CSS"],
-    description:
-      'Engineered an advanced AI automation tool for a social media agency, implementing algorithms and automations that brought in millions of additional monthly views.',
-    logo: zenith,
-  },
-  {
-    title: 'Full Stack Developer Intern',
     company: 'Ecomtent (Techstars)',
-    years: 'Dec 2024 - May 2024',
-    mainTech: ['Next.js', 'AWS', 'React', 'Node.js', 'Python'],
+    years: 'Nov 2023 - May 2024',
+    mainTech: ['Next.js', 'React', 'AWS', 'Python', 'LLMs'],
     description:
-      'Focused on full-stack development with a backend emphasis, integrated AI models with frontend, and worked with multiple AWS services, NodeJS/Python, and MLOps.',
+      'Reported directly to the CTO, building core features of an eBay-backed AI tool that drove $1M+ in sales on Amazon, eBay and Walmart. Ran LLM evaluations that improved accuracy and response speed by 23%, stood up the serverless AWS backend (Amplify, AppSync, DynamoDB, EC2), and revamped the frontend (+15% engagement, -25% bounce rate).',
     logo: ecomtent,
   },
   {
-    title: 'AI Automation Engineer',
-    company: 'Tiny Horse',
-    years: 'Dec 2023 - Feb 2024 (Contract)',
-    mainTech: ['Python', 'Node.js', 'React', 'Supabase', 'Shopify'],
+    title: 'AI Full Stack Developer',
+    company: 'Freelance',
+    years: 'Jun 2023 - Dec 2023 (Contract)',
+    mainTech: ['Python', 'Node.js', 'React', 'NLP', 'Supabase'],
     description:
-      'Created custom AI applications to help automate and streamline business processes.',
-    logo: tinyhorse,
+      'Delivered AI automation and full-stack work to 8+ startups and brands, including Signarama (700+ franchise locations), Tiny Horse, ImmiCan, Omnia Consulting, Pashmotors and Self Justice. Trained custom ML models and deployed NLP chatbots, working directly with CEOs and founders. Averaged a 35% gain in operational efficiency across 10+ projects.',
+    initials: '</>',
   },
   {
-    title: 'AI Engineer',
-    company: 'ImmiCan',
-    years: 'Dec 2023 (Contract)',
-    mainTech: ['React', 'Python', 'Flask', 'Node.js', 'Vercel'],
-    description:
-      'Trained and created custom AI chatbot with multimodal functionality to meet employer needs.',
-    logo: immican,
-  },
-  {
-    title: 'QA Tester',
-    company: 'Omnia Consulting',
-    years: 'Dec 2023 (Contract)',
-    mainTech: ['React', 'Node.js', 'Vite', 'Vitest'],
-    description:
-      'Implemented Unit testing and integration testing to ensure website stability. Tests included various pages, user profiles, and authentication.',
-    logo: omnia,
-  },
-  {
-    title: 'Backend Developer',
-    company: 'Pashmotors',
-    years: 'Nov 2024 (Contract)',
-    mainTech: ['Javascript', 'React'],
-    description:
-      'Implemented API endpoints and backend services to support the frontend. Conducted thorough testing to ensure stability and security.',
-    logo: pashmotors,
-  },
-  {
-    title: 'Frontend Developer',
-    company: 'Self Justice',
-    years: 'Nov 2024 (Contract)',
-    mainTech: ['Javascript', 'HTML', 'CSS'],
-    description:
-      'Implemented early page prototypes to test user response and feedback. Worked with a team to iterate on feedback and create a user-friendly and intuitive interface.',
-    logo: selfjustice,
-  },
-  {
-    title: 'Software Development Intern',
-    company: 'Project: Humam City',
-    years: 'Jan 2023 - March 2023',
+    title: 'Full Stack Developer Intern',
+    company: 'Project: Human City',
+    years: 'Dec 2022 - Mar 2023',
     mainTech: ['React Native', 'Python'],
     description:
-      'Developed and integrated user network features including login and messaging, along with API integrations using React Native and Python.',
+      'Led a team of three developers at an early-stage social media startup, building the mobile app. Implemented login, onboarding and messaging and integrated REST APIs, reporting directly to the CEO.',
     logo: phc,
   },
   {
     title: 'Full Stack Developer Intern',
     company: 'Simulence',
     years: 'Sep 2022 - Dec 2022',
-    mainTech: ['Vue.js', 'Firestore', 'React', 'Node.js'],
+    mainTech: ['Vue.js', 'Firestore', 'Node.js'],
     description:
-      'Contributed to backend development by creating API calls and integrating databases using Firestore.js. Effectively collaborated in an agile environment with a team of over 10 members, actively participating in meetings and demos. Utilized Vue.js to design and implement responsive, interactive user interfaces.',
+      'Architected and deployed REST APIs backed by Firestore, reducing data retrieval time by 30%, in agile sprints with a 10+ person cross-functional team.',
     logo: simulence,
   },
   {
-    title: 'App Developer Intern',
+    title: 'Software Developer Intern',
     company: 'Wali Ul Asr Learning Institute',
-    years: 'June 2019 - Sep 2019',
-    mainTech: ['Python', 'Bash', 'React Native', 'Node.js'],
+    years: 'Summers 2018 - 2019',
+    mainTech: ['React Native', 'React', 'Node.js', 'Google Cloud'],
     description:
-    "Developed and implemented app features based on client requirements using Python, Bash, React Native, and Node.js. Collaborated closely with the team to define specifications and design robust solutions. Conducted thorough testing to ensure high quality and reliability, and efficiently resolved complex bugs to enhance the user experience.",
-    logo: wali,
-  },
-  {
-    title: 'Web Developer Intern',
-    company: 'Wali Ul Asr Learning Institute',
-    years: 'June 2018 - Sep 2018',
-    mainTech: ['React', 'Node.js', 'Javascript', 'Python'],
-    description:
-    "Transformed client needs into web application features using React, Node.js, JavaScript, and Python. Worked collaboratively within a team to establish specifications and design efficient solutions. Ensured product quality through rigorous testing processes and successfully addressed complex bugs to improve overall functionality.",
+      'Built a React Native and Node.js app that automated media editing for content reaching thousands of viewers, and a custom CMS (React, Node.js, Google Cloud) that cut site update time by 50% for non-technical staff.',
     logo: wali,
   },
 ];
 
 export const projects = [
+  {
+    title: 'Zenith Gen',
+    details:
+      'Built an AI automation tool for a social media agency that drove millions of additional monthly views.',
+  },
   {
     title: 'Social Flows',
     details:
@@ -175,11 +114,6 @@ export const projects = [
     details:
       'Created a JavaScript library allowing draggable cards with unique properties for webpages, with a custom context menu.',
   },
-  {
-    title: 'Game Dev Lead',
-    details:
-      'Led a team of 5 developers in designing a Unity-based mobile game, delegating tasks, organizing meetings, and setting deadlines to ensure project success.',
-  },
 ];
 
 export const testimonialData = [
@@ -188,15 +122,14 @@ export const testimonialData = [
     company: 'Owner at TinyHorse',
     review:
       "It's been a joy to work with Haider. He demonstrated a deep understanding of the tools he uses: he thought and communicated quickly about how his skills could help achieve ideas, he delivered drafts in a very reasonable timeline!",
-    image: 'https://media.licdn.com/dms/image/C5603AQH7FQqevMWPGg/profile-displayphoto-shrink_800_800/0/1517480511384?e=1721865600&v=beta&t=0ofn9Ec0rPLwvyAcit2hm0cEHA4raq1C3gB_Jn5xmRg'
+    image: ''
   },
   {
     name: 'Kyle Lacroix',
     company: 'Co-Founder at Blue Guardian',
     review:
       'Haider was an invaluable asset to our website project. His creativity, technical expertise, and proactive approach were exceptional. Highly recommended for his outstanding work ethic and talent.',
-    image:
-      'https://media.licdn.com/dms/image/C4D03AQEuOKPlOiPH3g/profile-displayphoto-shrink_800_800/0/1604442994882?e=2147483647&v=beta&t=sQ1HqUZ68dlkKHozYwr0JFierhTUjn2DkZkUx8U8Drg',
+    image: '',
   },
   {
     name: 'Matt Karakilic',
@@ -211,29 +144,27 @@ export const testimonialData = [
     company: 'CEO & Founder at ImmiCan',
     review:
       'Great guy to work with. Clear concise understanding of the project with an action taking approach. It would be my honor and privilege to work with him again',
-    image: 'https://media.licdn.com/dms/image/D5603AQEPX5m3eZIh5A/profile-displayphoto-shrink_800_800/0/1702181465430?e=1721865600&v=beta&t=SvaNV4lTIrF9N317LsGOyggwidU9wLw4hVMoCYJcVAs'
+    image: ''
   },
 ];
 
 export const skillsArray = [
   'Python',
-  'AI/ML',
-  'NLP',
-  'Next.js',
-  'React.js',
-  "Flask",
-  "Node.js",
   'TypeScript',
-  'JavaScript',
+  'LLMs & Agents',
+  'RAG',
+  'Voice AI',
+  'WebRTC',
+  'React',
+  'Next.js',
+  'React Native',
+  'Node.js',
+  'Django',
+  'Flask',
+  'Postgres',
+  'Supabase',
   'AWS',
   'Docker',
-  'Vue.js',
-  'Supabase',
-  'Firebase',
-  'HTML',
-  'CSS',
-  'C#',
-  'Unity',
+  'K8s',
   'Git',
-  'C',
 ];

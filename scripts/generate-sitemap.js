@@ -40,7 +40,9 @@ async function generateSitemap() {
     '!src/pages/_*.js',
     '!src/pages/api',
   ]);
-  const postUrls = await globby(['src/posts/**/*.mdx']);
+  // Posts are only listed when an /articles route exists; otherwise they would 404.
+  const hasArticles = fs.existsSync('src/pages/articles');
+  const postUrls = hasArticles ? await globby(['src/posts/**/*.mdx']) : [];
   const posts = await Promise.all(postUrls.map(addPost));
 
   const sitemap = `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

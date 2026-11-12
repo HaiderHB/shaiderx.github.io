@@ -1,29 +1,20 @@
-__  __  __
-\ \ \ \ \/
- \ \/\ \
-  \/  \/
-
 The humans.txt file explains the team, technology,
 and graphic assets behind this site humanstxt.org.
 
 _______________________________________________________________________________
 
-DESIGNER | デザイナー
+DEVELOPER
 
 Haider Bokhari
-Hand crafted design & web development
+AI engineer and full-stack developer, Ontario, Canada
 
-Design tools:
-Figma
-Photoshop
-Blender
-
-twitter.com/hamishmw
-github.com/hamishmw
+haiderb.com
+github.com/HaiderHB
+linkedin.com/in/haiderbok
 
 _______________________________________________________________________________
 
-TECHNOLOGY | テクノロジー
+TECHNOLOGY
 
 React
 Next.js
@@ -32,7 +23,6 @@ Framer Motion
 
 _______________________________________________________________________________
 
-FONTS | フォント
+CREDITS
 
-Gotham
-Hiragino Kaku Gothic
+Based on the open-source portfolio template by Hamish Williams (MIT license).

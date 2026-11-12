@@ -51,7 +51,7 @@ export const Contact = () => {
                 <h3 className={styles.tertiaryTitle}>Social Links</h3>
                 <p>
                   <a
-                    href="https://github.com/yourusername"
+                    href="https://github.com/HaiderHB"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.socialLink}
@@ -61,7 +61,7 @@ export const Contact = () => {
                 </p>
                 <p>
                   <a
-                    href="https://linkedin.com/in/yourusername"
+                    href="https://www.linkedin.com/in/haiderbok/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.socialLink}
