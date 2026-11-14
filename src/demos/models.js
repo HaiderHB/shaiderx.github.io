@@ -258,8 +258,17 @@ export async function kieJobStatus(jobId) {
 
 // --- Fish Audio (text to speech, https://docs.fish.audio) ------------------------------
 
-/** Speech as MP3 bytes. voice: a Fish Audio voice (reference) id. Billed by text bytes. */
-export async function fishSpeak({ text, voice, model = process.env.FISH_TTS_MODEL || 's2.1-pro', speed = 1 }) {
+/**
+ * Speech as MP3 bytes. voice: a Fish Audio voice (reference) id. Billed by text bytes.
+ * bitrate: 64, 128 or 192 kbps (64 is plenty for speech and halves the payload).
+ */
+export async function fishSpeak({
+  text,
+  voice,
+  model = process.env.FISH_TTS_MODEL || 's2.1-pro',
+  speed = 1,
+  bitrate = 128,
+}) {
   const response = await fetch(`${FISH_URL()}/v1/tts`, {
     method: 'POST',
     headers: {
@@ -271,7 +280,7 @@ export async function fishSpeak({ text, voice, model = process.env.FISH_TTS_MODE
       text,
       reference_id: voice,
       format: 'mp3',
-      mp3_bitrate: 128,
+      mp3_bitrate: bitrate,
       temperature: 0.7,
       top_p: 0.7,
       prosody: { speed, volume: 0, normalize_loudness: true },

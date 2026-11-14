@@ -61,8 +61,8 @@ export function Guide({ covered, current }) {
       <div className={styles.exampleCheck}>
         <h3 className={styles.h3}>Guardrail, example check</h3>
         <p className={styles.small}>
-          Example scores. In a live interview, every moderator turn gets one Jev call that
-          returns these probabilities.
+          Real Jev scores for two sample questions. In an interview, every moderator turn
+          gets one call like this.
         </p>
         {EXAMPLE_CHECKS.map(item => (
           <div key={item.text} className={styles.exampleItem} data-verdict={item.verdict}>

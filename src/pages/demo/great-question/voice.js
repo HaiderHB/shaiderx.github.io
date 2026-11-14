@@ -1,16 +1,32 @@
-// Browser side of the voice interview: microphone, WebRTC to the OpenAI Realtime API,
-// and a pure reducer that turns Realtime server events into transcript turns.
-// Docs: https://developers.openai.com/api/docs/guides/voice-webrtc?voice-api=realtime
+// Browser side of the voice interview: the mic, a recorder that stops itself on a pause,
+// and moderator playback. Turn-based: nothing streams while the participant is not answering.
+
+const SILENCE_MS = 1200; // pause that ends an answer
+const NO_SPEECH_MS = 12_000; // give up if nothing that sounds like speech arrives
+const SPEECH_FRAMES = 3; // consecutive loud frames (50 ms each) before it counts as speech
+const TICK_MS = 50;
+
+/** First MediaRecorder type this browser supports: webm/opus (Chromium, Firefox), else mp4 (Safari). */
+export function pickMimeType() {
+  if (typeof MediaRecorder === 'undefined') return null;
+  const types = [
+    'audio/webm;codecs=opus',
+    'audio/mp4',
+    'audio/webm',
+    'audio/ogg;codecs=opus',
+  ];
+  return types.find(type => MediaRecorder.isTypeSupported?.(type)) ?? '';
+}
 
 export function voiceSupport() {
   if (typeof window === 'undefined') return { ok: true };
   if (!window.isSecureContext)
     return { ok: false, reason: 'Voice needs a secure (https) page.' };
-  if (typeof window.RTCPeerConnection === 'undefined') {
-    return { ok: false, reason: 'This browser does not support WebRTC voice.' };
-  }
   if (!navigator.mediaDevices?.getUserMedia) {
     return { ok: false, reason: 'This browser does not allow microphone access here.' };
+  }
+  if (typeof window.MediaRecorder === 'undefined') {
+    return { ok: false, reason: 'This browser cannot record audio.' };
   }
   return { ok: true };
 }
@@ -26,10 +42,14 @@ const MIC_ERRORS = {
   NotSupportedError: 'This browser cannot use a microphone here. Use "Type instead".',
 };
 
-/** Asks for the mic. Throws an Error with a human message on failure. */
-export async function getMicrophone() {
+/**
+ * Asks for the mic and wires an AnalyserNode for levels. Throws an Error with a human message.
+ * Returns { stream, level(): RMS 0-1, resume(), close() }.
+ */
+export async function openMicrophone() {
+  let stream;
   try {
-    return await navigator.mediaDevices.getUserMedia({
+    stream = await navigator.mediaDevices.getUserMedia({
       audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
     });
   } catch (error) {
@@ -38,192 +58,182 @@ export async function getMicrophone() {
         'The microphone did not start. Try again, or use "Type instead".'
     );
   }
-}
 
-/** Live input level (0-1) for a mic meter; calls onLevel about 30 times a second. */
-export function watchLevel(stream, onLevel) {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) return () => {};
-  const context = new AudioContext();
-  const analyser = context.createAnalyser();
-  analyser.fftSize = 512;
-  context.createMediaStreamSource(stream).connect(analyser);
-  const data = new Uint8Array(analyser.fftSize);
-  let frame = 0;
-  let last = 0;
-
-  const tick = now => {
-    frame = requestAnimationFrame(tick);
-    if (now - last < 33) return;
-    last = now;
-    analyser.getByteTimeDomainData(data);
-    let sum = 0;
-    for (const value of data) sum += ((value - 128) / 128) ** 2;
-    onLevel(Math.min(1, Math.sqrt(sum / data.length) * 4));
-  };
-  frame = requestAnimationFrame(tick);
-
-  return () => {
-    cancelAnimationFrame(frame);
-    context.close().catch(() => {});
-  };
-}
-
-function waitForOpen(channel, timeoutMs) {
-  if (channel.readyState === 'open') return Promise.resolve();
-  return new Promise((resolve, reject) => {
-    const timer = setTimeout(
-      () => reject(new Error('The voice connection timed out. Try again.')),
-      timeoutMs
-    );
-    channel.addEventListener('open', () => {
-      clearTimeout(timer);
-      resolve();
-    });
-    channel.addEventListener('close', () => {
-      clearTimeout(timer);
-      reject(new Error('The voice connection closed before it started.'));
-    });
-  });
-}
-
-/**
- * Connects the mic to an OpenAI Realtime session over WebRTC with an ephemeral secret.
- * Returns { send(event), close() }. Server events arrive as parsed JSON in onEvent.
- */
-export async function connectRealtime({
-  clientSecret,
-  callsUrl,
-  mic,
-  audio,
-  onEvent,
-  onConnection,
-}) {
-  const pc = new RTCPeerConnection();
-  let closed = false;
-
-  pc.ontrack = event => {
-    audio.srcObject = event.streams[0];
-    audio.play?.().catch(() => {});
-  };
-  pc.onconnectionstatechange = () => onConnection?.(pc.connectionState);
-  for (const track of mic.getAudioTracks()) pc.addTrack(track, mic);
-
-  const channel = pc.createDataChannel('oai-events');
-  channel.addEventListener('message', event => {
-    try {
-      onEvent(JSON.parse(event.data));
-    } catch {
-      // ignore malformed events
-    }
-  });
-
-  const close = () => {
-    if (closed) return;
-    closed = true;
-    try {
-      channel.close();
-    } catch {
-      // already closed
-    }
-    pc.getSenders().forEach(sender => sender.track?.stop());
-    pc.close();
-    audio.srcObject = null;
-  };
-
-  try {
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    const response = await fetch(callsUrl, {
-      method: 'POST',
-      body: offer.sdp,
-      headers: {
-        Authorization: `Bearer ${clientSecret}`,
-        'Content-Type': 'application/sdp',
-      },
-    });
-    if (!response.ok)
-      throw new Error(
-        `The voice service refused the call (${response.status}). Try again.`
-      );
-    await pc.setRemoteDescription({ type: 'answer', sdp: await response.text() });
-    await waitForOpen(channel, 12_000);
-  } catch (error) {
-    close();
-    throw error.message?.startsWith('The voice')
-      ? error
-      : new Error('Could not connect the voice call. Try again.');
+  const context = AudioContext ? new AudioContext() : null;
+  let analyser = null;
+  let data = null;
+  if (context) {
+    analyser = context.createAnalyser();
+    analyser.fftSize = 1024;
+    context.createMediaStreamSource(stream).connect(analyser);
+    data = new Float32Array(analyser.fftSize);
   }
 
   return {
-    send: event => {
-      if (channel.readyState === 'open') channel.send(JSON.stringify(event));
+    stream,
+    level() {
+      if (!analyser) return 0;
+      analyser.getFloatTimeDomainData(data);
+      let sum = 0;
+      for (const value of data) sum += value * value;
+      return Math.sqrt(sum / data.length);
     },
-    close,
+    // Safari starts the context suspended unless it is resumed inside a tap.
+    resume: () => context?.state === 'suspended' && context.resume().catch(() => {}),
+    close() {
+      stream.getTracks().forEach(track => track.stop());
+      context?.close().catch(() => {});
+    },
   };
 }
 
-// --- Realtime events -> transcript turns ---------------------------------------------------
-// Turn: { id, role: 'moderator' | 'participant', text, t, final, failed? }
+/**
+ * Records one answer. Stops after ~1.2 s of silence that follows speech, on stop(), at maxMs,
+ * or after 12 s with no speech. onTick({ level 0-1, ms }) drives the meter and clock.
+ * Returns { stop, cancel, done }; done resolves to { blob, mimeType, ms, heard, reason }.
+ */
+export function recordAnswer(mic, { mimeType, maxMs, onTick }) {
+  const recorder = new MediaRecorder(mic.stream, mimeType ? { mimeType } : undefined);
+  const chunks = [];
+  const started = performance.now();
+  let heard = false;
+  let loudFrames = 0;
+  let lastVoice = started;
+  let floor = 0.004; // ambient noise RMS, tracked on quiet frames
+  let reason = 'manual';
+  let timer = null;
 
-function upsert(turns, id, role, t, update) {
-  const index = turns.findIndex(turn => turn.id === id);
-  if (index === -1) return [...turns, update({ id, role, text: '', t, final: false })];
-  const next = turns.slice();
-  next[index] = update(next[index]);
-  return next;
-}
+  const stop = why => {
+    if (recorder.state === 'inactive') return;
+    reason = why;
+    recorder.stop();
+  };
 
-/** Applies one Realtime server event to the transcript. t: seconds since the call started. */
-export function applyRealtimeEvent(turns, event, t) {
-  const id = event.item_id;
-  switch (event.type) {
-    case 'input_audio_buffer.speech_started':
-      return id ? upsert(turns, id, 'participant', t, turn => turn) : turns;
+  const done = new Promise((resolve, reject) => {
+    recorder.ondataavailable = event => event.data?.size && chunks.push(event.data);
+    recorder.onstop = () => {
+      clearInterval(timer);
+      const type = recorder.mimeType || mimeType || 'audio/webm';
+      resolve({
+        blob: new Blob(chunks, { type }),
+        mimeType: type,
+        ms: performance.now() - started,
+        heard,
+        reason,
+      });
+    };
+    recorder.onerror = () => {
+      clearInterval(timer);
+      reject(new Error('Recording failed. Tap Answer to try again.'));
+    };
+  });
 
-    case 'conversation.item.input_audio_transcription.delta':
-      return upsert(turns, id, 'participant', t, turn =>
-        turn.final ? turn : { ...turn, text: turn.text + (event.delta || '') }
-      );
+  recorder.start(250);
+  timer = setInterval(() => {
+    const now = performance.now();
+    const rms = mic.level();
+    const threshold = Math.min(0.05, Math.max(0.012, floor * 3));
 
-    case 'conversation.item.input_audio_transcription.completed': {
-      const text = String(event.transcript || '').trim();
-      if (!text) return turns.filter(turn => turn.id !== id);
-      return upsert(turns, id, 'participant', t, turn => ({
-        ...turn,
-        text,
-        final: true,
-      }));
+    if (rms > threshold) {
+      loudFrames += 1;
+      if (loudFrames >= SPEECH_FRAMES) heard = true;
+      lastVoice = now;
+    } else {
+      loudFrames = 0;
+      floor = floor * 0.95 + rms * 0.05;
     }
 
-    case 'conversation.item.input_audio_transcription.failed':
-      return upsert(turns, id, 'participant', t, turn => ({
-        ...turn,
-        text: turn.text || '(inaudible)',
-        final: true,
-        failed: !turn.text,
-      }));
+    onTick?.({ level: Math.min(1, rms * 8), ms: now - started });
 
-    case 'response.output_audio_transcript.delta':
-      return upsert(turns, id, 'moderator', t, turn =>
-        turn.final ? turn : { ...turn, text: turn.text + (event.delta || '') }
-      );
+    if (heard && now - lastVoice > SILENCE_MS) stop('silence');
+    else if (now - started > maxMs) stop('cap');
+    else if (!heard && now - started > NO_SPEECH_MS) stop('nospeech');
+  }, TICK_MS);
 
-    case 'response.output_audio_transcript.done':
-      return upsert(turns, id, 'moderator', t, turn => ({
-        ...turn,
-        text: String(event.transcript ?? turn.text).trim(),
-        final: true,
-      }));
-
-    default:
-      return turns;
-  }
+  return { stop: () => stop('manual'), cancel: () => stop('cancel'), done };
 }
 
-/** Closes out turns that never got a final transcript (call ended mid-turn). */
-export function settleTurns(turns) {
-  return turns
-    .filter(turn => turn.final || turn.text.trim())
-    .map(turn => (turn.final ? turn : { ...turn, text: turn.text.trim(), final: true }));
+/** Blob to base64 (no data: prefix). */
+export function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(',')[1] || '');
+    reader.onerror = () => reject(new Error('Could not read the recording.'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+// 50 ms of silence as WAV. Played from the Start tap so later replies may play without one
+// (iOS Safari only lets an audio element play programmatically after a tap has played it).
+function silentWavUrl() {
+  const samples = 400;
+  const buffer = new ArrayBuffer(44 + samples);
+  const view = new DataView(buffer);
+  const text = (offset, value) =>
+    [...value].forEach((char, i) => view.setUint8(offset + i, char.charCodeAt(0)));
+  text(0, 'RIFF');
+  view.setUint32(4, 36 + samples, true);
+  text(8, 'WAVEfmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true); // PCM
+  view.setUint16(22, 1, true); // mono
+  view.setUint32(24, 8000, true);
+  view.setUint32(28, 8000, true);
+  view.setUint16(32, 1, true);
+  view.setUint16(34, 8, true);
+  text(36, 'data');
+  view.setUint32(40, samples, true);
+  new Uint8Array(buffer, 44).fill(128);
+  return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+}
+
+/** Call inside a tap, before any await. */
+export function unlockAudio(audio) {
+  if (!audio) return;
+  const url = silentWavUrl();
+  audio.src = url;
+  audio
+    .play()
+    .catch(() => {})
+    .finally(() => setTimeout(() => URL.revokeObjectURL(url), 1000));
+}
+
+/**
+ * Plays a base64 MP3 on the page's audio element. Returns { started, ended, resume, stop }:
+ * started resolves false when autoplay was blocked (resume() from a tap), ended when it ends.
+ */
+export function playAudio(audio, base64) {
+  const bytes = Uint8Array.from(atob(base64), char => char.charCodeAt(0));
+  const url = URL.createObjectURL(new Blob([bytes], { type: 'audio/mpeg' }));
+  let finish;
+  const ended = new Promise(resolve => (finish = resolve));
+  const cleanup = () => {
+    audio.onended = null;
+    audio.onerror = null;
+    URL.revokeObjectURL(url);
+    finish();
+  };
+  audio.onended = cleanup;
+  audio.onerror = cleanup;
+  audio.src = url;
+
+  const started = audio.play().then(
+    () => true,
+    error => {
+      if (error?.name === 'NotAllowedError') return false;
+      cleanup();
+      return true;
+    }
+  );
+
+  return {
+    started,
+    ended,
+    resume: () => audio.play().catch(cleanup),
+    stop() {
+      audio.pause();
+      cleanup();
+    },
+  };
 }

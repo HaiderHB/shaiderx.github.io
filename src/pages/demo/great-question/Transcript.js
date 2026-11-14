@@ -3,7 +3,12 @@ import { Badges } from './Badges';
 import styles from './GreatQuestion.module.css';
 import { formatTime } from './study';
 
-/** Live transcript: moderator and participant turns with timestamps and guardrail badges. */
+const seconds = ms => `${(ms / 1000).toFixed(1)} s`;
+
+/**
+ * Live transcript: moderator and participant turns with timestamps, guardrail badges and,
+ * for voice replies, how long each step of the turn took.
+ */
 export function Transcript({ turns, highlight, empty, follow }) {
   const listRef = useRef(null);
   const stickRef = useRef(true);
@@ -83,6 +88,15 @@ export function Transcript({ turns, highlight, empty, follow }) {
                   <span className={styles.caret} aria-hidden />
                 )}
               </p>
+              {turn.timing && (
+                <p className={styles.turnTiming}>
+                  <span>Fish ASR {seconds(turn.timing.asr)}</span>
+                  <span>DeepSeek {seconds(turn.timing.llm)}</span>
+                  <span>
+                    Fish TTS {turn.timing.tts < 60 ? 'cached' : seconds(turn.timing.tts)}
+                  </span>
+                </p>
+              )}
               {turn.role === 'moderator' && <Badges check={turn.check} />}
             </div>
           </li>

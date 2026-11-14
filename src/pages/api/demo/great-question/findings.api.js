@@ -4,7 +4,7 @@
 // is dropped, and timestamps come from the transcript, not from the model.
 import crypto from 'crypto';
 import { COST, clampText, demoApi } from 'demos/api';
-import { chat } from 'demos/models';
+import { DEMO_LLM, chat } from 'demos/models';
 import { cached } from 'demos/store';
 import { GOALS, GUIDE, formatTime } from 'pages/demo/great-question/study';
 
@@ -136,12 +136,10 @@ export default demoApi(
       answers.length < 2 ||
       answers.reduce((sum, turn) => sum + turn.text.length, 0) < 60
     ) {
-      return res
-        .status(400)
-        .json({
-          error: 'Answer at least two questions before generating findings.',
-          code: 'input',
-        });
+      return res.status(400).json({
+        error: 'Answer at least two questions before generating findings.',
+        code: 'input',
+      });
     }
 
     const hash = crypto
@@ -150,20 +148,17 @@ export default demoApi(
       .digest('hex')
       .slice(0, 32);
 
-    const model =
-      process.env.DEMO_FINDINGS_MODEL || process.env.DEMO_CHAT_MODEL || 'gpt-6-luna';
-    const overridden = process.env.DEMO_FINDINGS_MODEL || process.env.DEMO_CHAT_MODEL;
-    const reasoningEffort = overridden ? process.env.DEMO_CHAT_REASONING : 'low';
-
-    const result = await cached(`gq:findings:${hash}`, 7 * 86_400, async () => {
+    const model = DEMO_LLM.model();
+    const result = await cached(`gq:findings:${model}:${hash}`, 7 * 86_400, async () => {
       const text = await chat({
+        provider: DEMO_LLM.provider,
         model,
         system:
           'You are a senior UX researcher synthesizing one interview. Output JSON only.',
         messages: [{ role: 'user', content: buildPrompt(turns) }],
-        maxTokens: 2400,
+        maxTokens: 1600,
+        temperature: 0.3,
         json: true,
-        reasoningEffort,
       });
       const parsed = parseJson(text);
       if (!parsed) throw new Error('Findings were not valid JSON');
@@ -171,13 +166,10 @@ export default demoApi(
     });
 
     if (!result.findings.length) {
-      return res
-        .status(422)
-        .json({
-          error:
-            'No findings could be backed by verbatim quotes. Try a longer interview.',
-          code: 'empty',
-        });
+      return res.status(422).json({
+        error: 'No findings could be backed by verbatim quotes. Try a longer interview.',
+        code: 'empty',
+      });
     }
     return res.status(200).json(result);
   },

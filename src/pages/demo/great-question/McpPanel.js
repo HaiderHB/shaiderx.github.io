@@ -4,7 +4,7 @@ import styles from './GreatQuestion.module.css';
 import { TOOLS, callTool } from './mcp';
 import { GOALS } from './study';
 
-const PRESETS = ['payroll', 'spreadsheet', 'churn', 'alert'];
+const PRESETS = ['payroll', 'spreadsheet', 'alert', 'review'];
 
 // A starting query that matches the top finding, so the box shows a real result on load.
 const defaultQuery = findings =>

@@ -11,7 +11,7 @@ Pick the technology that solves *their* problem best, then make it feel current.
 | --- | --- | --- |
 | LLM agents | Tool calls, structured output, streaming "agent steps", RAG over sample docs | `chat()` / `chatStream()` in `demos/models`: OpenAI, Anthropic, Gemini (`provider: 'gemini'`) or any OpenAI-compatible API |
 | Jev decision models | Judgements code acts on: pick an option, score on a scale, yes/no probability, each with a confidence (lead routing, triage, "which reply/offer/next step", risk flags) | `askJev(state, { id: jevQuestion.choice(...) })`. Cheap and fast (~120 ms, input tokens only). Show the probabilities: that is the wow. Pair with an LLM for anything that writes text |
-| Voice | Speech-to-speech agents, call triage, voice notes to actions, narration | Fish Audio TTS via `fishSpeak()`; realtime voice over WebRTC (mint a short-lived client token in an API route, never expose the real key; charge `COST.realtimeMinute`) |
+| Voice | Voice interviews and agents, call triage, voice notes to actions, narration | Fish Audio ASR via `fishTranscribe()` and TTS via `fishSpeak()`. Turn-based loop (record in the browser, one route for ASR → LLM → TTS): see `api/demo/great-question/turn.api.js` |
 | Video models | Product videos, ad variants, personalised clips | kie.ai (`kieStartJob()` / `kieJobStatus()`, one API for Veo, Kling and others) or fal.ai (`falStartJob()` / `falJobStatus()`); client `pollJob()`. Pre-render 1–2 examples and show them first |
 | Image generation | Mockups, product shots, creatives, style transfer | kie.ai or fal.ai jobs, same pattern as video |
 

@@ -562,33 +562,6 @@
   }
 }
 
-.meter {
-  --level: 0;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  height: 18px;
-
-  & i {
-    width: 3px;
-    height: calc(4px + 14px * var(--level));
-    border-radius: 2px;
-    background: rgb(var(--rgbPrimary));
-    transition: height 80ms linear;
-  }
-
-  & i:nth-child(1),
-  & i:nth-child(5) {
-    height: calc(4px + 7px * var(--level));
-  }
-
-  & i:nth-child(2),
-  & i:nth-child(4) {
-    height: calc(4px + 11px * var(--level));
-  }
-}
-
 .miniGuide {
   display: inline-flex;
   gap: 4px;
@@ -766,6 +739,151 @@
 
   & i:nth-child(3) {
     animation-delay: 0.3s;
+  }
+}
+
+/* --- voice dock: what is happening now, the mic meter, the one action ------------------ */
+
+.voiceDock {
+  display: flex;
+  align-items: center;
+  gap: var(--spaceM);
+  margin: 0 calc(var(--spaceL) * -1);
+  padding: var(--spaceM) var(--spaceL);
+  border-top: 1px solid var(--line);
+  background: rgb(var(--rgbText) / 0.025);
+
+  & .primaryButton {
+    flex-shrink: 0;
+    min-width: 116px;
+  }
+
+  &[data-phase='listening'] {
+    background: rgb(var(--rgbPrimary) / 0.07);
+  }
+}
+
+.voiceMeter {
+  --level: 0;
+
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgb(var(--rgbText) / 0.06);
+
+  & i {
+    width: 3px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgb(var(--rgbText) / 0.4);
+    transition: height 60ms linear;
+  }
+
+  &[data-mode='level'] {
+    background: rgb(var(--rgbPrimary) / 0.16);
+
+    & i {
+      background: rgb(var(--rgbPrimary));
+    }
+
+    & i:nth-child(1),
+    & i:nth-child(5) {
+      height: calc(4px + 8px * var(--level));
+    }
+
+    & i:nth-child(2),
+    & i:nth-child(4) {
+      height: calc(4px + 13px * var(--level));
+    }
+
+    & i:nth-child(3) {
+      height: calc(4px + 18px * var(--level));
+    }
+  }
+
+  &[data-mode='speak'] i {
+    height: 14px;
+    background: rgb(var(--rgbPrimary));
+    animation: speak 0.9s ease-in-out infinite;
+  }
+
+  &[data-mode='speak'] i:nth-child(2) {
+    animation-delay: -0.6s;
+  }
+
+  &[data-mode='speak'] i:nth-child(3) {
+    animation-delay: -0.3s;
+  }
+
+  &[data-mode='speak'] i:nth-child(4) {
+    animation-delay: -0.75s;
+  }
+
+  &[data-mode='speak'] i:nth-child(5) {
+    animation-delay: -0.15s;
+  }
+
+  &[data-mode='idle'] i {
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+}
+
+.voiceState {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+
+  & strong {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 8px;
+    font-size: var(--fontSizeBodyXS);
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText));
+  }
+
+  & > span {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--muted);
+  }
+}
+
+.voiceClock {
+  font-size: 12px;
+  font-weight: normal;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.voiceDock[data-phase='ready'] .voiceMeter i,
+.voiceDock[data-phase='blocked'] .voiceMeter i {
+  animation: none;
+}
+
+.turnTiming {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  margin: 6px 0 0;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--rgbText) / 0.45);
+
+  & span {
+    white-space: nowrap;
+  }
+
+  & span:not(:last-child)::after {
+    content: '·';
+    margin-left: 8px;
   }
 }
 
@@ -1085,6 +1203,17 @@
   }
 }
 
+@keyframes speak {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+
+  50% {
+    transform: scaleY(1);
+  }
+}
+
 @keyframes blink {
   50% {
     opacity: 0;
@@ -1138,6 +1267,7 @@
   .status i,
   .caret,
   .typing i,
+  .voiceMeter i,
   .skeletons span {
     animation: none !important;
   }
@@ -1185,7 +1315,8 @@
   }
 
   .statusRow,
-  .composer {
+  .composer,
+  .voiceDock {
     margin-left: calc(var(--spaceM) * -1);
     margin-right: calc(var(--spaceM) * -1);
     padding-left: var(--spaceM);
@@ -1205,6 +1336,15 @@
 
   .controls > button {
     flex: 1 1 100%;
+  }
+
+  .voiceDock {
+    gap: var(--spaceS);
+
+    & .primaryButton {
+      min-width: 96px;
+      padding: 0 14px;
+    }
   }
 
   .cardHead .segmented {

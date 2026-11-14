@@ -60,7 +60,9 @@ async function extract(email, today) {
         if (match) {
           try {
             return JSON.parse(match[0]);
-          } catch {}
+          } catch {
+            // not JSON either; fall through to the error below
+          }
         }
         throw new Error('Extraction did not return valid JSON');
       }
