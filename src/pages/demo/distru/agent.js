@@ -184,7 +184,9 @@ export function normalizeExtraction(raw) {
       unit: /case/i.test(String(line?.unit || '')) ? 'case' : 'unit',
       // Only the item request itself can make a quantity vague, not a substitution note after it
       qty_vague:
-        Boolean(line?.qty_vague) || !(qty > 0) || VAGUE_WORDS.test(words.split(/[.;!?]|\bif\b/i)[0]),
+        Boolean(line?.qty_vague) ||
+        !(qty > 0) ||
+        VAGUE_WORDS.test(words.split(/[.;!?]|\bif\b/i)[0]),
       substitution_note: text(line?.substitution_note),
     };
   });
@@ -816,7 +818,8 @@ export function evalChecks(summary, expect) {
 // Only the model outputs are canned: the extraction, Jev's answers and the reply text. Every tool
 // call, rule and order line is computed live by the same code as a real run.
 
-// Recorded from a live run of sample 2 (DeepSeek V3.2 via fal + Jev) on 2026-11-14.
+// Recorded from a live run of sample 2 (DeepSeek V3.2 via fal + Jev) on 2026-11-14, the run in the video.
+// timings pace the replay; recordedMs are what the live run took and are what the trace shows.
 export const EXAMPLE = {
   sampleId: 'substitution',
   today: '2026-11-14',
@@ -833,7 +836,7 @@ export const EXAMPLE = {
     lines: [
       {
         text: 'a case of the blue dream eighths',
-        product: 'Blue Dream, eighths',
+        product: 'Blue Dream eighths',
         sku_guess: null,
         qty: 1,
         unit: 'case',
@@ -855,7 +858,7 @@ export const EXAMPLE = {
         sku_guess: null,
         qty: 2,
         unit: 'case',
-        qty_vague: true,
+        qty_vague: false,
         substitution_note:
           "if you're out of those any Kestrel live resin cart is fine, our customers mostly care about the brand",
       },
@@ -875,14 +878,18 @@ export const EXAMPLE = {
     },
     substitution_ok: {
       type: 'noul',
-      noul: 0.97,
+      noul: 0.96,
     },
   },
   reply:
-    "Thanks for your order, Marcus for Copperleaf Collective.\n\nWe have:\n- Blue Dream 3.5g Flower: 24 units\n- Watermelon Gummies 100mg: 120 units (estimated, confirm)\n- Ice Cream Cake Live Resin Cart 1g: 50 units (sub for Garlic Cookies, per email)\nDelivery pencilled for Wed, Dec 2. Total $2,712.00.\n\nHow many cases of Watermelon Gummies 100mg would you like? We've pencilled in 3 cases (120 units).\n\nRiverbend Wholesale order desk",
+    "Thanks for the order, Marcus at Copperleaf Collective.\n\nFor your delivery on Wed, Dec 2, we have:\n- Blue Dream 3.5g Flower: 24 units\n- Watermelon Gummies 100mg: 120 units (estimated, need confirmation)\n- Ice Cream Cake Live Resin Cart 1g: 50 units (substitute for Garlic Cookies)\n\nHow many cases of Watermelon Gummies 100mg would you like? We've pencilled in 3 cases (120 units).\n\nRiverbend Wholesale order desk",
   timings: {
-    extract: 7606,
-    decide: 126,
+    extract: 2500,
+    decide: 151,
     wordMs: 22,
+  },
+  recordedMs: {
+    extract: 17583,
+    decide: 151,
   },
 };

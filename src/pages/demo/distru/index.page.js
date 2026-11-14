@@ -144,7 +144,15 @@ export default function DistruDemo() {
           yield word;
         }
       },
-      emit: current.push,
+      // Show what the live run took, not the shortened replay wait
+      emit: event =>
+        current.push(
+          event.t === 'stage' &&
+            event.status === 'done' &&
+            EXAMPLE.recordedMs?.[event.id] != null
+            ? { ...event, ms: EXAMPLE.recordedMs[event.id] }
+            : event
+        ),
     }).catch(error => current.push({ t: 'error', message: error.message }));
   }
 
@@ -389,9 +397,9 @@ function TracePanel({ run, onReplay, replayDisabled }) {
       </div>
       {run.kind === 'example' && (
         <p className={styles.exampleNote}>
-          Example run of sample 2. The DeepSeek and Jev outputs were recorded from a live run;
-          every tool call, rule and order line is computed live in your browser by the same
-          code the API runs.
+          Example run of sample 2. The DeepSeek and Jev outputs were recorded from a live
+          run (replayed faster; the times shown are the live ones); every tool call, rule
+          and order line is computed live in your browser by the same code the API runs.
         </p>
       )}
       <ol className={styles.stages}>
