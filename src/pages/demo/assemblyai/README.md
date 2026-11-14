@@ -22,8 +22,8 @@ material goes wrong, and gives the fix.
 
 | Var | Needed for | Without it |
 | --- | --- | --- |
-| `OPENAI_API_KEY` | "Explain failures" | Route returns 502 with a clear message; checks still work |
-| `DEMO_LLM_MODEL` | Optional model override | Uses `gpt-6-luna` |
+| `FAL_API_KEY` | "Explain failures" (DeepSeek V3.2 via fal's OpenAI-compatible router) | Route returns 502 with a clear message; checks still work |
+| `DEMO_LLM_MODEL` | Optional model override | Uses `deepseek/deepseek-v3.2` |
 | `ASSEMBLYAI_API_KEY` | "Try the fix live" captions | Button is not rendered (decided at build time in `getStaticProps`); the token route returns 503 `no_assemblyai_key` |
 | `ASSEMBLYAI_TOKEN_URL` | Optional, e.g. the EU token host | `https://token.assemblyai.com/v1/token` |
 
@@ -53,8 +53,7 @@ key notice; the rule checks are unaffected.
   llms.txt and the examples it links. I did not run agents; the "First try" sample is assembled
   by hand from those snippets, with a comment naming the source of each part.
 - App Router and Next.js 14 or 15 for the reference, since that is what agents scaffold today.
-- `gpt-6-luna` is the current small, fast OpenAI model (developers.openai.com models page). It
-  reasons by default and `chatStream` has no reasoning-effort option, so the budget is 3000
+- DeepSeek V3.2 through fal answers in chat mode (no reasoning tokens), so the budget is 1200
   tokens; an empty reply returns a clear error and is not cached.
 
 ## What I cut

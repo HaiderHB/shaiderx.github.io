@@ -335,7 +335,7 @@ export function Checker({ request }) {
           <div>
             <h4 className={styles.llmTitle}>Explain and patch</h4>
             <p className={styles.llmNote}>
-              Optional. A small OpenAI model gets the code and the failing checks, explains each and proposes one minimal
+              Optional. DeepSeek V3.2 (via fal) gets the code and the failing checks, explains each and proposes one minimal
               diff. Repeat runs on the same code are cached.
             </p>
           </div>

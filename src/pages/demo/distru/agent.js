@@ -818,7 +818,7 @@ export function evalChecks(summary, expect) {
 export const EXAMPLE = {
   sampleId: 'substitution',
   today: '2026-11-13',
-  model: 'gpt-4.1-mini',
+  model: 'deepseek/deepseek-v3.2',
   extraction: {
     customer: {
       name: 'Copperleaf Collective',

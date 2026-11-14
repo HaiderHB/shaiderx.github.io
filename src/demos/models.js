@@ -14,10 +14,19 @@ const JEV_URL = () => process.env.JEV_BASE_URL || 'https://api.typesafe.ai/v1';
 const KIE_URL = () => process.env.KIE_BASE_URL || 'https://api.kie.ai';
 const FISH_URL = () => process.env.FISH_BASE_URL || 'https://api.fish.audio';
 
+const FAL_LLM_URL = () => process.env.FAL_LLM_URL || 'https://fal.run/openrouter/router/openai/v1';
+
 const falKey = () => process.env.FAL_KEY || requireEnv('FAL_API_KEY');
+
+/** Default LLM for demos: DeepSeek through fal's OpenAI-compatible router. */
+export const DEMO_LLM = {
+  provider: 'fal',
+  model: () => process.env.DEMO_LLM_MODEL || 'deepseek/deepseek-v3.2',
+};
 
 function pickProvider(provider) {
   if (provider) return provider;
+  if (process.env.FAL_API_KEY || process.env.FAL_KEY) return 'fal';
   if (process.env.OPENAI_API_KEY) return 'openai';
   if (process.env.ANTHROPIC_API_KEY) return 'anthropic';
   if (process.env.GOOGLE_API_KEY) return 'gemini';
@@ -41,6 +50,22 @@ function chatRequest({ provider, model, system, messages, maxTokens, temperature
         ...(system && { system }),
         ...(temperature != null && { temperature }),
         messages,
+        stream,
+      }),
+    });
+  }
+
+  // fal's OpenAI-compatible router (OpenRouter models such as DeepSeek), billed to the fal key
+  if (provider === 'fal') {
+    return fetch(`${FAL_LLM_URL()}/chat/completions`, {
+      method: 'POST',
+      headers: { Authorization: `Key ${falKey()}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model,
+        messages: system ? [{ role: 'system', content: system }, ...messages] : messages,
+        max_tokens: maxTokens,
+        ...(temperature != null && { temperature }),
+        ...(json && { response_format: { type: 'json_object' } }),
         stream,
       }),
     });
@@ -76,7 +101,7 @@ async function failIfBad(response, label) {
 
 /**
  * One LLM reply as text. messages: [{ role: 'user' | 'assistant', content }].
- * provider: 'openai' | 'anthropic' | 'gemini' (defaults to whichever key is set).
+ * provider: 'fal' | 'openai' | 'anthropic' | 'gemini' (defaults to whichever key is set; fal first).
  * reasoningEffort: passed as reasoning_effort to OpenAI-compatible reasoning models.
  */
 export async function chat({ provider, model, system, messages, maxTokens = 800, temperature, json, reasoningEffort }) {
@@ -234,7 +259,7 @@ export async function kieJobStatus(jobId) {
 // --- Fish Audio (text to speech, https://docs.fish.audio) ------------------------------
 
 /** Speech as MP3 bytes. voice: a Fish Audio voice (reference) id. Billed by text bytes. */
-export async function fishSpeak({ text, voice, model = 'drama-3', speed = 1 }) {
+export async function fishSpeak({ text, voice, model = process.env.FISH_TTS_MODEL || 's2.1-pro', speed = 1 }) {
   const response = await fetch(`${FISH_URL()}/v1/tts`, {
     method: 'POST',
     headers: {
@@ -256,4 +281,36 @@ export async function fishSpeak({ text, voice, model = 'drama-3', speed = 1 }) {
   });
   await failIfBad(response, 'fish audio');
   return Buffer.from(await response.arrayBuffer());
+}
+
+/** Fish Audio official library voices (stock voices, not clones). */
+export const FISH_VOICES = {
+  adrian: 'bf322df2096a46f18c579d0baa36f41d', // "a steady and reliable narrator"
+  selene: 'b347db033a6549378b48d00acb0d06cd', // "a meditative female voice"
+};
+
+/**
+ * Speech to text with Fish Audio ASR. audio: Buffer (webm/ogg/mp4/mp3/wav).
+ * Returns { text, duration } with Fish's speaker tags stripped.
+ */
+export async function fishTranscribe(audio, { mimeType = 'audio/webm', fileName = 'speech.webm', language = 'en' } = {}) {
+  const form = new FormData();
+  form.append('audio', new Blob([audio], { type: mimeType }), fileName);
+  form.append('language', language);
+  form.append('ignore_timestamps', 'true');
+  const response = await fetch(`${FISH_URL()}/v1/asr`, {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${requireEnv('FISH_AUDIO_API_KEY')}`,
+      model: process.env.FISH_ASR_MODEL || 'transcribe-1-pro',
+    },
+    body: form,
+  });
+  await failIfBad(response, 'fish asr');
+  const data = await response.json();
+  const text = String(data.text || '')
+    .replace(/<\|[^|]*\|>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return { text, duration: data.duration ?? null };
 }

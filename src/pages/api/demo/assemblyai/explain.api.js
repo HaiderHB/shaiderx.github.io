@@ -1,19 +1,19 @@
 // POST /api/demo/assemblyai/explain/ { code } -> streamed text
 // Re-runs the deterministic checks on the server (never trusts client findings), then asks a
-// small OpenAI model to explain the failures and propose one minimal diff. Cached per code.
+// DeepSeek (via fal) to explain the failures and propose one minimal diff. Cached per code.
 import crypto from 'crypto';
 import { clampText, COST, demoApi, startStream } from 'demos/api';
-import { chatStream } from 'demos/models';
+import { chatStream, DEMO_LLM } from 'demos/models';
 import { cached } from 'demos/store';
 import { runChecks } from '../../../demo/assemblyai/checks';
 
 export const config = { api: { bodyParser: { sizeLimit: '64kb' } } };
 
-// Current small, fast OpenAI model per developers.openai.com/api/docs/models (checked 13 Nov 2026).
-const model = () => process.env.DEMO_LLM_MODEL || 'gpt-6-luna';
+// DeepSeek through fal's OpenAI-compatible router (override with DEMO_LLM_MODEL).
+const model = DEMO_LLM.model;
 
-// Reasoning tokens count against this budget, so it leaves room beyond the ~500-token answer.
-const MAX_TOKENS = 3000;
+// The answer is ~500 tokens; no reasoning tokens with deepseek-v3.2's chat mode.
+const MAX_TOKENS = 1200;
 const CACHE_SECONDS = 7 * 24 * 3600;
 
 const FACTS = `- WebSocket: wss://streaming.assemblyai.com/v3/ws (EU: streaming.eu..., US: streaming.us...). v2 (api.assemblyai.com/v2/realtime/*) is gone.
@@ -80,7 +80,7 @@ export default demoApi(
         live = true;
         let full = '';
         for await (const delta of chatStream({
-          provider: 'openai',
+          provider: DEMO_LLM.provider,
           model: model(),
           system: SYSTEM,
           messages: [{ role: 'user', content: user }],

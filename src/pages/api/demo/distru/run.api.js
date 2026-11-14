@@ -3,7 +3,7 @@
 // the same day replays the cached run for free, so repeat clicks and eval reruns cost nothing.
 import crypto from 'crypto';
 import { COST, clampText, demoApi, startStream } from 'demos/api';
-import { askJev, chat, chatStream, jevQuestion } from 'demos/models';
+import { askJev, chat, chatStream, DEMO_LLM, jevQuestion } from 'demos/models';
 import { cached, getJSON, setJSON } from 'demos/store';
 import {
   REPLY_SYSTEM,
@@ -16,7 +16,7 @@ import {
 
 export const config = { api: { bodyParser: { sizeLimit: '16kb' } } };
 
-const MODEL = process.env.DEMO_LLM_MODEL || 'gpt-4.1-mini';
+const MODEL = DEMO_LLM.model();
 // Reasoning models (o-series, gpt-5) reject a custom temperature
 const temperature = value => (/^(o\d|gpt-5)/.test(MODEL) ? undefined : value);
 const VERSION = 'distru-v1';
@@ -44,7 +44,7 @@ async function extract(email, today) {
     CACHE_SECONDS,
     async () => {
       const text = await chat({
-        provider: 'openai',
+        provider: DEMO_LLM.provider,
         model: MODEL,
         system: extractionPrompt(today),
         messages: [{ role: 'user', content: email }],
@@ -55,6 +55,13 @@ async function extract(email, today) {
       try {
         return JSON.parse(text);
       } catch {
+        // Some models wrap JSON in a code fence or add a sentence; take the outermost object.
+        const match = String(text).match(/\{[\s\S]*\}/);
+        if (match) {
+          try {
+            return JSON.parse(match[0]);
+          } catch {}
+        }
         throw new Error('Extraction did not return valid JSON');
       }
     }
@@ -74,7 +81,7 @@ async function decide(state) {
 
 function draftReply(facts) {
   return chatStream({
-    provider: 'openai',
+    provider: DEMO_LLM.provider,
     model: MODEL,
     system: REPLY_SYSTEM,
     messages: [{ role: 'user', content: JSON.stringify(facts) }],

@@ -47,9 +47,9 @@ below 0.5.
 
 ## Env vars
 
-- `OPENAI_API_KEY`, `JEV_API_KEY` (required for live runs)
-- `DEMO_LLM_MODEL` (optional, default `gpt-4.1-mini`; o-series and gpt-5 models get no temperature)
-- `JEV_MODEL`, `OPENAI_BASE_URL`, `JEV_BASE_URL` (optional overrides, see `demos/models`)
+- `FAL_API_KEY` (DeepSeek V3.2 via fal's OpenAI-compatible router), `JEV_API_KEY` (required for live runs)
+- `DEMO_LLM_MODEL` (optional, default `deepseek/deepseek-v3.2`)
+- `JEV_MODEL`, `FAL_LLM_URL`, `JEV_BASE_URL` (optional overrides, see `demos/models`)
 
 ## What I assumed
 
@@ -86,9 +86,8 @@ below 0.5.
 - Add the write path behind approval: create the sales order, allocate packages, send the reply
   from the rep's inbox, and log every tool call and decision for audit.
 
-## Testing without keys
+## Testing
 
-Paid APIs can't be called locally. The run route was tested against a local mock of the OpenAI
-chat completions and Jev `/systemone` APIs (`OPENAI_BASE_URL`, `JEV_BASE_URL`) with a throwaway
-key: streaming, JSON mode, the Jev request shape, caching and the evals all pass. Real model
-behaviour (extraction quality, Jev's probabilities on these samples) needs a live check.
+Tested end to end with live DeepSeek (via fal) and Jev calls: extraction, tool calls, Jev's
+route and substitution answers, the reply and all three evals. The example run shown in preview
+mode is a recorded live run of sample 2.
