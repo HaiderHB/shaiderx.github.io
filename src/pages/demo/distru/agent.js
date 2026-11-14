@@ -97,12 +97,12 @@ Return only a JSON object with exactly these keys:
   "requested_delivery_date": "YYYY-MM-DD" or null,
   "po_number": string or null,
   "lines": [{
-    "text": the buyer's own words for this item,
+    "text": the buyer's own words requesting this item (not their remarks about substitutes),
     "product": short product description: strain or flavour, form, size, brand if given,
     "sku_guess": a SKU if the buyer wrote one, else null,
     "qty": number or null,
     "unit": "case" or "unit",
-    "qty_vague": true if the quantity is approximate or missing ("a few", "some", "whatever you can spare"),
+    "qty_vague": true only if the quantity is approximate or missing ("a few", "some", "whatever you can spare"); an explicit number is not vague,
     "substitution_note": the buyer's words about substitutes for this item, or null
   }],
   "notes": [short strings a sales rep should see: delivery window, payment remarks, anything unusual]
@@ -182,7 +182,9 @@ export function normalizeExtraction(raw) {
       sku_guess: text(line?.sku_guess),
       qty: Number.isFinite(qty) && qty > 0 ? qty : null,
       unit: /case/i.test(String(line?.unit || '')) ? 'case' : 'unit',
-      qty_vague: Boolean(line?.qty_vague) || !(qty > 0) || VAGUE_WORDS.test(words),
+      // Only the item request itself can make a quantity vague, not a substitution note after it
+      qty_vague:
+        Boolean(line?.qty_vague) || !(qty > 0) || VAGUE_WORDS.test(words.split(/[.;!?]|\bif\b/i)[0]),
       substitution_note: text(line?.substitution_note),
     };
   });

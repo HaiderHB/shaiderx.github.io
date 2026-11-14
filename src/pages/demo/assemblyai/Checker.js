@@ -333,10 +333,10 @@ export function Checker({ request }) {
       <div className={styles.llmPanel}>
         <div className={styles.llmHead}>
           <div>
-            <h4 className={styles.llmTitle}>Explain and patch</h4>
+            <h4 className={styles.llmTitle}>Explain and fix</h4>
             <p className={styles.llmNote}>
-              Optional. DeepSeek V3.2 (via fal) gets the code and the failing checks, explains each and proposes one minimal
-              diff. Repeat runs on the same code are cached.
+              Optional. DeepSeek V3.2 (via fal) gets the code and the failing checks, then explains what
+              each one breaks and the fix. Repeat runs on the same code are cached.
             </p>
           </div>
           <button

@@ -367,7 +367,7 @@ function EmailPanel({ email, sampleId, onPick, onEdit, onRun, busy, notice, hasK
 function TracePanel({ run, onReplay, replayDisabled }) {
   const totalMs = STAGES.reduce((sum, stage) => sum + (run.stages[stage.id]?.ms || 0), 0);
   return (
-    <div className={`${styles.card} ${styles.traceCard}`} aria-live="polite">
+    <div className={styles.card} aria-live="polite">
       <div className={styles.cardHead}>
         <h3 className={styles.cardTitle}>Agent run</h3>
         <RunBadge run={run} />
@@ -580,7 +580,7 @@ function DecisionLine({ decision }) {
 function DecisionPanel({ run }) {
   const decision = run.decision;
   return (
-    <div className={`${styles.card} ${styles.decisionCard}`}>
+    <div className={styles.card}>
       <div className={styles.cardHead}>
         <h3 className={styles.cardTitle}>Decision</h3>
         <span className={styles.pill} data-tone="info">
@@ -707,7 +707,7 @@ function ReplyPanel({ run, email }) {
   const streaming = run.stages.draft?.status === 'running';
   const to = senderOf(email);
   return (
-    <div className={`${styles.card} ${styles.replyCard}`}>
+    <div className={styles.card}>
       <div className={styles.cardHead}>
         <h3 className={styles.cardTitle}>Reply to buyer</h3>
         <span className={styles.pill} data-tone="info">

@@ -76,6 +76,7 @@ export function Spinner() {
 
 export function formatMs(ms) {
   if (ms == null) return '';
+  if (ms < 0.01) return '<0.01 ms';
   if (ms < 1) return `${ms.toFixed(2)} ms`;
   if (ms < 1000) return `${Math.round(ms)} ms`;
   return `${(ms / 1000).toFixed(2)} s`;

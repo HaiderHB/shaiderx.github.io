@@ -75,10 +75,10 @@ Measured live on 2026-11-14 (local `next start`, real providers):
 | Fish ASR, 10-16 s answer                         | 0.4-0.8 s            |
 | DeepSeek, one line                               | 0.5-1.2 s            |
 | Fish TTS, one line                               | 0.7-1.6 s            |
-| End of answer → moderator audio starts (browser) | 1.8-3.5 s            |
+| Pause detected → moderator audio starts (browser) | 1.8-4.1 s (plus the 1.2 s pause) |
 | Opening, first call / cached                     | 4.1-4.3 s / 11-13 ms |
 | Jev guardrail                                    | 80-230 ms            |
-| Findings (DeepSeek, JSON)                        | 7-9 s                |
+| Findings (DeepSeek, JSON)                        | 7-12 s               |
 
 ## Env vars
 

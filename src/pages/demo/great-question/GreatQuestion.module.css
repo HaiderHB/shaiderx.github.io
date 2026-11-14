@@ -624,8 +624,8 @@
   position: relative;
 
   /* The card is sticky on wide screens, so keep it inside the viewport */
-  height: clamp(300px, calc(100vh - 400px), 560px);
-  min-height: 280px;
+  height: clamp(260px, calc(100vh - 580px), 460px);
+  min-height: 260px;
   margin: 0 calc(var(--spaceL) * -1);
   padding: var(--spaceS) var(--spaceL) var(--spaceL);
   overflow-y: auto;
@@ -748,6 +748,7 @@
   display: flex;
   align-items: center;
   gap: var(--spaceM);
+  min-height: 84px; /* same height in every phase, so the page doesn't jump */
   margin: 0 calc(var(--spaceL) * -1);
   padding: var(--spaceM) var(--spaceL);
   border-top: 1px solid var(--line);

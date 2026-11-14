@@ -30,7 +30,7 @@ export const PRODUCTS = [
     category: 'Flower',
     casePack: 24,
     available: 0,
-    restockEta: '2026-11-24',
+    restockEta: '2026-12-10',
     batch: 'SF-2609-GG',
     packageTag: '1A4FF0300009D1F000004790',
     prices: { T1: 20, T2: 19, T3: 18 },
