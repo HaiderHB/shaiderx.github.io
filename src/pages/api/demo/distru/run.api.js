@@ -19,7 +19,7 @@ export const config = { api: { bodyParser: { sizeLimit: '16kb' } } };
 const MODEL = DEMO_LLM.model();
 // Reasoning models (o-series, gpt-5) reject a custom temperature
 const temperature = value => (/^(o\d|gpt-5)/.test(MODEL) ? undefined : value);
-const VERSION = 'distru-v1';
+const VERSION = 'distru-v2';
 const RUN_COST = COST.llm * 2 + COST.decision;
 const CACHE_SECONDS = 6 * 3600;
 

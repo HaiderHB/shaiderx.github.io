@@ -122,7 +122,7 @@ export const ROUTE_QUESTION = {
     'Route this wholesale cannabis order. order_checks holds the results of the ERP, license and credit checks; buyer_email is what the buyer wrote.',
   criteria: {
     auto_confirm:
-      'Every line maps to a catalog SKU with a clear, stated quantity and is in stock, the license is valid on the delivery date, credit is fine, and nothing in the email needs a person.',
+      'Every line is a confident catalog match with a clear, stated quantity and is in stock, the license is valid on the delivery date, credit is fine, and nothing in the email needs a person. Routine delivery details such as dock hours do not need a person.',
     needs_review:
       'No compliance or credit blocker, but a person or the buyer must settle something first: a vague or missing quantity, an uncertain product match, an out-of-stock or short line, a substitution, a missing delivery date or an unusual request.',
     hold: 'A compliance or credit blocker: the license is expired, missing, mismatched or expires before delivery, the account is unknown, on credit hold or over its limit. Nothing ships until it is fixed.',
@@ -226,11 +226,10 @@ function describeLine(line) {
   if (!line.product) {
     parts.push('no confident catalog match');
   } else {
-    parts.push(
-      `${line.product.sku} ${line.product.name} (match ${line.match.confidence.toFixed(
-        2
-      )})`
-    );
+    const c = line.match.confidence;
+    const strength =
+      c >= 0.8 ? 'confident match' : c >= 0.6 ? 'possible match' : 'uncertain match';
+    parts.push(`${line.product.sku} ${line.product.name} (${strength}, ${c.toFixed(2)})`);
     parts.push(
       line.vague ? `quantity vague, estimated ${line.units} units` : `${line.units} units`
     );
@@ -815,9 +814,10 @@ export function evalChecks(summary, expect) {
 // Only the model outputs are canned: the extraction, Jev's answers and the reply text. Every tool
 // call, rule and order line is computed live by the same code as a real run.
 
+// Recorded from a live run of sample 2 (DeepSeek V3.2 via fal + Jev) on 2026-11-14.
 export const EXAMPLE = {
   sampleId: 'substitution',
-  today: '2026-11-13',
+  today: '2026-11-14',
   model: 'deepseek/deepseek-v3.2',
   extraction: {
     customer: {
@@ -831,7 +831,7 @@ export const EXAMPLE = {
     lines: [
       {
         text: 'a case of the blue dream eighths',
-        product: 'Blue Dream 3.5g flower',
+        product: 'Blue Dream, eighths',
         sku_guess: null,
         qty: 1,
         unit: 'case',
@@ -840,7 +840,7 @@ export const EXAMPLE = {
       },
       {
         text: 'a few cases of watermelon gummies, the 100mg ones',
-        product: 'Watermelon gummies 100mg',
+        product: 'Watermelon gummies, 100mg',
         sku_guess: null,
         qty: 3,
         unit: 'case',
@@ -848,36 +848,39 @@ export const EXAMPLE = {
         substitution_note: null,
       },
       {
-        text: '2 cases Garlic Cookies live resin carts',
-        product: 'Garlic Cookies live resin cart, Kestrel',
+        text: "2 cases Garlic Cookies live resin carts. if you're out of those any Kestrel live resin cart is fine, our customers mostly care about the brand",
+        product: 'Garlic Cookies live resin carts',
         sku_guess: null,
         qty: 2,
         unit: 'case',
-        qty_vague: false,
-        substitution_note: "if you're out of those any Kestrel live resin cart is fine",
+        qty_vague: true,
+        substitution_note:
+          "if you're out of those any Kestrel live resin cart is fine, our customers mostly care about the brand",
       },
     ],
-    notes: ['Same terms as usual', 'Delivery Wednesday 12/2 preferred'],
+    notes: ['Wednesday 12/2 delivery would be ideal', 'same terms as usual'],
   },
   answers: {
     route: {
       type: 'choice',
       choice: 'needs_review',
-      confidence: 0.86,
-      probabilities: { auto_confirm: 0.05, needs_review: 0.86, hold: 0.09 },
+      confidence: 1,
+      probabilities: {
+        auto_confirm: 0,
+        needs_review: 1,
+        hold: 0,
+      },
     },
-    substitution_ok: { type: 'noul', noul: 0.93 },
+    substitution_ok: {
+      type: 'noul',
+      noul: 0.97,
+    },
   },
-  reply: `Hi Marcus,
-
-Thanks for the order for Wednesday, Dec 2. Here's what we have so far:
-
-- Blue Dream 3.5g Flower: 1 case (24 units)
-- Ice Cream Cake Live Resin Cart 1g: 2 cases (50 units), in place of the Garlic Cookies carts, which are out until Dec 5. Same brand and price, as you suggested.
-- Watermelon Gummies 100mg: pencilled in at 3 cases (120 units)
-
-One question before we confirm: how many cases of the Watermelon Gummies would you like?
-
-Riverbend Wholesale order desk`,
-  timings: { extract: 1380, decide: 140, wordMs: 22 },
+  reply:
+    "Thanks for your order, Marcus for Copperleaf Collective.\n\nWe have:\n- Blue Dream 3.5g Flower: 24 units\n- Watermelon Gummies 100mg: 120 units (estimated, confirm)\n- Ice Cream Cake Live Resin Cart 1g: 50 units (sub for Garlic Cookies, per email)\nDelivery pencilled for Wed, Dec 2. Total $2,712.00.\n\nHow many cases of Watermelon Gummies 100mg would you like? We've pencilled in 3 cases (120 units).\n\nRiverbend Wholesale order desk",
+  timings: {
+    extract: 7606,
+    decide: 126,
+    wordMs: 22,
+  },
 };

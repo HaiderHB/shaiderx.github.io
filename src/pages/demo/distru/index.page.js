@@ -389,8 +389,9 @@ function TracePanel({ run, onReplay, replayDisabled }) {
       </div>
       {run.kind === 'example' && (
         <p className={styles.exampleNote}>
-          Example run of sample 2. Model outputs are pre-recorded; every tool call, rule
-          and order line is computed live in your browser by the same code the API runs.
+          Example run of sample 2. The DeepSeek and Jev outputs were recorded from a live run;
+          every tool call, rule and order line is computed live in your browser by the same
+          code the API runs.
         </p>
       )}
       <ol className={styles.stages}>
