@@ -5,6 +5,12 @@
       "label": "Haider preview test, 2026-11-13",
       "created": "2026-11-13",
       "expires": "2026-11-27"
+    },
+    {
+      "hash": "4280ea1be27a56c4520b329e24abd2601d7072ea28034799385c39f008b0daa0",
+      "label": "PJ Murray (CTO) / WaaS / 2026-11-15",
+      "created": "2026-11-15",
+      "expires": "2026-12-30"
     }
   ],
   "assemblyai": [
@@ -13,6 +19,18 @@
       "label": "Haider preview test, 2026-11-13",
       "created": "2026-11-13",
       "expires": "2026-11-27"
+    },
+    {
+      "hash": "f1c34da67db893d03c21145f172b1098f5918ef17e605427d25c2de95263c7e6",
+      "label": "AssemblyAI Greenhouse application / 2026-11-15",
+      "created": "2026-11-15",
+      "expires": "2026-12-30"
+    },
+    {
+      "hash": "1a352bfe60a6f7adf410b27ee388c06b19353ce2c0043c89d8cec34fbced6176",
+      "label": "Alex Kroman / LinkedIn / 2026-11-15",
+      "created": "2026-11-15",
+      "expires": "2026-12-30"
     }
   ],
   "distru": [
@@ -21,6 +39,12 @@
       "label": "Haider preview test, 2026-11-13",
       "created": "2026-11-13",
       "expires": "2026-11-27"
+    },
+    {
+      "hash": "2860ede6509716fbd261edea4496a8bc771a46a5e2e993a24794c74fd617189a",
+      "label": "Distru Lever application / 2026-11-15",
+      "created": "2026-11-15",
+      "expires": "2026-12-30"
     }
   ]
 }
