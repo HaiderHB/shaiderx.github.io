@@ -24,7 +24,7 @@ function pickProvider(provider) {
   throw new Error('Set OPENAI_API_KEY, ANTHROPIC_API_KEY or GOOGLE_API_KEY in Vercel');
 }
 
-function chatRequest({ provider, model, system, messages, maxTokens, temperature, json, stream }) {
+function chatRequest({ provider, model, system, messages, maxTokens, temperature, json, stream, reasoningEffort }) {
   if (!model) throw new Error('chat() needs a model id');
 
   if (provider === 'anthropic') {
@@ -61,6 +61,8 @@ function chatRequest({ provider, model, system, messages, maxTokens, temperature
       ...(gemini ? { max_tokens: maxTokens } : { max_completion_tokens: maxTokens }),
       ...(temperature != null && { temperature }),
       ...(json && { response_format: { type: 'json_object' } }),
+      // Reasoning models only ('none' | 'low' | ...); omit for models without reasoning
+      ...(reasoningEffort && { reasoning_effort: reasoningEffort }),
       stream,
     }),
   });
@@ -75,10 +77,11 @@ async function failIfBad(response, label) {
 /**
  * One LLM reply as text. messages: [{ role: 'user' | 'assistant', content }].
  * provider: 'openai' | 'anthropic' | 'gemini' (defaults to whichever key is set).
+ * reasoningEffort: passed as reasoning_effort to OpenAI-compatible reasoning models.
  */
-export async function chat({ provider, model, system, messages, maxTokens = 800, temperature, json }) {
+export async function chat({ provider, model, system, messages, maxTokens = 800, temperature, json, reasoningEffort }) {
   provider = pickProvider(provider);
-  const response = await chatRequest({ provider, model, system, messages, maxTokens, temperature, json });
+  const response = await chatRequest({ provider, model, system, messages, maxTokens, temperature, json, reasoningEffort });
   await failIfBad(response, provider);
   const data = await response.json();
   return provider === 'anthropic'
@@ -87,9 +90,9 @@ export async function chat({ provider, model, system, messages, maxTokens = 800,
 }
 
 /** Streams an LLM reply as text deltas: for await (const text of chatStream({...})) */
-export async function* chatStream({ provider, model, system, messages, maxTokens = 800, temperature }) {
+export async function* chatStream({ provider, model, system, messages, maxTokens = 800, temperature, reasoningEffort }) {
   provider = pickProvider(provider);
-  const response = await chatRequest({ provider, model, system, messages, maxTokens, temperature, stream: true });
+  const response = await chatRequest({ provider, model, system, messages, maxTokens, temperature, reasoningEffort, stream: true });
   await failIfBad(response, provider);
 
   const reader = response.body.getReader();
