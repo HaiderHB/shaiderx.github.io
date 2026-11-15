@@ -1,26 +1,37 @@
+/* Expected vs actual: a three-column grid with a hairline above every data row. */
 .table {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
-  gap: var(--uiGapM) var(--uiGapXL);
   align-items: center;
   font-size: var(--uiFontNote);
 }
 
 .head {
-  font-size: var(--uiFontMicro);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--uiMuted);
+  padding: 0 var(--spaceM) var(--uiGapM) 0;
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  color: var(--uiFaint);
+}
+
+.label,
+.value {
+  align-self: stretch;
+  padding: var(--uiGapM) var(--spaceM) var(--uiGapM) 0;
+  border-top: 1px solid var(--uiLine);
 }
 
 .label {
+  display: flex;
+  align-items: center;
   color: var(--uiMuted);
 }
 
 .value {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: var(--uiGapS);
+  gap: var(--uiGapM);
   min-width: 0;
+  font-weight: var(--fontWeightMedium);
   color: rgb(var(--rgbText));
+  overflow-wrap: anywhere;
 }

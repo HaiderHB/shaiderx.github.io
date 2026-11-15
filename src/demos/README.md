@@ -44,9 +44,11 @@ hardcodes a model.
 ## UI kit
 
 Shared components and design tokens live in `src/demos/ui/`: cards, buttons, pills, decision
-bars, run timelines, an MCP tool panel, code and JSON views, markdown-lite for streamed text,
-notices and empty states. Import from `demos/ui`; restyle with the `--ui*` tokens on your page
-wrapper. Catalog, props and tokens: [`ui/README.md`](ui/README.md). Gallery: `npm run dev`,
+bars, stat tiles, small charts (gauge, ring, meter, split bar, sparkline), run timelines, an MCP
+tool panel, code and JSON views, markdown-lite for streamed text, notices and empty states.
+Import from `demos/ui`. Dark and light themes come from the tokens; each demo picks its accent
+with `<DemoLayout accent="iris | cobalt | coral">`. Catalog, props and tokens:
+[`ui/README.md`](ui/README.md). Gallery: `npm run dev`,
 then `/demo/ui/` (404 in production builds).
 
 ## Abuse prevention (so nobody burns the API credits)

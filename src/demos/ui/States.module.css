@@ -3,7 +3,7 @@
 .spinner {
   /* Resolved here, not inside border: the minifier mangles var() fallbacks in borders */
   --uiSpinnerTop: var(--uiSpinnerColor, rgb(var(--uiRgbAccent)));
-  --uiSpinnerTrack: var(--uiSpinnerTrackColor, rgb(var(--uiRgbAccent) / 0.25));
+  --uiSpinnerTrack: var(--uiSpinnerTrackColor, rgb(var(--uiRgbAccent) / 0.22));
 
   display: inline-block;
   flex: none;
@@ -22,6 +22,7 @@
   width: 7px;
   height: 1em;
   margin-left: 2px;
+  border-radius: 1px;
   vertical-align: -2px;
   background: rgb(var(--uiRgbAccent));
   animation: blink 1s steps(2) infinite;
@@ -50,7 +51,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: rgb(var(--rgbText) / 0.45);
+    background: rgb(var(--uiRgbAccent) / 0.8);
     animation: bounce 1.2s ease-in-out infinite;
   }
 
@@ -65,9 +66,12 @@
 
 /* --- empty / loading ------------------------------------------------------------------- */
 
+/* Hatching is the kit's "nothing here yet" texture: empty states, bar tracks, pending. */
 .empty {
   font-size: var(--fontSizeBodyXS);
   color: var(--uiMuted);
+  background: var(--uiHatch);
+  box-shadow: inset 0 0 0 1px var(--uiLine);
 
   &[data-size='s'] {
     display: flex;
@@ -75,8 +79,8 @@
     justify-content: center;
     gap: var(--uiGapL);
     min-height: 120px;
-    border: 1px dashed var(--uiLine);
-    border-radius: var(--uiRadiusM);
+    padding: var(--spaceM);
+    border-radius: var(--uiRadiusL);
   }
 
   &[data-size='m'] {
@@ -84,7 +88,6 @@
     place-items: center;
     min-height: 140px;
     padding: var(--spaceL);
-    border: 1px dashed var(--uiLineStrong);
     border-radius: var(--uiRadiusXL);
     text-align: center;
   }
@@ -98,12 +101,12 @@
 
   & span {
     height: 120px;
-    border-radius: var(--uiRadiusL);
+    border-radius: var(--uiRadiusXL);
     background: linear-gradient(
       90deg,
-      rgb(var(--rgbText) / 0.04),
-      rgb(var(--rgbText) / 0.09),
-      rgb(var(--rgbText) / 0.04)
+      rgb(var(--rgbText) / 0.05),
+      rgb(var(--rgbText) / 0.11),
+      rgb(var(--rgbText) / 0.05)
     );
     background-size: 200% 100%;
     animation: shimmer 1.4s linear infinite;
@@ -117,34 +120,29 @@
 
   font-size: var(--fontSizeBodyXS);
   color: rgb(var(--rgbText) / 0.9);
-  background: rgb(var(--uiNoticeTone) / 0.1);
-  border: 1px solid rgb(var(--uiNoticeTone) / 0.3);
+  background: rgb(var(--uiNoticeTone) / 0.12);
+  box-shadow: inset 0 0 0 1px rgb(var(--uiNoticeTone) / 0.24);
+
+  &[data-kind='error'] {
+    --uiNoticeTone: var(--uiRgbBad);
+
+    color: rgb(var(--rgbText));
+  }
 
   &[data-size='s'] {
     display: block;
-    padding: 8px 12px;
+    padding: 9px 14px;
     border-radius: var(--uiRadiusM);
   }
 
-  &[data-size='s'][data-kind='error'] {
-    color: rgb(var(--rgbText));
-    background: rgb(var(--uiRgbBad) / 0.12);
-    border-color: rgb(var(--uiRgbBad) / 0.4);
-  }
-
   &[data-size='m'] {
-    padding: 10px 14px;
+    padding: 12px 16px;
     border-radius: var(--uiRadiusL);
     line-height: 1.5;
   }
 
-  &[data-size='m'][data-kind='error'] {
-    background: rgb(var(--uiRgbBad) / 0.1);
-    border-color: rgb(var(--uiRgbBad) / 0.4);
-  }
-
   &[data-flat] {
-    border: 0;
+    box-shadow: none;
     border-radius: var(--uiRadiusM);
     line-height: inherit;
   }

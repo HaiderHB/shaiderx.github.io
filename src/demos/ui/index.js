@@ -13,6 +13,7 @@ export {
   Tag,
 } from './Badges';
 export { Button } from './Button';
+export { Gauge, Meter, MiniBars, Ring, Sparkline, SplitBar } from './Charts';
 export {
   ChoiceChips,
   Chip,
@@ -47,6 +48,7 @@ export {
   SectionHead,
 } from './Panel';
 export { ProbabilityBar, ProbabilityBars } from './ProbabilityBar';
+export { StatGrid, StatTile } from './Stat';
 export { Caret, EmptyState, Notice, SkeletonGrid, Spinner, TypingDots } from './States';
 export { StatusIcon } from './StatusIcon';
 export { PipelineStrip, Timeline, TimelineStep } from './Timeline';

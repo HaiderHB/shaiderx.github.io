@@ -1,11 +1,12 @@
 /*
  * Variants: primary, secondary, ghost (small outlined action), link (underlined text).
  * Sizes for primary and secondary: m (default), s (compact). `pill` swaps the size for a
- * 42px rounded touch target that fits an icon.
+ * 42px touch target that fits an icon. Every button is fully rounded.
  */
 .button {
   font: inherit;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 
   &:disabled {
     cursor: default;
@@ -14,58 +15,23 @@
 
 /* --- sizes ---------------------------------------------------------------------------- */
 
-.button[data-size='m'] {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--uiGapM);
-  font-size: var(--fontSizeBodyS);
-  border-radius: var(--uiRadiusM);
-  padding: 10px 20px;
-  transition: opacity var(--durationXS) ease, transform var(--durationXS) ease;
-
-  &:active:not(:disabled) {
-    transform: translateY(1px);
-  }
-
-  &:disabled {
-    opacity: 0.55;
-  }
-}
-
-.button[data-size='s'] {
-  font-size: var(--fontSizeBodyXS);
-  border-radius: var(--uiRadiusS);
-  padding: 9px 16px;
-  white-space: nowrap;
-  transition: background var(--durationXS) ease, border-color var(--durationXS) ease,
-    opacity var(--durationXS) ease;
-
-  &:disabled {
-    opacity: 0.4;
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgb(var(--rgbAccent));
-    outline-offset: 2px;
-  }
-}
-
+.button[data-size='m'],
+.button[data-size='s'],
 .button[data-pill] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--uiGapM);
-  min-height: 42px;
-  padding: 0 18px;
   border-radius: var(--uiRadiusPill);
-  font-size: var(--fontSizeBodyXS);
-  font-weight: var(--fontWeightMedium);
+  font-weight: 600;
+  letter-spacing: -0.005em;
   white-space: nowrap;
-  transition: transform var(--durationXS) ease, opacity var(--durationXS) ease,
-    background var(--durationXS) ease;
+  transition: transform var(--durationXS) var(--uiEase), box-shadow var(--durationS) ease,
+    background var(--durationXS) ease, border-color var(--durationXS) ease,
+    opacity var(--durationXS) ease;
 
   & svg {
-    flex-shrink: 0;
+    flex: none;
     font-size: 16px;
   }
 
@@ -75,74 +41,94 @@
 
   &:disabled {
     opacity: 0.45;
+    box-shadow: none;
   }
+}
+
+.button[data-size='m'] {
+  min-height: 44px;
+  padding: 0 22px;
+  font-size: var(--fontSizeBodyXS);
+}
+
+.button[data-size='s'] {
+  min-height: 36px;
+  padding: 0 16px;
+  font-size: var(--uiFontSmall);
+}
+
+.button[data-pill] {
+  min-height: 42px;
+  padding: 0 18px;
+  font-size: var(--fontSizeBodyXS);
 }
 
 /* --- variants ------------------------------------------------------------------------- */
 
 .button[data-variant='primary'] {
-  --uiSpinnerColor: rgb(var(--rgbBackground));
-  --uiSpinnerTrackColor: rgb(var(--rgbBackground) / 0.3);
+  --uiSpinnerColor: rgb(var(--uiRgbOnAction));
+  --uiSpinnerTrackColor: rgb(var(--uiRgbOnAction) / 0.3);
 
-  font-weight: var(--fontWeightMedium);
-  color: rgb(var(--rgbBackground));
-  background: rgb(var(--rgbPrimary));
+  color: rgb(var(--uiRgbOnAction));
+  background: rgb(var(--uiRgbAction));
   border: 0;
+  box-shadow: var(--uiShadowAction), inset 0 1px 0 rgb(255 255 255 / 0.18);
 
-  &:not([data-pill]):hover:not(:disabled) {
-    opacity: 0.88;
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(1.08);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
   }
 }
 
 .button[data-variant='secondary'] {
   color: rgb(var(--rgbText));
-  background: transparent;
+  background: rgb(var(--rgbText) / 0.04);
   border: 1px solid var(--uiLineStrong);
 
-  &[data-size='s'] {
-    padding: 8px 14px;
-  }
-
-  &[data-size='s']:hover {
-    border-color: rgb(var(--rgbText) / 0.45);
-  }
-
-  &[data-size='m'] {
-    padding: 9px 19px;
-  }
-
-  &[data-pill] {
-    background: rgb(var(--rgbText) / 0.06);
-  }
-
-  &[data-pill]:hover:not(:disabled) {
-    background: rgb(var(--rgbText) / 0.1);
+  &:hover:not(:disabled) {
+    background: rgb(var(--rgbText) / 0.09);
+    border-color: rgb(var(--rgbText) / 0.3);
   }
 }
 
 .button[data-variant='ghost'] {
-  font-size: var(--fontSizeBodyXS);
-  color: rgb(var(--rgbText));
-  background: transparent;
-  border: 1px solid rgb(var(--rgbText) / 0.25);
-  border-radius: var(--uiRadiusS);
-  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapS);
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontSmall);
+  font-weight: var(--fontWeightMedium);
   white-space: nowrap;
+  color: rgb(var(--rgbText) / 0.86);
+  background: transparent;
+  border: 1px solid var(--uiLineStrong);
+  transition: border-color var(--durationXS) ease, color var(--durationXS) ease,
+    background var(--durationXS) ease;
 
-  &:hover {
-    border-color: rgb(var(--uiRgbAccent));
+  &:hover:not(:disabled) {
+    color: rgb(var(--rgbText));
+    border-color: rgb(var(--uiRgbAccent) / 0.7);
+    background: rgb(var(--uiRgbAccent) / 0.08);
   }
 }
 
 .button[data-variant='link'] {
+  padding: 0;
   font-size: var(--fontSizeBodyXS);
-  color: rgb(var(--rgbText) / 0.85);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText) / 0.86);
   background: none;
   border: 0;
-  padding: 0;
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: rgb(var(--rgbText) / 0.35);
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgb(var(--rgbText) / 0.3);
 
   &:hover:not(:disabled) {
     color: rgb(var(--uiRgbAccent));
@@ -151,5 +137,16 @@
 
   &:disabled {
     opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none !important;
+  }
+
+  .button:hover,
+  .button:active {
+    transform: none !important;
   }
 }

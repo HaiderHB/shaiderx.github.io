@@ -1,10 +1,11 @@
+/* soft: 22px, for rule lists. Failures and warnings are solid; passes recede to a tint. */
 .icon {
   display: grid;
   place-items: center;
-  width: 20px;
-  height: 20px;
+  flex: none;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  margin-top: 1px;
 
   & svg {
     fill: none;
@@ -15,27 +16,29 @@
   }
 
   &[data-status='fail'] {
-    color: rgb(var(--rgbBackground));
+    color: rgb(var(--uiRgbOnStatus));
     background: rgb(var(--uiRgbBad));
+    box-shadow: 0 0 0 4px rgb(var(--uiRgbBad) / 0.16);
   }
 
   &[data-status='warn'] {
-    color: rgb(var(--rgbBackground));
+    color: rgb(var(--uiRgbOnStatus));
     background: rgb(var(--uiRgbWarn));
+    box-shadow: 0 0 0 4px rgb(var(--uiRgbWarn) / 0.16);
   }
 
   &[data-status='pass'] {
-    color: rgb(var(--uiRgbOk));
-    background: rgb(var(--uiRgbOk) / 0.16);
+    color: color-mix(in sRGB, rgb(var(--uiRgbOk)) 80%, rgb(var(--rgbText)));
+    background: rgb(var(--uiRgbOk) / 0.18);
   }
 
   &[data-status='na'] {
-    color: rgb(var(--rgbText) / 0.5);
-    background: rgb(var(--rgbText) / 0.08);
+    color: var(--uiFaint);
+    background: rgb(var(--rgbText) / 0.07);
   }
 }
 
-/* Solid: filled circle, dark tick on pass, white cross on fail */
+/* solid: 18px filled circle, for eval grids and timeline markers */
 .solid {
   display: inline-grid;
   place-items: center;
@@ -43,19 +46,18 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  color: rgb(17 17 17);
+  color: rgb(var(--uiRgbOnStatus));
   background: rgb(var(--uiRgbOk));
 
   & svg {
     fill: none;
     stroke: currentColor;
-    stroke-width: 2;
+    stroke-width: 2.2;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
 
   &[data-status='fail'] {
-    color: rgb(255 255 255);
     background: rgb(var(--uiRgbBad));
   }
 
@@ -67,6 +69,7 @@
 .idle {
   display: inline-grid;
   place-items: center;
+  flex: none;
   width: 18px;
-  color: var(--uiMuted);
+  color: var(--uiFaint);
 }

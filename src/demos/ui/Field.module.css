@@ -1,40 +1,54 @@
-/* plain: block field with an accent outline on focus */
-.field[data-variant='plain'] {
-  display: block;
-  width: 100%;
-  padding: 12px 14px;
+/* Fields are wells cut into the surface: inset fill, hairline edge, accent ring on focus. */
+.field {
   font: inherit;
-  font-size: var(--fontSizeBodyXS);
-  line-height: 1.55;
   color: rgb(var(--rgbText));
-  background: rgb(var(--rgbBackground));
-  border: 1px solid rgb(var(--rgbText) / 0.18);
-  border-radius: var(--uiRadiusM);
-  resize: vertical;
+  background: rgb(var(--uiRgbInset));
+  border: 1px solid var(--uiLine);
+  transition: border-color var(--durationXS) ease, box-shadow var(--durationXS) ease;
 
-  &:focus {
-    outline: 2px solid rgb(var(--uiRgbAccent) / 0.6);
-    outline-offset: 1px;
+  &::placeholder {
+    color: var(--uiFaint);
+  }
+
+  &:hover:not(:focus) {
+    border-color: var(--uiLineStrong);
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    border-color: rgb(var(--uiRgbAccent) / 0.8);
+    box-shadow: 0 0 0 4px rgb(var(--uiRgbAccent) / 0.16);
   }
 }
 
-/* ring: inline field with a soft focus ring, for forms and composers */
+/* plain: full-width block (emails, JSON arguments) */
+.field[data-variant='plain'] {
+  display: block;
+  width: 100%;
+  padding: 14px 16px;
+  font-size: var(--fontSizeBodyXS);
+  line-height: 1.6;
+  border-radius: var(--uiRadiusL);
+  resize: vertical;
+}
+
+/* ring: inline field for forms, composers and selects */
 .field[data-variant='ring'] {
   min-width: 0;
-  padding: 10px 12px;
-  border-radius: var(--uiRadiusL);
-  font: inherit;
+  padding: 10px 14px;
   font-size: var(--fontSizeBodyXS);
   line-height: 1.45;
-  color: rgb(var(--rgbText));
-  background: rgb(var(--rgbBackground));
-  border: 1px solid var(--uiLineStrong);
+  border-radius: var(--uiRadiusM);
+}
 
-  &:focus {
-    outline: none;
-    border-color: rgb(var(--uiRgbAccent));
-    box-shadow: 0 0 0 3px rgb(var(--uiRgbAccent) / 0.2);
-  }
+/* The reset strips the native arrow, so selects draw their own chevron */
+select.field[data-variant] {
+  padding-right: 38px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%238a8898' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
 }
 
 .field[data-code] {

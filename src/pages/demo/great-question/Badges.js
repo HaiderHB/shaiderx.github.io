@@ -1,6 +1,7 @@
 import { BadgeMeta, BadgeRow, ScoreBadge, percent, riskTone } from 'demos/ui';
 
-const CHECKS = [
+/** The three risk scores on every moderator turn: [key, label, what it means]. */
+export const CHECKS = [
   ['leading', 'Leading', 'Suggests an answer, assumes a feeling, or invites agreement'],
   ['doubleBarreled', 'Double-barreled', 'Asks about two things at once'],
   [

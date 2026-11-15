@@ -1,101 +1,494 @@
+/*
+ * Demo shell: ambient backdrop, floating bar, hero, footer.
+ * Colours and radii come from demos/ui/tokens.module.css (applied on the same element).
+ */
 .demo {
+  --demoWidth: 1240px;
+  --demoGutter: var(--spaceXL);
+
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  color: rgb(var(--rgbText));
-  background: rgb(var(--rgbBackground));
+  font-family: var(--fontStack);
+  color: rgb(var(--rgbText) / 0.86);
+  background: rgb(var(--uiRgbCanvas));
+  color-scheme: dark;
+  overflow-x: clip;
+
+  &[data-wide] {
+    --demoWidth: 1360px;
+  }
+
+  & :focus-visible {
+    outline: 2px solid rgb(var(--uiRgbAccent));
+    outline-offset: 2px;
+  }
+
+  & ::selection {
+    color: rgb(var(--uiRgbOnAccent));
+    background: rgb(var(--uiRgbAccentDeep));
+  }
+
+  /* Thin, quiet scrollbars on every scrolling panel inside a demo */
+  & * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--rgbText) / 0.22) transparent;
+  }
 }
+
+:global(body[data-theme='light']) .demo {
+  color-scheme: light;
+}
+
+/*
+ * The site sets body to 100vw, which includes the scrollbar and pushes a centred layout
+ * off by half its width. Demo pages size the body to the visible area instead.
+ */
+:global(body):has(.demo) {
+  width: 100%;
+}
+
+/*
+ * Colour wash behind the bar and hero: two accent blooms that fade into the canvas, with
+ * a little grain so the gradient doesn't band. Scrolls away with the page.
+ */
+.backdrop {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 920px;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+      52% 60% at 6% -8%,
+      rgb(var(--uiRgbAccentDeep) / 0.34),
+      transparent 70%
+    ),
+    radial-gradient(42% 56% at 98% -12%, rgb(var(--uiRgbAccent2) / 0.2), transparent 70%);
+  mask-image: linear-gradient(rgb(0 0 0), rgb(0 0 0) 55%, transparent);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.22;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+:global(body[data-theme='light']) .backdrop {
+  background: radial-gradient(
+      58% 62% at 8% -6%,
+      rgb(var(--uiRgbAccent) / 0.3),
+      transparent 68%
+    ),
+    radial-gradient(46% 58% at 96% -10%, rgb(var(--uiRgbAccent2) / 0.26), transparent 70%),
+    radial-gradient(40% 40% at 60% 4%, rgb(255 255 255 / 0.7), transparent 70%);
+}
+
+/* --- bar -------------------------------------------------------------------------------- */
 
 .bar {
   position: sticky;
   top: 0;
   z-index: var(--zIndex2);
-  display: flex;
+  padding: var(--uiGapXL) var(--demoGutter) 0;
+  pointer-events: none;
+}
+
+.barInner {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--spaceM);
-  padding: var(--spaceS) var(--spaceL);
-  background: rgb(var(--rgbBackground) / 0.92);
-  border-bottom: 1px solid rgb(var(--rgbText) / 0.12);
-  backdrop-filter: blur(8px);
+  gap: var(--uiGapXL);
+  max-width: var(--demoWidth);
+  min-height: 56px;
+  margin: 0 auto;
+  padding: var(--uiGapM) var(--uiGapM) var(--uiGapM) var(--uiGapL);
+  border-radius: var(--uiRadiusPill);
+  background: rgb(var(--uiRgbSurface) / 0.82);
+  border: 1px solid var(--uiLine);
+  box-shadow: var(--uiShadowPop);
+  backdrop-filter: blur(22px) saturate(1.6);
 }
 
 .brand {
-  display: flex;
-  color: rgb(var(--rgbText));
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: rgb(var(--uiRgbCanvas));
+  background: rgb(var(--rgbText));
+  transition: transform var(--durationS) var(--uiEase);
+
+  & svg {
+    width: 20px;
+    height: auto;
+    fill: currentColor;
+  }
+
+  &:hover {
+    transform: rotate(-8deg) scale(1.05);
+  }
 }
 
 .label {
-  font-size: var(--fontSizeBodyS);
-  color: rgb(var(--rgbText) / 0.8);
+  display: grid;
+  line-height: 1.15;
+  white-space: nowrap;
+
+  & span {
+    font-size: var(--uiFontMicro);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--uiFaint);
+  }
+
+  & strong {
+    font-size: var(--fontSizeBodyXS);
+    font-weight: 600;
+    letter-spacing: var(--uiTrackTight);
+    color: rgb(var(--rgbText));
+  }
 }
 
-.links {
-  margin-left: auto;
+.nav {
+  justify-self: center;
   display: flex;
-  gap: var(--spaceM);
-  font-size: var(--fontSizeBodyXS);
+  gap: var(--uiGap2XS);
+  max-width: 100%;
+  padding: 3px;
+  overflow-x: auto;
+  border-radius: var(--uiRadiusPill);
+  background: rgb(var(--rgbText) / 0.05);
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   & a {
-    color: rgb(var(--rgbText) / 0.8);
-    text-decoration: none;
+    flex: none;
+    padding: 7px 14px;
+    border-radius: var(--uiRadiusPill);
+    font-size: var(--uiFontSmall);
+    font-weight: var(--fontWeightMedium);
+    color: var(--uiMuted);
+    transition: color var(--durationXS) ease, background var(--durationXS) ease;
   }
 
   & a:hover {
-    color: rgb(var(--rgbPrimary));
+    color: rgb(var(--rgbText));
+  }
+
+  & a[aria-current] {
+    color: rgb(var(--rgbText));
+    background: rgb(var(--uiRgbRaised));
+    box-shadow: var(--uiShadowRaised);
   }
 }
 
-.notice {
-  margin: 0;
-  padding: var(--spaceS) var(--spaceL);
-  font-size: var(--fontSizeBodyXS);
-  text-align: center;
-  color: rgb(var(--rgbText) / 0.85);
-  background: rgb(var(--rgbPrimary) / 0.12);
+.actions {
+  grid-column: 4;
+  display: flex;
+  align-items: center;
+  gap: var(--uiGapS);
 }
 
+.iconButton {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 16px;
+  color: rgb(var(--rgbText) / 0.8);
+  background: rgb(var(--rgbText) / 0.06);
+  cursor: pointer;
+  transition: background var(--durationXS) ease, color var(--durationXS) ease;
+
+  &:hover {
+    color: rgb(var(--rgbText));
+    background: rgb(var(--rgbText) / 0.12);
+  }
+}
+
+/* The icon names the theme you would switch to */
+.moon {
+  display: none;
+}
+
+:global(body[data-theme='light']) .sun {
+  display: none;
+}
+
+:global(body[data-theme='light']) .moon {
+  display: block;
+}
+
+.link {
+  padding: 9px 14px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontSmall);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText) / 0.8);
+  transition: background var(--durationXS) ease, color var(--durationXS) ease;
+
+  &:hover {
+    color: rgb(var(--rgbText));
+    background: rgb(var(--rgbText) / 0.07);
+  }
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapXS);
+  height: 38px;
+  padding: 0 14px 0 16px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontSmall);
+  font-weight: 600;
+  white-space: nowrap;
+  color: rgb(var(--uiRgbCanvas));
+  background: rgb(var(--rgbText));
+  transition: transform var(--durationXS) var(--uiEase);
+
+  & svg {
+    font-size: 15px;
+    transition: transform var(--durationS) var(--uiEase);
+  }
+
+  &:hover svg {
+    transform: translate(2px, -2px);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+/* --- content and hero ------------------------------------------------------------------- */
+
 .content {
-  width: 100%;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: var(--spaceXL) var(--spaceL);
   flex: 1;
+  width: 100%;
+  max-width: calc(var(--demoWidth) + 2 * var(--demoGutter));
+  margin: 0 auto;
+  padding: var(--space3XL) var(--demoGutter) var(--space4XL);
+}
+
+.hero {
+  display: grid;
+  gap: var(--spaceXL) var(--space2XL);
+  margin-bottom: var(--space2XL);
+
+  &[data-split] {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    align-items: end;
+  }
+}
+
+.heroText {
+  min-width: 0;
+}
+
+.heroAside {
+  min-width: 0;
+}
+
+.kickers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapS);
+  margin: 0 0 var(--spaceL);
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapS);
+  padding: 5px 11px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  line-height: 1.35;
+  color: rgb(var(--rgbText) / 0.86);
+  background: rgb(var(--uiRgbSurface) / 0.7);
+  border: 1px solid var(--uiLine);
+  backdrop-filter: blur(8px);
+
+  & i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgb(var(--uiRgbAccent));
+    box-shadow: 0 0 0 3px rgb(var(--uiRgbAccent) / 0.22);
+  }
+
+  & svg {
+    flex: none;
+    font-size: 12px;
+    color: rgb(var(--uiRgbAccent));
+  }
+
+  &[data-quiet] {
+    color: var(--uiMuted);
+    background: transparent;
+    backdrop-filter: none;
+  }
+
+  &[data-preview] {
+    border-color: rgb(var(--uiRgbAccent) / 0.34);
+    background: rgb(var(--uiRgbAccent) / 0.12);
+  }
 }
 
 .title {
-  font-size: var(--fontSizeH3);
-  font-weight: var(--fontWeightMedium);
-  line-height: 1.1;
-  margin: 0 0 var(--spaceS);
+  max-width: 21ch;
+  margin: 0;
+  font-size: clamp(2rem, 1.1rem + 2.9vw, 3.5rem);
+  font-weight: 500;
+  line-height: 1.02;
+  letter-spacing: var(--uiTrackDisplay);
+  color: rgb(var(--rgbText));
+  text-wrap: balance;
 }
 
 .tagline {
-  font-size: var(--fontSizeBodyL);
-  color: rgb(var(--rgbText) / 0.75);
-  margin: 0 0 var(--spaceXL);
-  max-width: 70ch;
+  max-width: 64ch;
+  margin: var(--spaceL) 0 0;
+  font-size: clamp(1rem, 0.94rem + 0.3vw, 1.1875rem);
+  line-height: 1.5;
+  color: var(--uiMuted);
+  text-wrap: pretty;
 }
 
+/* --- footer ----------------------------------------------------------------------------- */
+
 .footer {
-  padding: var(--spaceM) var(--spaceL);
-  font-size: var(--fontSizeBodyXS);
-  color: rgb(var(--rgbText) / 0.6);
-  border-top: 1px solid rgb(var(--rgbText) / 0.12);
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: var(--spaceM);
+  width: calc(100% - 2 * var(--demoGutter));
+  max-width: var(--demoWidth);
+  margin: 0 auto;
+  padding: var(--spaceL) 0 var(--spaceXL);
+  font-size: var(--uiFontSmall);
+  line-height: 1.5;
+  color: var(--uiFaint);
+  border-top: 1px solid var(--uiLine);
+
+  & p {
+    flex: 1;
+    margin: 0;
+  }
+
+  & a {
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText) / 0.8);
+    white-space: nowrap;
+  }
+
+  & a:hover {
+    color: rgb(var(--uiRgbAccent));
+  }
+}
+
+.footMark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgb(var(--rgbText) / 0.08);
+
+  & svg {
+    width: 15px;
+    height: auto;
+    fill: rgb(var(--rgbText) / 0.7);
+  }
+}
+
+/* --- responsive ------------------------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  .hero[data-split] {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .nav {
+    display: none;
+  }
 }
 
 @media (max-width: 696px) {
-  .bar {
-    flex-wrap: wrap;
-    padding: var(--spaceS) var(--spaceM);
+  .demo {
+    --demoGutter: var(--spaceM);
   }
 
-  .links {
-    width: 100%;
-    margin-left: 0;
+  .bar {
+    padding-top: var(--uiGapM);
+  }
+
+  .barInner {
+    gap: var(--uiGapL);
+    min-height: 50px;
+    padding: 6px;
+  }
+
+  .brand,
+  .iconButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .link {
+    display: none;
+  }
+
+  .cta {
+    height: 36px;
   }
 
   .content {
-    padding: var(--spaceL) var(--spaceM);
+    padding-top: var(--spaceXL);
+    padding-bottom: var(--space3XL);
+  }
+
+  .hero {
+    margin-bottom: var(--spaceXL);
+  }
+
+  .kickers {
+    margin-bottom: var(--spaceM);
+  }
+
+  .tagline {
+    margin-top: var(--spaceM);
+  }
+
+  .footer {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 400px) {
+  .label span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand,
+  .cta,
+  .cta svg {
+    transition: none;
   }
 }

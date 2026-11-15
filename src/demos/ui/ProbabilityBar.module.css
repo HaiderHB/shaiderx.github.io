@@ -1,19 +1,23 @@
+/*
+ * Probability bars. The track is hatched ("the rest of the probability"), the fill is the
+ * option's tone, and the chosen option is the only row at full strength.
+ */
 .bars {
   display: grid;
-  gap: var(--uiGapM);
+  gap: var(--uiGapL);
 }
 
 .row {
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) 42px;
+  grid-template-columns: 96px minmax(0, 1fr) 46px;
   align-items: center;
-  gap: var(--uiGapL);
+  gap: var(--uiGapXL);
   font-size: var(--uiFontNote);
   color: var(--uiMuted);
 
   &[data-strong] {
     color: rgb(var(--rgbText));
-    font-weight: var(--fontWeightMedium);
+    font-weight: 600;
   }
 }
 
@@ -23,17 +27,18 @@
 
 .track {
   position: relative;
-  height: 10px;
-  border-radius: 5px;
-  background: rgb(var(--rgbText) / 0.08);
+  height: 14px;
+  border-radius: var(--uiRadiusPill);
+  background: var(--uiHatch), rgb(var(--rgbText) / 0.05);
 }
 
 .fill {
   position: absolute;
   inset: 0 auto 0 0;
-  border-radius: 5px;
-  background: rgb(var(--rgbText) / 0.4);
-  animation: grow 700ms var(--bezierFastoutSlowin) both;
+  min-width: 14px;
+  border-radius: var(--uiRadiusPill);
+  background: rgb(var(--rgbText) / 0.45);
+  animation: grow 800ms var(--uiEase) both;
   transform-origin: left center;
 
   &[data-tone='ok'] {
@@ -48,22 +53,31 @@
     background: rgb(var(--uiRgbBad));
   }
 
+  &[data-tone='accent'] {
+    background: var(--uiGradient);
+  }
+
   @nest .row:not([data-strong]) & {
-    opacity: 0.45;
+    opacity: 0.4;
   }
 }
 
+/* Threshold: a notch that overshoots the track, so it reads as a limit rather than data */
 .mark {
   position: absolute;
-  top: -3px;
-  bottom: -3px;
-  width: 1px;
-  background: rgb(var(--rgbText) / 0.45);
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: rgb(var(--rgbText) / 0.7);
+  box-shadow: 0 0 0 2px rgb(var(--uiRgbSurface));
 }
 
 .value {
   font-family: var(--uiMono);
   font-size: var(--uiFontCode);
+  font-variant-numeric: tabular-nums;
   text-align: right;
 }
 
@@ -85,7 +99,7 @@
 
 @media (max-width: 600px) {
   .row {
-    grid-template-columns: 88px minmax(0, 1fr) 38px;
+    grid-template-columns: 88px minmax(0, 1fr) 40px;
     gap: var(--uiGapM);
   }
 }

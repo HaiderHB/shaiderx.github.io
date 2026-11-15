@@ -1,0 +1,333 @@
+/*
+ * Small chart primitives. One colour per chart, picked with `tone`:
+ * accent (default) | ok | warn | bad | ink | muted. Tracks and "the rest" are hatched or
+ * faint, never a second hue.
+ */
+.ring,
+.gauge,
+.meter,
+.spark,
+.splitBar span,
+.splitLegend div {
+  --uiChartTone: var(--uiRgbAccent);
+
+  &[data-tone='ok'] {
+    --uiChartTone: var(--uiRgbOk);
+  }
+
+  &[data-tone='warn'] {
+    --uiChartTone: var(--uiRgbWarn);
+  }
+
+  &[data-tone='bad'] {
+    --uiChartTone: var(--uiRgbBad);
+  }
+
+  &[data-tone='ink'] {
+    --uiChartTone: var(--rgbText);
+  }
+}
+
+/* --- ring -------------------------------------------------------------------------------- */
+
+.ring {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+
+  & svg {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.ringTrack {
+  fill: none;
+  stroke: var(--uiTrack);
+}
+
+.ringValue {
+  fill: none;
+  stroke: rgb(var(--uiChartTone));
+  stroke-linecap: round;
+  transition: stroke-dasharray var(--durationXL) var(--uiEase);
+}
+
+.ringLabel {
+  position: relative;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--rgbText));
+}
+
+/* --- gauge ------------------------------------------------------------------------------- */
+
+/* The number scales with the dial (container units), so a small gauge stays legible */
+.gauge {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
+
+  & svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+}
+
+.tick {
+  fill: var(--uiTrack);
+  transition: fill var(--durationM) ease;
+
+  &[data-lit] {
+    fill: rgb(var(--uiChartTone));
+  }
+}
+
+.gaugeText {
+  position: absolute;
+  inset: auto 0 0;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+
+  & strong {
+    font-size: clamp(1.125rem, 15cqw, 2.5rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: var(--uiTrackDisplay);
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--rgbText));
+  }
+
+  & span {
+    font-size: clamp(var(--uiFontMicro), 5cqw, var(--uiFontSmall));
+    color: var(--uiMuted);
+  }
+}
+
+/* --- meter ------------------------------------------------------------------------------- */
+
+.meter {
+  display: flex;
+  gap: 3px;
+  width: 100%;
+
+  & i {
+    flex: 1;
+    height: 8px;
+    border-radius: var(--uiRadiusPill);
+    background: var(--uiTrack);
+  }
+
+  & i[data-on] {
+    background: rgb(var(--uiChartTone));
+  }
+
+  &[data-size='s'] i {
+    height: 5px;
+  }
+}
+
+/* --- split bar --------------------------------------------------------------------------- */
+
+.split {
+  display: grid;
+  gap: var(--uiGapXL);
+  min-width: 0;
+}
+
+.splitBar {
+  display: flex;
+  gap: 3px;
+  height: 10px;
+
+  & span {
+    flex: 1 1 0;
+    min-width: 6px;
+    border-radius: var(--uiRadiusPill);
+    background: rgb(var(--uiChartTone));
+  }
+
+  & span[data-tone='muted'] {
+    background: var(--uiHatch), rgb(var(--rgbText) / 0.07);
+  }
+}
+
+.splitLegend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapM) var(--spaceL);
+  margin: 0;
+
+  & div {
+    position: relative;
+    display: grid;
+    padding-left: var(--uiGap2XL);
+  }
+
+  & div::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgb(var(--uiChartTone));
+  }
+
+  & div[data-tone='muted']::before {
+    background: rgb(var(--rgbText) / 0.3);
+  }
+
+  & dd {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: var(--uiTrackTight);
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--rgbText));
+  }
+
+  & dt {
+    font-size: var(--uiFontCaption);
+    color: var(--uiMuted);
+  }
+}
+
+/* --- mini bars --------------------------------------------------------------------------- */
+
+.bars {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--uiGapM);
+}
+
+.bar {
+  display: grid;
+  gap: var(--uiGapM);
+  min-width: 0;
+}
+
+/* The top 28px is headroom for the value above the tallest column */
+.barPlot {
+  display: flex;
+  align-items: flex-end;
+  height: var(--uiBarsHeight, 120px);
+  padding-top: 28px;
+}
+
+.barFill {
+  position: relative;
+  width: 100%;
+  border-radius: var(--uiRadiusM);
+  background: var(--uiHatch), rgb(var(--rgbText) / 0.06);
+  transform-origin: bottom;
+  animation: rise 700ms var(--uiEase) both;
+
+  /* value: quiet above a hatched column, a bubble above the active one */
+  & b {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 6px);
+    transform: translateX(-50%);
+    padding: 2px 8px;
+    border-radius: var(--uiRadiusPill);
+    font-family: var(--uiMono);
+    font-size: var(--uiFontMicro);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: var(--uiMuted);
+  }
+
+  @nest .bar[data-active] & {
+    background: linear-gradient(rgb(var(--uiRgbAccent)), rgb(var(--uiRgbAccent) / 0.62));
+  }
+
+  @nest .bar[data-active] & b {
+    color: rgb(var(--uiRgbOnAccent));
+    background: rgb(var(--uiRgbAccentDeep));
+  }
+}
+
+.barLabel {
+  font-size: var(--uiFontCaption);
+  text-align: center;
+  color: var(--uiMuted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  @nest .bar[data-active] & {
+    font-weight: 600;
+    color: rgb(var(--uiRgbAccent));
+  }
+}
+
+/* --- sparkline --------------------------------------------------------------------------- */
+
+.spark {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.sparkStop {
+  stop-color: rgb(var(--uiChartTone));
+}
+
+.sparkLine {
+  fill: none;
+  stroke: rgb(var(--uiChartTone));
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sparkHalo,
+.sparkDot {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.sparkHalo {
+  stroke: rgb(var(--uiRgbSurface));
+  stroke-width: 11;
+}
+
+.sparkDot {
+  stroke: rgb(var(--uiChartTone));
+  stroke-width: 7;
+}
+
+.sparkThreshold {
+  stroke: rgb(var(--rgbText) / 0.35);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+@keyframes rise {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .barFill {
+    animation: none;
+  }
+
+  .ringValue {
+    transition: none;
+  }
+}

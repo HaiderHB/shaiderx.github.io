@@ -2,11 +2,73 @@
 
 /* Padding follows --uiCardPad, so a demo can tighten every card at once in a media query. */
 .card {
+  position: relative;
   min-width: 0;
   padding: var(--uiCardPad, var(--spaceL));
   border: 1px solid var(--uiLine);
-  border-radius: var(--uiRadiusXL);
-  background: var(--uiPanel);
+  border-radius: var(--uiRadius2XL);
+  background: rgb(var(--uiRgbSurface));
+  box-shadow: var(--uiShadowCard);
+}
+
+/* tint: a soft wash of the accent pair, for stat tiles and the card that leads a group */
+.card[data-tone='tint'] {
+  border-color: rgb(var(--uiRgbAccent) / 0.18);
+  background: var(--uiTint), rgb(var(--uiRgbSurface));
+}
+
+/* inset: sits in the page instead of on it (secondary groups, empty rails) */
+.card[data-tone='inset'] {
+  background: rgb(var(--uiRgbInset));
+  box-shadow: none;
+}
+
+/*
+ * accent: the one saturated card in a view. Text and line tokens flip to light-on-colour
+ * so kit components placed inside stay readable without their own overrides.
+ */
+.card[data-tone='accent'] {
+  /* On the gradient the "accent" is the light ink, so kickers, chips and rings still show */
+  --uiRgbAccent: var(--uiRgbOnAccent);
+  --rgbText: var(--uiRgbOnAccent);
+  --uiMuted: rgb(var(--uiRgbOnAccent) / 0.8);
+  --uiFaint: rgb(var(--uiRgbOnAccent) / 0.62);
+  --uiLine: rgb(var(--uiRgbOnAccent) / 0.2);
+  --uiLineStrong: rgb(var(--uiRgbOnAccent) / 0.36);
+  --uiWellStrong: rgb(var(--uiRgbOnAccent) / 0.16);
+  --uiTrack: rgb(var(--uiRgbOnAccent) / 0.26);
+
+  /* a primary button here is light with dark text, not accent on accent */
+  --uiRgbAction: var(--uiRgbOnAccent);
+  --uiRgbOnAction: 22 20 34;
+  --uiShadowAction: 0 10px 22px -14px rgb(0 0 0 / 0.55);
+  --uiHatch: repeating-linear-gradient(
+    -45deg,
+    rgb(var(--uiRgbOnAccent) / 0.26) 0 1px,
+    transparent 1px 6px
+  );
+
+  overflow: hidden;
+  color: rgb(var(--uiRgbOnAccent) / 0.9);
+  border: 0;
+  background: var(--uiGradient);
+  box-shadow: 0 24px 50px -26px rgb(var(--uiRgbAccentDeep) / 0.8),
+    inset 0 1px 0 rgb(255 255 255 / 0.22);
+
+  /* halftone corner: a dot grid that fades out, so the gradient isn't a flat fill */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: radial-gradient(rgb(255 255 255 / 0.3) 1px, transparent 1.4px);
+    background-size: 9px 9px;
+    mask-image: radial-gradient(120% 90% at 100% 0%, rgb(0 0 0), transparent 62%);
+  }
+
+  & > * {
+    position: relative;
+  }
 }
 
 .cardHead {
@@ -23,18 +85,22 @@
 
 .cardTitle {
   margin: 0;
-  font-size: var(--fontSizeBodyM);
-  font-weight: var(--fontWeightMedium);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: var(--uiTrackTight);
   color: rgb(var(--rgbText));
 
   & code {
     font-family: var(--uiMono);
-    font-size: 0.95em;
+    font-size: 0.9em;
+    font-weight: 500;
+    letter-spacing: 0;
   }
 
   &[data-size='s'] {
     min-width: 0;
-    font-size: var(--fontSizeBodyS);
+    font-size: 0.9375rem;
   }
 }
 
@@ -47,48 +113,53 @@
 
 /* --- labels ---------------------------------------------------------------------------- */
 
+/* Labels are sentence case and quiet; the value under them carries the weight. */
 .miniLabel {
   display: block;
-  margin-bottom: var(--uiGapXS);
-  font-size: var(--uiFontLabel);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  margin-bottom: var(--uiGapS);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
   color: var(--uiMuted);
 }
 
 .eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: var(--spaceS);
-  font-size: var(--uiFontCaption);
+  gap: var(--uiGapM);
+  font-size: var(--uiFontSmall);
   font-weight: var(--fontWeightMedium);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgb(var(--rgbText) / 0.55);
+  color: var(--uiMuted);
 }
 
 .step {
   display: inline-grid;
   place-items: center;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
+  font-family: var(--uiMono);
   font-size: var(--uiFontMicro);
-  letter-spacing: 0;
+  font-weight: 500;
   color: rgb(var(--uiRgbAccent));
-  border: 1px solid rgb(var(--uiRgbAccent) / 0.5);
+  background: rgb(var(--uiRgbAccent) / 0.16);
 }
 
 .kicker {
-  margin: 0 0 var(--uiGapS);
-  font-size: var(--uiFontCaption);
+  margin: 0 0 var(--uiGapM);
+  font-size: var(--uiFontSmall);
   font-weight: var(--fontWeightMedium);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--uiMuted);
+  color: rgb(var(--uiRgbAccent));
 }
 
 /* --- section heads --------------------------------------------------------------------- */
+
+.title {
+  text-wrap: balance;
+}
+
+.lede {
+  text-wrap: pretty;
+}
 
 /* plain: title and lede */
 .head[data-variant='plain'] {
@@ -99,26 +170,29 @@
   }
 
   & .title {
-    font-size: var(--fontSizeH5);
-    font-weight: var(--fontWeightMedium);
-    line-height: 1.2;
     margin: 0 0 var(--spaceS);
+    font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: var(--uiTrackTight);
     color: rgb(var(--rgbText));
   }
 
   & .lede {
     margin: 0;
-    max-width: 78ch;
-    color: rgb(var(--rgbText) / 0.75);
+    max-width: 74ch;
+    line-height: 1.55;
+    color: var(--uiMuted);
   }
 
   & .lede code {
     font-family: var(--uiMono);
-    font-size: 0.9em;
+    font-size: 0.88em;
+    color: rgb(var(--rgbText) / 0.9);
   }
 }
 
-/* eyebrow: uppercase kicker with an optional step number, title, lede, action on the right */
+/* eyebrow: kicker with an optional step number, title, lede, action on the right */
 .head[data-variant='eyebrow'] {
   display: flex;
   align-items: flex-end;
@@ -133,23 +207,28 @@
   }
 
   & .title {
-    margin: 6px 0 0;
-    font-size: var(--fontSizeH5);
-    font-weight: var(--fontWeightMedium);
-    line-height: 1.25;
+    margin: var(--uiGapM) 0 0;
+    font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: var(--uiTrackTight);
     color: rgb(var(--rgbText));
+  }
+
+  &[data-compact] .title {
+    font-size: 1.25rem;
   }
 
   & .lede {
     margin: var(--spaceS) 0 0;
-    max-width: 68ch;
-    font-size: var(--fontSizeBodyS);
+    max-width: 66ch;
+    font-size: var(--fontSizeBodyXS);
     line-height: 1.55;
-    color: rgb(var(--rgbText) / 0.7);
+    color: var(--uiMuted);
   }
 }
 
-/* numbered: "01" in the margin, kicker, large title, lede */
+/* numbered: "01" chip in the margin, kicker, large title, lede */
 .head[data-variant='numbered'] {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -157,28 +236,35 @@
   margin-bottom: var(--spaceL);
 
   & .number {
+    align-self: start;
+    display: grid;
+    place-items: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 var(--uiGapM);
+    border-radius: var(--uiRadiusM);
     font-family: var(--uiMono);
     font-size: var(--uiFontSmall);
-    color: rgb(var(--rgbAccent));
-    padding-top: var(--uiGapXS);
+    font-weight: 500;
+    color: rgb(var(--uiRgbAccent));
+    background: rgb(var(--uiRgbAccent) / 0.14);
   }
 
   & .title {
     margin: 0;
-    font-size: var(--fontSizeH4);
-    font-weight: var(--fontWeightMedium);
-    line-height: 1.15;
+    font-size: clamp(1.5rem, 1.25rem + 0.9vw, 2rem);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: var(--uiTrackDisplay);
+    color: rgb(var(--rgbText));
   }
 
   & .lede {
     margin: var(--spaceS) 0 0;
+    max-width: 70ch;
+    line-height: 1.55;
     color: var(--uiMuted);
-    max-width: 72ch;
   }
-}
-
-:global(body[data-theme='light']) .head[data-variant='numbered'] .number {
-  color: rgb(var(--rgbText));
 }
 
 /* --- key / value grid ------------------------------------------------------------------ */
@@ -186,18 +272,19 @@
 .keyValues {
   display: grid;
   grid-template-columns: repeat(var(--uiKvColumns, 2), minmax(0, 1fr));
-  gap: var(--uiKvGap, 8px 16px);
+  gap: var(--uiKvGap, 12px 20px);
+  margin: 0;
 
   & dt {
-    font-size: var(--uiFontLabel);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    margin-bottom: 2px;
+    font-size: var(--uiFontCaption);
     color: var(--uiMuted);
   }
 
   & dd {
     margin: 0;
     font-size: var(--fontSizeBodyXS);
+    font-weight: var(--fontWeightMedium);
     color: rgb(var(--rgbText));
     overflow-wrap: anywhere;
   }
@@ -205,54 +292,103 @@
 
 /* --- note grids: design choices, how it works ----------------------------------------- */
 
+.notes {
+  counter-reset: note;
+}
+
+/* accent: up to four cards, numbered in the corner */
 .notes[data-variant='accent'] {
   list-style: none;
+  margin: 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(var(--uiNoteColumns, 4), minmax(0, 1fr));
   gap: var(--spaceM);
 
   & li {
+    counter-increment: note;
+    position: relative;
     display: grid;
     align-content: start;
-    gap: var(--uiGapS);
-    padding: var(--spaceM);
-    border-top: 2px solid rgb(var(--uiRgbAccent) / 0.6);
-    background: var(--uiPanel);
-    border-radius: 0 0 var(--uiRadiusL) var(--uiRadiusL);
+    gap: var(--uiGapM);
+    padding: var(--spaceL);
+    padding-top: calc(var(--spaceL) + 26px);
+    border: 1px solid var(--uiLine);
+    border-radius: var(--uiRadiusXL);
+    background: rgb(var(--uiRgbSurface));
+    box-shadow: var(--uiShadowCard);
     font-size: var(--fontSizeBodyXS);
-    color: rgb(var(--rgbText) / 0.78);
+    line-height: 1.55;
+    color: var(--uiMuted);
+  }
+
+  & li::before {
+    content: counter(note, decimal-leading-zero);
+    position: absolute;
+    top: var(--spaceL);
+    left: var(--spaceL);
+    font-family: var(--uiMono);
+    font-size: var(--uiFontCaption);
+    color: rgb(var(--uiRgbAccent));
   }
 
   & strong {
-    font-weight: var(--fontWeightMedium);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: var(--uiTrackTight);
+    line-height: 1.3;
     color: rgb(var(--rgbText));
   }
 }
 
+/* boxed: two wider cards per row, for longer explanations */
 .notes[data-variant='boxed'] {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--spaceM);
 
   & > div {
+    counter-increment: note;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-content: start;
+    gap: var(--uiGapS) var(--spaceM);
     padding: var(--spaceL);
     border: 1px solid var(--uiLine);
     border-radius: var(--uiRadiusXL);
+    background: rgb(var(--uiRgbSurface));
+    box-shadow: var(--uiShadowCard);
+  }
+
+  & > div::before {
+    content: counter(note, decimal-leading-zero);
+    grid-row: span 2;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--uiRadiusM);
+    font-family: var(--uiMono);
+    font-size: var(--uiFontCaption);
+    color: rgb(var(--uiRgbAccent));
+    background: rgb(var(--uiRgbAccent) / 0.14);
   }
 
   & h3 {
-    margin: 0 0 var(--spaceS);
-    font-size: var(--fontSizeBodyS);
-    font-weight: var(--fontWeightMedium);
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: var(--uiTrackTight);
+    line-height: 1.3;
     color: rgb(var(--rgbText));
   }
 
   & p {
+    grid-column: 2;
     margin: 0;
     font-size: var(--fontSizeBodyXS);
     line-height: 1.6;
-    color: rgb(var(--rgbText) / 0.72);
+    color: var(--uiMuted);
   }
 }
 
@@ -269,8 +405,17 @@
 }
 
 @media (max-width: 696px) {
+  .card {
+    border-radius: var(--uiRadiusXL);
+  }
+
   .head[data-variant='numbered'] {
-    gap: var(--uiGapL);
+    gap: var(--uiGapXL);
+
+    & .number {
+      min-width: 34px;
+      height: 34px;
+    }
   }
 }
 

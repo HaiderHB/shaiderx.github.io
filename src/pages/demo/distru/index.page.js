@@ -13,12 +13,15 @@ import {
   Dot,
   EmptyState,
   EvalTable,
+  Gauge,
   IndexBadge,
   JsonDetails,
   JsonView,
   KeyValues,
   McpConnectCommand,
   McpToolPanel,
+  Meter,
+  MiniBars,
   MiniLabel,
   Notice,
   NoteGrid,
@@ -27,6 +30,7 @@ import {
   PipelineStrip,
   ProbabilityBar,
   ProbabilityBars,
+  Ring,
   SectionHead,
   Spinner,
   Tag,
@@ -38,6 +42,15 @@ import {
   srOnly,
 } from 'demos/ui';
 import { useEffect, useRef, useState } from 'react';
+import {
+  FiCpu,
+  FiDatabase,
+  FiHelpCircle,
+  FiInfo,
+  FiPlay,
+  FiRotateCcw,
+  FiTerminal,
+} from 'react-icons/fi';
 import {
   EXAMPLE,
   ROUTES,
@@ -67,6 +80,15 @@ const ROUTE_OPTIONS = ROUTES.map(route => ({
 const DOT_TONE = { ok: 'ok', warn: 'warn', fail: 'bad' };
 const TOOL_EXAMPLES = Object.fromEntries(TOOLS.map(tool => [tool.name, tool.example]));
 const PREVIEW_NOTE = 'Preview mode: live runs need the private link from my email.';
+const NAV = [
+  { href: '#run', label: 'Run' },
+  { href: '#mcp', label: 'MCP tools' },
+  { href: '#evals', label: 'Evals' },
+  { href: '#notes', label: 'Design choices' },
+];
+
+const stageMs = run => STAGES.map(stage => run.stages[stage.id]?.ms || 0);
+const totalMs = run => stageMs(run).reduce((sum, ms) => sum + ms, 0);
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const sampleById = id => SAMPLES.find(sample => sample.id === id);
@@ -278,11 +300,19 @@ export default function DistruDemo() {
       company="Distru"
       title="Order email to confirmed order: an agent with typed decisions"
       tagline="A buyer's messy wholesale email goes in. The agent extracts the order, checks it against the ERP through the same tools an MCP client would use, lets a decision model route it with visible probabilities, then drafts the sales order and the reply."
+      accent="iris"
+      nav={NAV}
+      hero={<RunGlance run={run} />}
     >
       <div className={styles.page}>
         <FlowStrip />
 
-        <section className={styles.section} ref={traceRef} aria-labelledby="run-heading">
+        <section
+          id="run"
+          className={styles.section}
+          ref={traceRef}
+          aria-labelledby="run-heading"
+        >
           <h2 id="run-heading" className={srOnly}>
             Agent run
           </h2>
@@ -346,6 +376,73 @@ function FlowStrip() {
   return <PipelineStrip steps={FLOW} />;
 }
 
+/** The current run in a few numbers, beside the page title. Everything is run state. */
+function RunGlance({ run }) {
+  const decision = run.decision;
+  const done = STAGES.filter(stage => run.stages[stage.id]?.status === 'done').length;
+  const finished = run.status === 'done';
+  const kind =
+    run.kind === 'example'
+      ? 'Example run'
+      : run.kind === 'eval'
+      ? 'Eval run'
+      : 'Live run';
+  const jevP = decision?.model?.probabilities[decision.model.choice];
+  const stats = [
+    ['Total time', finished ? formatMs(totalMs(run)) : null],
+    ['Tool calls', run.tools.length || null],
+    ['Order total', run.order ? money(run.order.total) : null],
+  ];
+
+  return (
+    <Card tone="accent" className={styles.glance} aria-label="This run at a glance">
+      <div className={styles.glanceTop}>
+        <span className={styles.glanceKind}>{kind}</span>
+        <span className={styles.glanceStages}>
+          {done} of {STAGES.length} stages
+        </span>
+      </div>
+      <Meter
+        className={styles.glanceMeter}
+        value={done / STAGES.length}
+        segments={STAGES.length}
+        tone="ink"
+        size="s"
+        label={`${done} of ${STAGES.length} stages done`}
+      />
+      <div className={styles.glanceRoute}>
+        <span className={styles.glanceLabel}>Final route</span>
+        <strong data-tone={decision ? ROUTE_TONE[decision.route] : undefined}>
+          {decision
+            ? ROUTE_LABELS[decision.route]
+            : run.status === 'running'
+            ? 'Running'
+            : run.status === 'error'
+            ? 'Stopped'
+            : 'Not run yet'}
+        </strong>
+        <span className={styles.glanceWhy}>
+          {!decision
+            ? 'Appears once the checks are in.'
+            : decision.model
+            ? `Jev ${pct(jevP)} on ${ROUTE_LABELS[decision.model.choice].toLowerCase()}${
+                decision.escalated ? ', escalated by rules' : ''
+              }`
+            : 'Decided by the rules alone'}
+        </span>
+      </div>
+      <dl className={styles.glanceStats}>
+        {stats.map(([label, value]) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd data-empty={value == null || undefined}>{value ?? '–'}</dd>
+          </div>
+        ))}
+      </dl>
+    </Card>
+  );
+}
+
 function RouteBadge({ route, size }) {
   if (!route) return null;
   return (
@@ -358,9 +455,8 @@ function RouteBadge({ route, size }) {
 function EmailPanel({ email, sampleId, onPick, onEdit, onRun, busy, notice, hasKey }) {
   return (
     <Card as="form" className={styles.emailCard} onSubmit={onRun}>
-      <CardHead>
+      <CardHead aside={<Pill>editable</Pill>}>
         <CardTitle>Inbound order email</CardTitle>
-        <span className={styles.muted}>editable</span>
       </CardHead>
       <OptionList
         className={styles.samples}
@@ -387,7 +483,9 @@ function EmailPanel({ email, sampleId, onPick, onEdit, onRun, busy, notice, hasK
               <Spinner /> Running
             </>
           ) : (
-            'Run agent'
+            <>
+              <FiPlay aria-hidden /> Run agent
+            </>
           )}
         </Button>
         <span className={styles.muted}>
@@ -406,18 +504,17 @@ function EmailPanel({ email, sampleId, onPick, onEdit, onRun, busy, notice, hasK
 }
 
 function TracePanel({ run, onReplay, replayDisabled }) {
-  const totalMs = STAGES.reduce((sum, stage) => sum + (run.stages[stage.id]?.ms || 0), 0);
   return (
     <Card aria-live="polite">
       <CardHead
         aside={
           <>
             {run.status === 'done' && (
-              <span className={styles.muted}>{formatMs(totalMs)}</span>
+              <span className={styles.total}>{formatMs(totalMs(run))}</span>
             )}
             {run.kind === 'example' && run.status !== 'running' && (
-              <Button variant="link" onClick={onReplay} disabled={replayDisabled}>
-                Replay
+              <Button variant="ghost" onClick={onReplay} disabled={replayDisabled}>
+                <FiRotateCcw aria-hidden /> Replay
               </Button>
             )}
           </>
@@ -428,9 +525,13 @@ function TracePanel({ run, onReplay, replayDisabled }) {
       </CardHead>
       {run.kind === 'example' && (
         <p className={styles.exampleNote}>
-          Example run of sample 2. The DeepSeek and Jev outputs were recorded from a live
-          run (replayed faster; the times shown are the live ones); every tool call, rule
-          and order line is computed live in your browser by the same code the API runs.
+          <FiInfo aria-hidden />
+          <span>
+            Example run of sample 2. The DeepSeek and Jev outputs were recorded from a
+            live run (replayed faster; the times shown are the live ones); every tool
+            call, rule and order line is computed live in your browser by the same code
+            the API runs.
+          </span>
         </p>
       )}
       <Timeline>
@@ -443,7 +544,38 @@ function TracePanel({ run, onReplay, replayDisabled }) {
           {run.error}
         </Notice>
       )}
+      {run.status === 'done' && <StageTimes run={run} />}
     </Card>
+  );
+}
+
+/** Where the run's time went, one column per stage; the slowest stage is the filled one. */
+function StageTimes({ run }) {
+  const times = stageMs(run);
+  const total = times.reduce((sum, ms) => sum + ms, 0);
+  if (!total) return null;
+  const slowest = times.indexOf(Math.max(...times));
+  return (
+    <div className={styles.times}>
+      <div className={styles.timesHead}>
+        <MiniLabel className={styles.timesLabel}>Where the time went</MiniLabel>
+        <span className={styles.timesNote}>
+          {STAGES[slowest].label} is {pct(times[slowest] / total)} of {formatMs(total)}
+        </span>
+      </div>
+      <MiniBars
+        height={104}
+        active={slowest}
+        label={`Time per stage: ${STAGES.map(
+          (stage, index) => `${stage.label} ${formatMs(times[index])}`
+        ).join(', ')}`}
+        data={STAGES.map((stage, index) => ({
+          label: stage.label,
+          value: times[index],
+          display: formatMs(times[index]),
+        }))}
+      />
+    </div>
   );
 }
 
@@ -470,7 +602,9 @@ function StageRow({ index, stage, run }) {
       detail={stage.detail}
       ms={state.ms}
     >
-      {stage.id === 'extract' && run.extraction && <ExtractionView data={run.extraction} />}
+      {stage.id === 'extract' && run.extraction && (
+        <ExtractionView data={run.extraction} />
+      )}
       {tools.length > 0 && (
         <ul className={styles.tools}>
           {tools.map((tool, toolIndex) => (
@@ -591,19 +725,34 @@ function DecisionPanel({ run }) {
         />
       ) : (
         <>
-          <div className={styles.decisionBlock}>
-            <p className={styles.question}>
-              <code>route</code> choice: auto_confirm, needs_review or hold?
-            </p>
-            {decision.model ? (
-              <ProbabilityBars
-                options={ROUTE_OPTIONS}
-                probabilities={decision.model.probabilities}
-                choice={decision.model.choice}
-              />
-            ) : (
-              <p className={styles.muted}>{decision.error}</p>
+          <div className={styles.routeBlock} data-model={decision.model ? '' : undefined}>
+            {decision.model && (
+              <Gauge
+                className={styles.routeGauge}
+                value={decision.model.probabilities[decision.model.choice]}
+                tone={ROUTE_TONE[decision.model.choice]}
+                caption={ROUTE_LABELS[decision.model.choice]}
+                label={`Jev picked ${ROUTE_LABELS[decision.model.choice]} at ${pct(
+                  decision.model.probabilities[decision.model.choice]
+                )}`}
+              >
+                {pct(decision.model.probabilities[decision.model.choice])}
+              </Gauge>
             )}
+            <div className={styles.decisionBlock}>
+              <p className={styles.question}>
+                <code>route</code> choice: auto_confirm, needs_review or hold?
+              </p>
+              {decision.model ? (
+                <ProbabilityBars
+                  options={ROUTE_OPTIONS}
+                  probabilities={decision.model.probabilities}
+                  choice={decision.model.choice}
+                />
+              ) : (
+                <p className={styles.muted}>{decision.error}</p>
+              )}
+            </div>
           </div>
 
           <div className={styles.final}>
@@ -638,7 +787,7 @@ function DecisionPanel({ run }) {
             )}
           </div>
 
-          <div className={styles.decisionBlock}>
+          <div className={`${styles.decisionBlock} ${styles.subBlock}`}>
             <p className={styles.question}>
               <code>substitution_ok</code> noul: would this buyer accept a substitute?
             </p>
@@ -724,10 +873,13 @@ function ReplyPanel({ run, email }) {
         </div>
       )}
       {run.question && run.decision?.route !== 'auto_confirm' && (
-        <p className={styles.oneQuestion}>
-          <MiniLabel>The one question (picked by rules)</MiniLabel>
-          {run.question}
-        </p>
+        <div className={styles.oneQuestion}>
+          <FiHelpCircle aria-hidden />
+          <p>
+            <MiniLabel>The one question (picked by rules)</MiniLabel>
+            {run.question}
+          </p>
+        </div>
       )}
     </Card>
   );
@@ -758,7 +910,8 @@ function OrderPanel({ run }) {
               [
                 'Customer',
                 <>
-                  {order.customer} <span className={styles.muted}>{order.account_id}</span>
+                  {order.customer}{' '}
+                  <span className={styles.muted}>{order.account_id}</span>
                 </>,
               ],
               ['Price tier', order.price_tier],
@@ -816,8 +969,14 @@ function OrderPanel({ run }) {
               </div>
             ))}
             <div className={styles.orderFoot} role="row">
-              <span role="cell">Order total</span>
-              <span role="cell" className={styles.num}>
+              <span role="cell" className={styles.orderFootLabel}>
+                Order total
+                <small>
+                  {order.lines.length} {order.lines.length === 1 ? 'line' : 'lines'} ·{' '}
+                  {order.lines.reduce((sum, line) => sum + line.qty, 0)} units
+                </small>
+              </span>
+              <span role="cell" className={`${styles.num} ${styles.orderTotal}`}>
                 {money(order.total)}
               </span>
             </div>
@@ -855,7 +1014,7 @@ function McpSection() {
   useEffect(() => setOrigin(window.location.origin), []);
 
   return (
-    <section className={styles.section} aria-labelledby="mcp-heading">
+    <section id="mcp" className={styles.section} aria-labelledby="mcp-heading">
       <SectionHead
         titleId="mcp-heading"
         title="Same tools, served over MCP"
@@ -871,21 +1030,29 @@ function McpSection() {
 
       <div className={styles.callers} aria-hidden>
         <div className={styles.callerCol}>
-          <span className={styles.callerBox}>Order agent (above)</span>
-          <span className={styles.callerBox}>Claude / Codex via MCP</span>
+          <span className={styles.callerBox}>
+            <FiCpu />
+            Order agent (above)
+          </span>
+          <span className={styles.callerBox}>
+            <FiTerminal />
+            Claude / Codex via MCP
+          </span>
         </div>
         <span className={styles.callerArrow} />
-        <span className={`${styles.callerBox} ${styles.callerHub}`}>
+        <span className={styles.callerHub}>
           <code>{MCP_SERVER.name}</code>
           <small>7 tools · JSON Schema · read-only</small>
         </span>
         <span className={styles.callerArrow} />
         <span className={styles.callerBox}>
+          <FiDatabase />
           ERP + CRM + license registry (sample data)
         </span>
       </div>
 
       <McpToolPanel
+        className={styles.mcpPanel}
         tools={MCP_TOOLS}
         examples={TOOL_EXAMPLES}
         initialTool="check_license"
@@ -914,9 +1081,13 @@ function EvalSection({ evals, onRun, busy, notice, onView }) {
   });
   const passed = checks.filter(check => check.pass).length;
   const allDone = done.length === SAMPLES.length && !busy;
+  const planned = SAMPLES.reduce(
+    (sum, sample) => sum + evalChecks(null, sample.expect).length,
+    0
+  );
 
   return (
-    <section className={styles.section} aria-labelledby="eval-heading">
+    <section id="evals" className={styles.section} aria-labelledby="eval-heading">
       <SectionHead
         titleId="eval-heading"
         title="Evals"
@@ -932,14 +1103,33 @@ function EvalSection({ evals, onRun, busy, notice, onView }) {
             'Run evals'
           )}
         </Button>
-        {checks.length > 0 && (
-          <span
-            className={styles.evalScore}
-            data-all={allDone && passed === checks.length ? 'pass' : undefined}
-          >
-            {passed}/{checks.length} checks passed
+        <span className={styles.evalScore}>
+          {checks.length > 0 ? (
+            <Ring
+              value={passed / planned}
+              tone={!allDone ? 'accent' : passed === checks.length ? 'ok' : 'warn'}
+              size={44}
+              stroke={5}
+              label={`${passed} of ${planned} checks passed`}
+            >
+              {passed}
+            </Ring>
+          ) : (
+            <span className={styles.evalPending} aria-hidden>
+              {planned}
+            </span>
+          )}
+          <span>
+            {checks.length > 0 ? (
+              <strong data-all={allDone && passed === checks.length ? 'pass' : undefined}>
+                {passed}/{checks.length} checks passed
+              </strong>
+            ) : (
+              <strong>{planned} checks</strong>
+            )}
+            <small>{SAMPLES.length} samples · route, license and substitution each</small>
           </span>
-        )}
+        </span>
         {notice && (
           <Notice as="span" size="s" role="status">
             {notice}
@@ -963,6 +1153,7 @@ function EvalSection({ evals, onRun, busy, notice, onView }) {
                   <>
                     {item?.status === 'running' && <Spinner />}
                     {item?.status === 'error' && <Pill tone="bad">error</Pill>}
+                    {summary && <PassRing rows={rows} />}
                   </>
                 }
               >
@@ -1001,6 +1192,21 @@ function EvalSection({ evals, onRun, busy, notice, onView }) {
   );
 }
 
+function PassRing({ rows }) {
+  const passed = rows.filter(row => row.pass).length;
+  return (
+    <Ring
+      value={passed / rows.length}
+      tone={passed === rows.length ? 'ok' : 'bad'}
+      size={36}
+      stroke={4}
+      label={`${passed} of ${rows.length} checks passed`}
+    >
+      {passed}/{rows.length}
+    </Ring>
+  );
+}
+
 const NOTES = [
   {
     title: 'The LLM never decides',
@@ -1022,7 +1228,7 @@ const NOTES = [
 
 function DesignNotes() {
   return (
-    <section className={styles.section} aria-labelledby="notes-heading">
+    <section id="notes" className={styles.section} aria-labelledby="notes-heading">
       <SectionHead titleId="notes-heading" title="Design choices" flush />
       <NoteGrid className={styles.notes} items={NOTES} />
     </section>

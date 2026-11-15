@@ -2,13 +2,22 @@ import { forwardRef } from 'react';
 import { classes } from 'utils/style';
 import styles from './Panel.module.css';
 
-/** Bordered panel. Padding follows --uiCardPad (default --spaceL). */
+/**
+ * Surface panel. Padding follows --uiCardPad (default --spaceL).
+ * tone: none (plain surface) | 'tint' (soft accent wash) | 'accent' (the one saturated
+ * card in a view; text inside turns light) | 'inset' (sits in the page, not on it).
+ */
 export const Card = forwardRef(function Card(
-  { as: Component = 'div', className, children, ...rest },
+  { as: Component = 'div', tone, className, children, ...rest },
   ref
 ) {
   return (
-    <Component ref={ref} className={classes(styles.card, className)} {...rest}>
+    <Component
+      ref={ref}
+      className={classes(styles.card, className)}
+      data-tone={tone}
+      {...rest}
+    >
       {children}
     </Component>
   );

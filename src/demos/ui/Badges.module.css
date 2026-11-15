@@ -1,3 +1,8 @@
+/*
+ * Tone text is the status colour pulled towards the ink, so it stays readable on its own
+ * tint in both themes.
+ */
+
 /* --- pill: run kind, model, cost, hints ---------------------------------------------- */
 
 .pill {
@@ -6,89 +11,96 @@
   display: inline-flex;
   align-items: center;
   gap: var(--uiGapXS);
-  padding: 2px 9px;
+  padding: 3px 10px;
   border-radius: var(--uiRadiusPill);
   font-size: var(--uiFontCaption);
-  line-height: 1.6;
+  font-weight: var(--fontWeightMedium);
+  line-height: 1.5;
   white-space: nowrap;
-  color: rgb(var(--rgbText) / 0.8);
-  border: 1px solid rgb(var(--rgbText) / 0.2);
+  color: rgb(var(--rgbText) / 0.78);
+  background: rgb(var(--rgbText) / 0.07);
+
+  &[data-tone='live'],
+  &[data-tone='ok'],
+  &[data-tone='warn'],
+  &[data-tone='bad'] {
+    color: color-mix(in sRGB, rgb(var(--uiPillTone)) 74%, rgb(var(--rgbText)));
+    background: rgb(var(--uiPillTone) / 0.15);
+  }
 
   &[data-tone='live'] {
     --uiPillTone: var(--uiRgbAccent);
-
-    color: rgb(var(--rgbText));
-    border-color: rgb(var(--uiRgbAccent) / 0.55);
-    background: rgb(var(--uiRgbAccent) / 0.12);
   }
 
   &[data-tone='ok'] {
     --uiPillTone: var(--uiRgbOk);
-
-    border-color: rgb(var(--uiRgbOk) / 0.5);
-    background: rgb(var(--uiRgbOk) / 0.1);
   }
 
   &[data-tone='warn'] {
     --uiPillTone: var(--uiRgbWarn);
-
-    border-color: rgb(var(--uiRgbWarn) / 0.5);
-    background: rgb(var(--uiRgbWarn) / 0.1);
   }
 
   &[data-tone='bad'] {
     --uiPillTone: var(--uiRgbBad);
-
-    border-color: rgb(var(--uiRgbBad) / 0.55);
-    background: rgb(var(--uiRgbBad) / 0.12);
   }
 
-  /* Uppercase outline: "design only", "beta", "not run yet" */
+  /* Outline, small caps: "design only", "beta", "not run yet" */
   &[data-caps] {
-    padding: 3px 8px;
-    font-size: var(--uiFontMicro);
-    font-weight: var(--fontWeightMedium);
-    letter-spacing: 0.06em;
+    padding: 2px 9px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
-    line-height: inherit;
     white-space: normal;
-    color: rgb(var(--uiPillTone));
-    border-color: rgb(var(--uiPillTone) / 0.5);
+    color: color-mix(in sRGB, rgb(var(--uiPillTone)) 74%, rgb(var(--rgbText)));
     background: none;
+    box-shadow: inset 0 0 0 1px rgb(var(--uiPillTone) / 0.45);
+  }
+
+  &[data-caps][data-tone='neutral'] {
+    color: var(--uiMuted);
+    box-shadow: inset 0 0 0 1px var(--uiLineStrong);
   }
 }
 
-/* --- tag: short uppercase label next to a value --------------------------------------- */
+/* --- tag: short label next to a value -------------------------------------------------- */
 
 .tag {
+  --uiTagTone: var(--rgbText);
+
   display: inline-block;
-  padding: 0 6px;
+  padding: 1px 7px;
   border-radius: var(--uiRadiusXS);
-  font-size: var(--uiFontMicro);
+  font-size: 10.5px;
+  font-weight: 600;
   line-height: 1.6;
-  font-weight: var(--fontWeightMedium);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   vertical-align: 1px;
-  color: rgb(var(--rgbText));
+  color: color-mix(in sRGB, rgb(var(--uiTagTone)) 76%, rgb(var(--rgbText)));
+  background: rgb(var(--uiTagTone) / 0.16);
 
   &[data-tone='ok'] {
-    background: rgb(var(--uiRgbOk) / 0.2);
+    --uiTagTone: var(--uiRgbOk);
   }
 
   &[data-tone='warn'] {
-    background: rgb(var(--uiRgbWarn) / 0.22);
+    --uiTagTone: var(--uiRgbWarn);
   }
 
   &[data-tone='bad'] {
-    background: rgb(var(--uiRgbBad) / 0.2);
+    --uiTagTone: var(--uiRgbBad);
   }
 
   /* Neutral id tag: goal ids, categories */
   &[data-soft] {
-    padding: 2px 7px;
+    padding: 2px 8px;
     border-radius: var(--uiRadiusS);
+    font-family: var(--uiMono);
+    font-size: var(--uiFontMicro);
+    font-weight: 500;
     line-height: inherit;
+    letter-spacing: 0;
     text-transform: none;
     vertical-align: baseline;
     white-space: nowrap;
@@ -99,37 +111,54 @@
 
 /* --- decision badge: the route / verdict a run ended on -------------------------------- */
 
+/* Solid fill: this is the answer, so it is the loudest thing in its card. */
 .decision {
+  --uiDecisionTone: var(--rgbText);
+
   display: inline-flex;
   align-items: center;
-  padding: 3px 10px;
-  border-radius: var(--uiRadiusS);
+  gap: var(--uiGapS);
+  padding: 4px 11px;
+  border-radius: var(--uiRadiusPill);
   font-size: var(--uiFontCaption);
-  font-weight: var(--fontWeightMedium);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   color: rgb(var(--rgbText));
-  border: 1px solid transparent;
+  background: rgb(var(--rgbText) / 0.1);
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.7;
+  }
 
   &[data-size='l'] {
-    padding: 5px 14px;
-    font-size: 14px;
+    padding: 7px 16px;
+    font-size: var(--fontSizeBodyXS);
+  }
+
+  &[data-tone='ok'],
+  &[data-tone='warn'],
+  &[data-tone='bad'] {
+    color: rgb(var(--uiRgbOnStatus));
+    background: rgb(var(--uiDecisionTone));
+    box-shadow: 0 8px 18px -10px rgb(var(--uiDecisionTone) / 0.9);
   }
 
   &[data-tone='ok'] {
-    background: rgb(var(--uiRgbOk) / 0.18);
-    border-color: rgb(var(--uiRgbOk) / 0.6);
+    --uiDecisionTone: var(--uiRgbOk);
   }
 
   &[data-tone='warn'] {
-    background: rgb(var(--uiRgbWarn) / 0.18);
-    border-color: rgb(var(--uiRgbWarn) / 0.6);
+    --uiDecisionTone: var(--uiRgbWarn);
   }
 
   &[data-tone='bad'] {
-    background: rgb(var(--uiRgbBad) / 0.18);
-    border-color: rgb(var(--uiRgbBad) / 0.6);
+    --uiDecisionTone: var(--uiRgbBad);
   }
 }
 
@@ -146,16 +175,18 @@
 .score {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 9px 4px 8px;
+  gap: var(--uiGapS);
+  padding: 4px 10px 4px 9px;
   border-radius: var(--uiRadiusPill);
   font-size: var(--uiFontCaption);
-  line-height: 1.2;
+  line-height: 1.3;
   white-space: nowrap;
-  color: rgb(var(--rgbText) / 0.85);
+  color: var(--uiMuted);
 
   & strong {
-    font-weight: var(--fontWeightMedium);
+    font-family: var(--uiMono);
+    font-size: var(--uiFontMicro);
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     color: rgb(var(--rgbText));
   }
@@ -163,79 +194,106 @@
   &[data-variant='score'] {
     --tone: var(--rgbText);
 
-    background: rgb(var(--tone) / 0.1);
-    border: 1px solid rgb(var(--tone) / 0.35);
+    background: rgb(var(--rgbText) / 0.06);
 
     &::before {
       content: '';
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: rgb(var(--tone));
+      background: rgb(var(--tone) / 0.5);
     }
   }
 
   &[data-variant='score'][data-tone='ok'] {
     --tone: var(--uiRgbOk);
+
+    &::before {
+      background: rgb(var(--tone));
+    }
   }
 
   &[data-variant='score'][data-tone='warn'] {
     --tone: var(--uiRgbWarn);
+
+    color: rgb(var(--rgbText) / 0.9);
+    background: rgb(var(--tone) / 0.16);
+
+    &::before {
+      background: rgb(var(--tone));
+    }
   }
 
   &[data-variant='score'][data-tone='bad'] {
     --tone: var(--uiRgbBad);
 
-    background: rgb(var(--tone) / 0.16);
+    color: rgb(var(--rgbText));
+    background: rgb(var(--tone) / 0.2);
+
+    &::before {
+      background: rgb(var(--tone));
+      box-shadow: 0 0 0 3px rgb(var(--tone) / 0.25);
+    }
   }
 
   &[data-variant='neutral'] {
-    border: 1px solid rgb(var(--rgbText) / 0.18);
-    background: rgb(var(--rgbText) / 0.05);
+    color: rgb(var(--rgbText) / 0.85);
+    background: rgb(var(--rgbText) / 0.06);
   }
 
   &[data-variant='pending'] {
-    border: 1px dashed rgb(var(--rgbText) / 0.25);
     color: var(--uiMuted);
+    background: var(--uiHatch);
+    box-shadow: inset 0 0 0 1px var(--uiLine);
     animation: pulse 1.2s ease-in-out infinite;
   }
 
   &[data-variant='muted'] {
-    border: 1px solid var(--uiLine);
-    color: var(--uiMuted);
+    color: var(--uiFaint);
+    box-shadow: inset 0 0 0 1px var(--uiLine);
   }
 }
 
 .badgeMeta {
+  font-family: var(--uiMono);
   font-size: var(--uiFontMicro);
-  color: rgb(var(--rgbText) / 0.45);
+  color: var(--uiFaint);
   white-space: nowrap;
 }
 
 /* --- dots and run status --------------------------------------------------------------- */
 
 .dot {
+  --uiDotTone: var(--rgbText);
+
   display: inline-block;
   flex: none;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--uiMuted);
+  background: rgb(var(--rgbText) / 0.45);
 
   &[data-tone='ok'] {
-    background: rgb(var(--uiRgbOk));
+    --uiDotTone: var(--uiRgbOk);
   }
 
   &[data-tone='warn'] {
-    background: rgb(var(--uiRgbWarn));
+    --uiDotTone: var(--uiRgbWarn);
   }
 
   &[data-tone='bad'] {
-    background: rgb(var(--uiRgbBad));
+    --uiDotTone: var(--uiRgbBad);
+  }
+
+  &[data-tone='ok'],
+  &[data-tone='warn'],
+  &[data-tone='bad'] {
+    background: rgb(var(--uiDotTone));
+    box-shadow: 0 0 0 3px rgb(var(--uiDotTone) / 0.2);
   }
 
   &[data-tone='idle'] {
-    background: rgb(var(--rgbText) / 0.35);
+    background: rgb(var(--rgbText) / 0.3);
   }
 
   &[data-motion='pulse'] {
@@ -243,7 +301,6 @@
   }
 
   &[data-motion='ring'] {
-    box-shadow: 0 0 0 0 rgb(var(--uiRgbBad) / 0.6);
     animation: ring 1.6s ease-out infinite;
   }
 }
@@ -251,8 +308,9 @@
 .status {
   display: inline-flex;
   align-items: center;
-  gap: var(--uiGapM);
+  gap: var(--uiGapL);
   font-size: var(--uiFontSmall);
+  font-weight: var(--fontWeightMedium);
   font-variant-numeric: tabular-nums;
   color: rgb(var(--rgbText) / 0.8);
 }
@@ -270,11 +328,11 @@
 
 @keyframes ring {
   0% {
-    box-shadow: 0 0 0 0 rgb(var(--uiRgbBad) / 0.55);
+    box-shadow: 0 0 0 0 rgb(var(--uiDotTone) / 0.6);
   }
 
   100% {
-    box-shadow: 0 0 0 8px rgb(var(--uiRgbBad) / 0);
+    box-shadow: 0 0 0 9px rgb(var(--uiDotTone) / 0);
   }
 }
 

@@ -2,7 +2,13 @@
   display: grid;
   gap: var(--uiGapL);
   font-size: var(--fontSizeBodyXS);
-  line-height: 1.6;
+  line-height: 1.65;
+  color: rgb(var(--rgbText) / 0.88);
+
+  & strong {
+    font-weight: 600;
+    color: rgb(var(--rgbText));
+  }
 }
 
 .para {
@@ -11,6 +17,12 @@
 }
 
 .list {
+  display: grid;
+  gap: var(--uiGapXS);
   margin: 0;
   padding-left: 1.2em;
+
+  & li::marker {
+    color: rgb(var(--uiRgbAccent));
+  }
 }

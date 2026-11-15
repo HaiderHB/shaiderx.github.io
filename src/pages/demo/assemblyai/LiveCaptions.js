@@ -1,8 +1,9 @@
 // Live version of the reference Captions component. Rendered only when the deployment has
 // ASSEMBLYAI_API_KEY; tokens come from /api/demo/assemblyai/token/ (demo key + budget guarded).
 import { postJson } from 'demos/client';
-import { Button } from 'demos/ui';
+import { Button, Card, CardTitle, Dot, Notice } from 'demos/ui';
 import { useEffect, useRef, useState } from 'react';
+import { FiMic } from 'react-icons/fi';
 import styles from './AssemblyAI.module.css';
 import { WORKLET_SOURCE } from './reference';
 
@@ -103,10 +104,13 @@ export function LiveCaptions() {
   const ordered = [...turns].sort((a, b) => a.order - b.order);
 
   return (
-    <div className={styles.live}>
+    <Card tone="tint" className={styles.live}>
       <div className={styles.liveHead}>
+        <span className={styles.liveIcon} aria-hidden>
+          <FiMic />
+        </span>
         <div>
-          <h4 className={styles.liveTitle}>Try the fix live</h4>
+          <CardTitle as="h4">Try the fix live</CardTitle>
           <p className={styles.liveNote}>
             The same worklet and session flow, against the real API. Stops itself after 90 seconds.
           </p>
@@ -121,7 +125,8 @@ export function LiveCaptions() {
             : 'Finishing last turn…'}
         </Button>
       </div>
-      <p className={styles.liveText} aria-live="polite">
+      <p className={styles.liveText} aria-live="polite" data-live={status === 'live' ? '' : undefined}>
+        {status === 'live' && <Dot tone="bad" motion="ring" className={styles.liveDot} />}
         {ordered.length ? (
           ordered.map(turn => (
             <span key={turn.order} className={turn.final ? undefined : styles.partial}>
@@ -134,7 +139,11 @@ export function LiveCaptions() {
           </span>
         )}
       </p>
-      {error && <p className={styles.error}>{error}</p>}
-    </div>
+      {error && (
+        <Notice kind="error" size="s" className={styles.liveError}>
+          {error}
+        </Notice>
+      )}
+    </Card>
   );
 }

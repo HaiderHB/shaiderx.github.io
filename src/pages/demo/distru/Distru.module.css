@@ -1,5 +1,8 @@
-/* Distru page styles. Shared pieces (cards, pills, bars, timeline, JSON, MCP panel) come
-   from demos/ui; colours and surfaces are the --ui* tokens with their defaults. */
+/*
+ * Distru page layout. Cards, pills, bars, timeline, charts, JSON and the MCP panel come from
+ * demos/ui; colours, surfaces and radii are the --ui* tokens (accent set by DemoLayout).
+ * One saturated card on the page: the run glance beside the title.
+ */
 .page {
   font-size: var(--fontSizeBodyS);
   line-height: 1.5;
@@ -7,33 +10,163 @@
 
 .muted {
   color: var(--uiMuted);
-  font-size: var(--fontSizeBodyXS);
+  font-size: var(--uiFontSmall);
 }
 
 .section {
   margin-top: var(--space3XL);
-  scroll-margin-top: 72px;
+  scroll-margin-top: 96px;
 }
 
 .section:first-of-type {
   margin-top: var(--spaceL);
 }
 
-/* --- layout ----------------------------------------------------------------------- */
+/* --- run glance (hero) -------------------------------------------------------------- */
+
+.glance {
+  display: grid;
+  gap: var(--uiGap2XL);
+}
+
+.glanceTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spaceM);
+}
+
+.glanceKind {
+  padding: 3px 11px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText));
+  background: rgb(var(--rgbText) / 0.18);
+}
+
+.glanceStages {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiMuted);
+}
+
+.glanceRoute {
+  display: grid;
+  gap: var(--uiGapXS);
+  margin-top: var(--uiGapM);
+
+  & strong {
+    display: flex;
+    align-items: center;
+    gap: var(--uiGapXL);
+    font-size: clamp(2rem, 1.3rem + 1.9vw, 2.875rem);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: var(--uiTrackDisplay);
+    color: rgb(var(--rgbText));
+  }
+
+  /* status dot: the only place the route colour shows on the gradient */
+  & strong[data-tone]::before {
+    content: '';
+    flex: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgb(var(--glanceTone));
+    box-shadow: 0 0 0 4px rgb(255 255 255 / 0.22);
+  }
+
+  & strong[data-tone='ok'] {
+    --glanceTone: var(--uiRgbOk);
+  }
+
+  & strong[data-tone='warn'] {
+    --glanceTone: var(--uiRgbWarn);
+  }
+
+  & strong[data-tone='bad'] {
+    --glanceTone: var(--uiRgbBad);
+  }
+}
+
+.glanceLabel,
+.glanceWhy {
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+.glanceStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding-top: var(--spaceM);
+  border-top: 1px solid var(--uiLine);
+
+  & div {
+    min-width: 0;
+  }
+
+  & div + div {
+    padding-left: var(--spaceM);
+    border-left: 1px solid var(--uiLine);
+  }
+
+  & dt {
+    font-size: var(--uiFontCaption);
+    color: var(--uiMuted);
+  }
+
+  & dd {
+    margin: 2px 0 0;
+    font-size: clamp(1.0625rem, 0.9rem + 0.5vw, 1.375rem);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: var(--uiTrackTight);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: rgb(var(--rgbText));
+  }
+
+  & dd[data-empty] {
+    color: var(--uiFaint);
+  }
+}
+
+/* --- layout ------------------------------------------------------------------------- */
 
 .gridTop,
 .gridMid {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   gap: var(--spaceL);
   align-items: start;
 }
 
+.gridTop {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+}
+
 .gridMid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: var(--spaceL);
 }
 
-/* --- run row and notices ---------------------------------------------------------- */
+/* --- email --------------------------------------------------------------------------- */
+
+.emailCard {
+  position: sticky;
+  top: 92px;
+}
+
+.samples {
+  margin-bottom: var(--spaceM);
+}
+
+.email {
+  min-height: 360px;
+}
 
 .runRow {
   display: flex;
@@ -44,56 +177,66 @@
 }
 
 .notice {
-  margin-top: var(--spaceS);
+  margin-top: var(--uiGapXL);
 }
 
 .error {
   margin-top: var(--spaceM);
 }
 
-/* --- email ------------------------------------------------------------------------ */
+/* --- trace ---------------------------------------------------------------------------- */
 
-.emailCard {
-  position: sticky;
-  top: 72px;
+.total {
+  padding: 3px 10px;
+  border-radius: var(--uiRadiusPill);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--rgbText));
+  background: rgb(var(--rgbText) / 0.07);
 }
-
-.samples {
-  margin-bottom: var(--spaceM);
-}
-
-.email {
-  min-height: 390px;
-}
-
-/* --- trace ------------------------------------------------------------------------- */
 
 .exampleNote {
-  margin: -6px 0 var(--spaceM);
-  padding-left: 10px;
-  border-left: 2px solid rgb(var(--uiRgbAccent) / 0.6);
+  display: flex;
+  gap: var(--uiGapL);
+  margin: 0 0 var(--spaceL);
+  padding: 12px 14px;
+  border-radius: var(--uiRadiusM);
   font-size: var(--uiFontSmall);
+  line-height: 1.5;
   color: var(--uiMuted);
+  background: rgb(var(--uiRgbAccent) / 0.09);
+
+  & svg {
+    flex: none;
+    margin-top: 2px;
+    font-size: 15px;
+    color: rgb(var(--uiRgbAccent));
+  }
 }
 
 .stageNote {
-  margin: 6px 0 0;
+  margin: var(--uiGapS) 0 0;
   font-size: var(--fontSizeBodyXS);
-  color: rgb(var(--rgbText) / 0.8);
+  color: var(--uiMuted);
 
   & strong {
-    font-weight: var(--fontWeightMedium);
+    font-weight: 600;
     color: rgb(var(--rgbText));
   }
 }
 
 .extract {
-  margin-top: 10px;
+  margin-top: var(--uiGapXL);
+  padding: var(--spaceM);
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusL);
+  background: rgb(var(--uiRgbInset));
   animation: rise 300ms ease both;
 }
 
 .fields {
-  margin: 0 0 10px;
+  margin-bottom: var(--uiGapXL);
 }
 
 .extractLines {
@@ -106,8 +249,8 @@
     display: flex;
     justify-content: space-between;
     align-items: baseline;
-    gap: 12px;
-    padding: 6px 0;
+    gap: var(--uiGapXL);
+    padding: var(--uiGapM) 0;
     border-bottom: 1px solid var(--uiLine);
     font-size: var(--uiFontNote);
   }
@@ -115,7 +258,7 @@
 
 .quote {
   min-width: 0;
-  color: rgb(var(--rgbText) / 0.75);
+  color: rgb(var(--rgbText) / 0.78);
   font-style: italic;
 
   &::before {
@@ -131,25 +274,33 @@
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--uiGapS);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  font-variant-numeric: tabular-nums;
   color: rgb(var(--rgbText));
   white-space: nowrap;
 }
 
 .tools {
   list-style: none;
-  margin: 10px 0 0;
+  margin: var(--uiGapXL) 0 0;
   padding: 0;
   display: grid;
-  gap: 6px;
+  gap: var(--uiGapS);
 }
 
 .tool {
   min-width: 0;
   border: 1px solid var(--uiLine);
-  border-radius: 8px;
-  background: rgb(var(--rgbBackground) / 0.6);
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbInset));
   animation: rise 260ms ease both;
+  transition: border-color var(--durationXS) ease;
+
+  &:hover {
+    border-color: var(--uiLineStrong);
+  }
 
   & summary {
     display: grid;
@@ -158,8 +309,9 @@
       'dot call chev'
       '. sum chev';
     align-items: center;
-    gap: 2px 10px;
-    padding: 8px 10px;
+    gap: 2px var(--uiGapXL);
+    padding: 10px 14px;
+    border-radius: var(--uiRadiusM);
     cursor: pointer;
     list-style: none;
 
@@ -172,8 +324,8 @@
       grid-area: chev;
       width: 6px;
       height: 6px;
-      border-right: 1.5px solid var(--uiMuted);
-      border-bottom: 1.5px solid var(--uiMuted);
+      border-right: 1.5px solid var(--uiFaint);
+      border-bottom: 1.5px solid var(--uiFaint);
       transform: rotate(-45deg);
       transition: transform var(--durationXS) ease;
     }
@@ -192,7 +344,7 @@
   grid-area: call;
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: var(--uiGapM);
   min-width: 0;
 }
 
@@ -200,7 +352,7 @@
   flex: none;
   font-family: var(--uiMono);
   font-size: var(--uiFontCode);
-  font-weight: var(--fontWeightMedium);
+  font-weight: 500;
   color: rgb(var(--rgbText));
 }
 
@@ -210,45 +362,91 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: var(--uiMono);
-  font-size: var(--uiFontLabel);
-  color: rgb(var(--rgbText) / 0.5);
+  font-size: var(--uiFontMicro);
+  color: var(--uiFaint);
 }
 
 .toolSummary {
   grid-area: sum;
   font-size: var(--uiFontSmall);
-  color: rgb(var(--rgbText) / 0.8);
+  color: var(--uiMuted);
 }
 
 .toolDetail {
   display: grid;
-  gap: 10px;
-  padding: 0 10px 10px;
+  gap: var(--uiGapL);
+  padding: 2px 14px 14px;
 }
 
-/* --- decision ---------------------------------------------------------------------- */
+/* stage timings under the timeline */
+.times {
+  margin-top: var(--spaceL);
+  padding-top: var(--spaceM);
+  border-top: 1px solid var(--uiLine);
+  animation: rise 300ms ease both;
+}
+
+.timesHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--uiGapXS) var(--spaceM);
+}
+
+.timesHead .timesLabel {
+  margin: 0;
+}
+
+.timesNote {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiFaint);
+}
+
+/* --- decision ------------------------------------------------------------------------- */
+
+.routeBlock {
+  display: grid;
+  align-items: center;
+  gap: var(--spaceL);
+
+  &[data-model] {
+    grid-template-columns: minmax(0, 208px) minmax(0, 1fr);
+  }
+}
+
+.routeBlock .routeGauge {
+  max-width: 208px;
+}
 
 .decisionBlock {
+  min-width: 0;
   animation: rise 300ms ease both;
 }
 
 .question {
-  margin: 0 0 10px;
+  margin: 0 0 var(--uiGapXL);
   font-size: var(--uiFontSmall);
   color: var(--uiMuted);
 
   & code {
+    padding: 1px 6px;
+    border-radius: var(--uiRadiusXS);
     font-family: var(--uiMono);
-    font-size: var(--uiFontCode);
+    font-size: var(--uiFontCaption);
     color: rgb(var(--rgbText));
+    background: var(--uiWellStrong);
   }
 }
 
 .final {
-  margin: var(--spaceM) 0;
-  padding: 14px;
-  border-radius: 10px;
-  background: var(--uiWell);
+  margin: var(--spaceL) 0;
+  padding: var(--spaceM);
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusL);
+  background: rgb(var(--uiRgbInset));
   animation: rise 300ms ease both;
 }
 
@@ -256,7 +454,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: var(--uiGapL);
 }
 
 .finalHead .finalLabel {
@@ -264,65 +462,73 @@
 }
 
 .finalWhy {
-  margin: 10px 0 0;
+  margin: var(--uiGapXL) 0 0;
   font-size: var(--uiFontNote);
-  color: rgb(var(--rgbText) / 0.8);
+  line-height: 1.5;
+  color: var(--uiMuted);
 }
 
 .flags {
   list-style: none;
-  margin: 10px 0 0;
-  padding: 0;
+  margin: var(--uiGapXL) 0 0;
+  padding: var(--uiGapXL) 0 0;
+  border-top: 1px solid var(--uiLine);
   display: grid;
-  gap: 4px;
+  gap: var(--uiGapS);
 
   & li {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    align-items: baseline;
+    gap: var(--uiGapL);
     font-size: var(--uiFontNote);
-    color: rgb(var(--rgbText) / 0.9);
+    color: rgb(var(--rgbText) / 0.92);
+  }
+
+  & li > :first-child {
+    transform: translateY(-1px);
   }
 }
 
 .subNote {
-  margin: 8px 0 0;
+  margin: var(--uiGapL) 0 0;
   font-size: var(--uiFontSmall);
   color: var(--uiMuted);
 }
 
-/* --- reply ------------------------------------------------------------------------- */
+/* --- reply ---------------------------------------------------------------------------- */
 
 .mail {
   border: 1px solid var(--uiLine);
-  border-radius: 10px;
-  background: rgb(var(--rgbBackground));
+  border-radius: var(--uiRadiusL);
+  background: rgb(var(--uiRgbInset));
   overflow: hidden;
 }
 
 .mailHead {
-  padding: 10px 14px;
+  display: grid;
+  gap: var(--uiGapXS);
+  padding: 12px 16px;
   border-bottom: 1px solid var(--uiLine);
   font-size: var(--uiFontSmall);
-  color: rgb(var(--rgbText) / 0.85);
+  color: rgb(var(--rgbText) / 0.9);
 
   & div {
     display: flex;
-    gap: 10px;
+    gap: var(--uiGapL);
     min-width: 0;
     overflow-wrap: anywhere;
   }
 
   & span {
     flex: none;
-    width: 58px;
-    color: var(--uiMuted);
+    width: 54px;
+    color: var(--uiFaint);
   }
 }
 
 .mailBody {
   margin: 0;
-  padding: 14px;
+  padding: var(--spaceM);
   white-space: pre-wrap;
   font-size: var(--fontSizeBodyXS);
   line-height: 1.65;
@@ -331,56 +537,82 @@
 }
 
 .oneQuestion {
-  margin: var(--spaceM) 0 0;
-  padding: 2px 0 2px 12px;
-  border-left: 2px solid rgb(var(--uiRgbWarn));
-  font-size: var(--uiFontNote);
-  color: rgb(var(--rgbText) / 0.9);
+  display: flex;
+  gap: var(--uiGapL);
+  margin-top: var(--spaceM);
+  padding: 12px 14px;
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbWarn) / 0.12);
+  box-shadow: inset 0 0 0 1px rgb(var(--uiRgbWarn) / 0.24);
+
+  & svg {
+    flex: none;
+    margin-top: 2px;
+    font-size: 16px;
+    color: color-mix(in sRGB, rgb(var(--uiRgbWarn)) 78%, rgb(var(--rgbText)));
+  }
+
+  & p {
+    margin: 0;
+    font-size: var(--uiFontNote);
+    line-height: 1.5;
+    color: rgb(var(--rgbText) / 0.94);
+  }
+
+  & p > :first-child {
+    margin-bottom: 2px;
+  }
 }
 
-/* --- order ------------------------------------------------------------------------- */
+/* --- order ----------------------------------------------------------------------------- */
 
 .orderCard {
   margin-top: var(--spaceL);
 }
 
 .orderId {
+  padding: 2px 8px;
+  border-radius: var(--uiRadiusS);
   font-family: var(--uiMono);
-  font-size: var(--uiFontCode);
-  color: var(--uiMuted);
+  font-size: var(--uiFontCaption);
+  color: rgb(var(--rgbText) / 0.8);
+  background: rgb(var(--rgbText) / 0.07);
 }
 
 .orderMeta {
   --uiKvColumns: 4;
-  --uiKvGap: 10px 16px;
+  --uiKvGap: 12px 20px;
 
-  margin: 0 0 var(--spaceM);
+  margin-bottom: var(--uiGapM);
+  padding: var(--spaceM);
+  border-radius: var(--uiRadiusL);
+  background: rgb(var(--uiRgbInset));
 }
 
 .orderCard .orderMeta dd {
   overflow-wrap: normal;
 }
 
-.orderTable {
-  border-top: 1px solid var(--uiLine);
+.orderMeta .muted {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  font-weight: 400;
 }
 
 .orderHeader,
-.orderRow,
-.orderFoot {
+.orderRow {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 90px 100px 110px;
-  gap: 12px;
+  gap: var(--uiGapXL);
   align-items: start;
-  padding: 10px 0;
+  padding: var(--uiGapXL) var(--uiGapM);
   border-bottom: 1px solid var(--uiLine);
 }
 
 .orderHeader {
-  font-size: var(--uiFontLabel);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--uiMuted);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  color: var(--uiFaint);
 
   & span:not(:first-child) {
     text-align: right;
@@ -392,7 +624,7 @@
   animation: rise 300ms ease both;
 
   &[data-backorder] strong {
-    color: rgb(var(--rgbText) / 0.7);
+    color: var(--uiMuted);
   }
 }
 
@@ -402,81 +634,141 @@
   min-width: 0;
 
   & strong {
-    font-weight: var(--fontWeightMedium);
+    font-weight: 600;
+    letter-spacing: var(--uiTrackTight);
     color: rgb(var(--rgbText));
   }
 }
 
 .orderCodes {
   font-family: var(--uiMono);
-  font-size: var(--uiFontLabel);
-  color: rgb(var(--rgbText) / 0.5);
+  font-size: var(--uiFontMicro);
+  color: var(--uiFaint);
   overflow-wrap: anywhere;
 }
 
 .orderNote {
-  font-size: var(--uiFontCode);
-  color: rgb(var(--rgbText) / 0.8);
-}
-
-.noteTag {
-  margin-right: 6px;
-}
-
-.num {
-  font-variant-numeric: tabular-nums;
-  text-align: right;
-  white-space: nowrap;
-  color: rgb(var(--rgbText));
-}
-
-.lineTotal {
-  font-weight: var(--fontWeightMedium);
-}
-
-.orderFoot {
-  grid-template-columns: minmax(0, 1fr) auto;
-  border-bottom: 0;
-  font-weight: var(--fontWeightMedium);
-  color: rgb(var(--rgbText));
-
-  & .num {
-    font-size: var(--fontSizeBodyM);
-  }
-}
-
-.footnote {
-  margin: var(--spaceS) 0 0;
-  font-size: var(--uiFontCode);
+  margin-top: 2px;
+  font-size: var(--uiFontSmall);
   color: var(--uiMuted);
 }
 
-/* --- MCP --------------------------------------------------------------------------- */
+.noteTag {
+  margin-right: var(--uiGapS);
+}
+
+.num {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontSmall);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+  color: rgb(var(--rgbText) / 0.9);
+}
+
+.num .muted {
+  font-size: inherit;
+}
+
+.lineTotal {
+  font-weight: 500;
+  color: rgb(var(--rgbText));
+}
+
+/* The total is the number the card exists for: largest type on the card, on its own band */
+.orderFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spaceM);
+  margin-top: var(--spaceM);
+  padding: var(--spaceM) var(--spaceL);
+  border-radius: var(--uiRadiusL);
+  background: rgb(var(--uiRgbInset));
+}
+
+.orderFootLabel {
+  display: grid;
+  font-size: var(--fontSizeBodyXS);
+  font-weight: 600;
+  color: rgb(var(--rgbText));
+
+  & small {
+    font-family: var(--uiMono);
+    font-size: var(--uiFontMicro);
+    font-weight: 400;
+    color: var(--uiFaint);
+  }
+}
+
+.orderFoot .orderTotal {
+  font-family: var(--fontStack);
+  font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: var(--uiTrackDisplay);
+  color: rgb(var(--rgbText));
+}
+
+.footnote {
+  margin: var(--uiGapXL) 0 0;
+  font-size: var(--uiFontSmall);
+  color: var(--uiFaint);
+}
+
+/* --- MCP ------------------------------------------------------------------------------- */
 
 .callers {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) 28px minmax(0, 1fr) 28px minmax(0, 1.1fr);
+  grid-template-columns: minmax(0, 1.1fr) 36px minmax(0, 1fr) 36px minmax(0, 1.1fr);
   align-items: center;
   margin-bottom: var(--spaceL);
 }
 
 .callerCol {
   display: grid;
-  gap: 8px;
+  gap: var(--uiGapM);
 }
 
 .callerBox {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-  min-height: 44px;
-  padding: 8px 12px;
+  align-items: center;
+  gap: var(--uiGapXL);
+  min-height: 52px;
+  padding: var(--uiGapL) var(--spaceM);
   border: 1px solid var(--uiLine);
-  border-radius: 8px;
+  border-radius: var(--uiRadiusL);
   font-size: var(--uiFontNote);
-  color: rgb(var(--rgbText) / 0.85);
-  background: var(--uiPanel);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText) / 0.9);
+  background: rgb(var(--uiRgbSurface));
+  box-shadow: var(--uiShadowCard);
+
+  & svg {
+    flex: none;
+    font-size: 16px;
+    color: rgb(var(--uiRgbAccent));
+  }
+}
+
+.callerHub {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--uiGapXS);
+  min-height: 112px;
+  padding: var(--spaceM);
+  border: 1px solid rgb(var(--uiRgbAccent) / 0.4);
+  border-radius: var(--uiRadiusXL);
+  text-align: center;
+  background: rgb(var(--uiRgbAccent) / 0.1);
+
+  & code {
+    font-family: var(--uiMono);
+    font-size: var(--fontSizeBodyXS);
+    font-weight: 500;
+    color: rgb(var(--rgbText));
+  }
 
   & small {
     font-size: var(--uiFontCaption);
@@ -484,37 +776,31 @@
   }
 }
 
-.callerHub {
-  min-height: 96px;
-  align-items: center;
-  text-align: center;
-  border-color: rgb(var(--uiRgbAccent) / 0.6);
-  background: rgb(var(--uiRgbAccent) / 0.08);
-
-  & code {
-    font-family: var(--uiMono);
-    font-size: 14px;
-    font-weight: var(--fontWeightMedium);
-    color: rgb(var(--rgbText));
-  }
-}
-
 .callerArrow {
   position: relative;
-  height: 1px;
-  margin: 0 4px;
-  background: rgb(var(--rgbText) / 0.35);
+  height: 1.5px;
+  margin: 0 var(--uiGapS);
+  background: var(--uiLineStrong);
 
   &::after {
     content: '';
     position: absolute;
     right: 0;
-    top: -3.5px;
+    top: -3px;
     width: 7px;
     height: 7px;
-    border-top: 1px solid rgb(var(--rgbText) / 0.5);
-    border-right: 1px solid rgb(var(--rgbText) / 0.5);
+    border-top: 1.5px solid var(--uiFaint);
+    border-right: 1.5px solid var(--uiFaint);
     transform: rotate(45deg);
+  }
+}
+
+/* long tool names wrap inside the two-column tool rail on phones */
+.mcpPanel [role='tab'] {
+  min-width: 0;
+
+  & code {
+    overflow-wrap: anywhere;
   }
 }
 
@@ -522,24 +808,61 @@
   margin-top: var(--spaceM);
 }
 
-/* --- evals ------------------------------------------------------------------------- */
+/* --- evals ----------------------------------------------------------------------------- */
 
 .evalBar {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--spaceS) var(--spaceM);
+  gap: var(--uiGapXL) var(--spaceL);
   margin-bottom: var(--spaceM);
+  padding: var(--uiGapXL) var(--spaceM) var(--uiGapXL) var(--uiGapXL);
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadius2XL);
+  background: rgb(var(--uiRgbSurface));
+  box-shadow: var(--uiShadowCard);
 }
 
 .evalScore {
-  font-size: var(--fontSizeBodyS);
-  font-weight: var(--fontWeightMedium);
-  color: rgb(var(--rgbText));
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapXL);
 
-  &[data-all='pass'] {
-    color: rgb(var(--uiRgbOk));
+  & > span:last-child {
+    display: grid;
   }
+
+  & strong {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: var(--uiTrackTight);
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--rgbText));
+  }
+
+  & strong[data-all='pass'] {
+    color: color-mix(in sRGB, rgb(var(--uiRgbOk)) 80%, rgb(var(--rgbText)));
+  }
+
+  & small {
+    font-size: var(--uiFontCaption);
+    color: var(--uiMuted);
+  }
+}
+
+/* before any eval has run: a hatched disc where the pass ring will be */
+.evalPending {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+  background: var(--uiHatch);
+  box-shadow: inset 0 0 0 1px var(--uiLine);
 }
 
 .evalGrid {
@@ -549,26 +872,29 @@
 }
 
 .evalCard {
-  --uiCardPad: var(--spaceM);
+  --uiCardPad: 20px;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .evalFoot {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: var(--spaceM);
-  padding-top: 10px;
+  gap: var(--uiGapM);
+  margin-top: auto;
+  padding-top: var(--uiGapXL);
   border-top: 1px solid var(--uiLine);
 }
 
-/* --- notes ------------------------------------------------------------------------- */
+/* --- notes ----------------------------------------------------------------------------- */
 
 .notes {
   margin-top: var(--spaceM);
 }
 
-/* --- motion ------------------------------------------------------------------------ */
+/* --- motion ---------------------------------------------------------------------------- */
 
 @keyframes rise {
   from {
@@ -585,6 +911,7 @@
 @media (prefers-reduced-motion: reduce) {
   .extract,
   .tool,
+  .times,
   .decisionBlock,
   .final,
   .orderRow {
@@ -592,17 +919,20 @@
   }
 }
 
-/* --- responsive -------------------------------------------------------------------- */
+/* --- responsive ------------------------------------------------------------------------ */
 
-@media (max-width: 1040px) {
+@media (max-width: 1100px) {
+  .gridMid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .evalGrid {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 880px) {
-  .gridTop,
-  .gridMid {
+  .gridTop {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -620,9 +950,9 @@
   }
 
   .callerArrow {
-    width: 1px;
-    height: 20px;
-    margin: 4px auto;
+    width: 1.5px;
+    height: 22px;
+    margin: var(--uiGapS) auto;
 
     &::after {
       right: -3px;
@@ -633,7 +963,7 @@
   }
 
   .callerHub {
-    min-height: 64px;
+    min-height: 76px;
   }
 }
 
@@ -646,6 +976,10 @@
     margin-top: var(--space2XL);
   }
 
+  .routeBlock[data-model] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .orderMeta {
     --uiKvColumns: 2;
   }
@@ -656,7 +990,8 @@
 
   .orderRow {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px 12px;
+    gap: var(--uiGapS) var(--uiGapXL);
+    padding-inline: 0;
   }
 
   .orderProduct {
@@ -669,12 +1004,15 @@
     &::before {
       content: attr(data-label);
       display: block;
-      font-size: 10.5px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      color: var(--uiMuted);
-      font-weight: var(--fontWeightRegular);
+      font-family: var(--fontStack);
+      font-size: var(--uiFontMicro);
+      font-weight: 400;
+      color: var(--uiFaint);
     }
+  }
+
+  .orderFoot {
+    padding: var(--uiGapXL) var(--spaceM);
   }
 
   .fields > div:first-child {
@@ -684,5 +1022,13 @@
   .extractLines li {
     flex-direction: column;
     gap: 2px;
+  }
+
+  .evalBar {
+    border-radius: var(--uiRadiusXL);
+  }
+
+  .glanceStats div + div {
+    padding-left: var(--uiGapXL);
   }
 }

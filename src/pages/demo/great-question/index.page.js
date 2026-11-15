@@ -14,24 +14,40 @@ import {
   SectionHead,
   SegmentedControl,
   SkeletonGrid,
+  StatGrid,
+  StatTile,
   TextArea,
   formatTime,
   srOnly,
 } from 'demos/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FiCheck, FiFileText, FiMic, FiSend, FiSquare } from 'react-icons/fi';
-import { FindingCards } from './Findings';
+import {
+  FiCheck,
+  FiClock,
+  FiFileText,
+  FiList,
+  FiMessageSquare,
+  FiMic,
+  FiSend,
+  FiShield,
+  FiSquare,
+  FiTarget,
+} from 'react-icons/fi';
+import { FindingCards, FindingsSummary } from './Findings';
 import styles from './GreatQuestion.module.css';
-import { Guide } from './Guide';
+import { ExampleCheck, Guide } from './Guide';
 import { McpPanel } from './McpPanel';
 import {
   CLOSING_LINE,
   EXAMPLE_FINDINGS,
   EXAMPLE_TURNS,
+  GOALS,
   GUIDE,
   MAX_ANSWERS,
   MAX_ANSWER_SECONDS,
+  STUDY,
 } from './study';
+import { GuardrailTrace } from './Trace';
 import { Transcript } from './Transcript';
 import {
   blobToBase64,
@@ -42,10 +58,52 @@ import {
   unlockAudio,
   voiceSupport,
 } from './voice';
-import { VoiceDock } from './VoiceDock';
+import { CallStage, VoiceDock } from './VoiceDock';
 
 const API = '/api/demo/great-question';
 const MAX_CHECKS = 16; // guardrail calls per interview
+const TYPED_CHECKS = 4; // typed questions Jev answers per moderator turn (see HOW)
+
+const NAV = [
+  { href: '#interview', label: 'Interview' },
+  { href: '#findings', label: 'Findings' },
+  { href: '#mcp', label: 'MCP tools' },
+  { href: '#how', label: 'How it works' },
+];
+
+// "3 minutes" -> value "3", unit "minutes"
+const [LENGTH_VALUE, ...LENGTH_UNIT] = STUDY.length.split(' ');
+
+/** The study at a glance, beside the page title. */
+const HERO = (
+  <StatGrid columns={2}>
+    <StatTile
+      tone="tint"
+      icon={<FiList />}
+      label="Guide questions"
+      value={GUIDE.length}
+      unit="asked in order"
+    />
+    <StatTile
+      icon={<FiTarget />}
+      label="Research goals"
+      value={GOALS.length}
+      unit="to cover"
+    />
+    <StatTile
+      icon={<FiClock />}
+      label="Interview length"
+      value={LENGTH_VALUE}
+      unit={LENGTH_UNIT.join(' ')}
+    />
+    <StatTile
+      icon={<FiShield />}
+      label="Scores per moderator turn"
+      value={TYPED_CHECKS}
+      unit="from Jev"
+    />
+  </StatGrid>
+);
 
 const PREVIEW_TEXT =
   'Preview mode. The private link from my email turns on live interviews. The example run shows a full session.';
@@ -85,11 +143,10 @@ const HOW = [
     title: 'Guarded spend',
     text: (
       <>
-        Private link per recipient, per-IP rate limits and daily budgets. A voice turn costs
-        about 4 cents; the opening line&apos;s speech is cached, so it is free after the
-        first play. Up to {MAX_ANSWERS} answers of{' '}
-        {MAX_ANSWER_SECONDS} seconds and {MAX_CHECKS} guardrail checks per interview. API
-        keys never reach the browser.
+        Private link per recipient, per-IP rate limits and daily budgets. A voice turn
+        costs about 4 cents; the opening line&apos;s speech is cached, so it is free after
+        the first play. Up to {MAX_ANSWERS} answers of {MAX_ANSWER_SECONDS} seconds and{' '}
+        {MAX_CHECKS} guardrail checks per interview. API keys never reach the browser.
       </>
     ),
   },
@@ -543,6 +600,7 @@ export default function GreatQuestionDemo() {
     turn => turn.role === 'participant' && turn.final && turn.text
   ).length;
   const busy = status === 'mic' || (status === 'live' && mode === 'voice');
+  const voiceLive = mode === 'voice' && view === 'live' && status === 'live';
 
   async function generateFindings() {
     if (!hasKey) {
@@ -615,191 +673,212 @@ export default function GreatQuestionDemo() {
   return (
     <DemoLayout
       company="Great Question"
+      accent="coral"
+      nav={NAV}
+      hero={HERO}
       title="AI Moderator: a voice interview that probes and stays neutral"
       tagline="Talk to an AI moderator running a four-question discussion guide. Every question it asks is scored live for leading, double-barreled and off-guide wording, and the transcript becomes quote-backed findings that an MCP client can search."
     >
       {/* Moderator speech; inline so mobile Safari plays it in the page */}
-      <audio
-        ref={audioRef}
-        playsInline
-        preload="auto"
-        className={srOnly}
-      />
+      <audio ref={audioRef} playsInline preload="auto" className={srOnly} />
 
       <div className={styles.page}>
-        <div className={styles.studyGrid}>
-          <section className={styles.guideCol} aria-label="Discussion guide">
-            <Guide covered={progress.covered} current={progress.current} />
-          </section>
+        <div id="interview" className={styles.workspace}>
+          <div className={styles.studyGrid}>
+            <section className={styles.guideCol} aria-label="Discussion guide">
+              <Guide covered={progress.covered} current={progress.current} />
+            </section>
 
-          <section
-            className={styles.interviewCol}
-            aria-label="Interview"
-            ref={interviewRef}
-          >
-            <Card className={styles.interviewCard}>
-              <SectionHead
-                variant="eyebrow"
-                compact
-                step={2}
-                kicker="Interview"
-                title={mode === 'voice' ? 'Talk to the moderator' : 'Type your answers'}
-                action={
-                  <SegmentedControl
-                    className={styles.modeSwitch}
-                    label="Interview mode"
-                    options={MODE_OPTIONS}
-                    value={mode}
-                    onChange={setMode}
-                    disabled={busy || (status === 'live' && mode === 'text')}
-                  />
-                }
-              />
-
-              <div className={styles.controls}>
-                {mode === 'voice' ? (
-                  status === 'live' ? (
-                    <Button variant="secondary" pill onClick={() => endVoice('user')}>
-                      <FiSquare aria-hidden /> End interview
-                    </Button>
-                  ) : (
-                    <Button pill onClick={startVoice} disabled={status === 'mic'}>
-                      <FiMic aria-hidden />
-                      {status === 'mic'
-                        ? 'Starting…'
-                        : status === 'ended'
-                        ? 'Start a new interview'
-                        : 'Start voice interview'}
-                    </Button>
-                  )
-                ) : status === 'live' ? (
-                  <Button variant="secondary" pill onClick={endText}>
-                    <FiSquare aria-hidden /> End interview
-                  </Button>
-                ) : (
-                  <Button pill onClick={startText}>
-                    <FiSend aria-hidden />
-                    {status === 'ended'
-                      ? 'Start a new typed interview'
-                      : 'Start typed interview'}
-                  </Button>
-                )}
-                <p className={styles.hint}>
-                  {mode === 'voice'
-                    ? `Uses your mic · tap Answer, pause to send · up to ${MAX_ANSWERS} answers`
-                    : `Same moderator, typed · up to ${MAX_ANSWERS} answers`}
-                  {!hasKey && <> · needs the private link</>}
-                </p>
-              </div>
-
-              {notice && (
-                <Notice
-                  className={styles.notice}
-                  kind={noticeKind(notice.kind)}
-                  role={notice.kind === 'error' ? 'alert' : 'status'}
-                >
-                  {notice.text}
-                </Notice>
-              )}
-
-              <div className={styles.statusRow}>
-                <RunStatus state={statusLine.tone}>{statusLine.text}</RunStatus>
-                {status === 'live' && view === 'live' && (
-                  <ol className={styles.miniGuide} aria-label="Guide progress">
-                    {GUIDE.map(q => {
-                      const state =
-                        progress.current === q.id
-                          ? 'current'
-                          : progress.covered.has(q.id)
-                          ? 'covered'
-                          : 'todo';
-                      return (
-                        <li key={q.id} data-state={state} title={q.text}>
-                          {state === 'covered' ? (
-                            <FiCheck aria-label={`${q.id} covered`} />
-                          ) : (
-                            q.id
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ol>
-                )}
-                {turns.length > 0 && status !== 'live' && status !== 'mic' && (
-                  <SegmentedControl
-                    variant="box"
-                    className={styles.viewToggle}
-                    label="Transcript shown"
-                    options={VIEW_OPTIONS}
-                    value={view}
-                    onChange={setView}
-                  />
-                )}
-              </div>
-
-              <Transcript
-                turns={shownTurns}
-                follow={view === 'live'}
-                highlight={highlight}
-                empty={
-                  status === 'mic'
-                    ? 'Waiting for the microphone…'
-                    : 'The moderator will open with a short intro and the first question.'
-                }
-              />
-
-              {mode === 'voice' && view === 'live' && status === 'live' && (
-                <VoiceDock
-                  phase={phase}
-                  onAnswer={answer}
-                  onDone={() => voiceRef.current?.recording?.stop()}
-                  onPlay={playBlocked}
-                  meterRef={meterRef}
-                  clockRef={clockRef}
+            <section
+              className={styles.interviewCol}
+              aria-label="Interview"
+              ref={interviewRef}
+            >
+              <Card className={styles.interviewCard}>
+                <SectionHead
+                  variant="eyebrow"
+                  compact
+                  step={2}
+                  kicker="Interview"
+                  title={mode === 'voice' ? 'Talk to the moderator' : 'Type your answers'}
+                  action={
+                    <SegmentedControl
+                      className={styles.modeSwitch}
+                      label="Interview mode"
+                      options={MODE_OPTIONS}
+                      value={mode}
+                      onChange={setMode}
+                      disabled={busy || (status === 'live' && mode === 'text')}
+                    />
+                  }
                 />
-              )}
 
-              {mode === 'text' && view === 'live' && status === 'live' && (
-                <form className={styles.composer} onSubmit={sendAnswer}>
-                  <label className={srOnly} htmlFor="answer">
-                    Your answer
-                  </label>
-                  <TextArea
-                    id="answer"
-                    variant="ring"
-                    className={styles.composerInput}
-                    rows={2}
-                    maxLength={600}
-                    value={draft}
-                    placeholder={streaming ? 'Moderator is typing…' : 'Type your answer'}
-                    onChange={event => setDraft(event.target.value)}
-                    onKeyDown={event => {
-                      if (event.key === 'Enter' && !event.shiftKey) sendAnswer(event);
-                    }}
+                {/* The call surface: start / end, or the live voice dock while talking */}
+                {voiceLive ? (
+                  <VoiceDock
+                    phase={phase}
+                    onAnswer={answer}
+                    onDone={() => voiceRef.current?.recording?.stop()}
+                    onPlay={playBlocked}
+                    onEnd={() => endVoice('user')}
+                    meterRef={meterRef}
+                    clockRef={clockRef}
                   />
-                  <Button
-                    type="submit"
-                    pill
-                    className={styles.sendButton}
-                    disabled={streaming || !draft.trim()}
-                    aria-label="Send answer"
+                ) : (
+                  <CallStage
+                    title={mode === 'voice' ? 'Voice interview' : 'Typed interview'}
+                    icon={mode === 'text' ? <FiMessageSquare /> : undefined}
+                    hint={
+                      <>
+                        {mode === 'voice'
+                          ? `Uses your mic · tap Answer, pause to send · up to ${MAX_ANSWERS} answers`
+                          : `Same moderator, typed · up to ${MAX_ANSWERS} answers`}
+                        {!hasKey && <> · needs the private link</>}
+                      </>
+                    }
                   >
-                    <FiSend aria-hidden />
-                  </Button>
-                </form>
-              )}
-            </Card>
+                    {mode === 'voice' ? (
+                      status === 'live' ? (
+                        <Button variant="secondary" pill onClick={() => endVoice('user')}>
+                          <FiSquare aria-hidden /> End interview
+                        </Button>
+                      ) : (
+                        <Button pill onClick={startVoice} disabled={status === 'mic'}>
+                          <FiMic aria-hidden />
+                          {status === 'mic'
+                            ? 'Starting…'
+                            : status === 'ended'
+                            ? 'Start a new interview'
+                            : 'Start voice interview'}
+                        </Button>
+                      )
+                    ) : status === 'live' ? (
+                      <Button variant="secondary" pill onClick={endText}>
+                        <FiSquare aria-hidden /> End interview
+                      </Button>
+                    ) : (
+                      <Button pill onClick={startText}>
+                        <FiSend aria-hidden />
+                        {status === 'ended'
+                          ? 'Start a new typed interview'
+                          : 'Start typed interview'}
+                      </Button>
+                    )}
+                  </CallStage>
+                )}
+
+                {notice && (
+                  <Notice
+                    className={styles.notice}
+                    kind={noticeKind(notice.kind)}
+                    role={notice.kind === 'error' ? 'alert' : 'status'}
+                  >
+                    {notice.text}
+                  </Notice>
+                )}
+
+                {/* Status, transcript and composer share one inset well */}
+                <div className={styles.conversation}>
+                  <div className={styles.statusRow}>
+                    <RunStatus state={statusLine.tone}>{statusLine.text}</RunStatus>
+                    {status === 'live' && view === 'live' && (
+                      <ol className={styles.miniGuide} aria-label="Guide progress">
+                        {GUIDE.map(q => {
+                          const state =
+                            progress.current === q.id
+                              ? 'current'
+                              : progress.covered.has(q.id)
+                              ? 'covered'
+                              : 'todo';
+                          return (
+                            <li key={q.id} data-state={state} title={q.text}>
+                              {state === 'covered' ? (
+                                <FiCheck aria-label={`${q.id} covered`} />
+                              ) : (
+                                q.id
+                              )}
+                            </li>
+                          );
+                        })}
+                      </ol>
+                    )}
+                    {turns.length > 0 && status !== 'live' && status !== 'mic' && (
+                      <SegmentedControl
+                        variant="box"
+                        className={styles.viewToggle}
+                        label="Transcript shown"
+                        options={VIEW_OPTIONS}
+                        value={view}
+                        onChange={setView}
+                      />
+                    )}
+                  </div>
+
+                  <Transcript
+                    turns={shownTurns}
+                    follow={view === 'live'}
+                    highlight={highlight}
+                    empty={
+                      status === 'mic'
+                        ? 'Waiting for the microphone…'
+                        : 'The moderator will open with a short intro and the first question.'
+                    }
+                  />
+
+                  {mode === 'text' && view === 'live' && status === 'live' && (
+                    <form className={styles.composer} onSubmit={sendAnswer}>
+                      <label className={srOnly} htmlFor="answer">
+                        Your answer
+                      </label>
+                      <TextArea
+                        id="answer"
+                        variant="ring"
+                        className={styles.composerInput}
+                        rows={2}
+                        maxLength={600}
+                        value={draft}
+                        placeholder={
+                          streaming ? 'Moderator is typing…' : 'Type your answer'
+                        }
+                        onChange={event => setDraft(event.target.value)}
+                        onKeyDown={event => {
+                          if (event.key === 'Enter' && !event.shiftKey) sendAnswer(event);
+                        }}
+                      />
+                      <Button
+                        type="submit"
+                        pill
+                        className={styles.sendButton}
+                        disabled={streaming || !draft.trim()}
+                        aria-label="Send answer"
+                      >
+                        <FiSend aria-hidden />
+                      </Button>
+                    </form>
+                  )}
+                </div>
+              </Card>
+            </section>
+          </div>
+
+          <section className={styles.guardrailRow} aria-label="Guardrail">
+            <GuardrailTrace
+              turns={shownTurns}
+              sourceLabel={view === 'example' ? 'the example run' : 'your interview'}
+            />
+            <ExampleCheck />
           </section>
         </div>
 
-        <section className={styles.section} aria-label="Findings">
+        <section id="findings" className={styles.section} aria-label="Findings">
           <SectionHead
             variant="eyebrow"
-            className={styles.sectionHead}
             step={3}
             kicker="Findings"
             title={
-              view === 'example' ? 'What the example run found' : 'What your interview found'
+              view === 'example'
+                ? 'What the example run found'
+                : 'What your interview found'
             }
             lede="DeepSeek drafts findings as JSON; the server keeps only quotes that appear word for word in the transcript and stamps their times from it."
             action={
@@ -831,6 +910,7 @@ export default function GreatQuestionDemo() {
 
           {shownFindings ? (
             <>
+              <FindingsSummary findings={shownFindings} />
               <FindingCards findings={shownFindings} onQuote={showQuote} />
               {view === 'live' && findings?.dropped > 0 && (
                 <p className={styles.small}>
@@ -852,7 +932,7 @@ export default function GreatQuestionDemo() {
           )}
         </section>
 
-        <section className={styles.section} aria-label="MCP tools">
+        <section id="mcp" className={styles.section} aria-label="MCP tools">
           <SectionHead
             variant="eyebrow"
             step={4}
@@ -867,8 +947,12 @@ export default function GreatQuestionDemo() {
           />
         </section>
 
-        <section className={styles.section} aria-label="How it works">
-          <SectionHead variant="eyebrow" kicker="Under the hood" title="How it is wired" />
+        <section id="how" className={styles.section} aria-label="How it works">
+          <SectionHead
+            variant="eyebrow"
+            kicker="Under the hood"
+            title="How it is wired"
+          />
           <NoteGrid variant="boxed" items={HOW} />
         </section>
       </div>

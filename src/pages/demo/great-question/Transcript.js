@@ -1,11 +1,13 @@
 import { Caret, TypingDots, formatTime, seconds } from 'demos/ui';
 import { useEffect, useRef } from 'react';
+import { FiUser } from 'react-icons/fi';
 import { Badges } from './Badges';
 import styles from './GreatQuestion.module.css';
 
 /**
- * Live transcript: moderator and participant turns with timestamps, guardrail badges and,
- * for voice replies, how long each step of the turn took.
+ * Live transcript as a conversation: moderator turns on the left, participant turns on the
+ * right, each with its timestamp; moderator turns carry their guardrail badges and, for
+ * voice replies, how long each step of the turn took.
  */
 export function Transcript({ turns, highlight, empty, follow }) {
   const listRef = useRef(null);
@@ -40,59 +42,64 @@ export function Transcript({ turns, highlight, empty, follow }) {
   };
 
   return (
-    <ol
-      className={styles.transcript}
-      ref={listRef}
-      onScroll={onScroll}
-      aria-live="polite"
-    >
-      {!turns.length && <li className={styles.transcriptEmpty}>{empty}</li>}
-      {turns.map(turn => {
-        const waiting = !turn.final && !turn.text;
-        return (
-          <li
-            key={turn.id}
-            className={styles.turn}
-            data-role={turn.role}
-            data-label={turn.label}
-            data-flash={
-              highlight && turn.label && highlight.label === turn.label
-                ? highlight.n % 2
-                : undefined
-            }
-          >
-            <div className={styles.turnMeta}>
-              <span className={styles.time}>{formatTime(turn.t)}</span>
-              {turn.label && <span className={styles.turnLabel}>{turn.label}</span>}
-            </div>
-            <div className={styles.turnBody}>
-              <span className={styles.speaker}>
-                {turn.role === 'moderator' ? 'AI moderator' : 'Participant'}
+    <div className={styles.transcriptWrap}>
+      <ol
+        className={styles.transcript}
+        ref={listRef}
+        onScroll={onScroll}
+        aria-live="polite"
+      >
+        {!turns.length && <li className={styles.transcriptEmpty}>{empty}</li>}
+        {turns.map(turn => {
+          const waiting = !turn.final && !turn.text;
+          const moderator = turn.role === 'moderator';
+          return (
+            <li
+              key={turn.id}
+              className={styles.turn}
+              data-role={turn.role}
+              data-label={turn.label}
+              data-flash={
+                highlight && turn.label && highlight.label === turn.label
+                  ? highlight.n % 2
+                  : undefined
+              }
+            >
+              <span className={styles.avatar} aria-hidden>
+                {moderator ? 'AI' : <FiUser />}
               </span>
-              <p className={styles.turnText} data-failed={turn.failed || undefined}>
-                {waiting ? (
-                  <TypingDots
-                    label={turn.role === 'participant' ? 'Transcribing' : 'Thinking'}
-                  />
-                ) : (
-                  turn.text
-                )}
-                {!turn.final && turn.text && <Caret />}
-              </p>
-              {turn.timing && (
-                <p className={styles.turnTiming}>
-                  <span>Fish ASR {seconds(turn.timing.asr)}</span>
-                  <span>DeepSeek {seconds(turn.timing.llm)}</span>
-                  <span>
-                    Fish TTS {turn.timing.tts < 60 ? 'cached' : seconds(turn.timing.tts)}
+              <div className={styles.turnBody}>
+                <div className={styles.turnMeta}>
+                  <span className={styles.speaker}>
+                    {moderator ? 'AI moderator' : 'Participant'}
                   </span>
+                  <span className={styles.time}>{formatTime(turn.t)}</span>
+                  {turn.label && <span className={styles.turnLabel}>{turn.label}</span>}
+                </div>
+                <p className={styles.turnText} data-failed={turn.failed || undefined}>
+                  {waiting ? (
+                    <TypingDots label={moderator ? 'Thinking' : 'Transcribing'} />
+                  ) : (
+                    turn.text
+                  )}
+                  {!turn.final && turn.text && <Caret />}
                 </p>
-              )}
-              {turn.role === 'moderator' && <Badges check={turn.check} />}
-            </div>
-          </li>
-        );
-      })}
-    </ol>
+                {turn.timing && (
+                  <p className={styles.turnTiming}>
+                    <span>Fish ASR {seconds(turn.timing.asr)}</span>
+                    <span>DeepSeek {seconds(turn.timing.llm)}</span>
+                    <span>
+                      Fish TTS{' '}
+                      {turn.timing.tts < 60 ? 'cached' : seconds(turn.timing.tts)}
+                    </span>
+                  </p>
+                )}
+                {moderator && <Badges check={turn.check} />}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
   );
 }

@@ -2,32 +2,32 @@
 .json {
   margin: 0;
   overflow: auto;
+  overscroll-behavior: contain;
   font-family: var(--uiMono);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  tab-size: 2;
+  background: rgb(var(--uiRgbInset));
+  border: 1px solid var(--uiLine);
 
-  /* well: tinted block without a border, for traces and details */
+  /* well: compact block for traces and details */
   &[data-variant='well'] {
     max-height: 260px;
-    padding: 10px 12px;
+    padding: 12px 14px;
     font-size: var(--uiFontCaption);
-    line-height: 1.5;
-    tab-size: 2;
-    color: rgb(var(--rgbText) / 0.85);
-    background: var(--uiWell);
+    line-height: 1.6;
+    color: rgb(var(--rgbText) / 0.82);
     border-radius: var(--uiRadiusM);
   }
 
-  /* boxed: bordered block, larger type, for tool definitions and results */
+  /* boxed: larger type, for tool definitions and results */
   &[data-variant='boxed'] {
     max-height: 380px;
-    padding: 14px 16px;
-    border: 1px solid var(--uiLine);
-    border-radius: var(--uiRadiusL);
+    padding: 16px 18px;
     font-size: var(--uiFontCode);
-    line-height: 1.6;
-    color: rgb(var(--rgbText) / 0.75);
-    background: rgb(var(--rgbText) / 0.04);
+    line-height: 1.65;
+    color: rgb(var(--rgbText) / 0.78);
+    border-radius: var(--uiRadiusL);
   }
 
   &[data-tall] {
@@ -57,20 +57,50 @@
 
 /* Collapsible raw JSON under a small summary line */
 .details {
-  margin-top: var(--uiGapL);
+  margin-top: var(--uiGapXL);
 
   & > summary {
-    cursor: pointer;
-    font-size: var(--uiFontCode);
-    color: var(--uiMuted);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--uiGapS);
     width: fit-content;
+    padding: 4px 10px 4px 8px;
+    border-radius: var(--uiRadiusPill);
+    font-size: var(--uiFontCaption);
+    font-weight: var(--fontWeightMedium);
+    color: var(--uiMuted);
+    background: rgb(var(--rgbText) / 0.06);
+    cursor: pointer;
+    list-style: none;
+    transition: color var(--durationXS) ease, background var(--durationXS) ease;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    /* chevron that turns down when open */
+    &::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      margin: 0 2px 0 3px;
+      border: solid currentColor;
+      border-width: 0 1.5px 1.5px 0;
+      transform: rotate(-45deg);
+      transition: transform var(--durationXS) ease;
+    }
 
     &:hover {
       color: rgb(var(--rgbText));
+      background: rgb(var(--rgbText) / 0.1);
     }
   }
 
+  &[open] > summary::before {
+    transform: translateY(-1px) rotate(45deg);
+  }
+
   & > pre {
-    margin-top: var(--uiGapM);
+    margin-top: var(--uiGapL);
   }
 }

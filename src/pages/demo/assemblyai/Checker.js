@@ -1,16 +1,20 @@
 import { streamFromApi } from 'demos/client';
 import {
   Button,
+  Card,
+  CardTitle,
   Caret,
   ChoiceChips,
   CodeView,
   MarkdownLite,
   Notice,
   RichText,
+  SplitBar,
   StatusIcon,
   srOnly,
 } from 'demos/ui';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { FiArrowDown, FiCode, FiZap } from 'react-icons/fi';
 import styles from './AssemblyAI.module.css';
 import { CHECK_COUNT, GROUPS, runChecks, STATUS_ORDER } from './checks';
 import { SAMPLES } from './reference';
@@ -117,23 +121,41 @@ export function Checker({ request }) {
 
   const v = verdict(checked.counts);
   const showCode = editing || !checked.code.trim();
+  const { fail, warn, pass, na } = checked.counts;
 
   return (
     <div className={styles.checker}>
-      <ChoiceChips
-        label="Code to check"
-        options={SAMPLE_OPTIONS}
-        value={sampleId}
-        onChange={id => (id === 'own' ? pasteOwn() : pick(id))}
-      />
-      <p className={styles.sampleHint}>
-        {sampleId === 'own'
-          ? 'Paste a token route and the browser code (separate files with a // ---- path ---- line). Nothing leaves your browser for the rule checks.'
-          : SAMPLES.find(s => s.id === sampleId)?.hint}
-      </p>
+      <div className={styles.checkerBar}>
+        <ChoiceChips
+          label="Code to check"
+          options={SAMPLE_OPTIONS}
+          value={sampleId}
+          onChange={id => (id === 'own' ? pasteOwn() : pick(id))}
+        />
+        <p className={styles.sampleHint}>
+          {sampleId === 'own'
+            ? 'Paste a token route and the browser code (separate files with a // ---- path ---- line). Nothing leaves your browser for the rule checks.'
+            : SAMPLES.find(s => s.id === sampleId)?.hint}
+        </p>
+      </div>
 
       <div className={styles.checkerGrid}>
-        <div className={styles.editorPane}>
+        <Card className={styles.codePane}>
+          <div className={styles.paneHead}>
+            <span className={styles.paneTitle}>
+              <FiCode aria-hidden />
+              Code
+            </span>
+            <span className={styles.markLegend} aria-hidden>
+              <i data-mark="fail" />
+              fail
+              <i data-mark="warn" />
+              warn
+            </span>
+            <span className={styles.charCount}>
+              {code.length.toLocaleString('en-US')} / {MAX_CHARS.toLocaleString('en-US')}
+            </span>
+          </div>
           {showCode ? (
             <div className={styles.editorWrap}>
               <label className={srOnly} htmlFor="aai-code">
@@ -171,92 +193,101 @@ export function Checker({ request }) {
                 Edit code
               </Button>
             )}
-            <span className={styles.charCount}>
-              {code.length.toLocaleString('en-US')} / {MAX_CHARS.toLocaleString('en-US')}
-            </span>
+            <span className={styles.editorNote}>{CHECK_COUNT} checks · free · in your browser</span>
           </div>
-        </div>
+        </Card>
 
-        <div className={`${styles.resultsPane} ${stale ? styles.resultsStale : ''}`} aria-live="polite">
-          <div className={`${styles.verdict} ${styles[`verdict_${v.tone}`]}`}>
-            <div className={styles.tally}>
-              {['fail', 'warn', 'pass'].map(status => (
-                <span key={status} className={`${styles.tallyItem} ${styles[`tally_${status}`]}`}>
-                  <strong>{checked.counts[status]}</strong> {STATUS_LABEL[status].toLowerCase()}
-                </span>
-              ))}
-              <span className={styles.tallyMuted}>{CHECK_COUNT} checks · free · in your browser</span>
+        {/* The cell takes its height from the code pane; the card fills it and scrolls inside */}
+        <div className={styles.resultsCell}>
+          <Card className={styles.resultsPane} data-stale={stale ? '' : undefined} aria-live="polite">
+            <div className={styles.verdict} data-tone={v.tone}>
+              <div className={styles.verdictLine}>
+                <StatusIcon status={v.tone} />
+                <p className={styles.verdictText}>{v.text}</p>
+              </div>
+              <SplitBar
+                className={styles.tally}
+                label={`${fail} fail, ${warn} warn, ${pass} pass, ${na} not applicable`}
+                parts={[
+                  { label: STATUS_LABEL.fail.toLowerCase(), value: fail, tone: 'bad' },
+                  { label: STATUS_LABEL.warn.toLowerCase(), value: warn, tone: 'warn' },
+                  { label: STATUS_LABEL.pass.toLowerCase(), value: pass, tone: 'ok' },
+                  ...(na ? [{ label: STATUS_LABEL.na.toLowerCase(), value: na, tone: 'muted' }] : []),
+                ]}
+              />
+              {stale && <p className={styles.staleNote}>These results are for the previous code. Run checks to update.</p>}
             </div>
-            <p className={styles.verdictText}>{v.text}</p>
-            {stale && <p className={styles.staleNote}>These results are for the previous code. Run checks to update.</p>}
-          </div>
 
-          <div className={styles.results} key={checked.run}>
-            {orderedGroups.map(({ group, items }) => {
-              return (
-                <div key={group.id} className={styles.resultGroup}>
-                  <h4 className={styles.groupLabel}>{group.label}</h4>
-                  <ul className={styles.resultList}>
-                    {items.map((item, i) => (
-                      <li
-                        key={item.id}
-                        className={`${styles.result} ${styles[`result_${item.status}`]}`}
-                        style={{ '--i': i }}
-                      >
-                        <StatusIcon status={item.status} />
-                        <div className={styles.resultBody}>
-                          <div className={styles.resultTitle}>
-                            <span>{item.title}</span>
-                            <span className={styles.resultStatus}>{STATUS_LABEL[item.status]}</span>
-                          </div>
-                          {item.status !== 'pass' && item.status !== 'na' && (
-                            <p className={styles.resultSummary}>
-                              <RichText text={item.summary} />
-                            </p>
-                          )}
-                          {(item.status === 'pass' || item.status === 'na') && (
-                            <p className={styles.resultSummaryMuted}>
-                              <RichText text={item.summary} />
-                            </p>
-                          )}
-                          {(item.lines.length > 0 || (item.gap && item.status !== 'pass' && item.status !== 'na')) && (
-                            <div className={styles.resultRefs}>
-                              {item.status !== 'na' &&
-                                item.lines.slice(0, 4).map(line => (
-                                  <button
-                                    key={line}
-                                    type="button"
-                                    className={styles.lineRef}
-                                    onClick={() => {
-                                      setEditing(false);
-                                      setFocus({ line, at: Date.now() });
-                                    }}
-                                  >
-                                    L{line}
-                                  </button>
-                                ))}
-                              {item.gap && item.status !== 'pass' && item.status !== 'na' && (
-                                <a className={styles.gapRef} href={`#${item.gap}`}>
-                                  Evidence
-                                </a>
-                              )}
+            <div className={styles.results} key={checked.run}>
+              {orderedGroups.map(({ group, items }) => {
+                return (
+                  <div key={group.id} className={styles.resultGroup}>
+                    <h4 className={styles.groupLabel}>
+                      {group.label}
+                      <span>{items.length}</span>
+                    </h4>
+                    <ul className={styles.resultList}>
+                      {items.map((item, i) => (
+                        <li key={item.id} className={styles.result} data-status={item.status} style={{ '--index': i }}>
+                          <StatusIcon status={item.status} />
+                          <div className={styles.resultBody}>
+                            <div className={styles.resultTitle}>
+                              <span>{item.title}</span>
+                              <span className={styles.resultStatus}>{STATUS_LABEL[item.status]}</span>
                             </div>
-                          )}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
+                            {item.status !== 'pass' && item.status !== 'na' && (
+                              <p className={styles.resultSummary}>
+                                <RichText text={item.summary} />
+                              </p>
+                            )}
+                            {(item.status === 'pass' || item.status === 'na') && (
+                              <p className={styles.resultSummaryMuted}>
+                                <RichText text={item.summary} />
+                              </p>
+                            )}
+                            {(item.lines.length > 0 || (item.gap && item.status !== 'pass' && item.status !== 'na')) && (
+                              <div className={styles.resultRefs}>
+                                {item.status !== 'na' &&
+                                  item.lines.slice(0, 4).map(line => (
+                                    <button
+                                      key={line}
+                                      type="button"
+                                      className={styles.lineRef}
+                                      onClick={() => {
+                                        setEditing(false);
+                                        setFocus({ line, at: Date.now() });
+                                      }}
+                                    >
+                                      L{line}
+                                    </button>
+                                  ))}
+                                {item.gap && item.status !== 'pass' && item.status !== 'na' && (
+                                  <a className={styles.gapRef} href={`#${item.gap}`}>
+                                    Evidence
+                                    <FiArrowDown aria-hidden />
+                                  </a>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
         </div>
       </div>
 
-      <div className={styles.llmPanel}>
+      <Card className={styles.llmPanel}>
         <div className={styles.llmHead}>
+          <span className={styles.llmIcon} aria-hidden>
+            <FiZap />
+          </span>
           <div>
-            <h4 className={styles.llmTitle}>Explain and fix</h4>
+            <CardTitle as="h4">Explain and fix</CardTitle>
             <p className={styles.llmNote}>
               Optional. DeepSeek V3.2 (via fal) gets the code and the failing checks and explains what
               each one breaks; each Fix line is reviewed text for that check. Repeat runs are cached.
@@ -268,18 +299,20 @@ export function Checker({ request }) {
         </div>
         {llm.state === 'error' &&
           (llm.keyNeeded ? (
-            <Notice flat className={styles.keyNotice}>
+            <Notice className={styles.keyNotice}>
               {`${llm.error} The ${CHECK_COUNT} rule checks above are free and already ran in your browser.`}
             </Notice>
           ) : (
-            <p className={styles.error}>{llm.error}</p>
+            <Notice kind="error" className={styles.keyNotice}>
+              {llm.error}
+            </Notice>
           ))}
         {llm.text && (
           <MarkdownLite text={llm.text} className={styles.reply}>
             {llm.state === 'running' && <Caret variant="block" />}
           </MarkdownLite>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

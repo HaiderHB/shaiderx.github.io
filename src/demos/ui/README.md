@@ -13,8 +13,9 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 - No demo-specific copy inside components: labels, notes and help text come in as props.
 - Looks the three demos need differently are variants (`variant`, `size`, `pill`...), named
   for what they look like, not which demo uses them.
-- **Gallery:** `npm run dev`, then open `/demo/ui/`. Every component with sample props. The
-  route returns 404 in production builds (`getStaticProps` → `notFound`).
+- **Gallery:** `npm run dev`, then open `/demo/ui/`. Every component with sample props, an
+  accent switcher in the hero and the theme switch in the bar. The route returns 404 in
+  production builds (`getStaticProps` → `notFound`).
 
 ## Catalog
 
@@ -34,7 +35,8 @@ kit component.
 | `Dot` | 8px status dot | `tone` (`ok`, `warn`, `bad`, `idle`), `motion` (`pulse`, `ring`) | D, G via RunStatus |
 | `RunStatus` | Status line for a run: example (recorded), waiting, live, ended, idle | `state` (`example`, `wait`, `live`, `ended`, `idle`), children | G |
 | `StatusIcon` | Pass / fail / warn / n/a icon | `status` (`pass`, `fail`, `warn`, `na`), `variant` (`soft` 20px rule lists, `solid` 18px evals) | A, D via Timeline and EvalTable |
-| `Card` | Bordered panel; padding from `--uiCardPad` | `as`, div props | D, G |
+| `Card` | Surface panel; padding from `--uiCardPad` | `tone` (none, `tint`, `accent`, `inset`), `as`, div props | D, A, G |
+| `StatTile`, `StatGrid` | A headline number with an icon chip, unit and note; a row of them | `label`, `value`, `unit`, `icon`, `note`, `tone` (none, `tint`, `accent`), children under the value; `columns`; other props pass through (`as="a" href`) | G |
 | `CardHead`, `CardTitle` | Card header row with an `aside` pushed right; card title | `aside`, `nowrap`; `as`, `size` (`s`) | D |
 | `SectionHead` | Section heading | `variant` (`plain`, `eyebrow`, `numbered`), `title`, `titleId`, `lede`, `kicker`, `step`, `index`, `action`, `flush`, `compact` (inside a card) | D (plain), G (eyebrow), A (numbered) |
 | `Eyebrow`, `Kicker`, `MiniLabel` | Uppercase labels: step + kicker; kicker paragraph; tiny label over a value or block | `step`; children; `as` | G via SectionHead, A, D |
@@ -42,7 +44,13 @@ kit component.
 | `NoteGrid` | "Design choices" / "How it works" notes | `items` `[{ title, text }]`, `variant` (`accent`, `boxed`) | D (accent), G (boxed) |
 | `PipelineStrip` | How a run works: numbered step cards with cost | `steps` `[{ label, what, cost }]`, `label` | D |
 | `Timeline`, `TimelineStep` | Run stages with marker (number, spinner, tick), timing and details | `index`, `status` (`pending`, `running`, `done`, `error`), `title`, `detail`, `ms` (formatted), children | D |
-| `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars, chosen option bold, threshold marks | `label`, `value`, `tone`, `strong`, `marks`; `options` `[{ value, label, tone }]`, `probabilities`, `choice` | D |
+| `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars on a hatched track, chosen option bold, threshold marks | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `accent`), `strong`, `marks`; `options` `[{ value, label, tone }]`, `probabilities`, `choice` | D |
+| `Gauge` | Half-dial of ticks with a big value in the middle | `value` (0..1), `ticks`, `tone`, `caption`, `label`, children | D |
+| `Ring` | Circular progress around a short label | `value` (0..1), `tone`, `size`, `stroke`, `label`, children | D, G |
+| `Meter` | Segmented meter | `value` (0..1), `segments`, `tone`, `size` (`m`, `s`), `label` | D, G |
+| `SplitBar` | One bar in proportional parts, with a legend | `parts` `[{ label, value, tone, display }]`, `legend`, `label` | A |
+| `MiniBars` | Small column chart: active column filled, the rest hatched | `data` `[{ label, value, display }]`, `active`, `max`, `height`, `label` | D |
+| `Sparkline` | Line over a short series with an end dot and optional threshold | `values`, `min`, `max`, `tone`, `height`, `threshold`, `label` | G |
 | `EvalTable` | Expected vs actual per check, with pass/fail icons | `rows` `[{ id, label, expected, actual, pass }]`, `columns` | D |
 | `SegmentedControl` | One-of-n toggle | `options` `[{ value, label, disabled }]`, `value`, `onChange`, `label`, `variant` (`pill`, `box`), `disabled` | G |
 | `OptionList`, `IndexBadge` | Stacked, numbered sample picker; the square number | `options` `[{ value, label, hint }]`, `value`, `onChange`, `label` | D |
@@ -67,34 +75,73 @@ kit component.
 ## Tokens
 
 Defined on `.tokens` in `tokens.module.css`; `DemoLayout` puts that class on every demo's
-root, so components and demo CSS can use them anywhere inside. A demo changes the kit's look by
-overriding tokens on its own wrapper, never by editing a component:
+root, so components and demo CSS can use them anywhere inside. Dark is the default and
+`body[data-theme='light']` swaps the palette; the bar in `DemoLayout` has the theme switch.
 
-```css
-.page {
-  --uiRgbAccent: var(--rgbPrimary); /* Great Question: accent follows the theme primary */
-  --uiRgbOk: 40 190 120;
-}
+`Rgb` tokens are channels for `rgb(var(--uiRgbOk) / 0.2)`. The site theme tokens
+(`--rgbText`, `--rgbBackground`, `--rgbPrimary`, `--rgbAccent`, `--rgbError`, `--fontStack`,
+`--monoFontStack`) are re-pointed at the demo palette inside `.tokens`, so `rgb(var(--rgbText)
+/ 0.6)` in a demo's CSS follows the demo theme too.
+
+| Group | Tokens |
+| --- | --- |
+| Layers | `--uiRgbCanvas` (the page), `--uiRgbSurface` (cards), `--uiRgbRaised` (things on cards), `--uiRgbInset` (wells, fields, code), `--uiRgbInk` (text) |
+| Accent | `--uiRgbAccent`, `--uiRgbAccentDeep` (fills, the dark-theme button), `--uiRgbAccent2` (far end of a gradient only), `--uiRgbOnAccent` |
+| Status | `--uiRgbOk`, `--uiRgbWarn`, `--uiRgbBad`, `--uiRgbOnStatus` (text on a solid status fill) |
+| Action | `--uiRgbAction`, `--uiRgbOnAction`: the primary button (accent in the dark, ink in the light) |
+| Lines and text | `--uiLine`, `--uiLineStrong`, `--uiMuted`, `--uiFaint`, `--uiWellStrong`, `--uiMono` |
+| Fills | `--uiGradient` (one feature card or mark per view), `--uiTint` (soft tiles), `--uiHatch` (empty, pending, the rest of a bar) |
+| Elevation | `--uiShadowCard`, `--uiShadowRaised`, `--uiShadowPop`, `--uiShadowAction` |
+| Radius | `--uiRadiusXS` 6, `--uiRadiusS` 8, `--uiRadiusM` 12, `--uiRadiusL` 14, `--uiRadiusXL` 18, `--uiRadius2XL` 24, `--uiRadius3XL` 32, `--uiRadiusPill` 999 (px) |
+| Type (under `--fontSizeBodyXS`) | `--uiFontMicro` 11, `--uiFontLabel` 11.5, `--uiFontCaption` 12, `--uiFontCode` 12.5, `--uiFontSmall` 13, `--uiFontNote` 13.5 (px); `--uiTrackTight`, `--uiTrackDisplay` for headings and numerals |
+| Spacing (between theme steps) | `--uiGap2XS` 2, `--uiGapXS` 4, `--uiGapS` 6, `--uiGapM` 8, `--uiGapL` 10, `--uiGapXL` 12, `--uiGap2XL` 14 (px); the theme's `--spaceXS`..`--space5XL` still apply |
+| Motion | `--uiEase` |
+| JSON, code | `--uiJsonKey`, `--uiJsonString`, `--uiJsonNumber`, `--uiJsonBool`, `--uiJsonNull`; `--uiRgbCodeKeyword`, `--uiRgbCodeString`, `--uiRgbCodeNumber` |
+
+### Accent
+
+Each demo picks an accent pair with a prop, never by overriding `--uiRgbAccent` in its own
+CSS (the gradient, tint and shadow tokens are computed on the layout root, so an override
+further down would not reach them):
+
+```jsx
+<DemoLayout accent="cobalt" …>   // 'iris' (default) | 'cobalt' | 'coral'
 ```
 
-`Rgb` tokens are channels for `rgb(var(--uiRgbOk) / 0.2)`. Light theme values are set under
-`body[data-theme='light']`.
+To add a preset, add a `.tokens[data-accent='name']` block (dark) and its
+`body[data-theme='light']` twin in `tokens.module.css`. Status colours, surfaces and type
+stay the same across demos.
 
-| Group | Tokens (dark default) |
-| --- | --- |
-| Status | `--uiRgbOk` 52 211 153, `--uiRgbWarn` 251 191 36, `--uiRgbBad` = `--rgbError`, `--uiRgbAccent` = `--rgbAccent` (light: 8 145 178) |
-| Surfaces | `--uiLine` text/0.12, `--uiLineStrong` text/0.2, `--uiPanel` text/0.035, `--uiWell` text/0.05, `--uiWellStrong` text/0.06, `--uiMuted` text/0.62, `--uiMono` |
-| Radius | `--uiRadiusXS` 4, `--uiRadiusS` 6, `--uiRadiusM` 8, `--uiRadiusL` 10, `--uiRadiusXL` 12, `--uiRadiusPill` 999 (px) |
-| Type (under `--fontSizeBodyXS`) | `--uiFontMicro` 11, `--uiFontLabel` 11.5, `--uiFontCaption` 12, `--uiFontCode` 12.5, `--uiFontSmall` 13, `--uiFontNote` 13.5 (px) |
-| Spacing (between theme steps) | `--uiGap2XS` 2, `--uiGapXS` 4, `--uiGapS` 6, `--uiGapM` 8, `--uiGapL` 10, `--uiGapXL` 12, `--uiGap2XL` 14 (px); the theme's `--spaceXS`..`--space5XL` still apply |
-| JSON | `--uiJsonKey`, `--uiJsonString`, `--uiJsonNumber`, `--uiJsonBool`, `--uiJsonNull` (full colours) |
-| Code | `--uiRgbCodeKeyword`, `--uiRgbCodeString`, `--uiRgbCodeNumber` |
+### Conventions
+
+- Labels are sentence case, quiet and medium weight; the value under them carries the weight.
+- Numbers, ids and timings use `--uiMono` with tabular figures.
+- One saturated card per view (`Card tone="accent"` or an accent `StatTile`); `tint` for the
+  card that leads a group. No gradient text.
+- A chart takes one tone. Tracks and "the rest" are hatched or faint, never a second hue.
+- Hatching (`--uiHatch`) means "not there yet": empty states, pending badges, bar tracks.
 
 Component knobs, set on a wrapper or the component: `--uiCardPad` (Card padding),
 `--uiKvColumns` / `--uiKvGap` (KeyValues), `--uiCodeHeight` (CodeView scroll height),
 `--uiNoticeRgb` (info Notice colour), `--uiSpinnerColor` / `--uiSpinnerTrackColor` (Spinner;
-primary buttons set them). Larger sizes, `--space*`, `--fontSize*`, `--rgbText`,
-`--rgbPrimary` and friends come from the site theme (`components/ThemeProvider/theme.js`).
+primary buttons set them), `--uiStatColumns` (StatGrid, via `columns`). Larger type sizes and
+`--space*` come from the site theme (`components/ThemeProvider/theme.js`).
+
+### Shell
+
+`DemoLayout` (`src/demos/DemoLayout.js`) draws the floating bar, the hero and the footer:
+
+| Prop | What it does |
+| --- | --- |
+| `company`, `title`, `tagline` | Bar label, hero title and lede |
+| `accent` | Accent preset, see above |
+| `nav` | `[{ href: '#id', label }]` section links in the bar; the current section is highlighted while scrolling. Give sections `scroll-margin-top: 96px` |
+| `hero` | Node shown beside the title on wide screens (stat tiles, a verdict card) |
+| `live` | `false` hides the preview-mode chip for demos that never call paid models |
+| `wide` | 1360px content instead of 1240px |
+
+Fonts (Host Grotesk, Geist Mono) load from Google Fonts on demo pages only; Gotham is the
+fallback.
 
 ## Start a new demo
 
@@ -120,6 +167,6 @@ for anything else the page needs (decision bars, timelines, MCP panel, code view
 
 ## Adding to the kit
 
-Move a piece here when a second demo needs it. Keep its markup and CSS identical to the page
-it came from (screenshot before and after), add it to `index.js`, the gallery and the catalog
-above, and prefer a token or a `variant` over a one-off prop.
+Move a piece here when a second demo needs it. Add it to `index.js`, the gallery and the
+catalog above, build it only from tokens (check it in both themes and all three accents in the
+gallery), and prefer a token or a `variant` over a one-off prop.

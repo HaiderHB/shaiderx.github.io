@@ -1,46 +1,103 @@
 /*
  * Design tokens for demo pages. DemoLayout puts `.tokens` on its root, so every demo and
  * every component in demos/ui can read these. A demo restyles the kit by overriding tokens
- * on its own wrapper (for example `.page { --uiRgbAccent: var(--rgbPrimary); }`), never by
- * editing the components.
+ * on its own wrapper or by passing `accent` to DemoLayout, never by editing the components.
  *
  * Colours ending in `Rgb` are space-separated channels, used as `rgb(var(--uiRgbOk) / 0.2)`.
- * Spacing and the large type sizes come from the site theme (--spaceXS..--space5XL,
- * --fontSizeBodyXS..--fontSizeH0); the small sizes below fill the gaps under 14px.
+ * Dark is the default; `body[data-theme='light']` swaps the palette below.
+ *
+ * Layers, back to front: canvas (the page) → surface (cards) → raised (things on cards)
+ * with inset (wells, fields, code) cut into either.
  */
 .tokens {
-  /* status colours */
-  --uiRgbOk: 52 211 153;
-  --uiRgbWarn: 251 191 36;
-  --uiRgbBad: var(--rgbError);
-  --uiRgbAccent: var(--rgbAccent);
+  /* --- palette: dark ------------------------------------------------------------------ */
+  --uiRgbCanvas: 10 10 15;
+  --uiRgbSurface: 20 20 28;
+  --uiRgbRaised: 30 30 41;
+  --uiRgbInset: 13 13 19;
+  --uiRgbInk: 242 241 249;
 
-  /* surfaces and text */
-  --uiLine: rgb(var(--rgbText) / 0.12);
-  --uiLineStrong: rgb(var(--rgbText) / 0.2);
-  --uiPanel: rgb(var(--rgbText) / 0.035);
-  --uiWell: rgb(var(--rgbText) / 0.05);
-  --uiWellStrong: rgb(var(--rgbText) / 0.06);
-  --uiMuted: rgb(var(--rgbText) / 0.62);
+  /* accent pair: the second colour only ever appears as the far end of a gradient, and
+     stays deep enough for white text on it */
+  --uiRgbAccent: 142 120 255;
+  --uiRgbAccent2: 196 92 228;
+  --uiRgbAccentDeep: 104 80 240;
+  --uiRgbOnAccent: 255 255 255;
+
+  /* status */
+  --uiRgbOk: 148 226 96;
+  --uiRgbWarn: 255 192 76;
+  --uiRgbBad: 255 104 112;
+  --uiRgbOnStatus: 14 14 20;
+
+  /* primary action: accent in the dark, ink in the light */
+  --uiRgbAction: var(--uiRgbAccentDeep);
+  --uiRgbOnAction: 255 255 255;
+
+  /* --- site theme tokens, re-pointed so older demo CSS picks up the palette ------------ */
+  --rgbBackground: var(--uiRgbCanvas);
+  --rgbBackgroundLight: var(--uiRgbSurface);
+  --rgbText: var(--uiRgbInk);
+  --rgbPrimary: var(--uiRgbAccent);
+  --rgbAccent: var(--uiRgbAccent);
+  --rgbError: var(--uiRgbBad);
+  --fontStack: 'Host Grotesk', 'Gotham', var(--systemFontStack);
+  --monoFontStack: 'Geist Mono', ui-monospace, 'SFMono-Regular', 'Menlo', 'Consolas', monospace;
+
+  /* --- surfaces and text -------------------------------------------------------------- */
+  --uiLine: rgb(var(--rgbText) / 0.08);
+  --uiLineStrong: rgb(var(--rgbText) / 0.16);
+  --uiPanel: rgb(var(--uiRgbSurface));
+  --uiWell: rgb(var(--uiRgbInset));
+  --uiWellStrong: rgb(var(--rgbText) / 0.07);
+  --uiMuted: rgb(var(--rgbText) / 0.6);
+  --uiFaint: rgb(var(--rgbText) / 0.4);
+  --uiTrack: rgb(var(--rgbText) / 0.1);
   --uiMono: var(--monoFontStack);
 
-  /* radius */
-  --uiRadiusXS: 4px;
-  --uiRadiusS: 6px;
-  --uiRadiusM: 8px;
-  --uiRadiusL: 10px;
-  --uiRadiusXL: 12px;
+  /* gradients: `Gradient` for one feature card or mark per view, `Tint` for soft tiles */
+  --uiGradient: linear-gradient(135deg, rgb(var(--uiRgbAccentDeep)), rgb(var(--uiRgbAccent2)));
+  --uiTint: linear-gradient(
+    135deg,
+    rgb(var(--uiRgbAccent) / 0.2),
+    rgb(var(--uiRgbAccent2) / 0.09)
+  );
+
+  /* 45° hatching for "the rest" of a track, empty bars and placeholders */
+  --uiHatch: repeating-linear-gradient(
+    -45deg,
+    rgb(var(--rgbText) / 0.1) 0 1px,
+    transparent 1px 6px
+  );
+
+  /* elevation */
+  --uiShadowCard: inset 0 1px 0 rgb(255 255 255 / 0.045);
+  --uiShadowRaised: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 8px 20px -10px rgb(0 0 0 / 0.7);
+  --uiShadowPop: 0 24px 60px -20px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(255 255 255 / 0.06);
+  --uiShadowAction: 0 10px 24px -12px rgb(var(--uiRgbAction) / 0.9);
+  --uiFocus: 0 0 0 2px rgb(var(--uiRgbCanvas)), 0 0 0 4px rgb(var(--uiRgbAccent));
+
+  /* --- radius ------------------------------------------------------------------------- */
+  --uiRadiusXS: 6px;
+  --uiRadiusS: 8px;
+  --uiRadiusM: 12px;
+  --uiRadiusL: 14px;
+  --uiRadiusXL: 18px;
+  --uiRadius2XL: 24px;
+  --uiRadius3XL: 32px;
   --uiRadiusPill: 999px;
 
-  /* type scale below --fontSizeBodyXS (14px) */
+  /* --- type scale below --fontSizeBodyXS (14px) ---------------------------------------- */
   --uiFontMicro: 11px;
   --uiFontLabel: 11.5px;
   --uiFontCaption: 12px;
   --uiFontCode: 12.5px;
   --uiFontSmall: 13px;
   --uiFontNote: 13.5px;
+  --uiTrackTight: -0.022em;
+  --uiTrackDisplay: -0.035em;
 
-  /* spacing between the theme's 4 / 8 / 16 / 24 steps */
+  /* --- spacing between the theme's 4 / 8 / 16 / 24 steps ------------------------------- */
   --uiGap2XS: 2px;
   --uiGapXS: 4px;
   --uiGapS: 6px;
@@ -49,31 +106,92 @@
   --uiGapXL: 12px;
   --uiGap2XL: 14px;
 
-  /* JSON colours (JsonView) */
-  --uiJsonKey: rgb(140 200 255);
-  --uiJsonString: rgb(134 239 172);
-  --uiJsonNumber: rgb(253 186 116);
-  --uiJsonBool: rgb(216 180 254);
+  /* --- motion -------------------------------------------------------------------------- */
+  --uiEase: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* --- JSON colours (JsonView) --------------------------------------------------------- */
+  --uiJsonKey: rgb(167 152 255);
+  --uiJsonString: rgb(150 222 160);
+  --uiJsonNumber: rgb(255 184 120);
+  --uiJsonBool: rgb(240 144 214);
   --uiJsonNull: var(--uiMuted);
 
-  /* code colours (CodeView) */
-  --uiRgbCodeKeyword: 199 146 234;
-  --uiRgbCodeString: 158 214 145;
-  --uiRgbCodeNumber: 247 160 108;
+  /* --- code colours (CodeView) --------------------------------------------------------- */
+  --uiRgbCodeKeyword: 182 160 255;
+  --uiRgbCodeString: 150 222 160;
+  --uiRgbCodeNumber: 255 184 120;
 }
 
 :global(body[data-theme='light']) .tokens {
-  --uiRgbOk: 5 150 105;
-  --uiRgbWarn: 202 138 4;
-  --uiRgbAccent: 8 145 178;
-  --uiWellStrong: rgb(var(--rgbText) / 0.05);
-  --uiJsonKey: rgb(29 78 216);
-  --uiJsonString: rgb(21 128 61);
-  --uiJsonNumber: rgb(194 65 12);
-  --uiJsonBool: rgb(126 34 206);
-  --uiRgbCodeKeyword: 124 58 237;
-  --uiRgbCodeString: 21 128 61;
-  --uiRgbCodeNumber: 194 65 12;
+  --uiRgbCanvas: 234 232 243;
+  --uiRgbSurface: 255 255 255;
+  --uiRgbRaised: 255 255 255;
+  --uiRgbInset: 244 243 250;
+  --uiRgbInk: 22 20 34;
+  --uiRgbAccent: 96 70 240;
+  --uiRgbAccent2: 186 72 214;
+  --uiRgbAccentDeep: 96 70 240;
+  --uiRgbOk: 22 148 92;
+  --uiRgbWarn: 214 132 6;
+  --uiRgbBad: 222 52 82;
+  --uiRgbOnStatus: 255 255 255;
+  --uiRgbAction: var(--uiRgbInk);
+  --uiRgbOnAction: 255 255 255;
+  --uiLine: rgb(var(--rgbText) / 0.09);
+  --uiLineStrong: rgb(var(--rgbText) / 0.18);
+  --uiWellStrong: rgb(var(--rgbText) / 0.06);
+  --uiMuted: rgb(var(--rgbText) / 0.64);
+  --uiFaint: rgb(var(--rgbText) / 0.44);
+  --uiTint: linear-gradient(
+    135deg,
+    rgb(var(--uiRgbAccent) / 0.15),
+    rgb(var(--uiRgbAccent2) / 0.1)
+  );
+  --uiHatch: repeating-linear-gradient(
+    -45deg,
+    rgb(var(--rgbText) / 0.13) 0 1px,
+    transparent 1px 6px
+  );
+  --uiShadowCard: 0 1px 1px rgb(30 22 80 / 0.03), 0 18px 40px -28px rgb(30 22 80 / 0.28);
+  --uiShadowRaised: 0 1px 2px rgb(30 22 80 / 0.08), 0 6px 16px -8px rgb(30 22 80 / 0.2);
+  --uiShadowPop: 0 30px 70px -28px rgb(30 22 80 / 0.45), 0 0 0 1px rgb(30 22 80 / 0.06);
+  --uiShadowAction: 0 10px 22px -12px rgb(var(--uiRgbInk) / 0.7);
+  --uiJsonKey: rgb(88 60 220);
+  --uiJsonString: rgb(14 122 74);
+  --uiJsonNumber: rgb(190 86 10);
+  --uiJsonBool: rgb(176 44 150);
+  --uiRgbCodeKeyword: 104 62 226;
+  --uiRgbCodeString: 14 122 74;
+  --uiRgbCodeNumber: 190 86 10;
+}
+
+/*
+ * Accent presets: <DemoLayout accent="cobalt">. Each sets the accent pair for both themes;
+ * everything else (status colours, surfaces, type) stays the same across demos.
+ */
+.tokens[data-accent='cobalt'] {
+  --uiRgbAccent: 104 150 255;
+  --uiRgbAccent2: 34 142 228;
+  --uiRgbAccentDeep: 56 104 244;
+}
+
+:global(body[data-theme='light']) .tokens[data-accent='cobalt'] {
+  --uiRgbAccent: 40 86 232;
+  --uiRgbAccent2: 22 132 204;
+  --uiRgbAccentDeep: 40 86 232;
+}
+
+/* Coral fills are kept deep enough for white text (4.5:1 and up) */
+.tokens[data-accent='coral'] {
+  --uiRgbAccent: 255 128 96;
+  --uiRgbAccent2: 214 52 122;
+  --uiRgbAccentDeep: 218 66 42;
+}
+
+:global(body[data-theme='light']) .tokens[data-accent='coral'] {
+  --uiRgbAccent: 200 58 32;
+  --uiRgbAccent2: 204 44 112;
+  --uiRgbAccentDeep: 206 60 36;
 }
 
 /* Screen-reader-only text: `import { srOnly } from 'demos/ui'`. */

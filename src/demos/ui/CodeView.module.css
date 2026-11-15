@@ -2,12 +2,13 @@
  * Code block with line numbers, token colours, line marks and a copy button.
  * Token colours: --uiRgbCodeKeyword, --uiRgbCodeString, --uiRgbCodeNumber.
  * Marks and diff lines use --uiRgbBad, --uiRgbWarn and --uiRgbOk.
+ * --uiCodeRadius on a wrapper sets the corner radius (smaller when nested in a padded card).
  */
 .codeView {
   min-width: 0;
   border: 1px solid var(--uiLine);
-  border-radius: var(--uiRadiusL);
-  background: var(--uiPanel);
+  border-radius: var(--uiCodeRadius, var(--uiRadiusXL));
+  background: rgb(var(--uiRgbInset));
   overflow: hidden;
 }
 
@@ -15,40 +16,52 @@
   display: flex;
   align-items: center;
   gap: var(--spaceS);
-  padding: 6px 8px 6px 14px;
+  min-height: 44px;
+  padding: 6px 8px 6px 16px;
   border-bottom: 1px solid var(--uiLine);
-  min-height: 38px;
+  background: rgb(var(--rgbText) / 0.025);
 }
 
 .title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapM);
+  min-width: 0;
   font-family: var(--uiMono);
   font-size: var(--uiFontCaption);
   color: var(--uiMuted);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  /* file glyph: a small page with a folded corner */
+  &::before {
+    content: '';
+    flex: none;
+    width: 9px;
+    height: 11px;
+    border-radius: 2px;
+    border: 1.5px solid var(--uiFaint);
+    clip-path: polygon(0 0, 62% 0, 100% 32%, 100% 100%, 0 100%);
+  }
 }
 
 .copy {
-  font: inherit;
-  cursor: pointer;
-  border-radius: var(--uiRadiusS);
-  transition: background var(--durationXS) ease, border-color var(--durationXS) ease,
-    opacity var(--durationXS) ease;
-  font-size: var(--uiFontCaption);
-  color: rgb(var(--rgbText));
-  background: transparent;
-  border: 1px solid var(--uiLine);
-  padding: 4px 10px;
   min-width: 64px;
+  padding: 5px 12px;
+  border: 0;
+  border-radius: var(--uiRadiusPill);
+  font: inherit;
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText) / 0.86);
+  background: rgb(var(--rgbText) / 0.07);
+  cursor: pointer;
+  transition: background var(--durationXS) ease, color var(--durationXS) ease;
 
   &:hover {
-    border-color: rgb(var(--rgbText) / 0.4);
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgb(var(--rgbAccent));
-    outline-offset: 2px;
+    color: rgb(var(--rgbText));
+    background: rgb(var(--rgbText) / 0.13);
   }
 }
 
@@ -65,11 +78,12 @@
 
 .pre {
   margin: 0;
-  padding: 10px 0;
+  padding: 12px 0;
   font-family: var(--uiMono);
   font-size: var(--uiFontCode);
-  line-height: 1.65;
+  line-height: 1.7;
   tab-size: 2;
+  color: rgb(var(--rgbText) / 0.88);
 
   & code {
     display: block;
@@ -86,10 +100,11 @@
 
 .lineNo {
   flex: none;
-  width: 3.2em;
+  width: 3.4em;
   padding-right: 1em;
   text-align: right;
-  color: rgb(var(--rgbText) / 0.3);
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--rgbText) / 0.28);
   user-select: none;
 }
 
@@ -115,17 +130,25 @@
 }
 
 .line[data-mark='fail'] {
-  background: rgb(var(--uiRgbBad) / 0.12);
+  background: rgb(var(--uiRgbBad) / 0.13);
   border-left-color: rgb(var(--uiRgbBad));
+
+  & .lineNo {
+    color: rgb(var(--uiRgbBad));
+  }
 }
 
 .line[data-mark='warn'] {
-  background: rgb(var(--uiRgbWarn) / 0.1);
+  background: rgb(var(--uiRgbWarn) / 0.11);
   border-left-color: rgb(var(--uiRgbWarn));
+
+  & .lineNo {
+    color: rgb(var(--uiRgbWarn));
+  }
 }
 
 .line[data-mark='pass'] {
-  border-left-color: rgb(var(--uiRgbOk) / 0.55);
+  border-left-color: rgb(var(--uiRgbOk) / 0.6);
 }
 
 .flash {
@@ -134,11 +157,11 @@
 
 @keyframes flash {
   0% {
-    box-shadow: inset 0 0 0 999px rgb(var(--rgbAccent) / 0.28);
+    box-shadow: inset 0 0 0 999px rgb(var(--uiRgbAccent) / 0.3);
   }
 
   100% {
-    box-shadow: inset 0 0 0 999px rgb(var(--rgbAccent) / 0);
+    box-shadow: inset 0 0 0 999px rgb(var(--uiRgbAccent) / 0);
   }
 }
 
@@ -155,30 +178,31 @@
 }
 
 .comment {
-  color: rgb(var(--rgbText) / 0.45);
+  color: rgb(var(--rgbText) / 0.42);
   font-style: italic;
 }
 
 .added {
   display: inline-block;
   min-width: 100%;
-  color: rgb(var(--uiRgbOk));
-  background: rgb(var(--uiRgbOk) / 0.12);
+  color: color-mix(in sRGB, rgb(var(--uiRgbOk)) 82%, rgb(var(--rgbText)));
+  background: rgb(var(--uiRgbOk) / 0.13);
 }
 
 .removed {
   display: inline-block;
   min-width: 100%;
-  color: rgb(var(--uiRgbBad));
-  background: rgb(var(--uiRgbBad) / 0.1);
+  color: color-mix(in sRGB, rgb(var(--uiRgbBad)) 82%, rgb(var(--rgbText)));
+  background: rgb(var(--uiRgbBad) / 0.11);
 }
 
 /* Inline `code` inside prose (RichText) */
 .inlineCode {
-  font-family: var(--uiMono);
-  font-size: 0.88em;
-  padding: 1px 5px;
+  padding: 1px 6px;
   border-radius: var(--uiRadiusXS);
+  font-family: var(--uiMono);
+  font-size: 0.86em;
+  color: rgb(var(--rgbText) / 0.94);
   background: var(--uiWellStrong);
   overflow-wrap: anywhere;
 }

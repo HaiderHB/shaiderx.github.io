@@ -1,7 +1,22 @@
-// Reference demo: copy this folder to src/pages/demo/<company>/ for a new demo.
-// Live at /demo/sample/ (unlisted, noindex).
+// Reference demo: the smallest page built on the demo kit (src/demos/ui).
+// For a new company demo run `node scripts/new-demo.js <slug> "<Company>"` instead of copying
+// this folder. Live at /demo/sample/ (unlisted, noindex).
 import { DemoLayout } from 'demos/DemoLayout';
 import { streamFromApi } from 'demos/client';
+import {
+  Button,
+  Card,
+  CardHead,
+  CardTitle,
+  Caret,
+  EmptyState,
+  MarkdownLite,
+  Notice,
+  Pill,
+  Spinner,
+  TextArea,
+  srOnly,
+} from 'demos/ui';
 import { useState } from 'react';
 import styles from './Sample.module.css';
 
@@ -37,23 +52,55 @@ export default function SampleDemo() {
       title="Support triage agent"
       tagline="Paste a customer message and watch the agent classify it, pick a tool and draft a reply. This page is the template every company demo starts from."
     >
-      <form className={styles.panel} onSubmit={run}>
-        <label className={styles.label} htmlFor="message">
-          Customer message
-        </label>
-        <textarea
-          id="message"
-          className={styles.input}
-          rows={4}
-          value={input}
-          onChange={event => setInput(event.target.value)}
-        />
-        <button className={styles.button} type="submit" disabled={running || !input.trim()}>
-          {running ? 'Running…' : 'Run agent'}
-        </button>
-      </form>
-      {error && <p className={styles.error}>{error}</p>}
-      {output && <pre className={styles.output}>{output}</pre>}
+      <div className={styles.grid}>
+        <Card as="form" onSubmit={run}>
+          <CardHead>
+            <CardTitle>Customer message</CardTitle>
+            <span className={styles.muted}>editable</span>
+          </CardHead>
+          <label className={srOnly} htmlFor="message">
+            Customer message
+          </label>
+          <TextArea
+            id="message"
+            rows={6}
+            value={input}
+            onChange={event => setInput(event.target.value)}
+          />
+          <div className={styles.runRow}>
+            <Button type="submit" disabled={running || !input.trim()}>
+              {running ? (
+                <>
+                  <Spinner /> Running
+                </>
+              ) : (
+                'Run agent'
+              )}
+            </Button>
+          </div>
+        </Card>
+
+        <Card aria-live="polite">
+          <CardHead>
+            <CardTitle>Agent reply</CardTitle>
+            <Pill tone={running ? 'live' : 'neutral'}>
+              {running ? 'Streaming' : 'Streamed text'}
+            </Pill>
+          </CardHead>
+          {output ? (
+            <MarkdownLite text={output}>{running && <Caret variant="block" />}</MarkdownLite>
+          ) : (
+            <EmptyState size="s" loading={running}>
+              {running ? 'Waiting…' : 'The reply appears here.'}
+            </EmptyState>
+          )}
+          {error && (
+            <Notice kind="error" size="s" className={styles.notice} role="alert">
+              {error}
+            </Notice>
+          )}
+        </Card>
+      </div>
     </DemoLayout>
   );
 }

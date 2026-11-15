@@ -150,6 +150,7 @@ export default function ${name}Demo() {
       company={${companyJs}}
       title="TODO: the outcome, in their words"
       tagline="TODO: one or two sentences. What goes in, what the model and code do, what comes out."
+      accent="iris"
     >
       <div className={styles.page}>
         <PipelineStrip steps={FLOW} />
@@ -242,8 +243,9 @@ export default function ${name}Demo() {
 }
 `;
 
-const css = `/* ${companyText} page styles. Shared pieces come from demos/ui; tune them with the --ui*
-   tokens here (e.g. --uiRgbAccent: var(--rgbPrimary);) instead of restyling components. */
+const css = `/* ${companyText} page styles. Shared pieces come from demos/ui and read the --ui* tokens.
+   Pick the accent with <DemoLayout accent="iris | cobalt | coral">, not by overriding
+   --uiRgbAccent here: the gradient and tint tokens are computed on the layout root. */
 .page {
   font-size: var(--fontSizeBodyS);
   line-height: 1.5;
@@ -256,7 +258,7 @@ const css = `/* ${companyText} page styles. Shared pieces come from demos/ui; tu
 
 .section {
   margin-top: var(--space3XL);
-  scroll-margin-top: 72px;
+  scroll-margin-top: 96px;
 }
 
 .section:first-of-type {
@@ -291,11 +293,13 @@ const css = `/* ${companyText} page styles. Shared pieces come from demos/ui; tu
 }
 
 .exampleNote {
-  margin: -6px 0 var(--spaceM);
-  padding-left: var(--uiGapL);
-  border-left: 2px solid rgb(var(--uiRgbAccent) / 0.6);
+  margin: -4px 0 var(--spaceM);
+  padding: var(--uiGapL) var(--uiGap2XL);
+  border-radius: var(--uiRadiusM);
   font-size: var(--uiFontSmall);
+  line-height: 1.5;
   color: var(--uiMuted);
+  background: rgb(var(--uiRgbInset));
 }
 
 .notes {

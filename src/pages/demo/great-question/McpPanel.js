@@ -1,4 +1,14 @@
-import { Button, Chip, Input, JsonView, SegmentedControl, Select, srOnly } from 'demos/ui';
+import {
+  Button,
+  Card,
+  Chip,
+  Input,
+  JsonView,
+  Pill,
+  SegmentedControl,
+  Select,
+  srOnly,
+} from 'demos/ui';
 import { useEffect, useMemo, useState } from 'react';
 import { FiPlay } from 'react-icons/fi';
 import styles from './GreatQuestion.module.css';
@@ -14,11 +24,15 @@ const defaultQuery = findings =>
     .split(/[^a-z]+/)
     .find(word => word.length >= 5) || 'onboarding';
 
-const TOOL_OPTIONS = TOOLS.map(item => ({ value: item.name, label: <code>{item.name}</code> }));
+const TOOL_OPTIONS = TOOLS.map(item => ({
+  value: item.name,
+  label: <code>{item.name}</code>,
+}));
 
-function Json({ value, clip = false }) {
+function Json({ value, clip = false, className }) {
   return (
     <JsonView
+      className={className}
       value={value}
       variant="boxed"
       colon="plain"
@@ -81,7 +95,11 @@ export function McpPanel({ findings, turns, sourceLabel }) {
 
   return (
     <div className={styles.mcpGrid}>
-      <div className={styles.mcpCol}>
+      <Card className={styles.mcpCol}>
+        <div className={styles.mcpHead}>
+          <Pill tone="ok">Read-only</Pill>
+          <span>{TOOLS.length} tools</span>
+        </div>
         <SegmentedControl
           className={styles.toolPicker}
           label="Tool"
@@ -93,10 +111,10 @@ export function McpPanel({ findings, turns, sourceLabel }) {
           }}
         />
         <p className={styles.codeLabel}>Tool definition, as listed by tools/list</p>
-        <Json value={tool} />
-      </div>
+        <Json value={tool} className={styles.toolDef} />
+      </Card>
 
-      <div className={styles.mcpCol}>
+      <Card className={styles.mcpCol}>
         <form
           className={styles.callBox}
           onSubmit={event => {
@@ -198,7 +216,7 @@ export function McpPanel({ findings, turns, sourceLabel }) {
             Runs in your browser over the findings above. No model call, no cost.
           </p>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

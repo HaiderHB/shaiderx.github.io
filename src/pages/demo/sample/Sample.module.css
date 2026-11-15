@@ -1,58 +1,32 @@
-.panel {
+/* Sample page styles: layout only. Everything else comes from demos/ui. */
+.grid {
   display: grid;
-  gap: var(--spaceS);
-  padding: var(--spaceL);
-  border: 1px solid rgb(var(--rgbText) / 0.15);
-  border-radius: 8px;
-  background: rgb(var(--rgbText) / 0.03);
-}
-
-.label {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--spaceL);
+  align-items: start;
   font-size: var(--fontSizeBodyS);
-  color: rgb(var(--rgbText) / 0.8);
+  line-height: 1.5;
 }
 
-.input {
-  width: 100%;
-  font: inherit;
-  font-size: var(--fontSizeBodyS);
-  color: rgb(var(--rgbText));
-  background: rgb(var(--rgbBackground));
-  border: 1px solid rgb(var(--rgbText) / 0.2);
-  border-radius: 6px;
-  padding: var(--spaceS);
-  resize: vertical;
+.muted {
+  font-size: var(--fontSizeBodyXS);
+  color: var(--uiMuted);
 }
 
-.button {
-  justify-self: start;
-  font: inherit;
-  font-size: var(--fontSizeBodyS);
-  font-weight: var(--fontWeightMedium);
-  color: rgb(var(--rgbBackground));
-  background: rgb(var(--rgbPrimary));
-  border: 0;
-  border-radius: 6px;
-  padding: var(--spaceS) var(--spaceL);
-  cursor: pointer;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-}
-
-.error {
-  color: rgb(var(--rgbError, 255 100 100));
+.runRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spaceS) var(--spaceM);
   margin-top: var(--spaceM);
 }
 
-.output {
-  margin-top: var(--spaceL);
-  padding: var(--spaceL);
-  border-radius: 8px;
-  background: rgb(var(--rgbText) / 0.06);
-  font-size: var(--fontSizeBodyS);
-  line-height: 1.6;
-  white-space: pre-wrap;
+.notice {
+  margin-top: var(--spaceM);
+}
+
+@media (max-width: 880px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
