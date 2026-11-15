@@ -1,5 +1,6 @@
 // MCP surface for interview findings: tool definitions as an MCP server would list them
 // (tools/list), and the handlers, run here in the browser over the findings on the page.
+import { rpcRequest } from 'demos/ui';
 import { GOALS, formatTime } from './study';
 
 const quoteSchema = {
@@ -187,12 +188,7 @@ let rpcId = 0;
  */
 export function callTool(name, args, { findings, turns }) {
   rpcId += 1;
-  const request = {
-    jsonrpc: '2.0',
-    id: rpcId,
-    method: 'tools/call',
-    params: { name, arguments: args },
-  };
+  const request = rpcRequest(rpcId, name, args);
 
   let structured = null;
   let error = null;

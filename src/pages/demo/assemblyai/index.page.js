@@ -2,11 +2,21 @@
 // real-time streaming" failure, a free in-browser checker for it, and the fix.
 // Live at /demo/assemblyai/ (unlisted, noindex). Notes in ./README.md.
 import { DemoLayout } from 'demos/DemoLayout';
+import {
+  Button,
+  CodeView,
+  InlineCode,
+  Kicker,
+  Pill,
+  RichText,
+  SectionHead as KitSectionHead,
+  StatusIcon,
+  Tabs,
+} from 'demos/ui';
 import { useState } from 'react';
 import styles from './AssemblyAI.module.css';
-import { Checker, StatusIcon } from './Checker';
+import { Checker } from './Checker';
 import { CHECK_COUNT, runChecks } from './checks';
-import { CodeView, Rich } from './CodeView';
 import { ALSO_SEEN, GAPS, VERIFIED_ON } from './gaps';
 import { LiveCaptions } from './LiveCaptions';
 import { MCP_TOOLS, README_DIFF, REFERENCE_FILES, SAMPLES } from './reference';
@@ -70,17 +80,14 @@ const PLAN = [
 ];
 
 function SectionHead({ n, title, kicker, children }) {
-  return (
-    <header className={styles.sectionHead}>
-      <span className={styles.sectionNo}>{n}</span>
-      <div>
-        {kicker && <p className={styles.kicker}>{kicker}</p>}
-        <h2 className={styles.sectionTitle}>{title}</h2>
-        {children && <p className={styles.sectionLede}>{children}</p>}
-      </div>
-    </header>
-  );
+  return <KitSectionHead variant="numbered" index={n} kicker={kicker} title={title} lede={children} />;
 }
+
+const FILE_TABS = REFERENCE_FILES.map((item, i) => ({
+  id: i,
+  label: item.path.split('/').pop(),
+  sub: <>{item.path.split('/').slice(0, -1).join('/')}/</>,
+}));
 
 function Evidence({ item }) {
   return (
@@ -89,7 +96,7 @@ function Evidence({ item }) {
         <pre className={styles.evidenceCode}>{item.code}</pre>
       ) : (
         <blockquote className={styles.quote}>
-          <Rich text={item.quote} />
+          <RichText text={item.quote} />
         </blockquote>
       )}
       <figcaption className={styles.source}>
@@ -115,7 +122,7 @@ function GapCard({ gap, n }) {
       <dl className={styles.gapRows}>
         <dt>Agent does</dt>
         <dd>
-          <Rich text={gap.agent} />
+          <RichText text={gap.agent} />
         </dd>
         <dt>Evidence</dt>
         <dd className={styles.evidenceList}>
@@ -125,11 +132,11 @@ function GapCard({ gap, n }) {
         </dd>
         <dt>Breaks</dt>
         <dd>
-          <Rich text={gap.breaks} />
+          <RichText text={gap.breaks} />
         </dd>
         <dt className={styles.fixLabel}>Fix</dt>
         <dd className={styles.fixText}>
-          <Rich text={gap.fix} />
+          <RichText text={gap.fix} />
         </dd>
       </dl>
     </article>
@@ -155,7 +162,7 @@ export default function AssemblyAIDemo({ liveCaptions = false }) {
       <div className={styles.page}>
       <section className={styles.hero} aria-label="The task">
         <div className={styles.task}>
-          <p className={styles.kicker}>The task</p>
+          <Kicker>The task</Kicker>
           <p className={styles.prompt}>
             <span className={styles.promptMark} aria-hidden="true">
               &gt;
@@ -169,7 +176,7 @@ export default function AssemblyAIDemo({ liveCaptions = false }) {
           </p>
         </div>
         <div className={styles.heroVerdict}>
-          <p className={styles.kicker}>The agent&apos;s first try</p>
+          <Kicker className={styles.verdictKicker}>The agent&apos;s first try</Kicker>
           <p className={styles.heroScore}>
             <strong>{FIRST_TRY_FAILS}</strong> failures
             <span>
@@ -224,7 +231,7 @@ export default function AssemblyAIDemo({ liveCaptions = false }) {
           <ul>
             {ALSO_SEEN.map(item => (
               <li key={item}>
-                <Rich text={item} />
+                <RichText text={item} />
               </li>
             ))}
           </ul>
@@ -236,29 +243,21 @@ export default function AssemblyAIDemo({ liveCaptions = false }) {
           Three files for a Next.js App Router project, written against the current v3 docs. Only the token route sees
           the key.
         </SectionHead>
-        <div className={styles.fileTabs} role="tablist" aria-label="Reference files">
-          {REFERENCE_FILES.map((item, i) => (
-            <button
-              key={item.path}
-              type="button"
-              role="tab"
-              aria-selected={fileIndex === i}
-              className={styles.fileTab}
-              onClick={() => setFileIndex(i)}
-            >
-              {item.path.split('/').pop()}
-              <span className={styles.fileDir}>{item.path.split('/').slice(0, -1).join('/')}/</span>
-            </button>
-          ))}
-        </div>
+        <Tabs
+          variant="files"
+          label="Reference files"
+          items={FILE_TABS}
+          value={fileIndex}
+          onChange={setFileIndex}
+        />
         <p className={styles.fileNote}>{file.note}</p>
-        <CodeView code={file.code} title={file.path} maxHeight="560px" className={styles.fixCode} />
+        <CodeView code={file.code} title={file.path} maxHeight="560px" />
         <div className={styles.fixActions}>
-          <button type="button" className={styles.secondary} onClick={checkReference}>
+          <Button variant="secondary" size="s" onClick={checkReference}>
             Run the checker on these files
-          </button>
+          </Button>
           <span className={styles.fixHint}>
-            Needs <code className={styles.inlineCode}>ASSEMBLYAI_API_KEY</code> on the server only. Not run live here
+            Needs <InlineCode>ASSEMBLYAI_API_KEY</InlineCode> on the server only. Not run live here
             unless this deployment has a key.
           </span>
         </div>
@@ -298,7 +297,9 @@ export default function AssemblyAIDemo({ liveCaptions = false }) {
         <div className={styles.evalBox}>
           <div className={styles.evalHead}>
             <h3 className={styles.subTitle}>How I would measure it</h3>
-            <span className={styles.badge}>Design only. No results yet.</span>
+            <Pill caps tone="warn">
+              Design only. No results yet.
+            </Pill>
           </div>
           <p className={styles.evalLede}>
             The task above, N = 30 runs for each agent (Claude Code, Cursor, Codex), condition and Next.js version (14 and

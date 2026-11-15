@@ -31,7 +31,8 @@ below 0.5.
 - `agent.js`: the pipeline (`runOrderAgent` with injected `extract`/`decide`/`draftReply`), prompts,
   Jev questions, rules, the one-question picker, the trace reducer, samples with expectations,
   and the pre-recorded example run.
-- `index.page.js`, `ui.js`, `Distru.module.css`: the page.
+- `index.page.js`, `Distru.module.css`: the page, built from the shared kit in `src/demos/ui`
+  (cards, timeline, probability bars, JSON views, MCP tool panel).
 - `src/pages/api/demo/distru/run.api.js`: `POST /api/demo/distru/run/` streams NDJSON events.
 - `src/pages/api/demo/distru/mcp.api.js`: `POST /api/demo/distru/mcp/`, a minimal stateless MCP
   server (`initialize`, `ping`, `tools/list`, `tools/call`; JSON responses, no SSE). Free, since

@@ -1,0 +1,161 @@
+/* --- run timeline: one row per stage, with a marker, timing and details --------------- */
+
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: var(--uiGapXL);
+  padding-bottom: var(--spaceM);
+
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 13.5px;
+    top: 30px;
+    bottom: 2px;
+    width: 1px;
+    background: var(--uiLine);
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+  }
+
+  &[data-status='pending'] .head {
+    opacity: 0.5;
+  }
+}
+
+.marker {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: var(--uiFontCode);
+  color: var(--uiMuted);
+  border: 1px solid var(--uiLine);
+  background: rgb(var(--rgbBackground));
+
+  @nest .step[data-status='running'] & {
+    border-color: rgb(var(--uiRgbAccent) / 0.7);
+  }
+
+  @nest .step[data-status='done'] & {
+    border-color: rgb(var(--uiRgbOk) / 0.6);
+  }
+
+  @nest .step[data-status='error'] & {
+    border-color: rgb(var(--uiRgbBad) / 0.7);
+  }
+}
+
+.body {
+  min-width: 0;
+  padding-top: 3px;
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+
+  & strong {
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText));
+  }
+}
+
+.detail {
+  color: var(--uiMuted);
+  font-size: var(--fontSizeBodyXS);
+}
+
+.ms {
+  margin-left: auto;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}
+
+/* --- pipeline strip: how a run works, step by step ------------------------------------- */
+
+.flow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--uiFlowColumns, 4), minmax(0, 1fr));
+  gap: var(--spaceS);
+}
+
+.flowStep {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: var(--uiGapL);
+  padding: 12px 14px;
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusL);
+  background: var(--uiPanel);
+}
+
+.flowIndex {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  font-size: var(--uiFontSmall);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText));
+  border: 1px solid rgb(var(--uiRgbAccent) / 0.6);
+  background: rgb(var(--uiRgbAccent) / 0.12);
+}
+
+.flowText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: var(--fontSizeBodyXS);
+  color: var(--uiMuted);
+
+  & strong {
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText));
+    font-size: var(--fontSizeBodyS);
+  }
+}
+
+.flowCost {
+  grid-column: 2;
+  margin-top: var(--uiGapXS);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontLabel);
+  color: rgb(var(--rgbText) / 0.5);
+}
+
+@media (max-width: 880px) {
+  .flow {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .flowStep {
+    padding: 10px;
+  }
+
+  .flowCost {
+    display: none;
+  }
+}

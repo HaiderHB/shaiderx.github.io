@@ -1,0 +1,269 @@
+/* --- segmented control ----------------------------------------------------------------- */
+
+.segmented[data-variant='pill'] {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 3px;
+  border-radius: var(--uiRadiusPill);
+  border: 1px solid var(--uiLine);
+  background: rgb(var(--rgbText) / 0.04);
+
+  & button {
+    padding: 6px 12px;
+    border: 0;
+    border-radius: var(--uiRadiusPill);
+    font: inherit;
+    font-size: var(--uiFontSmall);
+    color: rgb(var(--rgbText) / 0.65);
+    background: transparent;
+    cursor: pointer;
+    transition: color var(--durationXS) ease, background var(--durationXS) ease;
+  }
+
+  & button code {
+    font-size: var(--uiFontCaption);
+  }
+
+  & button:hover:not(:disabled) {
+    color: rgb(var(--rgbText));
+  }
+
+  & button[aria-pressed='true'] {
+    color: rgb(var(--rgbText));
+    background: rgb(var(--rgbBackground));
+    box-shadow: 0 0 0 1px rgb(var(--rgbText) / 0.14), 0 1px 3px rgb(0 0 0 / 0.25);
+  }
+
+  & button:disabled {
+    cursor: default;
+  }
+
+  & button:disabled:not([aria-pressed='true']) {
+    opacity: 0.45;
+  }
+}
+
+.segmented[data-variant='box'] {
+  display: inline-flex;
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusM);
+  overflow: hidden;
+
+  & button {
+    padding: 4px 10px;
+    border: 0;
+    font: inherit;
+    font-size: var(--uiFontCaption);
+    color: var(--uiMuted);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  & button[aria-pressed='true'] {
+    color: rgb(var(--rgbText));
+    background: rgb(var(--rgbText) / 0.08);
+  }
+}
+
+/* --- numbered option list -------------------------------------------------------------- */
+
+.options {
+  display: grid;
+  gap: var(--uiGapS);
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--uiGapL);
+  width: 100%;
+  padding: 8px 10px;
+  font: inherit;
+  text-align: left;
+  color: rgb(var(--rgbText));
+  background: transparent;
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusM);
+  cursor: pointer;
+  transition: border-color var(--durationXS) ease, background var(--durationXS) ease;
+
+  &:hover {
+    border-color: rgb(var(--rgbText) / 0.3);
+  }
+
+  &[aria-pressed='true'] {
+    border-color: rgb(var(--uiRgbAccent) / 0.7);
+    background: rgb(var(--uiRgbAccent) / 0.08);
+  }
+}
+
+.optionText {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  min-width: 0;
+  font-size: var(--fontSizeBodyXS);
+
+  & strong {
+    font-weight: var(--fontWeightMedium);
+  }
+
+  & span {
+    color: var(--uiMuted);
+    font-size: var(--uiFontCode);
+  }
+}
+
+.indexBadge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--uiRadiusS);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText));
+  background: rgb(var(--rgbText) / 0.08);
+}
+
+/* --- choice chips ---------------------------------------------------------------------- */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapS);
+}
+
+.choiceChip {
+  font: inherit;
+  font-size: var(--fontSizeBodyXS);
+  color: var(--uiMuted);
+  background: transparent;
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusS);
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: background var(--durationXS) ease, border-color var(--durationXS) ease,
+    opacity var(--durationXS) ease;
+
+  &:hover {
+    color: rgb(var(--rgbText));
+    border-color: var(--uiLineStrong);
+  }
+
+  &[aria-pressed='true'] {
+    color: rgb(var(--rgbText));
+    background: var(--uiWellStrong);
+    border-color: rgb(var(--rgbText) / 0.5);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgb(var(--rgbAccent));
+    outline-offset: 2px;
+  }
+}
+
+.chip {
+  padding: 4px 10px;
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusPill);
+  font: inherit;
+  font-size: var(--uiFontCaption);
+  color: rgb(var(--rgbText) / 0.75);
+  background: transparent;
+  cursor: pointer;
+
+  &:hover {
+    color: rgb(var(--rgbText));
+    border-color: rgb(var(--uiRgbAccent) / 0.6);
+  }
+}
+
+/* --- tabs ------------------------------------------------------------------------------- */
+
+.tabs[data-variant='files'] {
+  display: flex;
+  gap: var(--uiGapS);
+  overflow-x: auto;
+  padding-bottom: 2px;
+
+  & button {
+    display: grid;
+    justify-items: start;
+    gap: 1px;
+    flex: none;
+    font: inherit;
+    font-family: var(--uiMono);
+    font-size: var(--uiFontSmall);
+    color: var(--uiMuted);
+    background: transparent;
+    border: 1px solid var(--uiLine);
+    border-radius: var(--uiRadiusS);
+    padding: 7px 14px;
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--durationXS) ease, border-color var(--durationXS) ease,
+      opacity var(--durationXS) ease;
+  }
+
+  & button:hover {
+    color: rgb(var(--rgbText));
+  }
+
+  & button[aria-selected='true'] {
+    color: rgb(var(--rgbText));
+    background: var(--uiWellStrong);
+    border-color: rgb(var(--rgbText) / 0.5);
+  }
+
+  & button:focus-visible {
+    outline: 2px solid rgb(var(--rgbAccent));
+    outline-offset: 2px;
+  }
+
+  & .tabSub {
+    font-size: var(--uiFontMicro);
+    color: rgb(var(--rgbText) / 0.4);
+  }
+}
+
+.tabs[data-variant='list'] {
+  display: grid;
+  align-content: start;
+  gap: var(--uiGapXS);
+
+  & button {
+    display: grid;
+    gap: 1px;
+    width: 100%;
+    padding: 8px 10px;
+    font: inherit;
+    text-align: left;
+    color: rgb(var(--rgbText));
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--uiRadiusM);
+    cursor: pointer;
+  }
+
+  & button code {
+    font-family: var(--uiMono);
+    font-size: var(--uiFontCode);
+  }
+
+  & .tabSub {
+    font-size: var(--uiFontCaption);
+    color: var(--uiMuted);
+  }
+
+  & button:hover {
+    background: rgb(var(--rgbText) / 0.05);
+  }
+
+  & button[aria-selected='true'] {
+    border-color: rgb(var(--uiRgbAccent) / 0.6);
+    background: rgb(var(--uiRgbAccent) / 0.08);
+  }
+}

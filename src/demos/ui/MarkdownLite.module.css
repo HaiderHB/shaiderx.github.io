@@ -1,0 +1,16 @@
+.markdown {
+  display: grid;
+  gap: var(--uiGapL);
+  font-size: var(--fontSizeBodyXS);
+  line-height: 1.6;
+}
+
+.para {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.list {
+  margin: 0;
+  padding-left: 1.2em;
+}

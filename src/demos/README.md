@@ -29,8 +29,10 @@ hardcodes a model.
 ## Add a demo
 
 1. Slug: company name in lowercase with dashes (`acme`, `blue-guardian`).
-2. Copy `src/pages/demo/sample/` to `src/pages/demo/<slug>/` (page files end in `.page.js`).
-3. Wrap the page in `<DemoLayout company="Acme" title="…" tagline="…">`.
+2. Scaffold it: `node scripts/new-demo.js <slug> "Acme"` writes a working page, CSS module,
+   README and a guarded API route from the UI kit (see below). For a bare start, copy
+   `src/pages/demo/sample/` instead (page files end in `.page.js`).
+3. Wrap the page in `<DemoLayout company="Acme" title="…" tagline="…">` (the scaffold does).
 4. Server code goes in `src/pages/api/demo/<slug>.api.js` or
    `src/pages/api/demo/<slug>/<name>.api.js`, wrapped in `demoApi(handler, { cost })`.
    Call it from the page with `postJson`, `streamFromApi` or `pollJob` from `demos/client`,
@@ -38,6 +40,14 @@ hardcodes a model.
 5. Mint a private link per recipient: `node scripts/demo-key.js <slug> --label "Founder email"`.
    Commit the updated `src/demos/keys.json` (hashes only) and send the printed link.
 6. `npm run build` before pushing. A broken demo blocks the whole site's deploy.
+
+## UI kit
+
+Shared components and design tokens live in `src/demos/ui/`: cards, buttons, pills, decision
+bars, run timelines, an MCP tool panel, code and JSON views, markdown-lite for streamed text,
+notices and empty states. Import from `demos/ui`; restyle with the `--ui*` tokens on your page
+wrapper. Catalog, props and tokens: [`ui/README.md`](ui/README.md). Gallery: `npm run dev`,
+then `/demo/ui/` (404 in production builds).
 
 ## Abuse prevention (so nobody burns the API credits)
 

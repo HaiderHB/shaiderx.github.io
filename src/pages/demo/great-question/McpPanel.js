@@ -1,4 +1,5 @@
-import { Fragment, useEffect, useMemo, useState } from 'react';
+import { Button, Chip, Input, JsonView, SegmentedControl, Select, srOnly } from 'demos/ui';
+import { useEffect, useMemo, useState } from 'react';
 import { FiPlay } from 'react-icons/fi';
 import styles from './GreatQuestion.module.css';
 import { TOOLS, callTool } from './mcp';
@@ -13,75 +14,22 @@ const defaultQuery = findings =>
     .split(/[^a-z]+/)
     .find(word => word.length >= 5) || 'onboarding';
 
-// Minimal JSON syntax coloring: keys, strings, numbers, literals.
-const TOKEN =
-  /("(?:\\.|[^"\\])*")(\s*:)?|\b(-?\d+(?:\.\d+)?(?:e[+-]?\d+)?)\b|\b(true|false|null)\b/g;
-
-const CLIP = 140;
-
-// Shortens long strings for display only (the serialized text block repeats the whole result).
-function clipStrings(value, clipped) {
-  if (typeof value === 'string' && value.length > CLIP + 20) {
-    clipped.count += 1;
-    return `${value.slice(0, CLIP)}… (+${value.length - CLIP} chars)`;
-  }
-  if (Array.isArray(value)) return value.map(item => clipStrings(item, clipped));
-  if (value && typeof value === 'object') {
-    return Object.fromEntries(
-      Object.entries(value).map(([key, item]) => [key, clipStrings(item, clipped)])
-    );
-  }
-  return value;
-}
+const TOOL_OPTIONS = TOOLS.map(item => ({ value: item.name, label: <code>{item.name}</code> }));
 
 function Json({ value, clip = false }) {
-  const clipped = { count: 0 };
-  const text = JSON.stringify(clip ? clipStrings(value, clipped) : value, null, 2);
-  const parts = [];
-  let last = 0;
-  let match;
-  TOKEN.lastIndex = 0;
-  while ((match = TOKEN.exec(text))) {
-    if (match.index > last) parts.push(text.slice(last, match.index));
-    if (match[1] && match[2]) {
-      parts.push(
-        <span key={match.index} className={styles.jsonKey}>
-          {match[1]}
-        </span>,
-        match[2]
-      );
-    } else if (match[1]) {
-      parts.push(
-        <span key={match.index} className={styles.jsonString}>
-          {match[1]}
-        </span>
-      );
-    } else {
-      parts.push(
-        <span key={match.index} className={styles.jsonLiteral}>
-          {match[0]}
-        </span>
-      );
-    }
-    last = match.index + match[0].length;
-  }
-  parts.push(text.slice(last));
   return (
-    <>
-      <pre className={styles.json}>
-        <code>
-          {parts.map((part, index) => (
-            <Fragment key={index}>{part}</Fragment>
-          ))}
-        </code>
-      </pre>
-      {clipped.count > 0 && (
+    <JsonView
+      value={value}
+      variant="boxed"
+      colon="plain"
+      clip={clip ? 140 : undefined}
+      clipNote={
         <p className={styles.small}>
           The text block carries the same JSON as structuredContent, serialized (shortened
           here).
         </p>
-      )}
-    </>
+      }
+    />
   );
 }
 
@@ -134,22 +82,16 @@ export function McpPanel({ findings, turns, sourceLabel }) {
   return (
     <div className={styles.mcpGrid}>
       <div className={styles.mcpCol}>
-        <div className={styles.segmented} role="group" aria-label="Tool">
-          {TOOLS.map(item => (
-            <button
-              key={item.name}
-              type="button"
-              className={styles.segment}
-              aria-pressed={toolName === item.name}
-              onClick={() => {
-                setToolName(item.name);
-                setCall(null);
-              }}
-            >
-              <code>{item.name}</code>
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          className={styles.toolPicker}
+          label="Tool"
+          options={TOOL_OPTIONS}
+          value={toolName}
+          onChange={name => {
+            setToolName(name);
+            setCall(null);
+          }}
+        />
         <p className={styles.codeLabel}>Tool definition, as listed by tools/list</p>
         <Json value={tool} />
       </div>
@@ -168,23 +110,23 @@ export function McpPanel({ findings, turns, sourceLabel }) {
           {toolName === 'search_findings' ? (
             <>
               <div className={styles.callRow}>
-                <label className={styles.visuallyHidden} htmlFor="mcp-query">
+                <label className={srOnly} htmlFor="mcp-query">
                   query
                 </label>
-                <input
+                <Input
                   id="mcp-query"
-                  className={styles.input}
+                  className={styles.queryInput}
                   value={query}
                   maxLength={80}
                   onChange={event => setQuery(event.target.value)}
                   placeholder="query"
                 />
-                <label className={styles.visuallyHidden} htmlFor="mcp-goal">
+                <label className={srOnly} htmlFor="mcp-goal">
                   goal
                 </label>
-                <select
+                <Select
                   id="mcp-goal"
-                  className={styles.select}
+                  className={styles.querySelect}
                   value={goal}
                   onChange={event => setGoal(event.target.value)}
                 >
@@ -194,29 +136,24 @@ export function McpPanel({ findings, turns, sourceLabel }) {
                       {item.id} {item.label}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
               <div className={styles.presets}>
                 {PRESETS.map(word => (
-                  <button
-                    key={word}
-                    type="button"
-                    className={styles.chip}
-                    onClick={() => preset(word)}
-                  >
+                  <Chip key={word} onClick={() => preset(word)}>
                     {word}
-                  </button>
+                  </Chip>
                 ))}
               </div>
             </>
           ) : (
             <div className={styles.callRow}>
-              <label className={styles.visuallyHidden} htmlFor="mcp-quote">
+              <label className={srOnly} htmlFor="mcp-quote">
                 quote_id
               </label>
-              <select
+              <Select
                 id="mcp-quote"
-                className={styles.select}
+                className={styles.querySelect}
                 value={quoteId}
                 onChange={event => setQuoteId(event.target.value)}
               >
@@ -225,11 +162,13 @@ export function McpPanel({ findings, turns, sourceLabel }) {
                     quote_id: {id}
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
           )}
-          <button
-            className={styles.secondaryButton}
+          <Button
+            variant="secondary"
+            pill
+            className={styles.runButton}
             type="submit"
             disabled={
               !findings?.length ||
@@ -237,7 +176,7 @@ export function McpPanel({ findings, turns, sourceLabel }) {
             }
           >
             <FiPlay aria-hidden /> Run tool
-          </button>
+          </Button>
           {!findings?.length && (
             <p className={styles.small}>
               Generate findings first, or switch to the example run.

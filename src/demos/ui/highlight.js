@@ -1,5 +1,5 @@
-// Tiny syntax highlighter for the code on this page (JS, JSX, JSON, diff, shell).
-// Returns lines of [text, kind] pieces; kinds map to CSS classes in the page module.
+// Tiny syntax highlighter for demo code blocks (JS, JSX, JSON, diff, shell).
+// Returns lines of [text, kind] pieces; kinds map to token classes in CodeView.module.css.
 
 const KEYWORDS = new Set(
   'import from export default async await function const let var return if else for of in while new class extends this true false null undefined try catch finally throw typeof continue'.split(

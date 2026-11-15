@@ -1,9 +1,7 @@
+import { Caret, TypingDots, formatTime, seconds } from 'demos/ui';
 import { useEffect, useRef } from 'react';
 import { Badges } from './Badges';
 import styles from './GreatQuestion.module.css';
-import { formatTime } from './study';
-
-const seconds = ms => `${(ms / 1000).toFixed(1)} s`;
 
 /**
  * Live transcript: moderator and participant turns with timestamps, guardrail badges and,
@@ -73,20 +71,13 @@ export function Transcript({ turns, highlight, empty, follow }) {
               </span>
               <p className={styles.turnText} data-failed={turn.failed || undefined}>
                 {waiting ? (
-                  <span
-                    className={styles.typing}
-                    aria-label={turn.role === 'participant' ? 'Transcribing' : 'Thinking'}
-                  >
-                    <i />
-                    <i />
-                    <i />
-                  </span>
+                  <TypingDots
+                    label={turn.role === 'participant' ? 'Transcribing' : 'Thinking'}
+                  />
                 ) : (
                   turn.text
                 )}
-                {!turn.final && turn.text && (
-                  <span className={styles.caret} aria-hidden />
-                )}
+                {!turn.final && turn.text && <Caret />}
               </p>
               {turn.timing && (
                 <p className={styles.turnTiming}>

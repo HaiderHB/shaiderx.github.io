@@ -4,6 +4,20 @@
 // Live at /demo/great-question/ (unlisted, noindex).
 import { DemoLayout } from 'demos/DemoLayout';
 import { getDemoKey, postJson, streamFromApi } from 'demos/client';
+import {
+  Button,
+  Card,
+  EmptyState,
+  Notice,
+  NoteGrid,
+  RunStatus,
+  SectionHead,
+  SegmentedControl,
+  SkeletonGrid,
+  TextArea,
+  formatTime,
+  srOnly,
+} from 'demos/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FiCheck, FiFileText, FiMic, FiSend, FiSquare } from 'react-icons/fi';
 import { FindingCards } from './Findings';
@@ -17,7 +31,6 @@ import {
   GUIDE,
   MAX_ANSWERS,
   MAX_ANSWER_SECONDS,
-  formatTime,
 } from './study';
 import { Transcript } from './Transcript';
 import {
@@ -37,11 +50,50 @@ const MAX_CHECKS = 16; // guardrail calls per interview
 const PREVIEW_TEXT =
   'Preview mode. The private link from my email turns on live interviews. The example run shows a full session.';
 
+const MODE_OPTIONS = [
+  { value: 'voice', label: 'Voice' },
+  { value: 'text', label: 'Type instead' },
+];
+
+const VIEW_OPTIONS = [
+  { value: 'live', label: 'Your interview' },
+  { value: 'example', label: 'Example run' },
+];
+
+const noticeKind = kind => (kind === 'error' ? 'error' : 'info');
+
 const END_REASONS = {
   wrapup: 'Moderator wrapped up',
   user: 'You ended the interview',
   limit: 'Answer limit reached',
 };
+
+const HOW = [
+  {
+    title: 'Turn-based voice',
+    text: "The browser records each answer and stops on a 1.2-second pause. One server route turns it into text with Fish Audio, asks DeepSeek (through fal) for the next question with the same prompt as typed mode, and returns it as Fish Audio speech. The next question starts 2 to 4 seconds after an answer ends; the transcript shows each step's time.",
+  },
+  {
+    title: 'Live guardrail',
+    text: 'After each moderator turn, one call to Jev, a decision model that answers with probabilities instead of text (about 120 ms), scores four typed questions: leading, double-barreled, off-guide, and which guide question the turn covers. That last one drives the guide progress and the automatic wrap-up.',
+  },
+  {
+    title: 'Findings you can trust',
+    text: 'DeepSeek returns findings as JSON. Quotes are verified against the transcript on the server, paraphrases are dropped, and results are cached by transcript hash.',
+  },
+  {
+    title: 'Guarded spend',
+    text: (
+      <>
+        Private link per recipient, per-IP rate limits and daily budgets. A voice turn costs
+        about 4 cents; the opening line&apos;s speech is cached, so it is free after the
+        first play. Up to {MAX_ANSWERS} answers of{' '}
+        {MAX_ANSWER_SECONDS} seconds and {MAX_CHECKS} guardrail checks per interview. API
+        keys never reach the browser.
+      </>
+    ),
+  },
+];
 
 function errorText(error) {
   if (error?.code === 'key_missing') return PREVIEW_TEXT;
@@ -571,7 +623,7 @@ export default function GreatQuestionDemo() {
         ref={audioRef}
         playsInline
         preload="auto"
-        className={styles.visuallyHidden}
+        className={srOnly}
       />
 
       <div className={styles.page}>
@@ -585,86 +637,52 @@ export default function GreatQuestionDemo() {
             aria-label="Interview"
             ref={interviewRef}
           >
-            <div className={`${styles.card} ${styles.interviewCard}`}>
-              <div className={styles.cardHead}>
-                <div>
-                  <span className={styles.eyebrow}>
-                    <span className={styles.step}>2</span> Interview
-                  </span>
-                  <h2 className={styles.h2}>
-                    {mode === 'voice' ? 'Talk to the moderator' : 'Type your answers'}
-                  </h2>
-                </div>
-                <div
-                  className={styles.segmented}
-                  role="group"
-                  aria-label="Interview mode"
-                >
-                  <button
-                    type="button"
-                    className={styles.segment}
-                    aria-pressed={mode === 'voice'}
+            <Card className={styles.interviewCard}>
+              <SectionHead
+                variant="eyebrow"
+                compact
+                step={2}
+                kicker="Interview"
+                title={mode === 'voice' ? 'Talk to the moderator' : 'Type your answers'}
+                action={
+                  <SegmentedControl
+                    className={styles.modeSwitch}
+                    label="Interview mode"
+                    options={MODE_OPTIONS}
+                    value={mode}
+                    onChange={setMode}
                     disabled={busy || (status === 'live' && mode === 'text')}
-                    onClick={() => setMode('voice')}
-                  >
-                    Voice
-                  </button>
-                  <button
-                    type="button"
-                    className={styles.segment}
-                    aria-pressed={mode === 'text'}
-                    disabled={busy || (status === 'live' && mode === 'text')}
-                    onClick={() => setMode('text')}
-                  >
-                    Type instead
-                  </button>
-                </div>
-              </div>
+                  />
+                }
+              />
 
               <div className={styles.controls}>
                 {mode === 'voice' ? (
                   status === 'live' ? (
-                    <button
-                      type="button"
-                      className={styles.secondaryButton}
-                      onClick={() => endVoice('user')}
-                    >
+                    <Button variant="secondary" pill onClick={() => endVoice('user')}>
                       <FiSquare aria-hidden /> End interview
-                    </button>
+                    </Button>
                   ) : (
-                    <button
-                      type="button"
-                      className={styles.primaryButton}
-                      onClick={startVoice}
-                      disabled={status === 'mic'}
-                    >
+                    <Button pill onClick={startVoice} disabled={status === 'mic'}>
                       <FiMic aria-hidden />
                       {status === 'mic'
                         ? 'Starting…'
                         : status === 'ended'
                         ? 'Start a new interview'
                         : 'Start voice interview'}
-                    </button>
+                    </Button>
                   )
                 ) : status === 'live' ? (
-                  <button
-                    type="button"
-                    className={styles.secondaryButton}
-                    onClick={endText}
-                  >
+                  <Button variant="secondary" pill onClick={endText}>
                     <FiSquare aria-hidden /> End interview
-                  </button>
+                  </Button>
                 ) : (
-                  <button
-                    type="button"
-                    className={styles.primaryButton}
-                    onClick={startText}
-                  >
+                  <Button pill onClick={startText}>
                     <FiSend aria-hidden />
                     {status === 'ended'
                       ? 'Start a new typed interview'
                       : 'Start typed interview'}
-                  </button>
+                  </Button>
                 )}
                 <p className={styles.hint}>
                   {mode === 'voice'
@@ -675,20 +693,17 @@ export default function GreatQuestionDemo() {
               </div>
 
               {notice && (
-                <p
+                <Notice
                   className={styles.notice}
-                  data-kind={notice.kind}
+                  kind={noticeKind(notice.kind)}
                   role={notice.kind === 'error' ? 'alert' : 'status'}
                 >
                   {notice.text}
-                </p>
+                </Notice>
               )}
 
               <div className={styles.statusRow}>
-                <span className={styles.status} data-tone={statusLine.tone}>
-                  <i aria-hidden />
-                  {statusLine.text}
-                </span>
+                <RunStatus state={statusLine.tone}>{statusLine.text}</RunStatus>
                 {status === 'live' && view === 'live' && (
                   <ol className={styles.miniGuide} aria-label="Guide progress">
                     {GUIDE.map(q => {
@@ -711,26 +726,14 @@ export default function GreatQuestionDemo() {
                   </ol>
                 )}
                 {turns.length > 0 && status !== 'live' && status !== 'mic' && (
-                  <div
+                  <SegmentedControl
+                    variant="box"
                     className={styles.viewToggle}
-                    role="group"
-                    aria-label="Transcript shown"
-                  >
-                    <button
-                      type="button"
-                      aria-pressed={view === 'live'}
-                      onClick={() => setView('live')}
-                    >
-                      Your interview
-                    </button>
-                    <button
-                      type="button"
-                      aria-pressed={view === 'example'}
-                      onClick={() => setView('example')}
-                    >
-                      Example run
-                    </button>
-                  </div>
+                    label="Transcript shown"
+                    options={VIEW_OPTIONS}
+                    value={view}
+                    onChange={setView}
+                  />
                 )}
               </div>
 
@@ -758,12 +761,13 @@ export default function GreatQuestionDemo() {
 
               {mode === 'text' && view === 'live' && status === 'live' && (
                 <form className={styles.composer} onSubmit={sendAnswer}>
-                  <label className={styles.visuallyHidden} htmlFor="answer">
+                  <label className={srOnly} htmlFor="answer">
                     Your answer
                   </label>
-                  <textarea
+                  <TextArea
                     id="answer"
-                    className={styles.input}
+                    variant="ring"
+                    className={styles.composerInput}
                     rows={2}
                     maxLength={600}
                     value={draft}
@@ -773,60 +777,56 @@ export default function GreatQuestionDemo() {
                       if (event.key === 'Enter' && !event.shiftKey) sendAnswer(event);
                     }}
                   />
-                  <button
+                  <Button
                     type="submit"
-                    className={styles.primaryButton}
+                    pill
+                    className={styles.sendButton}
                     disabled={streaming || !draft.trim()}
                     aria-label="Send answer"
                   >
                     <FiSend aria-hidden />
-                  </button>
+                  </Button>
                 </form>
               )}
-            </div>
+            </Card>
           </section>
         </div>
 
         <section className={styles.section} aria-label="Findings">
-          <div className={styles.sectionHead}>
-            <div>
-              <span className={styles.eyebrow}>
-                <span className={styles.step}>3</span> Findings
-              </span>
-              <h2 className={styles.h2}>
-                {view === 'example'
-                  ? 'What the example run found'
-                  : 'What your interview found'}
-              </h2>
-              <p className={styles.sub}>
-                DeepSeek drafts findings as JSON; the server keeps only quotes that appear
-                word for word in the transcript and stamps their times from it.
-              </p>
-            </div>
-            {view === 'live' && (
-              <button
-                type="button"
-                className={styles.primaryButton}
-                onClick={generateFindings}
-                disabled={findingsState.loading || answered < 2 || busy || streaming}
-              >
-                <FiFileText aria-hidden />
-                {findingsState.loading
-                  ? 'Reading transcript…'
-                  : findings
-                  ? 'Regenerate'
-                  : 'Generate findings'}
-              </button>
-            )}
-          </div>
+          <SectionHead
+            variant="eyebrow"
+            className={styles.sectionHead}
+            step={3}
+            kicker="Findings"
+            title={
+              view === 'example' ? 'What the example run found' : 'What your interview found'
+            }
+            lede="DeepSeek drafts findings as JSON; the server keeps only quotes that appear word for word in the transcript and stamps their times from it."
+            action={
+              view === 'live' && (
+                <Button
+                  pill
+                  onClick={generateFindings}
+                  disabled={findingsState.loading || answered < 2 || busy || streaming}
+                >
+                  <FiFileText aria-hidden />
+                  {findingsState.loading
+                    ? 'Reading transcript…'
+                    : findings
+                    ? 'Regenerate'
+                    : 'Generate findings'}
+                </Button>
+              )
+            }
+          />
 
           {findingsState.error && (
-            <p
+            <Notice
               className={styles.notice}
-              data-kind={findingsState.error === PREVIEW_TEXT ? 'preview' : 'error'}
+              kind={findingsState.error === PREVIEW_TEXT ? 'info' : 'error'}
             >
               {findingsState.error}
-            </p>
+            </Notice>
           )}
 
           {shownFindings ? (
@@ -840,34 +840,26 @@ export default function GreatQuestionDemo() {
               )}
             </>
           ) : (
-            <div className={styles.emptyState}>
+            <EmptyState>
               {findingsState.loading ? (
-                <div className={styles.skeletons} aria-label="Generating findings">
-                  <span />
-                  <span />
-                </div>
+                <SkeletonGrid label="Generating findings" />
               ) : answered < 2 ? (
                 'Answer at least two questions, then generate findings.'
               ) : (
                 'Ready when you are. Findings take a few seconds.'
               )}
-            </div>
+            </EmptyState>
           )}
         </section>
 
         <section className={styles.section} aria-label="MCP tools">
-          <div className={styles.sectionHead}>
-            <div>
-              <span className={styles.eyebrow}>
-                <span className={styles.step}>4</span> MCP surface
-              </span>
-              <h2 className={styles.h2}>The same findings, as tools an agent can call</h2>
-              <p className={styles.sub}>
-                Read-only tools a research agent or Claude can use to search findings and
-                pull exact quotes with timestamps, so every claim it makes is citable.
-              </p>
-            </div>
-          </div>
+          <SectionHead
+            variant="eyebrow"
+            step={4}
+            kicker="MCP surface"
+            title="The same findings, as tools an agent can call"
+            lede="Read-only tools a research agent or Claude can use to search findings and pull exact quotes with timestamps, so every claim it makes is citable."
+          />
           <McpPanel
             findings={shownFindings}
             turns={shownTurns}
@@ -876,52 +868,8 @@ export default function GreatQuestionDemo() {
         </section>
 
         <section className={styles.section} aria-label="How it works">
-          <div className={styles.sectionHead}>
-            <div>
-              <span className={styles.eyebrow}>Under the hood</span>
-              <h2 className={styles.h2}>How it is wired</h2>
-            </div>
-          </div>
-          <div className={styles.how}>
-            <div>
-              <h3 className={styles.h3}>Turn-based voice</h3>
-              <p>
-                The browser records each answer and stops on a 1.2-second pause. One
-                server route turns it into text with Fish Audio, asks DeepSeek (through
-                fal) for the next question with the same prompt as typed mode, and returns
-                it as Fish Audio speech. The next question starts 2 to 4 seconds after an
-                answer ends; the transcript shows each step&apos;s time.
-              </p>
-            </div>
-            <div>
-              <h3 className={styles.h3}>Live guardrail</h3>
-              <p>
-                After each moderator turn, one call to Jev, a decision model that answers
-                with probabilities instead of text (about 120 ms), scores four typed
-                questions: leading, double-barreled, off-guide, and which guide question
-                the turn covers. That last one drives the guide progress and the automatic
-                wrap-up.
-              </p>
-            </div>
-            <div>
-              <h3 className={styles.h3}>Findings you can trust</h3>
-              <p>
-                DeepSeek returns findings as JSON. Quotes are verified against the
-                transcript on the server, paraphrases are dropped, and results are cached
-                by transcript hash.
-              </p>
-            </div>
-            <div>
-              <h3 className={styles.h3}>Guarded spend</h3>
-              <p>
-                Private link per recipient, per-IP rate limits and daily budgets. A voice
-                turn costs about 4 cents; the opening line&apos;s speech is cached, so it
-                is free after the first play. Up to {MAX_ANSWERS} answers of{' '}
-                {MAX_ANSWER_SECONDS} seconds and {MAX_CHECKS} guardrail checks per
-                interview. API keys never reach the browser.
-              </p>
-            </div>
-          </div>
+          <SectionHead variant="eyebrow" kicker="Under the hood" title="How it is wired" />
+          <NoteGrid variant="boxed" items={HOW} />
         </section>
       </div>
     </DemoLayout>

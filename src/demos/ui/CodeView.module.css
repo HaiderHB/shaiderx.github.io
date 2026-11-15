@@ -1,0 +1,190 @@
+/*
+ * Code block with line numbers, token colours, line marks and a copy button.
+ * Token colours: --uiRgbCodeKeyword, --uiRgbCodeString, --uiRgbCodeNumber.
+ * Marks and diff lines use --uiRgbBad, --uiRgbWarn and --uiRgbOk.
+ */
+.codeView {
+  min-width: 0;
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusL);
+  background: var(--uiPanel);
+  overflow: hidden;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--spaceS);
+  padding: 6px 8px 6px 14px;
+  border-bottom: 1px solid var(--uiLine);
+  min-height: 38px;
+}
+
+.title {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.copy {
+  font: inherit;
+  cursor: pointer;
+  border-radius: var(--uiRadiusS);
+  transition: background var(--durationXS) ease, border-color var(--durationXS) ease,
+    opacity var(--durationXS) ease;
+  font-size: var(--uiFontCaption);
+  color: rgb(var(--rgbText));
+  background: transparent;
+  border: 1px solid var(--uiLine);
+  padding: 4px 10px;
+  min-width: 64px;
+
+  &:hover {
+    border-color: rgb(var(--rgbText) / 0.4);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgb(var(--rgbAccent));
+    outline-offset: 2px;
+  }
+}
+
+.headCopy {
+  margin-left: auto;
+}
+
+.scroll {
+  position: relative;
+  height: var(--uiCodeHeight, auto);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.pre {
+  margin: 0;
+  padding: 10px 0;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCode);
+  line-height: 1.65;
+  tab-size: 2;
+
+  & code {
+    display: block;
+    min-width: max-content;
+    font: inherit;
+  }
+}
+
+.line {
+  display: flex;
+  padding-right: var(--spaceM);
+  border-left: 3px solid transparent;
+}
+
+.lineNo {
+  flex: none;
+  width: 3.2em;
+  padding-right: 1em;
+  text-align: right;
+  color: rgb(var(--rgbText) / 0.3);
+  user-select: none;
+}
+
+.lineText {
+  flex: 1;
+  white-space: pre;
+  padding-left: 10px;
+}
+
+.noNumbers .lineText {
+  padding-left: 14px;
+}
+
+.wrap .pre code {
+  min-width: 0;
+}
+
+.wrap .lineText {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding-left: 2.2em;
+  text-indent: -1.2em;
+}
+
+.line[data-mark='fail'] {
+  background: rgb(var(--uiRgbBad) / 0.12);
+  border-left-color: rgb(var(--uiRgbBad));
+}
+
+.line[data-mark='warn'] {
+  background: rgb(var(--uiRgbWarn) / 0.1);
+  border-left-color: rgb(var(--uiRgbWarn));
+}
+
+.line[data-mark='pass'] {
+  border-left-color: rgb(var(--uiRgbOk) / 0.55);
+}
+
+.flash {
+  animation: flash 1.4s ease-out;
+}
+
+@keyframes flash {
+  0% {
+    box-shadow: inset 0 0 0 999px rgb(var(--rgbAccent) / 0.28);
+  }
+
+  100% {
+    box-shadow: inset 0 0 0 999px rgb(var(--rgbAccent) / 0);
+  }
+}
+
+.keyword {
+  color: rgb(var(--uiRgbCodeKeyword));
+}
+
+.string {
+  color: rgb(var(--uiRgbCodeString));
+}
+
+.number {
+  color: rgb(var(--uiRgbCodeNumber));
+}
+
+.comment {
+  color: rgb(var(--rgbText) / 0.45);
+  font-style: italic;
+}
+
+.added {
+  display: inline-block;
+  min-width: 100%;
+  color: rgb(var(--uiRgbOk));
+  background: rgb(var(--uiRgbOk) / 0.12);
+}
+
+.removed {
+  display: inline-block;
+  min-width: 100%;
+  color: rgb(var(--uiRgbBad));
+  background: rgb(var(--uiRgbBad) / 0.1);
+}
+
+/* Inline `code` inside prose (RichText) */
+.inlineCode {
+  font-family: var(--uiMono);
+  font-size: 0.88em;
+  padding: 1px 5px;
+  border-radius: var(--uiRadiusXS);
+  background: var(--uiWellStrong);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 696px) {
+  .pre {
+    font-size: var(--uiFontCaption);
+  }
+}

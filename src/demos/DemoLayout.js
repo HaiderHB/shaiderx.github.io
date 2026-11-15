@@ -3,10 +3,12 @@ import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import { getDemoKey } from './client';
 import styles from './DemoLayout.module.css';
+import ui from './ui/tokens.module.css';
 
 /**
  * Shell for every company demo at /demo/<company>.
  * Labels the page as an unofficial prototype and keeps it out of search results.
+ * Defines the --ui* design tokens (demos/ui/tokens.module.css) for everything inside it.
  * `live`: the demo calls paid models, so visitors without a private key see a note.
  */
 export function DemoLayout({ company, title, tagline, live = true, children }) {
@@ -16,7 +18,7 @@ export function DemoLayout({ company, title, tagline, live = true, children }) {
   useEffect(() => setHasKey(Boolean(getDemoKey())), []);
 
   return (
-    <div className={styles.demo}>
+    <div className={`${styles.demo} ${ui.tokens}`}>
       <Head>
         <title>{pageTitle}</title>
         <meta name="robots" content="noindex, nofollow" />
