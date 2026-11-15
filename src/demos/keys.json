@@ -6,5 +6,13 @@
       "created": "2026-11-13",
       "expires": "2026-11-27"
     }
+  ],
+  "distru": [
+    {
+      "hash": "796180498a928e8479a8857f57da8ebce282f6d837bc55e2964ed66a654fe646",
+      "label": "Haider preview test, 2026-11-13",
+      "created": "2026-11-13",
+      "expires": "2026-11-27"
+    }
   ]
 }
