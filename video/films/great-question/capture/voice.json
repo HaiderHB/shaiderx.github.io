@@ -1,0 +1,95 @@
+{
+ "clip": "take",
+ "lag": 0.05,
+ "captions": "captions",
+ "utterances": [
+  {
+   "id": "mod1",
+   "src": "assets/audio/mod1.wav",
+   "at": 6.46,
+   "use": [
+    [
+     0,
+     1.88
+    ],
+    [
+     2.3,
+     3.75
+    ],
+    [
+     7.7,
+     13.69
+    ]
+   ],
+   "cues": [
+    {
+     "from": 2.47,
+     "to": 11.2,
+     "text": "I'm an AI moderator. To start, walk me through what happens after a new customer signs,",
+     "label": "AI moderator",
+     "chip": "Real run · Fish stock voice Adrian, 1.15x",
+     "note": "Leading questions ruin research, so Jev scores every line live."
+    },
+    {
+     "from": 11.6,
+     "to": 13.6,
+     "hold": 2.2,
+     "text": "up to the point they're using the product on their own.",
+     "label": "AI moderator"
+    }
+   ]
+  },
+  {
+   "id": "a1",
+   "src": "assets/audio/a1.wav",
+   "at": 22.358,
+   "cues": [
+    {
+     "from": 0.08,
+     "to": 5.63,
+     "hold": 0.15,
+     "text": "We run a kickoff call, then their admin sets up single sign-on. That's usually where it stalls.",
+     "label": "Participant",
+     "chip": "Simulated participant · Fish voice Selene, 1.15x"
+    }
+   ]
+  },
+  {
+   "id": "mod2",
+   "src": "assets/audio/mod2.wav",
+   "at": 32.534,
+   "cues": [
+    {
+     "from": 0.17,
+     "to": 3.84,
+     "hold": 0.6,
+     "text": "Got it. Who is involved from your side in that kickoff call?",
+     "label": "AI moderator · follow-up probe",
+     "note": "Neutral: it reuses the participant's own words. Jev: leading 13%."
+    }
+   ]
+  },
+  {
+   "id": "a2",
+   "src": "assets/audio/a2.wav",
+   "at": 38.622,
+   "cues": [
+    {
+     "from": 0.08,
+     "to": 2.17,
+     "text": "Me and one onboarding specialist.",
+     "label": "Participant",
+     "chip": "Simulated participant · Fish voice Selene, 1.15x"
+    },
+    {
+     "from": 2.57,
+     "to": 6.88,
+     "hold": 0.9,
+     "text": "On their side, the admin, and their IT person for single sign-on.",
+     "label": "Participant",
+     "chip": "Simulated participant · Fish voice Selene, 1.15x"
+    }
+   ]
+  }
+ ]
+}

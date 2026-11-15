@@ -1,0 +1,88 @@
+<!--
+  kit/blocks/next-steps.html — "If I join / First 30 days" with up to three numbered lines.
+  Slot 3-4.5 s (QA warns above 4.5 s). Rows land 0.35 s apart, then the card holds still to be read.
+
+  Host:
+    <div id="nextsteps" data-composition-id="nextsteps" data-composition-src="kit/blocks/next-steps.html"
+      data-kit-role="next-steps" data-start="…" data-duration="4" data-track-index="1"
+      data-track-kind="graphics" data-width="1920" data-height="1080"
+      data-variable-values='{"label": "If I join", "head": "First 30 days",
+        "row1": "Put this harness behind the live agent", "row2": "Evals on real orders (anonymized)",
+        "row3": "Same tools over MCP"}'></div>
+
+  Variables
+    label  cyan label above the head          head  display line (*word* = cyan)
+    row1, row2, row3  one line each, <= ~48 characters at 52 px; "(...)" renders quiet grey;
+                      an empty row is hidden
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--kit-ground);
+    }
+    #ns-label {
+      top: 214px;
+    }
+    #ns-head {
+      top: 262px;
+      font-size: 96px;
+      white-space: nowrap;
+    }
+    #ns-rows {
+      top: 440px;
+    }
+  </style>
+  <div
+    id="root"
+    data-composition-id="nextsteps"
+    data-width="1920"
+    data-height="1080"
+    data-composition-variables='[
+      {"id":"label","type":"string","label":"Label","default":"If I join"},
+      {"id":"head","type":"string","label":"Head","default":"First 30 days"},
+      {"id":"row1","type":"string","label":"Row 1","default":"First thing I would do"},
+      {"id":"row2","type":"string","label":"Row 2","default":"Second thing (detail)"},
+      {"id":"row3","type":"string","label":"Row 3","default":"Third thing"}
+    ]'
+  >
+    <div id="ns-card" class="clip kit-card" data-start="0" data-duration="6" data-track-index="0">
+      <div id="ns-label" class="kit-card-label" data-var-text="label">If I join</div>
+      <div id="ns-head" class="kit-card-head" data-var-text="head">First 30 days</div>
+      <div id="ns-rows" class="kit-rows">
+        <div id="ns-row1" class="kit-row"><div class="kit-num">1</div><div class="kit-row-text" id="ns-t1" data-var-text="row1">First thing I would do</div></div>
+        <div id="ns-row2" class="kit-row"><div class="kit-num">2</div><div class="kit-row-text" id="ns-t2" data-var-text="row2">Second thing (detail)</div></div>
+        <div id="ns-row3" class="kit-row"><div class="kit-num">3</div><div class="kit-row-text" id="ns-t3" data-var-text="row3">Third thing</div></div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const inner = document.querySelector('[data-composition-id="nextsteps"][data-composition-variables]');
+      const v = Kit.blocks.vars(inner, "nextsteps");
+      document.getElementById("ns-label").textContent = v.label || "";
+      Kit.blocks.rich(document.getElementById("ns-head"), v.head);
+      Kit.reveal.fadeIn(tl, "#ns-label", 0, 0.2);
+      Kit.reveal.blurIn(tl, "#ns-head", 0.02);
+      let n = 0;
+      [1, 2, 3].forEach((i) => {
+        const text = v["row" + i];
+        const row = document.getElementById("ns-row" + i);
+        const t = document.getElementById("ns-t" + i);
+        if (!text) {
+          row.style.display = "none";
+          return;
+        }
+        Kit.blocks.rich(t, text);
+        t.innerHTML = t.innerHTML.replace(/\(([^)]*)\)/g, '<span class="q">($1)</span>');
+        const at = 0.4 + n * 0.35;
+        tl.fromTo("#ns-row" + i + " .kit-num", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.6)" }, at);
+        Kit.reveal.blurIn(tl, t, at + 0.06);
+        n++;
+      });
+      window.__timelines["nextsteps"] = tl;
+    })();
+  </script>
+</template>

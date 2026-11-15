@@ -1,0 +1,92 @@
+<!--
+  kit/blocks/cold-open.html — the first 1.5-2.5 s of every film: REAL product footage on screen
+  from frame 0 (moving), framed on one component, with the headline in the caption band.
+  It plays assets/footage/hook.mp4 from its start; make that clip with build-footage `cuts`
+  (e.g. {"name": "hook", "from": "s2", "start": 1.0, "end": 3.4}), so its boxes come along.
+
+  Host (index.html):
+    <div id="coldopen" data-composition-id="coldopen" data-composition-src="kit/blocks/cold-open.html"
+      data-kit-role="cold-open" data-start="0" data-duration="2.2" data-track-index="1"
+      data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"
+      data-variable-values='{"kicker": "Prototype for Acme · Haider Bokhari",
+        "headline": "Order email to *confirmed* order", "focus": "email", "zoom": 1.5}'></div>
+
+  Variables
+    kicker    small cyan line above the headline (who / for whom)
+    headline  one line, <= ~42 characters at 66 px; *word* = the one cyan word
+    focus     component name(s) from data/clips/hook.json ("email" or "email,runButton") or "x,y,w,h"
+    zoom      zoom wanted (lowered automatically if the component would not fit above the band)
+    push      slow push-in over the block, as a fraction of zoom (0 = static)
+    align     center | top | left | ... (Kit.camera.fit align)
+    reveal    "instant" (default: kicker + headline crisp from frame 0, so the thumbnail reads) or
+              "words" (word-by-word blur-in; costs ~0.4 s of reading time in a 2 s cold open)
+  Slot: 1.5-2.5 s (QA warns above 2.5 s). Element windows are 3 s so any slot up to 3 s works.
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div
+    id="root"
+    data-composition-id="coldopen"
+    data-width="1920"
+    data-height="1080"
+    data-composition-variables='[
+      {"id":"kicker","type":"string","label":"Kicker","default":"Prototype for Company · Haider Bokhari"},
+      {"id":"headline","type":"string","label":"Headline (*word* = cyan)","default":"What the demo does, in one line"},
+      {"id":"focus","type":"string","label":"Focus component(s) or x,y,w,h","default":"0,0,1920,1080"},
+      {"id":"zoom","type":"number","label":"Zoom wanted","default":1.5},
+      {"id":"push","type":"number","label":"Push-in (fraction of zoom)","default":0.06},
+      {"id":"align","type":"string","label":"Align","default":"center"},
+      {"id":"reveal","type":"string","label":"Headline reveal (instant | words)","default":"instant"}
+    ]'
+  >
+    <div id="co-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="co-cam" class="kit-cam">
+        <video
+          id="co-hook"
+          class="clip kit-footage"
+          src="assets/footage/hook.mp4"
+          data-kit-clip="hook"
+          data-start="0"
+          data-duration="3"
+          data-track-index="0"
+          muted
+          playsinline
+        ></video>
+      </div>
+    </div>
+    <div id="co-band-w" class="clip" data-start="0" data-duration="3" data-track-index="1" data-layout-ignore>
+      <div id="co-band" class="kit-band"></div>
+    </div>
+    <div id="co-text" class="clip kit-headline" data-start="0" data-duration="3" data-track-index="2" data-layout-allow-caption-zone>
+      <div id="co-kicker" class="kit-kicker" data-var-text="kicker">Prototype for Company · Haider Bokhari</div>
+      <div id="co-head" class="kit-head" data-var-text="headline">What the demo does, in one line</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const host = document.querySelector('[data-composition-id="coldopen"]');
+      const inner = document.querySelector('[data-composition-id="coldopen"][data-composition-variables]');
+      const duration = parseFloat(host.getAttribute("data-duration")) || 2.2;
+      const v = Kit.blocks.vars(inner, "coldopen");
+      Kit.blocks.rich(document.getElementById("co-head"), v.headline);
+      document.getElementById("co-kicker").textContent = v.kicker;
+
+      Kit.scene.footage({ id: "coldopen", tl, root: host, duration, shots: Kit.blocks.coldOpenShots(v, duration) });
+
+      // band, kicker and headline are readable on frame 0 (thumbnail + a 2 s slot leaves no time for a reveal)
+      tl.set("#co-band", { opacity: 1 }, 0);
+      tl.set("#co-kicker", { opacity: 1 }, 0);
+      if (v.reveal === "words") Kit.reveal.words(tl, document.getElementById("co-head"), 0.05, { stagger: 0.06, dur: 0.16, firstOpacity: 0.45 });
+      else tl.set("#co-head", { opacity: 1, filter: "blur(0px)" }, 0); // crisp on frame 0 (thumbnail)
+      window.__timelines["coldopen"] = tl;
+    })();
+  </script>
+</template>

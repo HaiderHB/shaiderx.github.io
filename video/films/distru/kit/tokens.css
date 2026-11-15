@@ -1,0 +1,49 @@
+/*
+ * kit/tokens.css — house style for Haider's demo launch films (1920x1080, 30 fps).
+ * Loaded once by the film's index.html; every scene and block reads these variables.
+ *
+ * Variables
+ *   colour   --kit-ground (#111111, the demo pages' own background), --kit-ink, --kit-quiet,
+ *            --kit-dim-ink, --kit-accent (one cyan, #00e5ff), --kit-line, --kit-panel
+ *   type     --kit-font (Inter), --kit-mono (JetBrains Mono)
+ *   frame    --kit-w / --kit-h (canvas), --kit-margin (24px framing margin),
+ *            --kit-band-top (y where the caption band starts; the camera never frames
+ *            the focused component below this line while captions are on),
+ *            --kit-gutter (left/right text margin for cards and captions)
+ *   caption  --kit-cap-* sizes
+ * Rules (see video/README.md): no glow, no glass, no decorative gradients, no target-company logo.
+ * The only gradient allowed is the 40 px fade at the top of the caption band.
+ * Keep lib/camera.js SAFE.bandTop in sync with --kit-band-top.
+ */
+:root {
+  --kit-ground: #111111;
+  --kit-panel: #181818;
+  --kit-ink: #fafafa;
+  --kit-quiet: #a3a3a3;
+  --kit-dim-ink: #6b6b6b;
+  --kit-accent: #00e5ff;
+  --kit-line: rgba(250, 250, 250, 0.16);
+  --kit-dim: rgba(12, 12, 12, 0.5);
+
+  --kit-font: "Inter", sans-serif;
+  --kit-mono: "JetBrains Mono", monospace;
+
+  --kit-w: 1920px;
+  --kit-h: 1080px;
+  --kit-margin: 24px;
+  --kit-gutter: 160px;
+  --kit-band-top: 840px;
+
+  --kit-cap-label: 28px;
+  --kit-cap-main: 48px;
+  --kit-cap-note: 28px;
+  --kit-cap-bottom: 60px;
+
+  --kit-display: 104px;
+  --kit-head: 72px;
+  --kit-line-size: 52px;
+  --kit-label: 28px;
+
+  --kit-ring: 3px;
+  --kit-ring-radius: 12px;
+}

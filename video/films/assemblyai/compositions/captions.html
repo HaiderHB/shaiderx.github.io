@@ -1,0 +1,67 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <!-- one host over the four footage scenes, 2.30-39.45 s (captions-local = absolute - 2.30) -->
+    <div id="cap-band" class="clip" data-start="0" data-duration="37.15" data-track-index="0" data-layout-ignore>
+      <div class="kit-band"></div>
+    </div>
+
+    <!-- checker (scene-local = captions-local) -->
+    <div id="cap-check" class="clip kit-cap" data-start="0.1" data-duration="4.05" data-track-index="1">
+      <div class="kit-cap-label"><span>Integration checker · 14 rules · free</span></div>
+      <div class="kit-cap-main">First try, built from AssemblyAI’s own snippets: 3 fail.</div>
+    </div>
+    <div id="cap-l9" class="clip kit-cap" data-start="4.25" data-duration="3.0" data-track-index="1">
+      <div class="kit-cap-label"><span>L9 · from the SDK README</span></div>
+      <div class="kit-cap-main">The README’s token snippet is a SyntaxError.</div>
+    </div>
+    <div id="cap-l43" class="clip kit-cap" data-start="7.35" data-duration="3.55" data-track-index="1">
+      <div class="kit-cap-label"><span>L43–44 · fail</span></div>
+      <div class="kit-cap-main"><code>close()</code> right after Terminate drops the last sentence.</div>
+    </div>
+
+    <!-- explain (captions-local = 11.00 + scene-local) -->
+    <div id="cap-explain" class="clip kit-cap" data-start="11.1" data-duration="3.05" data-track-index="1">
+      <div class="kit-cap-label"><span>Explain and fix</span><span class="kit-chip">Live run · uncached</span><span class="kit-speed" data-rate="4" data-tag-start="12.4" data-tag-end="14.2">4x</span></div>
+      <div class="kit-cap-main">DeepSeek V3.2 via fal explains each failing check.</div>
+    </div>
+    <div id="cap-reviewed" class="clip kit-cap" data-start="14.3" data-duration="5.05" data-track-index="1">
+      <div class="kit-cap-label"><span>Reviewed fixes</span></div>
+      <div class="kit-cap-main">The model writes what breaks. Each Fix line is reviewed text.</div>
+    </div>
+
+    <!-- fix (captions-local = 19.45 + scene-local) -->
+    <div id="cap-fix" class="clip kit-cap" data-start="19.55" data-duration="4.95" data-track-index="1">
+      <div class="kit-cap-label"><span>Reference fix · 3 files</span></div>
+      <div class="kit-cap-main">Same checker: all 14 checks pass.</div>
+      <div class="kit-cap-note">Rule checks only; no live AssemblyAI session yet.</div>
+    </div>
+    <div id="cap-gaps" class="clip kit-cap" data-start="24.65" data-duration="4.2" data-track-index="1">
+      <div class="kit-cap-label"><span>8 verified gaps · checked 13 Nov</span></div>
+      <div class="kit-cap-main">Each one quotes the AssemblyAI source that misleads the agent.</div>
+    </div>
+
+    <!-- prop (captions-local = 28.95 + scene-local) -->
+    <div id="cap-tools" class="clip kit-cap" data-start="29.05" data-duration="4.2" data-track-index="1">
+      <div class="kit-cap-label"><span>Proposed, not shipped</span></div>
+      <div class="kit-cap-main">Two MCP tools so agents test streaming instead of guessing.</div>
+    </div>
+    <div id="cap-readme" class="clip kit-cap" data-start="33.45" data-duration="3.6" data-track-index="1">
+      <div class="kit-cap-label"><span>Proposed · README fix</span></div>
+      <div class="kit-cap-main">One line in the SDK README fixes the SyntaxError.</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

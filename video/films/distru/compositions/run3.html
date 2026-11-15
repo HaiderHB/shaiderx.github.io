@@ -1,0 +1,43 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="run3" data-width="1920" data-height="1080">
+    <div id="r3-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="r3-cam" class="kit-cam">
+        <!-- live, uncached run of sample 3, recorded 2026-11-14 -->
+        <video id="r3-v1" class="clip kit-footage" src="assets/footage/s3.mp4" data-kit-clip="s3" data-start="0" data-duration="1.9" data-media-start="1.7" data-track-index="0" muted playsinline></video>
+        <!-- jump cut: 2.2 s of the cursor travelling to Run agent is skipped -->
+        <video id="r3-v2" class="clip kit-footage" src="assets/footage/s3.mp4" data-kit-clip="s3" data-start="1.9" data-duration="0.85" data-media-start="5.85" data-track-index="0" muted playsinline></video>
+        <!-- extraction, 7.5 s of the run shown at 6x (tagged) -->
+        <video id="r3-v3" class="clip kit-footage" src="assets/footage/s3.mp4" data-kit-clip="s3" data-start="2.75" data-duration="1.25" data-media-start="6.7" data-playback-rate="6" data-track-index="0" muted playsinline></video>
+        <!-- jump cut to the finished run (the page has scrolled to the decision) -->
+        <video id="r3-v4" class="clip kit-footage" src="assets/footage/s3.mp4" data-kit-clip="s3" data-start="4" data-duration="5.25" data-media-start="18.75" data-track-index="0" muted playsinline></video>
+
+        <div id="r3-ring-route" class="clip kit-ring" data-start="4.6" data-duration="2.1" data-kit-focus="finalRoute" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+        <div id="r3-ring-q" class="clip kit-ring" data-start="7.6" data-duration="1.5" data-kit-focus="oneQuestion" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": ["emailHead", "samples", "emailText"], "maxZoom": 1.5, "label": "sample 3 picked" },
+        { "t": 1.9, "focus": ["emailText", "runButton"], "cut": true, "maxZoom": 1.6, "label": "Run agent" },
+        { "t": 2.6, "focus": "trace", "dur": 0.45, "label": "the run, 6x" },
+        { "t": 4, "focus": "decision", "cut": true, "label": "Hold" },
+        { "t": 6.85, "focus": "reply", "dur": 0.6, "label": "reply asks for the renewed license" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "run3", tl });
+      window.__timelines["run3"] = tl;
+    })();
+  </script>
+</template>

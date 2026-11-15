@@ -1,0 +1,43 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="mcp" data-width="1920" data-height="1080">
+    <div id="mc-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="mc-cam" class="kit-cam">
+        <!-- the MCP section's "call a tool" box: the same tool layer the agent uses, run in the browser on sample data -->
+        <video id="mc-v1" class="clip kit-footage" src="assets/footage/mcp.mp4" data-kit-clip="mcp" data-start="0" data-duration="2.1" data-media-start="5.6" data-track-index="0" muted playsinline></video>
+        <!-- jump cut: 1.3 s of cursor travel to Call tool is skipped -->
+        <video id="mc-v2" class="clip kit-footage" src="assets/footage/mcp.mp4" data-kit-clip="mcp" data-start="2.1" data-duration="1.4" data-media-start="9" data-track-index="0" muted playsinline></video>
+        <!-- jump cut over the page scroll to the result -->
+        <video id="mc-v3" class="clip kit-footage" src="assets/footage/mcp.mp4" data-kit-clip="mcp" data-start="3.5" data-duration="3" data-media-start="13" data-track-index="0" muted playsinline></video>
+        <!-- crops (ground patches, footage px): keep the "claude mcp add ... localhost" row (and the next section) out of frame -->
+        <!-- the row sits 20 px lower once check_license's longer definition opens (media 6.73 s); not in frame during the Call tool close-up -->
+        <div id="mc-crop-a" class="clip kit-crop" data-start="0" data-duration="1.13" data-track-index="2" data-layout-ignore style="left: 380px; top: 846px; width: 1160px; height: 240px"></div>
+        <div id="mc-crop-a2" class="clip kit-crop" data-start="1.13" data-duration="0.97" data-track-index="2" data-layout-ignore style="left: 380px; top: 866px; width: 1160px; height: 220px"></div>
+        <div id="mc-crop-b" class="clip kit-crop" data-start="3.5" data-duration="3" data-track-index="2" data-layout-ignore style="left: 380px; top: 990px; width: 1160px; height: 90px"></div>
+
+        <div id="mc-ring-status" class="clip kit-ring" data-start="4" data-duration="2.3" data-kit-focus="statusLine" data-kit-pad="8" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": "toolPanel", "label": "7 tools; check_license picked" },
+        { "t": 2.1, "focus": "args", "cut": true, "label": "Call tool" },
+        { "t": 3.5, "focus": "result", "cut": true, "maxZoom": 2, "label": "the result" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "mcp", tl });
+      window.__timelines["mcp"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,80 @@
+<!--
+  captions: one host over the footage scenes (film 2.00-47.12; times here are local = film - 2.00).
+  Speech subtitles (.kit-voice) between the kit:voice-cues markers are WRITTEN by
+  node ../../kit/scripts/place-audio.mjs . --write  from capture/voice.json, so they follow the placed audio.
+  The other cues are hand-written notes for the silent stretches.
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band" class="clip" data-start="0" data-duration="45.12" data-track-index="0" data-layout-ignore><div class="kit-band"></div></div>
+
+    <!-- speech (interview 0.00-32.10 local) -->
+    <!-- kit:voice-cues:start -->
+    <div id="vc-mod1-1" class="clip kit-cap kit-voice" data-start="0.120" data-duration="5.180" data-track-index="1" data-kit-voice="mod1">
+      <div class="kit-cap-label"><span>AI moderator</span><span class="kit-chip">Real run · Fish stock voice Adrian, 1.15x</span></div>
+      <div class="kit-cap-main">I'm an AI moderator. To start, walk me through what happens after a new customer signs,</div>
+      <div class="kit-cap-note">Leading questions ruin research, so Jev scores every line live.</div>
+    </div>
+    <div id="vc-mod1-2" class="clip kit-cap kit-voice" data-start="5.300" data-duration="4.250" data-track-index="1" data-kit-voice="mod1">
+      <div class="kit-cap-label"><span>AI moderator</span></div>
+      <div class="kit-cap-main">up to the point they're using the product on their own.</div>
+    </div>
+    <div id="vc-a1-1" class="clip kit-cap kit-voice" data-start="9.678" data-duration="5.750" data-track-index="1" data-kit-voice="a1">
+      <div class="kit-cap-label"><span>Participant</span><span class="kit-chip">Simulated participant · Fish voice Selene, 1.15x</span></div>
+      <div class="kit-cap-main">We run a kickoff call, then their admin sets up single sign-on. That's usually where it stalls.</div>
+    </div>
+    <div id="vc-mod2-1" class="clip kit-cap kit-voice" data-start="17.799" data-duration="4.320" data-track-index="1" data-kit-voice="mod2">
+      <div class="kit-cap-label"><span>AI moderator · follow-up probe</span></div>
+      <div class="kit-cap-main">Got it. Who is involved from your side in that kickoff call?</div>
+      <div class="kit-cap-note">Neutral: it reuses the participant's own words. Jev: leading 13%.</div>
+    </div>
+    <div id="vc-a2-1" class="clip kit-cap kit-voice" data-start="23.797" data-duration="2.490" data-track-index="1" data-kit-voice="a2">
+      <div class="kit-cap-label"><span>Participant</span><span class="kit-chip">Simulated participant · Fish voice Selene, 1.15x</span></div>
+      <div class="kit-cap-main">Me and one onboarding specialist.</div>
+    </div>
+    <div id="vc-a2-2" class="clip kit-cap kit-voice" data-start="26.287" data-duration="5.260" data-track-index="1" data-kit-voice="a2">
+      <div class="kit-cap-label"><span>Participant</span><span class="kit-chip">Simulated participant · Fish voice Selene, 1.15x</span></div>
+      <div class="kit-cap-main">On their side, the admin, and their IT person for single sign-on.</div>
+    </div>
+    <!-- kit:voice-cues:end -->
+
+    <!-- answer -> reply, shown at 2x (iv-v3: local 15.43-17.575) -->
+    <div id="cap-pipe" class="clip kit-cap" data-start="15.45" data-duration="2.3" data-track-index="2">
+      <div class="kit-cap-label"><span>Answer to reply</span><span class="kit-speed" data-rate="2" data-tag-start="15.45" data-tag-end="17.575">2x</span></div>
+      <div class="kit-cap-main">Fish ASR 0.5 s · DeepSeek V3.2 1.4 s · Fish TTS 1.2 s</div>
+    </div>
+
+    <!-- check (film 34.095-37.295 = local 32.095-35.295) -->
+    <div id="cap-check" class="clip kit-cap" data-start="32.15" data-duration="3.1" data-track-index="2">
+      <div class="kit-cap-label"><span>What Jev flags</span><span class="kit-chip">The page's example check</span></div>
+      <div class="kit-cap-main">A leading question scores 96% leading and 89% off-guide.</div>
+    </div>
+
+    <!-- findings (film 37.295-42.62 = local 35.295-40.62); fd-v2 at 5x = local 36.595-37.813 -->
+    <div id="cap-findings" class="clip kit-cap" data-start="35.35" data-duration="5.22" data-track-index="2">
+      <div class="kit-cap-label"><span>Findings</span><span class="kit-speed" data-rate="5" data-tag-start="36.595" data-tag-end="37.813">5x</span></div>
+      <div class="kit-cap-main">Each finding cites the participant's exact words, checked against the transcript.</div>
+      <div class="kit-cap-note">DeepSeek V3.2 drafts them; the server keeps only verbatim quotes (0 dropped).</div>
+    </div>
+
+    <!-- mcp (film 42.62-47.12 = local 40.62-45.12) -->
+    <div id="cap-mcp" class="clip kit-cap" data-start="40.67" data-duration="4.4" data-track-index="2">
+      <div class="kit-cap-label"><span>MCP · get_quote</span></div>
+      <div class="kit-cap-main">An agent gets the exact quote, its turn and timestamp, ready to cite.</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

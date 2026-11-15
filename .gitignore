@@ -64,3 +64,15 @@ public/draco/
 public/og
 .serverless
 .next
+
+# Launch videos (video/): media, renders and installs stay local
+video/node_modules
+video/films/*/node_modules
+video/films/*/raw/
+video/films/*/renders/
+video/films/*/assets/footage/
+video/films/*/.hyperframes/
+video/**/*.mp4
+video/**/*.mov
+video/**/*.webm
+video/**/*.wav

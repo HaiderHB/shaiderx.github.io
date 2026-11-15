@@ -1,0 +1,37 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="checker" data-width="1920" data-height="1080">
+    <div id="ck-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="ck-cam" class="kit-cam">
+        <!-- clip "top" (free, recorded 2026-11-15): the checker on the "First try" sample after the page
+             scroll (jump cut from the cold open), Run again, the pointer on L9, then L43 clicked. One take, 1x. -->
+        <video id="ck-v1" class="clip kit-footage" src="assets/footage/top.mp4" data-kit-clip="top" data-start="0" data-duration="11" data-media-start="5" data-track-index="0" muted playsinline></video>
+
+        <!-- L9: `expires_in_seconds = 60` from the SDK README (SyntaxError); then L43-44: Terminate, then close() -->
+        <div id="ck-ring-l9" class="clip kit-ring" data-start="4.4" data-duration="2.6" data-kit-focus="l9" data-kit-pad="4" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+        <div id="ck-ring-l43" class="clip kit-ring" data-start="8.6" data-duration="2.3" data-kit-focus='["l43", "l44"]' data-kit-pad="4" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": ["code", "resultsPane", "runAgain"], "label": "the checker: Run again, results rise" },
+        { "t": 2.3, "focus": ["l1", "l12", "verdict", "failTerminate"], "dur": 0.6, "align": "top", "pad": 0, "margin": 4, "label": "token route + verdict: 3 fail (frame top falls between the hint line and the panels)" },
+        { "t": 7.0, "focus": ["verdict", "failTerminate", "l42", "l45"], "dur": 0.6, "align": "top", "pad": 0, "margin": 4, "window": [8.55, 11], "label": "L43 clicked: Terminate then close()" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "checker", tl });
+      window.__timelines["checker"] = tl;
+    })();
+  </script>
+</template>

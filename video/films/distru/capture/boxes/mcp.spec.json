@@ -1,0 +1,5 @@
+{"ground": 17, "threshold": 4, "region": [0, 47, 1920, 1033],
+ "queries": [
+  {"name": "toolPanel", "point": [440, 600], "every": 0.5, "from": 2.5, "to": 16.5},
+  {"name": "result", "point": [1100, 800], "every": 0.5, "from": 12.5, "to": 16.5}
+ ]}

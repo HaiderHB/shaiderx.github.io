@@ -1,0 +1,14 @@
+{
+  "name": "film-distru",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync": "node ../../kit/scripts/sync.mjs .",
+    "footage": "node ../../kit/scripts/build-footage.mjs .",
+    "check": "npx hyperframes check --json",
+    "qa": "node ../../kit/scripts/qa.mjs .",
+    "qa:frames": "node ../../kit/scripts/qa.mjs . --frames",
+    "preview": "npx hyperframes preview",
+    "render": "npx hyperframes render --quality delivery -o renders/distru-launch.mp4"
+  }
+}

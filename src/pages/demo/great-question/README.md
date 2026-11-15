@@ -61,7 +61,8 @@ Steps:
    router), `moderatorInstructions('voice')`, temperature 0.6, 160 max tokens. On the 10th answer
    the prompt gets a time check so the moderator wraps up. `done` is the closing line or the cap.
 3. **TTS**: `fishSpeak()` (`s2.1-pro`), stock library voice **Adrian** ("a steady and reliable
-   narrator": even and unhurried, so it does not sound like it favors an answer), 64 kbps MP3
+   narrator": even and unhurried, so it does not sound like it favors an answer) at 1.15x speed
+   (`prosody.speed`), 64 kbps MP3
    (about 8 KB per second). Cached by exact text for 7 days.
 
 The browser plays the MP3 on one `<audio>` element. The Start tap plays 50 ms of silence on it

@@ -1,0 +1,96 @@
+{
+ "name": "evals",
+ "source": "frame",
+ "width": 1920,
+ "height": 1080,
+ "duration": 24.067,
+ "marks": [
+  {
+   "label": "begin",
+   "t": 0
+  },
+  {
+   "label": "at-evals",
+   "t": 2.12
+  },
+  {
+   "label": "run",
+   "t": 4.448
+  },
+  {
+   "label": "done",
+   "t": 18.081
+  },
+  {
+   "label": "pointed",
+   "t": 20.52
+  },
+  {
+   "label": "end",
+   "t": 24.027
+  }
+ ],
+ "boxes": {
+  "evalsSection": [
+   {
+    "t": 0,
+    "absent": true,
+    "src": "frame"
+   },
+   {
+    "t": 2.2,
+    "x": 434,
+    "y": 333,
+    "w": 1052,
+    "h": 413,
+    "src": "frame"
+   }
+  ],
+  "cards": [
+   {
+    "t": 0,
+    "absent": true,
+    "src": "frame"
+   },
+   {
+    "t": 2.2,
+    "x": 434,
+    "y": 501,
+    "w": 1052,
+    "h": 245,
+    "src": "frame"
+   }
+  ],
+  "runEvals": [
+   {
+    "t": 0,
+    "absent": true,
+    "src": "frame"
+   },
+   {
+    "t": 2.2,
+    "x": 433,
+    "y": 441,
+    "w": 118,
+    "h": 46,
+    "src": "frame"
+   }
+  ],
+  "score": [
+   {
+    "t": 0,
+    "absent": true,
+    "src": "frame"
+   },
+   {
+    "t": 18.1,
+    "x": 566,
+    "y": 452,
+    "w": 151,
+    "h": 22,
+    "src": "frame"
+   }
+  ]
+ },
+ "events": []
+}

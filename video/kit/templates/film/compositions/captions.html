@@ -1,0 +1,40 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band" class="clip" data-start="0" data-duration="38" data-track-index="0" data-layout-ignore>
+      <div class="kit-band"></div>
+    </div>
+
+    <div id="cap-input" class="clip kit-cap" data-start="0.2" data-duration="3" data-track-index="1">
+      <div class="kit-cap-label"><span>The input</span></div>
+      <div class="kit-cap-main">One sentence on what the viewer is looking at.</div>
+    </div>
+
+    <div id="cap-run" class="clip kit-cap" data-start="3.4" data-duration="3" data-track-index="1">
+      <div class="kit-cap-label">
+        <span>Step 1 · Extract</span>
+        <span class="kit-speed" data-rate="4" data-tag-start="4" data-tag-end="6">4x</span>
+      </div>
+      <div class="kit-cap-main">What the step does, in plain words.</div>
+    </div>
+
+    <div id="cap-cache" class="clip kit-cap" data-start="6.5" data-duration="3" data-track-index="1">
+      <div class="kit-cap-label"><span>Evals</span><span class="kit-chip">Replayed from cache</span></div>
+      <div class="kit-cap-main">3 of 3 samples pass.</div>
+      <div class="kit-cap-note">Samples 2 and 3 replayed today's cached live runs.</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

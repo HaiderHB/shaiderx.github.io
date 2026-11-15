@@ -1,0 +1,89 @@
+<!--
+  kit/blocks/end-card.html — the closing question and the sign-off. Slot 2.5-3 s (QA fails above 3 s).
+  Words land in ~0.7 s, then name · url; the rest of the slot is a still hold.
+
+  Host:
+    <div id="endcard" data-composition-id="endcard" data-composition-src="kit/blocks/end-card.html"
+      data-kit-role="end-card" data-start="…" data-duration="2.8" data-track-index="1"
+      data-track-kind="graphics" data-width="1920" data-height="1080"
+      data-variable-values='{"question": "Where does the agent need a *human* most today?",
+        "name": "Haider Bokhari", "url": "haiderb.com"}'></div>
+
+  Variables
+    question  up to 3 lines at 88 px; *word* = the one cyan word
+    name, url sign-off line (url in cyan)
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--kit-ground);
+    }
+    #ec-q {
+      top: 300px;
+      font-size: 88px;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      width: 1500px;
+    }
+    #ec-rule {
+      position: absolute;
+      left: calc(var(--kit-gutter) + 4px);
+      top: 664px;
+      width: 120px;
+      height: 4px;
+      background: var(--kit-accent);
+      transform-origin: 0 50%;
+    }
+    #ec-sign {
+      position: absolute;
+      left: calc(var(--kit-gutter) + 4px);
+      top: 696px;
+      font-family: var(--kit-font);
+      font-size: 50px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+      color: var(--kit-ink);
+    }
+    #ec-sign .dot {
+      color: var(--kit-dim-ink);
+      margin: 0 0.3em;
+    }
+    #ec-url {
+      color: var(--kit-accent);
+    }
+  </style>
+  <div
+    id="root"
+    data-composition-id="endcard"
+    data-width="1920"
+    data-height="1080"
+    data-composition-variables='[
+      {"id":"question","type":"string","label":"Question (*word* = cyan)","default":"The one question you want them to answer?"},
+      {"id":"name","type":"string","label":"Name","default":"Haider Bokhari"},
+      {"id":"url","type":"string","label":"URL","default":"haiderb.com"}
+    ]'
+  >
+    <div id="ec-card" class="clip kit-card" data-start="0" data-duration="4" data-track-index="0">
+      <div id="ec-q" class="kit-card-head" data-var-text="question">The one question you want them to answer?</div>
+      <div id="ec-rule"></div>
+      <div id="ec-sign"><span id="ec-name" data-var-text="name">Haider Bokhari</span><span class="dot">·</span><span id="ec-url" data-var-text="url">haiderb.com</span></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const inner = document.querySelector('[data-composition-id="endcard"][data-composition-variables]');
+      const v = Kit.blocks.vars(inner, "endcard");
+      Kit.blocks.rich(document.getElementById("ec-q"), v.question);
+      document.getElementById("ec-name").textContent = v.name || "";
+      document.getElementById("ec-url").textContent = v.url || "";
+      const landed = Kit.reveal.words(tl, document.getElementById("ec-q"), 0, { stagger: 0.05, dur: 0.14 });
+      tl.fromTo("#ec-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "expo.out" }, Math.min(landed, 0.8));
+      Kit.reveal.blurIn(tl, "#ec-sign", Math.min(landed, 0.8) + 0.1);
+      window.__timelines["endcard"] = tl;
+    })();
+  </script>
+</template>

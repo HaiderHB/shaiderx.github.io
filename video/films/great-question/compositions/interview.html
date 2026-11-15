@@ -1,0 +1,51 @@
+<!--
+  interview: the live voice interview from take 1 (2026-11-15), one take, real Fish ASR / DeepSeek V3.2 /
+  Fish TTS 1.15x / Jev calls. Media times are footage seconds of assets/footage/take.mp4 (= DOM time + 0.05 s
+  screencast lag, kit/scripts/frame-lag.py). Sound is placed separately (index.html, kit/scripts/place-audio.mjs).
+    iv-v1   0.00-1.45   "I'm an AI moderator," (the opening line continues from the cold open; a 0.4 s pause cut)
+    iv-v2   1.45-15.43  jump over "this takes about three minutes, and there are no right or wrong answers."
+                        -> "To start, walk me through ..." (Q1), Your turn, Answer tapped, simulated answer 1
+    iv-v3  15.43-17.58  2x: pause detected -> Fish ASR -> DeepSeek -> Fish TTS (labelled 2x in the captions)
+    iv-v4  17.58-30.90  the moderator's probe ("Got it. Who is involved ...?"), Answer, simulated answer 2
+    iv-v5  30.90-32.10  hard cut over 1.6 s of waiting: answer 2 transcribed, the moderator thinking
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="interview" data-width="1920" data-height="1080">
+    <div id="iv-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="iv-cam" class="kit-cam">
+        <video id="iv-v1" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="0" data-duration="1.45" data-media-start="8.81" data-track-index="0" muted playsinline></video>
+        <video id="iv-v2" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="1.45" data-duration="13.98" data-media-start="14.21" data-track-index="0" muted playsinline></video>
+        <video id="iv-v3" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="15.43" data-duration="2.145" data-media-start="28.19" data-playback-rate="2" data-track-index="0" muted playsinline></video>
+        <video id="iv-v4" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="17.575" data-duration="13.32" data-media-start="32.48" data-track-index="0" muted playsinline></video>
+        <video id="iv-v5" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="30.895" data-duration="1.2" data-media-start="47.4" data-track-index="0" muted playsinline></video>
+
+        <div id="iv-ring-b1" class="clip kit-ring" data-start="2.4" data-duration="2.6" data-kit-focus="badges1" data-kit-pad="5" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+        <div id="iv-ring-b2" class="clip kit-ring" data-start="19.4" data-duration="2.3" data-kit-focus="badges2" data-kit-pad="5" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": ["mod1", "dock"], "zoom": 1.2, "align": "bottom", "cut": true, "label": "the opening question + Jev badges + dock (continues the cold open); bottom-aligned so the frame top falls in the gap above the card controls" },
+        { "t": 7.6, "focus": "card", "dur": 0.8, "pad": 8, "margin": 4, "label": "the whole interview card: Your turn, Answer tapped, simulated answer 1" },
+        { "t": 15.43, "focus": ["status", "transcript", "dock"], "zoom": 1.2, "align": "bottom", "dur": 0.6, "label": "answer -> reply pipeline (2x), same framing as the opening" },
+        { "t": 17.575, "focus": ["part1", "mod2", "dock"], "dur": 0.6, "label": "the probe under the answer it follows; answer 2 with the dock" },
+        { "t": 30.895, "focus": ["mod2", "part2", "dock"], "cut": true, "label": "answer 2 transcribed, moderator thinking" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "interview", tl });
+      window.__timelines["interview"] = tl;
+    })();
+  </script>
+</template>

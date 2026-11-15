@@ -1,0 +1,36 @@
+<!--
+  mcp: the same findings as MCP tools, on the same take. get_quote runs in the browser (no model call).
+    mc-v1  0.00-1.00   cursor to the get_quote tool, click
+    mc-v2  1.00-4.50   jump over 0.75 s; Run tool -> the JSON-RPC result with the verbatim quote, turn, time
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="mcp" data-width="1920" data-height="1080">
+    <div id="mc-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="mc-cam" class="kit-cam">
+        <video id="mc-v1" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="0" data-duration="1" data-media-start="83.15" data-track-index="0" muted playsinline></video>
+        <video id="mc-v2" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="1" data-duration="3.5" data-media-start="84.9" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": ["toolSeg", "callBox"], "cut": true, "label": "pick get_quote, Run tool" },
+        { "t": 2.0, "focus": "mcpPre2", "dur": 0.6, "label": "the result an MCP client receives" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "mcp", tl });
+      window.__timelines["mcp"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,20 @@
+{
+  "name": "haider-video",
+  "private": true,
+  "description": "Launch-film kit and films for Haider's daily demos (HyperFrames). See README.md.",
+  "type": "module",
+  "scripts": {
+    "new-film": "node kit/scripts/new-film.mjs",
+    "sync": "node kit/scripts/sync.mjs",
+    "sync:all": "node kit/scripts/sync.mjs --all",
+    "footage": "node kit/scripts/build-footage.mjs",
+    "qa": "node kit/scripts/qa.mjs",
+    "boxes": "python3 kit/scripts/measure-boxes.py"
+  },
+  "dependencies": {
+    "hyperframes": "^0.9.43"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

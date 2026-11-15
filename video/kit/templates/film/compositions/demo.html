@@ -1,0 +1,35 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="demo" data-width="1920" data-height="1080">
+    <div id="demo-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="demo-cam" class="kit-cam">
+        <video id="demo-v1" class="clip kit-footage" src="assets/footage/s1.mp4" data-kit-clip="s1"
+          data-start="0" data-duration="4" data-media-start="0" data-track-index="0" muted playsinline></video>
+        <video id="demo-v2" class="clip kit-footage" src="assets/footage/s1.mp4" data-kit-clip="s1"
+          data-start="4" data-duration="2" data-media-start="4" data-playback-rate="4" data-track-index="0" muted playsinline></video>
+        <div id="demo-ring1" class="clip kit-ring" data-start="1.2" data-duration="1.6" data-kit-focus="runButton"
+          data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": "email", "maxZoom": 1.6, "label": "the input" },
+        { "t": 3.6, "focus": "trace", "dur": 0.8, "label": "the run" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "demo", tl });
+      window.__timelines["demo"] = tl;
+    })();
+  </script>
+</template>

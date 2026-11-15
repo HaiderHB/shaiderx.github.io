@@ -1,0 +1,31 @@
+L43, L44 · Stop sends Terminate and waits for Termination
+The code closes the WebSocket immediately after sending Terminate, which discards the final transcript because the server hasn't yet sent the Termination message.
+Fix: Send {"type":"Terminate"}, keep reading until the Termination message, then close.
+
+L31 · Audio is PCM16 from an AudioWorklet
+Chrome and Edge do not support 'audio/ogg;codecs=opus' in MediaRecorder, so creating the recorder with that mimeType will throw a NotSupportedError.
+Fix: Capture with an AudioWorklet that resamples to 16 kHz and sends Int16 PCM in ~50 ms chunks (see The fix below).
+
+L9 · Doc snippets compile
+The SDK call uses expires_in_seconds = 60 instead of expires_in_seconds: 60, causing a SyntaxError for an invalid shorthand property initializer.
+Fix: Use a colon: { expires_in_seconds: 60 }. Moving to the documented POST mint (L8) removes this call entirely.
+
+L8 · Token minted on the documented endpoint
+The SDK's createTemporaryToken calls GET /v3/token, which differs from the documented POST endpoint and may not be supported long-term.
+Fix: Mint server-side with fetch('https://token.assemblyai.com/v1/token', { method: 'POST', headers: { Authorization: process.env.ASSEMBLYAI_API_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ product: 'streaming', expires_in_seconds: 60 }) }).
+
+L8 · Token is short-lived and streaming-only
+The token is minted without restricting access, so it could be used for other products like TTS, not just streaming STT.
+Fix: Keep expires_in_seconds short (60) and turn off other products with access.
+
+L7 · Token route runs per request
+The GET route handler is statically prerendered, generating a single token at build time that expires quickly, breaking for subsequent visitors.
+Fix: Add export const dynamic = 'force-dynamic' to the token route. It stays GET, so the client needs no change.
+
+L28 · Speech model is explicit and current
+The WebSocket URL omits the speech_model parameter, leaving the model choice to the server's default, which could change unexpectedly.
+Fix: Add speech_model=universal-3-6-pro to the WebSocket URL.
+
+L28 · No parameters v3 silently ignores
+The query parameter 'formatted_finals' is not recognized by v3 and will be silently ignored, having no effect on the output.
+Fix: Remove the parameter from the WebSocket URL; v3 ignores it.

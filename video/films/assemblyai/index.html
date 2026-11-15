@@ -1,0 +1,81 @@
+<!doctype html>
+<!--
+  AssemblyAI launch film v2 (built on video/kit). 45.95 s, silent. Real captures of the demo (2026-11-15).
+    coldopen   0.00-2.30   kit block: the page's hero (task + "3 failures"), headline in the band
+    checker    2.30-13.30  First try in the checker: Run again, 3 fail; L9 SyntaxError; L43 Terminate/close()
+    explain   13.30-21.75  one LIVE uncached "Explain and fix" run (DeepSeek V3.2 via fal), wait at 4x
+    fix       21.75-31.25  Reference fix: 14 pass; then the 8 verified gaps (row 1)
+    prop      31.25-39.45  proposed, not shipped: two MCP tools, the one-line README fix
+    nextsteps 39.45-42.95  kit block
+    endcard   42.95-45.95  kit block
+    captions   2.30-39.45  one host over the footage scenes
+  QA: node ../../kit/scripts/qa.mjs . --frames
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="kit/tokens.css" />
+    <link rel="stylesheet" href="kit/kit.css" />
+    <script src="kit/kit.js"></script>
+    <script src="data/clips.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #111111;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #111111;
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="45.95" data-width="1920" data-height="1080">
+      <div id="coldopen" data-composition-id="coldopen" data-composition-src="kit/blocks/cold-open.html" data-kit-role="cold-open"
+        data-variable-values='{"kicker": "Prototype for AssemblyAI · Haider Bokhari", "headline": "Where coding agents *trip* on AssemblyAI", "focus": "hero", "zoom": 1.7, "push": 0.06, "align": "top"}'
+        data-start="0" data-duration="2.3" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
+
+      <div id="checker" data-composition-id="checker" data-composition-src="compositions/checker.html" data-kit-role="footage"
+        data-start="2.3" data-duration="11" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
+
+      <div id="explain" data-composition-id="explain" data-composition-src="compositions/explain.html" data-kit-role="footage"
+        data-start="13.3" data-duration="8.45" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
+
+      <div id="fix" data-composition-id="fix" data-composition-src="compositions/fix.html" data-kit-role="footage"
+        data-start="21.75" data-duration="9.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+
+      <div id="prop" data-composition-id="prop" data-composition-src="compositions/prop.html" data-kit-role="footage"
+        data-start="31.25" data-duration="8.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
+
+      <div id="nextsteps" data-composition-id="nextsteps" data-composition-src="kit/blocks/next-steps.html" data-kit-role="next-steps"
+        data-variable-values='{"label": "If I join", "head": "First 30 days", "row1": "Baseline first-try rates per agent", "row2": "Docs CI: every snippet compiles", "row3": "Ship both MCP tools, re-run the eval"}'
+        data-start="39.45" data-duration="3.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
+
+      <div id="endcard" data-composition-id="endcard" data-composition-src="kit/blocks/end-card.html" data-kit-role="end-card"
+        data-variable-values='{"question": "Which *agent* do new signups use?", "name": "Haider Bokhari", "url": "haiderb.com"}'
+        data-start="42.95" data-duration="3" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 7"></div>
+
+      <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-kit-role="captions"
+        data-start="2.3" data-duration="37.15" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

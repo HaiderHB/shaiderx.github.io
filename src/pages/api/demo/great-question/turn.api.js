@@ -25,10 +25,12 @@ export const config = { api: { bodyParser: { sizeLimit: '2mb' } } };
 // Fish Audio stock library voice ("a steady and reliable narrator"): even and unhurried,
 // which suits a moderator who should not sound like they favor an answer.
 const VOICE = FISH_VOICES.adrian;
+// Spoken a little faster than Fish's default pace: at 1.0 the moderator drags between turns.
+const SPEED = 1.15;
 const MAX_AUDIO_BYTES = 1_200_000; // 45 s of opus or AAC is a few hundred KB
 const LINE_TTL = 7 * 86_400;
 const OPENING_TTL = 30 * 86_400;
-const OPENING_FLAG = `gq:opening:${VOICE}`;
+const OPENING_FLAG = `gq:opening:${VOICE}:${SPEED}`;
 
 // MediaRecorder types: Chromium and Firefox record webm/opus, Safari records mp4 (AAC).
 const EXTENSIONS = {
@@ -45,8 +47,8 @@ const hash = text => crypto.createHash('sha256').update(text).digest('hex').slic
 
 /** Moderator speech as base64 MP3, cached by voice and exact text. */
 const speak = (text, ttl = LINE_TTL) =>
-  cached(`gq:tts:${VOICE}:${hash(text)}`, ttl, async () =>
-    (await fishSpeak({ text, voice: VOICE, bitrate: 64 })).toString('base64')
+  cached(`gq:tts:${VOICE}:${SPEED}:${hash(text)}`, ttl, async () =>
+    (await fishSpeak({ text, voice: VOICE, speed: SPEED, bitrate: 64 })).toString('base64')
   );
 
 // A turn is ASR + LLM + TTS. The opening is one TTS call the first time, then free.

@@ -1,0 +1,36 @@
+<!--
+  check: the guide's own "Guardrail, example check" on the page (assets/footage/check.mp4, recorded
+  2026-11-15, no API call). Real Jev scores the page ships with for two sample questions; the live take
+  had no flagged question (its four moderator lines scored 9-25% leading), so this is labelled as the
+  page's example check in the captions.
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="check" data-width="1920" data-height="1080">
+    <div id="ck-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="ck-cam" class="kit-cam">
+        <video id="ck-v1" class="clip kit-footage" src="assets/footage/check.mp4" data-kit-clip="check" data-start="0" data-duration="3.2" data-media-start="1.25" data-track-index="0" muted playsinline></video>
+        <!-- ground patch: keeps the example run's transcript (right column, unrelated to the live take) out of frame -->
+        <div id="ck-crop" class="kit-crop" style="left: 832px; top: 0; width: 1088px; height: 1080px"></div>
+        <div id="ck-ring-bad" class="clip kit-ring" data-start="0.5" data-duration="2.6" data-kit-focus="exampleBad" data-kit-pad="6" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [{ "t": 0, "focus": "exampleCheck", "cut": true, "maxZoom": 1.9, "label": "the page's guardrail example check" }]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "check", tl });
+      window.__timelines["check"] = tl;
+    })();
+  </script>
+</template>

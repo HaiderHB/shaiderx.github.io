@@ -1,0 +1,57 @@
+{
+ "source": "frame",
+ "samples": [
+  {
+   "name": "evalsSection",
+   "t": 0,
+   "absent": true
+  },
+  {
+   "name": "evalsSection",
+   "t": 2.2,
+   "x": 434,
+   "y": 333,
+   "w": 1052,
+   "h": 413
+  },
+  {
+   "name": "cards",
+   "t": 0,
+   "absent": true
+  },
+  {
+   "name": "cards",
+   "t": 2.2,
+   "x": 434,
+   "y": 501,
+   "w": 1052,
+   "h": 245
+  },
+  {
+   "name": "runEvals",
+   "t": 0,
+   "absent": true
+  },
+  {
+   "name": "runEvals",
+   "t": 2.2,
+   "x": 433,
+   "y": 441,
+   "w": 118,
+   "h": 46
+  },
+  {
+   "name": "score",
+   "t": 0,
+   "absent": true
+  },
+  {
+   "name": "score",
+   "t": 18.1,
+   "x": 566,
+   "y": 452,
+   "w": 151,
+   "h": 22
+  }
+ ]
+}

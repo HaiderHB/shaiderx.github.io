@@ -1,0 +1,5 @@
+{"ground": 17, "threshold": 4, "region": [0, 47, 1920, 1033],
+ "queries": [
+  {"name": "cards", "point": [1180, 600], "every": 0.5, "from": 2.5, "to": 23.5},
+  {"name": "runEvals", "point": [440, 450], "times": [2.5, 3.5, 4.0]}
+ ]}

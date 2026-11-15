@@ -1,0 +1,78 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <!-- band off from 15.52 to 17.52 while the full-frame sales order shot plays (captions:false shot) -->
+    <div id="cap-band-a" class="clip" data-start="0" data-duration="15.52" data-track-index="0" data-layout-ignore><div class="kit-band"></div></div>
+    <div id="cap-band-b" class="clip" data-start="17.52" data-duration="22.6" data-track-index="0" data-layout-ignore><div class="kit-band"></div></div>
+
+    <!-- run2 (scene-local = captions-local) -->
+    <div id="cap-input" class="clip kit-cap" data-start="0.1" data-duration="3.75" data-track-index="1">
+      <div class="kit-cap-label"><span>The input</span></div>
+      <div class="kit-cap-main">A messy order email: a vague quantity, an out-of-stock cart, a swap hint.</div>
+    </div>
+    <div id="cap-extract" class="clip kit-cap" data-start="3.9" data-duration="3.95" data-track-index="1">
+      <div class="kit-cap-label"><span>Step 1 · Extract</span><span class="kit-speed" data-rate="6" data-tag-start="3.9" data-tag-end="6.77">6x</span></div>
+      <div class="kit-cap-main">DeepSeek V3.2 turns the email into structured JSON.</div>
+    </div>
+    <div id="cap-check" class="clip kit-cap" data-start="7.87" data-duration="1.83" data-track-index="1">
+      <div class="kit-cap-label"><span>Step 2 · Check</span></div>
+      <div class="kit-cap-main">Six deterministic tool calls check it against sample ERP data.</div>
+    </div>
+    <div id="cap-decide" class="clip kit-cap" data-start="9.72" data-duration="3.28" data-track-index="1">
+      <div class="kit-cap-label"><span>Step 3 · Decide</span></div>
+      <div class="kit-cap-main">Jev routes it with probabilities: needs review 100%, substitute OK 96%.</div>
+    </div>
+    <div id="cap-draft" class="clip kit-cap" data-start="13.02" data-duration="2.48" data-track-index="1">
+      <div class="kit-cap-label"><span>Step 4 · Draft</span></div>
+      <div class="kit-cap-main">A reply that asks the one question that matters, and a priced sales order.</div>
+    </div>
+
+    <!-- run3 (captions-local = 17.52 + scene-local) -->
+    <div id="cap-s3" class="clip kit-cap" data-start="17.62" data-duration="3.9" data-track-index="1">
+      <div class="kit-cap-label"><span>Sample 3 · live run</span><span class="kit-speed" data-rate="6" data-tag-start="20.27" data-tag-end="21.52">6x</span></div>
+      <div class="kit-cap-main">Next email: the buyer’s license expires before delivery.</div>
+    </div>
+    <div id="cap-rule" class="clip kit-cap" data-start="21.52" data-duration="2.8" data-track-index="1">
+      <div class="kit-cap-label"><span>Hard rule</span></div>
+      <div class="kit-cap-main">License expires Nov 28, before the Dec 3 delivery: floor is Hold. Jev agreed (68%).</div>
+    </div>
+    <div id="cap-escalate" class="clip kit-cap" data-start="24.37" data-duration="2.35" data-track-index="1">
+      <div class="kit-cap-label"><span>Rules only escalate</span></div>
+      <div class="kit-cap-main">Code can only make a route stricter. The reply asks for the renewed license.</div>
+    </div>
+
+    <!-- evals (captions-local = 26.77 + scene-local) -->
+    <div id="cap-evals" class="clip kit-cap" data-start="26.87" data-duration="3.7" data-track-index="1">
+      <div class="kit-cap-label"><span>Evals</span><span class="kit-speed" data-rate="6" data-tag-start="28.37" data-tag-end="30.62">6x</span></div>
+      <div class="kit-cap-main">All 3 samples run through the agent; route, license flag and swap are graded.</div>
+    </div>
+    <div id="cap-result" class="clip kit-cap" data-start="30.62" data-duration="2.95" data-track-index="1">
+      <div class="kit-cap-label"><span>Result</span><span class="kit-chip">Samples 2 and 3: cached replay</span></div>
+      <div class="kit-cap-main">3 of 3 samples pass: 9 of 9 checks.</div>
+      <div class="kit-cap-note">Sample 1 ran live; samples 2 and 3 replayed today’s cached live runs of the same emails.</div>
+    </div>
+
+    <!-- mcp (captions-local = 33.62 + scene-local) -->
+    <div id="cap-mcp" class="clip kit-cap" data-start="33.72" data-duration="3.35" data-track-index="1">
+      <div class="kit-cap-label"><span>MCP</span></div>
+      <div class="kit-cap-main">The same 7 tools, served over MCP: Claude or Codex can call them too.</div>
+    </div>
+    <div id="cap-call" class="clip kit-cap" data-start="37.12" data-duration="2.95" data-track-index="1">
+      <div class="kit-cap-label"><span>Call a tool</span></div>
+      <div class="kit-cap-main">Called by hand: <code>check_license</code> says <code>expires_before_delivery</code>.</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,94 @@
+<!doctype html>
+<!--
+  Great Question launch film v2 (built on video/kit). 53.3 s. The only sound is the recorded interview:
+  the AI moderator's real replies from the take (Fish stock voice Adrian at 1.15x, what the page played)
+  and a SIMULATED participant (Fish stock voice Selene at 1.15x, fed through the page's mic path).
+    coldopen   0.00-2.00   kit block: the opening line arriving live (T1 + Jev badges), headline in the band
+    interview  2.00-34.10  the live take: Q1, simulated answer 1, the pipeline (2x), the probe, answer 2
+    check     34.10-37.30  the page's guardrail example check (real Jev scores, labelled as the example)
+    findings  37.30-42.62  Generate findings (wait at 4x): quote-backed findings
+    mcp       42.62-47.12  get_quote over MCP: the verbatim quote with turn and time
+    nextsteps 47.12-50.62  kit block
+    endcard   50.62-53.32  kit block
+    captions   2.00-47.12  one host: speech subtitles (written by place-audio from capture/voice.json) + notes
+  Voice <audio> between the kit:voice markers is written by: node ../../kit/scripts/place-audio.mjs . --write
+  QA: node ../../kit/scripts/qa.mjs . --frames
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="kit/tokens.css" />
+    <link rel="stylesheet" href="kit/kit.css" />
+    <script src="kit/kit.js"></script>
+    <script src="data/clips.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #111111;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #111111;
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="53.32" data-width="1920" data-height="1080">
+      <div id="coldopen" data-composition-id="coldopen" data-composition-src="kit/blocks/cold-open.html" data-kit-role="cold-open"
+        data-variable-values='{"kicker": "Prototype for Great Question · Haider Bokhari", "headline": "Voice AI interviews, *checked* for leading", "focus": "mod1,dock", "zoom": 1.2, "push": 0, "align": "bottom"}'
+        data-start="0" data-duration="2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
+
+      <div id="interview" data-composition-id="interview" data-composition-src="compositions/interview.html" data-kit-role="footage"
+        data-start="2" data-duration="32.095" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
+
+      <div id="check" data-composition-id="check" data-composition-src="compositions/check.html" data-kit-role="footage"
+        data-start="34.095" data-duration="3.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
+
+      <div id="findings" data-composition-id="findings" data-composition-src="compositions/findings.html" data-kit-role="footage"
+        data-start="37.295" data-duration="5.325" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+
+      <div id="mcp" data-composition-id="mcp" data-composition-src="compositions/mcp.html" data-kit-role="footage"
+        data-start="42.62" data-duration="4.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
+
+      <div id="nextsteps" data-composition-id="nextsteps" data-composition-src="kit/blocks/next-steps.html" data-kit-role="next-steps"
+        data-variable-values='{"label": "If I join", "head": "First 30 days", "row1": "Calibrate the guardrail on researcher-labeled turns", "row2": "Rewrite a flagged question before it is spoken", "row3": "Findings across interviews, over a real MCP server"}'
+        data-start="47.12" data-duration="3.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
+
+      <div id="endcard" data-composition-id="endcard" data-composition-src="kit/blocks/end-card.html" data-kit-role="end-card"
+        data-variable-values='{"question": "How do you measure *moderator quality* today?", "name": "Haider Bokhari", "url": "haiderb.com"}'
+        data-start="50.62" data-duration="2.7" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 7"></div>
+
+      <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-kit-role="captions"
+        data-start="2" data-duration="45.12" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
+
+      <!-- the interview's own sound, placed in sync with the footage (do not edit by hand) -->
+      <!-- kit:voice:start -->
+      <audio id="v-mod1-1" class="clip" src="assets/audio/mod1.wav" data-start="0.110" data-duration="1.880" data-media-start="0.000" data-volume="1" data-track-index="5"></audio>
+      <audio id="v-mod1-2" class="clip" src="assets/audio/mod1.wav" data-start="2.000" data-duration="1.450" data-media-start="2.300" data-volume="1" data-track-index="5"></audio>
+      <audio id="v-mod1-3" class="clip" src="assets/audio/mod1.wav" data-start="3.450" data-duration="5.988" data-media-start="7.700" data-volume="1" data-track-index="5"></audio>
+      <audio id="v-a1-1" class="clip" src="assets/audio/a1.wav" data-start="11.648" data-duration="5.735" data-media-start="0.000" data-volume="1" data-track-index="6"></audio>
+      <audio id="v-mod2-1" class="clip" src="assets/audio/mod2.wav" data-start="19.679" data-duration="3.840" data-media-start="0.000" data-volume="1" data-track-index="5"></audio>
+      <audio id="v-a2-1" class="clip" src="assets/audio/a2.wav" data-start="25.767" data-duration="6.982" data-media-start="0.000" data-volume="1" data-track-index="6"></audio>
+      <!-- kit:voice:end -->
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>
