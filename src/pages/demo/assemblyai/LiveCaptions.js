@@ -1,6 +1,7 @@
 // Live version of the reference Captions component. Rendered only when the deployment has
 // ASSEMBLYAI_API_KEY; tokens come from /api/demo/assemblyai/token/ (demo key + budget guarded).
 import { postJson } from 'demos/client';
+import { Button } from 'demos/ui';
 import { useEffect, useRef, useState } from 'react';
 import styles from './AssemblyAI.module.css';
 import { WORKLET_SOURCE } from './reference';
@@ -110,7 +111,7 @@ export function LiveCaptions() {
             The same worklet and session flow, against the real API. Stops itself after 90 seconds.
           </p>
         </div>
-        <button type="button" className={styles.primary} onClick={status === 'idle' ? start : stop} disabled={busy}>
+        <Button size="s" onClick={status === 'idle' ? start : stop} disabled={busy}>
           {status === 'idle'
             ? 'Start captions'
             : status === 'live'
@@ -118,7 +119,7 @@ export function LiveCaptions() {
             : status === 'starting'
             ? 'Connecting…'
             : 'Finishing last turn…'}
-        </button>
+        </Button>
       </div>
       <p className={styles.liveText} aria-live="polite">
         {ordered.length ? (

@@ -1,0 +1,76 @@
+/* Colours come from tokens: --uiJsonKey, --uiJsonString, --uiJsonNumber, --uiJsonBool, --uiJsonNull. */
+.json {
+  margin: 0;
+  overflow: auto;
+  font-family: var(--uiMono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+
+  /* well: tinted block without a border, for traces and details */
+  &[data-variant='well'] {
+    max-height: 260px;
+    padding: 10px 12px;
+    font-size: var(--uiFontCaption);
+    line-height: 1.5;
+    tab-size: 2;
+    color: rgb(var(--rgbText) / 0.85);
+    background: var(--uiWell);
+    border-radius: var(--uiRadiusM);
+  }
+
+  /* boxed: bordered block, larger type, for tool definitions and results */
+  &[data-variant='boxed'] {
+    max-height: 380px;
+    padding: 14px 16px;
+    border: 1px solid var(--uiLine);
+    border-radius: var(--uiRadiusL);
+    font-size: var(--uiFontCode);
+    line-height: 1.6;
+    color: rgb(var(--rgbText) / 0.75);
+    background: rgb(var(--rgbText) / 0.04);
+  }
+
+  &[data-tall] {
+    max-height: 380px;
+  }
+}
+
+.key {
+  color: var(--uiJsonKey);
+}
+
+.string {
+  color: var(--uiJsonString);
+}
+
+.number {
+  color: var(--uiJsonNumber);
+}
+
+.bool {
+  color: var(--uiJsonBool);
+}
+
+.null {
+  color: var(--uiJsonNull);
+}
+
+/* Collapsible raw JSON under a small summary line */
+.details {
+  margin-top: var(--uiGapL);
+
+  & > summary {
+    cursor: pointer;
+    font-size: var(--uiFontCode);
+    color: var(--uiMuted);
+    width: fit-content;
+
+    &:hover {
+      color: rgb(var(--rgbText));
+    }
+  }
+
+  & > pre {
+    margin-top: var(--uiGapM);
+  }
+}

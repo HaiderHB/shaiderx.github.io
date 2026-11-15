@@ -1,0 +1,155 @@
+/*
+ * Variants: primary, secondary, ghost (small outlined action), link (underlined text).
+ * Sizes for primary and secondary: m (default), s (compact). `pill` swaps the size for a
+ * 42px rounded touch target that fits an icon.
+ */
+.button {
+  font: inherit;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+  }
+}
+
+/* --- sizes ---------------------------------------------------------------------------- */
+
+.button[data-size='m'] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapM);
+  font-size: var(--fontSizeBodyS);
+  border-radius: var(--uiRadiusM);
+  padding: 10px 20px;
+  transition: opacity var(--durationXS) ease, transform var(--durationXS) ease;
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.55;
+  }
+}
+
+.button[data-size='s'] {
+  font-size: var(--fontSizeBodyXS);
+  border-radius: var(--uiRadiusS);
+  padding: 9px 16px;
+  white-space: nowrap;
+  transition: background var(--durationXS) ease, border-color var(--durationXS) ease,
+    opacity var(--durationXS) ease;
+
+  &:disabled {
+    opacity: 0.4;
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgb(var(--rgbAccent));
+    outline-offset: 2px;
+  }
+}
+
+.button[data-pill] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--uiGapM);
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--fontSizeBodyXS);
+  font-weight: var(--fontWeightMedium);
+  white-space: nowrap;
+  transition: transform var(--durationXS) ease, opacity var(--durationXS) ease,
+    background var(--durationXS) ease;
+
+  & svg {
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+  }
+}
+
+/* --- variants ------------------------------------------------------------------------- */
+
+.button[data-variant='primary'] {
+  --uiSpinnerColor: rgb(var(--rgbBackground));
+  --uiSpinnerTrackColor: rgb(var(--rgbBackground) / 0.3);
+
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbBackground));
+  background: rgb(var(--rgbPrimary));
+  border: 0;
+
+  &:not([data-pill]):hover:not(:disabled) {
+    opacity: 0.88;
+  }
+}
+
+.button[data-variant='secondary'] {
+  color: rgb(var(--rgbText));
+  background: transparent;
+  border: 1px solid var(--uiLineStrong);
+
+  &[data-size='s'] {
+    padding: 8px 14px;
+  }
+
+  &[data-size='s']:hover {
+    border-color: rgb(var(--rgbText) / 0.45);
+  }
+
+  &[data-size='m'] {
+    padding: 9px 19px;
+  }
+
+  &[data-pill] {
+    background: rgb(var(--rgbText) / 0.06);
+  }
+
+  &[data-pill]:hover:not(:disabled) {
+    background: rgb(var(--rgbText) / 0.1);
+  }
+}
+
+.button[data-variant='ghost'] {
+  font-size: var(--fontSizeBodyXS);
+  color: rgb(var(--rgbText));
+  background: transparent;
+  border: 1px solid rgb(var(--rgbText) / 0.25);
+  border-radius: var(--uiRadiusS);
+  padding: 6px 12px;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: rgb(var(--uiRgbAccent));
+  }
+}
+
+.button[data-variant='link'] {
+  font-size: var(--fontSizeBodyXS);
+  color: rgb(var(--rgbText) / 0.85);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgb(var(--rgbText) / 0.35);
+
+  &:hover:not(:disabled) {
+    color: rgb(var(--uiRgbAccent));
+    text-decoration-color: currentColor;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}

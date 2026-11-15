@@ -1,0 +1,90 @@
+/*
+ * Design tokens for demo pages. DemoLayout puts `.tokens` on its root, so every demo and
+ * every component in demos/ui can read these. A demo restyles the kit by overriding tokens
+ * on its own wrapper (for example `.page { --uiRgbAccent: var(--rgbPrimary); }`), never by
+ * editing the components.
+ *
+ * Colours ending in `Rgb` are space-separated channels, used as `rgb(var(--uiRgbOk) / 0.2)`.
+ * Spacing and the large type sizes come from the site theme (--spaceXS..--space5XL,
+ * --fontSizeBodyXS..--fontSizeH0); the small sizes below fill the gaps under 14px.
+ */
+.tokens {
+  /* status colours */
+  --uiRgbOk: 52 211 153;
+  --uiRgbWarn: 251 191 36;
+  --uiRgbBad: var(--rgbError);
+  --uiRgbAccent: var(--rgbAccent);
+
+  /* surfaces and text */
+  --uiLine: rgb(var(--rgbText) / 0.12);
+  --uiLineStrong: rgb(var(--rgbText) / 0.2);
+  --uiPanel: rgb(var(--rgbText) / 0.035);
+  --uiWell: rgb(var(--rgbText) / 0.05);
+  --uiWellStrong: rgb(var(--rgbText) / 0.06);
+  --uiMuted: rgb(var(--rgbText) / 0.62);
+  --uiMono: var(--monoFontStack);
+
+  /* radius */
+  --uiRadiusXS: 4px;
+  --uiRadiusS: 6px;
+  --uiRadiusM: 8px;
+  --uiRadiusL: 10px;
+  --uiRadiusXL: 12px;
+  --uiRadiusPill: 999px;
+
+  /* type scale below --fontSizeBodyXS (14px) */
+  --uiFontMicro: 11px;
+  --uiFontLabel: 11.5px;
+  --uiFontCaption: 12px;
+  --uiFontCode: 12.5px;
+  --uiFontSmall: 13px;
+  --uiFontNote: 13.5px;
+
+  /* spacing between the theme's 4 / 8 / 16 / 24 steps */
+  --uiGap2XS: 2px;
+  --uiGapXS: 4px;
+  --uiGapS: 6px;
+  --uiGapM: 8px;
+  --uiGapL: 10px;
+  --uiGapXL: 12px;
+  --uiGap2XL: 14px;
+
+  /* JSON colours (JsonView) */
+  --uiJsonKey: rgb(140 200 255);
+  --uiJsonString: rgb(134 239 172);
+  --uiJsonNumber: rgb(253 186 116);
+  --uiJsonBool: rgb(216 180 254);
+  --uiJsonNull: var(--uiMuted);
+
+  /* code colours (CodeView) */
+  --uiRgbCodeKeyword: 199 146 234;
+  --uiRgbCodeString: 158 214 145;
+  --uiRgbCodeNumber: 247 160 108;
+}
+
+:global(body[data-theme='light']) .tokens {
+  --uiRgbOk: 5 150 105;
+  --uiRgbWarn: 202 138 4;
+  --uiRgbAccent: 8 145 178;
+  --uiWellStrong: rgb(var(--rgbText) / 0.05);
+  --uiJsonKey: rgb(29 78 216);
+  --uiJsonString: rgb(21 128 61);
+  --uiJsonNumber: rgb(194 65 12);
+  --uiJsonBool: rgb(126 34 206);
+  --uiRgbCodeKeyword: 124 58 237;
+  --uiRgbCodeString: 21 128 61;
+  --uiRgbCodeNumber: 194 65 12;
+}
+
+/* Screen-reader-only text: `import { srOnly } from 'demos/ui'`. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

@@ -3,6 +3,40 @@
 // pre-recorded example run; with one, runs and evals hit /api/demo/distru/run/.
 import { DemoLayout } from 'demos/DemoLayout';
 import { getDemoKey, streamFromApi } from 'demos/client';
+import {
+  Button,
+  Card,
+  Caret,
+  CardHead,
+  CardTitle,
+  DecisionBadge,
+  Dot,
+  EmptyState,
+  EvalTable,
+  IndexBadge,
+  JsonDetails,
+  JsonView,
+  KeyValues,
+  McpConnectCommand,
+  McpToolPanel,
+  MiniLabel,
+  Notice,
+  NoteGrid,
+  OptionList,
+  Pill,
+  PipelineStrip,
+  ProbabilityBar,
+  ProbabilityBars,
+  SectionHead,
+  Spinner,
+  Tag,
+  TextArea,
+  Timeline,
+  TimelineStep,
+  formatMs,
+  pct,
+  srOnly,
+} from 'demos/ui';
 import { useEffect, useRef, useState } from 'react';
 import {
   EXAMPLE,
@@ -21,11 +55,17 @@ import {
 } from './agent';
 import styles from './Distru.module.css';
 import { MCP_SERVER, MCP_TOOLS, TOOLS, callTool } from './erp';
-import { Bar, Check, Dot, JsonView, RouteBadge, Spinner, formatMs, pct } from './ui';
 
 const RUN_PATH = '/api/demo/distru/run/';
 const MCP_PATH = '/api/demo/distru/mcp/';
 const ROUTE_TONE = { auto_confirm: 'ok', needs_review: 'warn', hold: 'bad' };
+const ROUTE_OPTIONS = ROUTES.map(route => ({
+  value: route,
+  label: ROUTE_LABELS[route],
+  tone: ROUTE_TONE[route],
+}));
+const DOT_TONE = { ok: 'ok', warn: 'warn', fail: 'bad' };
+const TOOL_EXAMPLES = Object.fromEntries(TOOLS.map(tool => [tool.name, tool.example]));
 const PREVIEW_NOTE = 'Preview mode: live runs need the private link from my email.';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -243,7 +283,7 @@ export default function DistruDemo() {
         <FlowStrip />
 
         <section className={styles.section} ref={traceRef} aria-labelledby="run-heading">
-          <h2 id="run-heading" className={styles.srOnly}>
+          <h2 id="run-heading" className={srOnly}>
             Agent run
           </h2>
           <div className={styles.gridTop}>
@@ -289,66 +329,59 @@ export default function DistruDemo() {
 
 // --- page sections ---------------------------------------------------------------------------
 
+const FLOW = [
+  { label: 'Extract', what: 'LLM, JSON mode', cost: '1 call' },
+  { label: 'Check', what: '7 MCP tools vs ERP', cost: 'code, free' },
+  { label: 'Decide', what: 'Jev: route + substitution', cost: '1 call' },
+  { label: 'Draft', what: 'Sales order + reply', cost: '1 call' },
+];
+
+const SAMPLE_OPTIONS = SAMPLES.map(sample => ({
+  value: sample.id,
+  label: sample.label,
+  hint: sample.hint,
+}));
+
 function FlowStrip() {
-  const steps = [
-    { label: 'Extract', what: 'LLM, JSON mode', cost: '1 call' },
-    { label: 'Check', what: '7 MCP tools vs ERP', cost: 'code, free' },
-    { label: 'Decide', what: 'Jev: route + substitution', cost: '1 call' },
-    { label: 'Draft', what: 'Sales order + reply', cost: '1 call' },
-  ];
+  return <PipelineStrip steps={FLOW} />;
+}
+
+function RouteBadge({ route, size }) {
+  if (!route) return null;
   return (
-    <ol className={styles.flow} aria-label="How a run works">
-      {steps.map((step, index) => (
-        <li key={step.label} className={styles.flowStep}>
-          <span className={styles.flowIndex}>{index + 1}</span>
-          <span className={styles.flowText}>
-            <strong>{step.label}</strong>
-            <span>{step.what}</span>
-          </span>
-          <span className={styles.flowCost}>{step.cost}</span>
-        </li>
-      ))}
-    </ol>
+    <DecisionBadge tone={ROUTE_TONE[route]} size={size}>
+      {ROUTE_LABELS[route] || route}
+    </DecisionBadge>
   );
 }
 
 function EmailPanel({ email, sampleId, onPick, onEdit, onRun, busy, notice, hasKey }) {
   return (
-    <form className={`${styles.card} ${styles.emailCard}`} onSubmit={onRun}>
-      <div className={styles.cardHead}>
-        <h3 className={styles.cardTitle}>Inbound order email</h3>
+    <Card as="form" className={styles.emailCard} onSubmit={onRun}>
+      <CardHead>
+        <CardTitle>Inbound order email</CardTitle>
         <span className={styles.muted}>editable</span>
-      </div>
-      <div className={styles.samples} role="group" aria-label="Sample emails">
-        {SAMPLES.map((sample, index) => (
-          <button
-            key={sample.id}
-            type="button"
-            className={styles.sample}
-            aria-pressed={sampleId === sample.id}
-            onClick={() => onPick(sample.id)}
-          >
-            <span className={styles.sampleIndex}>{index + 1}</span>
-            <span className={styles.sampleText}>
-              <strong>{sample.label}</strong>
-              <span>{sample.hint}</span>
-            </span>
-          </button>
-        ))}
-      </div>
-      <label className={styles.srOnly} htmlFor="order-email">
+      </CardHead>
+      <OptionList
+        className={styles.samples}
+        label="Sample emails"
+        options={SAMPLE_OPTIONS}
+        value={sampleId}
+        onChange={onPick}
+      />
+      <label className={srOnly} htmlFor="order-email">
         Order email
       </label>
-      <textarea
+      <TextArea
         id="order-email"
-        className={styles.textarea}
+        className={styles.email}
         value={email}
         maxLength={4000}
         spellCheck={false}
         onChange={event => onEdit(event.target.value)}
       />
       <div className={styles.runRow}>
-        <button className={styles.button} type="submit" disabled={busy || !email.trim()}>
+        <Button type="submit" disabled={busy || !email.trim()}>
           {busy ? (
             <>
               <Spinner /> Running
@@ -356,7 +389,7 @@ function EmailPanel({ email, sampleId, onPick, onEdit, onRun, busy, notice, hasK
           ) : (
             'Run agent'
           )}
-        </button>
+        </Button>
         <span className={styles.muted}>
           {hasKey
             ? 'Live: about 3 cents a run, repeats are cached'
@@ -364,37 +397,35 @@ function EmailPanel({ email, sampleId, onPick, onEdit, onRun, busy, notice, hasK
         </span>
       </div>
       {notice && (
-        <p className={styles.notice} role="status">
+        <Notice size="s" className={styles.notice} role="status">
           {notice}
-        </p>
+        </Notice>
       )}
-    </form>
+    </Card>
   );
 }
 
 function TracePanel({ run, onReplay, replayDisabled }) {
   const totalMs = STAGES.reduce((sum, stage) => sum + (run.stages[stage.id]?.ms || 0), 0);
   return (
-    <div className={styles.card} aria-live="polite">
-      <div className={styles.cardHead}>
-        <h3 className={styles.cardTitle}>Agent run</h3>
+    <Card aria-live="polite">
+      <CardHead
+        aside={
+          <>
+            {run.status === 'done' && (
+              <span className={styles.muted}>{formatMs(totalMs)}</span>
+            )}
+            {run.kind === 'example' && run.status !== 'running' && (
+              <Button variant="link" onClick={onReplay} disabled={replayDisabled}>
+                Replay
+              </Button>
+            )}
+          </>
+        }
+      >
+        <CardTitle>Agent run</CardTitle>
         <RunBadge run={run} />
-        <span className={styles.headRight}>
-          {run.status === 'done' && (
-            <span className={styles.muted}>{formatMs(totalMs)}</span>
-          )}
-          {run.kind === 'example' && run.status !== 'running' && (
-            <button
-              type="button"
-              className={styles.linkButton}
-              onClick={onReplay}
-              disabled={replayDisabled}
-            >
-              Replay
-            </button>
-          )}
-        </span>
-      </div>
+      </CardHead>
       {run.kind === 'example' && (
         <p className={styles.exampleNote}>
           Example run of sample 2. The DeepSeek and Jev outputs were recorded from a live
@@ -402,39 +433,29 @@ function TracePanel({ run, onReplay, replayDisabled }) {
           and order line is computed live in your browser by the same code the API runs.
         </p>
       )}
-      <ol className={styles.stages}>
+      <Timeline>
         {STAGES.map((stage, index) => (
           <StageRow key={stage.id} index={index} stage={stage} run={run} />
         ))}
-      </ol>
+      </Timeline>
       {run.error && (
-        <p className={styles.error} role="alert">
+        <Notice kind="error" size="s" className={styles.error} role="alert">
           {run.error}
-        </p>
+        </Notice>
       )}
-    </div>
+    </Card>
   );
 }
 
 function RunBadge({ run }) {
-  if (run.kind === 'example')
-    return (
-      <span className={styles.pill} data-tone="info">
-        Example run
-      </span>
-    );
-  if (run.kind === 'eval')
-    return (
-      <span className={styles.pill} data-tone="info">
-        Eval run
-      </span>
-    );
+  if (run.kind === 'example') return <Pill>Example run</Pill>;
+  if (run.kind === 'eval') return <Pill>Eval run</Pill>;
   if (run.status === 'idle') return null;
   return (
-    <span className={styles.pill} data-tone="live">
+    <Pill tone="live">
       Live{run.model ? ` · ${run.model}` : ''}
       {run.cached ? ' · cached' : ''}
-    </span>
+    </Pill>
   );
 }
 
@@ -442,45 +463,29 @@ function StageRow({ index, stage, run }) {
   const state = run.stages[stage.id] || { status: 'pending' };
   const tools = run.tools.filter(tool => tool.stage === stage.id);
   return (
-    <li className={styles.stage} data-status={state.status}>
-      <span className={styles.stageMarker}>
-        {state.status === 'running' ? (
-          <Spinner />
-        ) : state.status === 'done' ? (
-          <Check pass />
-        ) : (
-          index + 1
-        )}
-      </span>
-      <div className={styles.stageBody}>
-        <div className={styles.stageHead}>
-          <strong>{stage.label}</strong>
-          <span className={styles.muted}>{stage.detail}</span>
-          {state.ms != null && (
-            <span className={styles.stageMs}>{formatMs(state.ms)}</span>
-          )}
-        </div>
-        {stage.id === 'extract' && run.extraction && (
-          <ExtractionView data={run.extraction} />
-        )}
-        {tools.length > 0 && (
-          <ul className={styles.tools}>
-            {tools.map((tool, toolIndex) => (
-              <ToolRow key={`${tool.name}-${toolIndex}`} tool={tool} />
-            ))}
-          </ul>
-        )}
-        {stage.id === 'decide' && run.decision && (
-          <DecisionLine decision={run.decision} />
-        )}
-        {stage.id === 'draft' && run.reply && (
-          <p className={styles.stageNote}>
-            Reply {state.status === 'done' ? 'drafted' : 'streaming'} ·{' '}
-            {run.reply.trim().split(/\s+/).length} words
-          </p>
-        )}
-      </div>
-    </li>
+    <TimelineStep
+      index={index}
+      status={state.status}
+      title={stage.label}
+      detail={stage.detail}
+      ms={state.ms}
+    >
+      {stage.id === 'extract' && run.extraction && <ExtractionView data={run.extraction} />}
+      {tools.length > 0 && (
+        <ul className={styles.tools}>
+          {tools.map((tool, toolIndex) => (
+            <ToolRow key={`${tool.name}-${toolIndex}`} tool={tool} />
+          ))}
+        </ul>
+      )}
+      {stage.id === 'decide' && run.decision && <DecisionLine decision={run.decision} />}
+      {stage.id === 'draft' && run.reply && (
+        <p className={styles.stageNote}>
+          Reply {state.status === 'done' ? 'drafted' : 'streaming'} ·{' '}
+          {run.reply.trim().split(/\s+/).length} words
+        </p>
+      )}
+    </TimelineStep>
   );
 }
 
@@ -502,14 +507,7 @@ function ExtractionView({ data }) {
   ];
   return (
     <div className={styles.extract}>
-      <dl className={styles.fields}>
-        {fields.map(([label, value]) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
-      </dl>
+      <KeyValues className={styles.fields} items={fields} />
       <ul className={styles.extractLines}>
         {data.lines.map((line, index) => (
           <li key={index}>
@@ -517,19 +515,12 @@ function ExtractionView({ data }) {
             <span className={styles.qty}>
               {line.qty ?? '?'}{' '}
               {line.unit === 'case' ? (line.qty === 1 ? 'case' : 'cases') : 'units'}
-              {line.qty_vague && (
-                <span className={styles.tag} data-tone="warn">
-                  vague
-                </span>
-              )}
+              {line.qty_vague && <Tag tone="warn">vague</Tag>}
             </span>
           </li>
         ))}
       </ul>
-      <details className={styles.raw}>
-        <summary>Structured output (JSON)</summary>
-        <JsonView value={data} />
-      </details>
+      <JsonDetails summary="Structured output (JSON)" value={data} />
     </div>
   );
 }
@@ -540,7 +531,7 @@ function ToolRow({ tool }) {
     <li className={styles.tool}>
       <details>
         <summary>
-          <Dot level={tool.summary.level} />
+          <Dot tone={DOT_TONE[tool.summary.level]} className={styles.toolDot} />
           <span className={styles.toolCall}>
             <code className={styles.toolName}>{tool.name}</code>
             <code className={styles.toolArgs}>{args}</code>
@@ -549,11 +540,11 @@ function ToolRow({ tool }) {
         </summary>
         <div className={styles.toolDetail}>
           <div>
-            <span className={styles.miniLabel}>arguments</span>
+            <MiniLabel>arguments</MiniLabel>
             <JsonView value={tool.args} />
           </div>
           <div>
-            <span className={styles.miniLabel}>result · {formatMs(tool.ms)}</span>
+            <MiniLabel>result · {formatMs(tool.ms)}</MiniLabel>
             <JsonView value={tool.result} />
           </div>
         </div>
@@ -588,13 +579,11 @@ function DecisionLine({ decision }) {
 function DecisionPanel({ run }) {
   const decision = run.decision;
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHead}>
-        <h3 className={styles.cardTitle}>Decision</h3>
-        <span className={styles.pill} data-tone="info">
-          Jev · 1 call, 2 typed questions
-        </span>
-      </div>
+    <Card>
+      <CardHead>
+        <CardTitle>Decision</CardTitle>
+        <Pill>Jev · 1 call, 2 typed questions</Pill>
+      </CardHead>
       {!decision ? (
         <Placeholder
           running={run.status === 'running'}
@@ -607,17 +596,11 @@ function DecisionPanel({ run }) {
               <code>route</code> choice: auto_confirm, needs_review or hold?
             </p>
             {decision.model ? (
-              <div className={styles.bars}>
-                {ROUTES.map(route => (
-                  <Bar
-                    key={route}
-                    label={ROUTE_LABELS[route]}
-                    value={decision.model.probabilities[route] || 0}
-                    tone={ROUTE_TONE[route]}
-                    strong={decision.model.choice === route}
-                  />
-                ))}
-              </div>
+              <ProbabilityBars
+                options={ROUTE_OPTIONS}
+                probabilities={decision.model.probabilities}
+                choice={decision.model.choice}
+              />
             ) : (
               <p className={styles.muted}>{decision.error}</p>
             )}
@@ -625,7 +608,7 @@ function DecisionPanel({ run }) {
 
           <div className={styles.final}>
             <div className={styles.finalHead}>
-              <span className={styles.miniLabel}>Final route</span>
+              <MiniLabel className={styles.finalLabel}>Final route</MiniLabel>
               <RouteBadge route={decision.route} size="l" />
             </div>
             <p className={styles.finalWhy}>
@@ -645,7 +628,7 @@ function DecisionPanel({ run }) {
               <ul className={styles.flags}>
                 {decision.flags.map((flag, index) => (
                   <li key={index}>
-                    <Dot level={flag.level === 'hold' ? 'fail' : 'warn'} />
+                    <Dot tone={flag.level === 'hold' ? 'bad' : 'warn'} />
                     <span>{flag.text}</span>
                   </li>
                 ))}
@@ -661,7 +644,7 @@ function DecisionPanel({ run }) {
             </p>
             {decision.substitution.p != null ? (
               <>
-                <Bar
+                <ProbabilityBar
                   label="Yes"
                   value={decision.substitution.p}
                   tone={
@@ -683,13 +666,10 @@ function DecisionPanel({ run }) {
             )}
           </div>
 
-          <details className={styles.raw}>
-            <summary>What Jev saw (state JSON)</summary>
-            <JsonView value={decision.state} />
-          </details>
+          <JsonDetails summary="What Jev saw (state JSON)" value={decision.state} />
         </>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -704,10 +684,9 @@ function substitutionText({ p, relevant }) {
 
 function Placeholder({ running, text }) {
   return (
-    <div className={styles.placeholder}>
-      {running && <Spinner />}
-      <span>{running ? 'Waiting…' : text}</span>
-    </div>
+    <EmptyState size="s" loading={running}>
+      {running ? 'Waiting…' : text}
+    </EmptyState>
   );
 }
 
@@ -715,18 +694,11 @@ function ReplyPanel({ run, email }) {
   const streaming = run.stages.draft?.status === 'running';
   const to = senderOf(email);
   return (
-    <div className={styles.card}>
-      <div className={styles.cardHead}>
-        <h3 className={styles.cardTitle}>Reply to buyer</h3>
-        <span className={styles.pill} data-tone="info">
-          LLM draft
-        </span>
-        {run.decision && (
-          <span className={styles.headRight}>
-            <RouteBadge route={run.decision.route} />
-          </span>
-        )}
-      </div>
+    <Card>
+      <CardHead aside={run.decision ? <RouteBadge route={run.decision.route} /> : null}>
+        <CardTitle>Reply to buyer</CardTitle>
+        <Pill>LLM draft</Pill>
+      </CardHead>
       {!run.reply ? (
         <Placeholder
           running={run.status === 'running'}
@@ -747,33 +719,28 @@ function ReplyPanel({ run, email }) {
           </div>
           <p className={styles.mailBody}>
             {run.reply}
-            {streaming && <span className={styles.caret} aria-hidden />}
+            {streaming && <Caret variant="soft" />}
           </p>
         </div>
       )}
       {run.question && run.decision?.route !== 'auto_confirm' && (
         <p className={styles.oneQuestion}>
-          <span className={styles.miniLabel}>The one question (picked by rules)</span>
+          <MiniLabel>The one question (picked by rules)</MiniLabel>
           {run.question}
         </p>
       )}
-    </div>
+    </Card>
   );
 }
 
 function OrderPanel({ run }) {
   const order = run.order;
   return (
-    <div className={`${styles.card} ${styles.orderCard}`}>
-      <div className={styles.cardHead}>
-        <h3 className={styles.cardTitle}>Draft sales order</h3>
+    <Card className={styles.orderCard}>
+      <CardHead aside={<Pill>draft_sales_order · not submitted</Pill>}>
+        <CardTitle>Draft sales order</CardTitle>
         {order && <code className={styles.orderId}>{order.order_id}</code>}
-        <span className={styles.headRight}>
-          <span className={styles.pill} data-tone="info">
-            draft_sales_order · not submitted
-          </span>
-        </span>
-      </div>
+      </CardHead>
       {!order ? (
         <Placeholder
           running={run.status === 'running'}
@@ -785,28 +752,23 @@ function OrderPanel({ run }) {
         />
       ) : (
         <>
-          <dl className={styles.orderMeta}>
-            <div>
-              <dt>Customer</dt>
-              <dd>
-                {order.customer} <span className={styles.muted}>{order.account_id}</span>
-              </dd>
-            </div>
-            <div>
-              <dt>Price tier</dt>
-              <dd>{order.price_tier}</dd>
-            </div>
-            <div>
-              <dt>Terms</dt>
-              <dd>{order.terms}</dd>
-            </div>
-            <div>
-              <dt>Delivery</dt>
-              <dd>
-                {order.delivery_date ? formatDate(order.delivery_date) : 'to confirm'}
-              </dd>
-            </div>
-          </dl>
+          <KeyValues
+            className={styles.orderMeta}
+            items={[
+              [
+                'Customer',
+                <>
+                  {order.customer} <span className={styles.muted}>{order.account_id}</span>
+                </>,
+              ],
+              ['Price tier', order.price_tier],
+              ['Terms', order.terms],
+              [
+                'Delivery',
+                order.delivery_date ? formatDate(order.delivery_date) : 'to confirm',
+              ],
+            ]}
+          />
           <div className={styles.orderTable} role="table" aria-label="Order lines">
             <div className={styles.orderHeader} role="row">
               <span role="columnheader">Product</span>
@@ -828,9 +790,9 @@ function OrderPanel({ run }) {
                   </span>
                   {line.note && (
                     <span className={styles.orderNote}>
-                      <span className={styles.tag} data-tone={lineTone(line)}>
+                      <Tag tone={lineTone(line)} className={styles.noteTag}>
                         {lineTag(line)}
-                      </span>
+                      </Tag>
                       {line.note}
                     </span>
                   )}
@@ -863,7 +825,7 @@ function OrderPanel({ run }) {
           <p className={styles.footnote}>{order.note}</p>
         </>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -882,84 +844,30 @@ function lineTone(line) {
 
 // --- MCP --------------------------------------------------------------------------------------
 
+function toolErrorText(error) {
+  return error.toolError ? error.message : 'The tool could not run with these arguments.';
+}
+
 function McpSection() {
-  const [name, setName] = useState('check_license');
-  const [args, setArgs] = useState(() =>
-    JSON.stringify(TOOLS.find(tool => tool.name === 'check_license').example, null, 2)
-  );
-  const [result, setResult] = useState(null);
   const [origin, setOrigin] = useState('https://haiderb.com');
-  const [copied, setCopied] = useState(false);
-  const callId = useRef(0);
-  const tool = MCP_TOOLS.find(item => item.name === name);
   const command = `claude mcp add --transport http ${MCP_SERVER.name} ${origin}${MCP_PATH}`;
 
   useEffect(() => setOrigin(window.location.origin), []);
 
-  function select(next) {
-    setName(next);
-    setArgs(JSON.stringify(TOOLS.find(item => item.name === next).example, null, 2));
-    setResult(null);
-  }
-
-  function call(event) {
-    event.preventDefault();
-    let parsed;
-    try {
-      parsed = args.trim() ? JSON.parse(args) : {};
-    } catch {
-      setResult({ error: 'Arguments are not valid JSON.' });
-      return;
-    }
-    const request = {
-      jsonrpc: '2.0',
-      id: ++callId.current,
-      method: 'tools/call',
-      params: { name, arguments: parsed },
-    };
-    const started = performance.now();
-    let response;
-    try {
-      response = { isError: false, structuredContent: callTool(name, parsed) };
-    } catch (error) {
-      response = {
-        isError: true,
-        content: [
-          {
-            type: 'text',
-            text: error.toolError
-              ? error.message
-              : 'The tool could not run with these arguments.',
-          },
-        ],
-      };
-    }
-    setResult({ request, response, ms: performance.now() - started });
-  }
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(command);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    } catch {
-      setCopied(false);
-    }
-  }
-
   return (
     <section className={styles.section} aria-labelledby="mcp-heading">
-      <div className={styles.sectionHead}>
-        <h2 id="mcp-heading" className={styles.h2}>
-          Same tools, served over MCP
-        </h2>
-        <p className={styles.lede}>
-          The agent doesn&apos;t call private helpers. It calls the{' '}
-          <code>{MCP_SERVER.name}</code> tool layer, which is also an MCP server, so
-          Claude or Codex run the same checks against the same data. One implementation,
-          two callers, one set of evals.
-        </p>
-      </div>
+      <SectionHead
+        titleId="mcp-heading"
+        title="Same tools, served over MCP"
+        lede={
+          <>
+            The agent doesn&apos;t call private helpers. It calls the{' '}
+            <code>{MCP_SERVER.name}</code> tool layer, which is also an MCP server, so
+            Claude or Codex run the same checks against the same data. One implementation,
+            two callers, one set of evals.
+          </>
+        }
+      />
 
       <div className={styles.callers} aria-hidden>
         <div className={styles.callerCol}>
@@ -977,94 +885,26 @@ function McpSection() {
         </span>
       </div>
 
-      <div className={`${styles.card} ${styles.mcpCard}`}>
-        <div className={styles.toolList} role="tablist" aria-label="Tools">
-          {MCP_TOOLS.map(item => (
-            <button
-              key={item.name}
-              type="button"
-              role="tab"
-              aria-selected={item.name === name}
-              className={styles.toolTab}
-              onClick={() => select(item.name)}
-            >
-              <code>{item.name}</code>
-              <span>{item.title}</span>
-            </button>
-          ))}
-        </div>
-        <div className={styles.toolPane} role="tabpanel">
-          <div className={styles.toolDef}>
-            <div className={styles.cardHead}>
-              <h3 className={styles.cardTitle}>
-                <code>{tool.name}</code>
-              </h3>
-              <span className={styles.pill} data-tone="ok">
-                readOnlyHint
-              </span>
-            </div>
-            <p className={styles.toolDesc}>{tool.description}</p>
-            <details className={styles.raw} open>
-              <summary>Tool definition (tools/list)</summary>
-              <JsonView value={tool} className={styles.jsonTall} />
-            </details>
-          </div>
-          <form className={styles.tryBox} onSubmit={call}>
-            <label className={styles.miniLabel} htmlFor="tool-args">
-              arguments
-            </label>
-            <textarea
-              id="tool-args"
-              className={`${styles.textarea} ${styles.code}`}
-              value={args}
-              spellCheck={false}
-              rows={6}
-              onChange={event => setArgs(event.target.value)}
-            />
-            <div className={styles.runRow}>
-              <button className={styles.button} type="submit">
-                Call tool
-              </button>
-              <span className={styles.muted}>
-                Free: runs in your browser against the sample data
-              </span>
-            </div>
-            {result?.error && <p className={styles.error}>{result.error}</p>}
-            {result?.response && (
-              <div className={styles.rpc}>
-                <div>
-                  <span className={styles.miniLabel}>request</span>
-                  <JsonView value={result.request} />
-                </div>
-                <div>
-                  <span className={styles.miniLabel}>
-                    result{result.response.isError ? ' · isError' : ''} ·{' '}
-                    {formatMs(result.ms)}
-                  </span>
-                  <JsonView value={result.response} className={styles.jsonTall} />
-                </div>
-              </div>
-            )}
-          </form>
-        </div>
-      </div>
+      <McpToolPanel
+        tools={MCP_TOOLS}
+        examples={TOOL_EXAMPLES}
+        initialTool="check_license"
+        call={callTool}
+        errorText={toolErrorText}
+      />
 
-      <div className={styles.connect}>
-        <span className={styles.miniLabel}>
-          Connect from Claude Code (stateless JSON-RPC, sample data, rate limited)
-        </span>
-        <div className={styles.connectRow}>
-          <code className={styles.command}>{command}</code>
-          <button type="button" className={styles.ghostButton} onClick={copy}>
-            {copied ? 'Copied' : 'Copy'}
-          </button>
-        </div>
-      </div>
+      <McpConnectCommand
+        className={styles.connect}
+        label="Connect from Claude Code (stateless JSON-RPC, sample data, rate limited)"
+        command={command}
+      />
     </section>
   );
 }
 
 // --- evals ------------------------------------------------------------------------------------
+
+const pretty = value => (value == null ? '–' : String(value).replace('_', ' '));
 
 function EvalSection({ evals, onRun, busy, notice, onView }) {
   const done = SAMPLES.map(sample => evals[sample.id]).filter(item => item?.run?.summary);
@@ -1077,18 +917,13 @@ function EvalSection({ evals, onRun, busy, notice, onView }) {
 
   return (
     <section className={styles.section} aria-labelledby="eval-heading">
-      <div className={styles.sectionHead}>
-        <h2 id="eval-heading" className={styles.h2}>
-          Evals
-        </h2>
-        <p className={styles.lede}>
-          Each sample has expected outcomes. Run evals sends all three emails through the
-          live agent and grades the final route, the license flag and the substitution
-          call. Real runs, about 9 cents; identical emails replay from cache.
-        </p>
-      </div>
+      <SectionHead
+        titleId="eval-heading"
+        title="Evals"
+        lede="Each sample has expected outcomes. Run evals sends all three emails through the live agent and grades the final route, the license flag and the substitution call. Real runs, about 9 cents; identical emails replay from cache."
+      />
       <div className={styles.evalBar}>
-        <button className={styles.button} type="button" onClick={onRun} disabled={busy}>
+        <Button onClick={onRun} disabled={busy}>
           {busy ? (
             <>
               <Spinner /> Running 3 evals
@@ -1096,7 +931,7 @@ function EvalSection({ evals, onRun, busy, notice, onView }) {
           ) : (
             'Run evals'
           )}
-        </button>
+        </Button>
         {checks.length > 0 && (
           <span
             className={styles.evalScore}
@@ -1106,38 +941,35 @@ function EvalSection({ evals, onRun, busy, notice, onView }) {
           </span>
         )}
         {notice && (
-          <span className={styles.notice} role="status">
+          <Notice as="span" size="s" role="status">
             {notice}
-          </span>
+          </Notice>
         )}
       </div>
       <div className={styles.evalGrid}>
         {SAMPLES.map((sample, index) => {
           const item = evals[sample.id];
           const summary = item?.run?.summary;
-          const rows = evalChecks(summary, sample.expect);
+          const rows = evalChecks(summary, sample.expect).map(row => ({
+            ...row,
+            expected: pretty(row.expected),
+            actual: row.actual != null && pretty(row.actual),
+          }));
           return (
-            <article key={sample.id} className={`${styles.card} ${styles.evalCard}`}>
-              <div className={styles.cardHead}>
-                <span className={styles.sampleIndex}>{index + 1}</span>
-                <h3 className={styles.cardTitle}>{sample.label}</h3>
-                <span className={styles.headRight}>
-                  {item?.status === 'running' && <Spinner />}
-                  {item?.status === 'error' && (
-                    <span className={styles.pill} data-tone="bad">
-                      error
-                    </span>
-                  )}
-                </span>
-              </div>
-              <div className={styles.evalTable}>
-                <span className={styles.evalHead}>Check</span>
-                <span className={styles.evalHead}>Expected</span>
-                <span className={styles.evalHead}>Actual</span>
-                {rows.map(row => (
-                  <EvalRow key={row.id} row={row} />
-                ))}
-              </div>
+            <Card as="article" key={sample.id} className={styles.evalCard}>
+              <CardHead
+                nowrap
+                aside={
+                  <>
+                    {item?.status === 'running' && <Spinner />}
+                    {item?.status === 'error' && <Pill tone="bad">error</Pill>}
+                  </>
+                }
+              >
+                <IndexBadge>{index + 1}</IndexBadge>
+                <CardTitle size="s">{sample.label}</CardTitle>
+              </CardHead>
+              <EvalTable rows={rows} />
               <div className={styles.evalFoot}>
                 {summary ? (
                   <>
@@ -1149,13 +981,9 @@ function EvalSection({ evals, onRun, busy, notice, onView }) {
                         : 'Rules only'}
                       {item.ms ? ` · ${formatMs(item.ms)}` : ''}
                     </span>
-                    <button
-                      type="button"
-                      className={styles.linkButton}
-                      onClick={() => onView(sample)}
-                    >
+                    <Button variant="link" onClick={() => onView(sample)}>
                       View run
-                    </button>
+                    </Button>
                   </>
                 ) : (
                   <span className={styles.muted}>
@@ -1165,7 +993,7 @@ function EvalSection({ evals, onRun, busy, notice, onView }) {
                   </span>
                 )}
               </div>
-            </article>
+            </Card>
           );
         })}
       </div>
@@ -1173,52 +1001,30 @@ function EvalSection({ evals, onRun, busy, notice, onView }) {
   );
 }
 
-function EvalRow({ row }) {
-  const pretty = value => (value == null ? '–' : String(value).replace('_', ' '));
-  return (
-    <>
-      <span className={styles.evalLabel}>{row.label}</span>
-      <span className={styles.evalValue}>{pretty(row.expected)}</span>
-      <span className={styles.evalValue} data-pass={row.pass ?? undefined}>
-        <Check pass={row.pass} />
-        {row.actual != null && pretty(row.actual)}
-      </span>
-    </>
-  );
-}
+const NOTES = [
+  {
+    title: 'The LLM never decides',
+    text: 'It extracts and writes. Deterministic tools check the facts, and Jev returns probabilities that code acts on.',
+  },
+  {
+    title: 'Rules only escalate',
+    text: "Hard checks (license, credit, account) run in code after the model, so a persuasive or hostile email can't talk its way into auto-confirm.",
+  },
+  {
+    title: 'One tool layer',
+    text: 'The agent and MCP clients call the same functions, so these evals cover what Claude or Codex would get too.',
+  },
+  {
+    title: 'Cheap and cached',
+    text: 'Two small LLM calls and one Jev call per order, about 3 cents. Repeat emails replay from cache for free.',
+  },
+];
 
 function DesignNotes() {
-  const notes = [
-    [
-      'The LLM never decides',
-      'It extracts and writes. Deterministic tools check the facts, and Jev returns probabilities that code acts on.',
-    ],
-    [
-      'Rules only escalate',
-      "Hard checks (license, credit, account) run in code after the model, so a persuasive or hostile email can't talk its way into auto-confirm.",
-    ],
-    [
-      'One tool layer',
-      'The agent and MCP clients call the same functions, so these evals cover what Claude or Codex would get too.',
-    ],
-    [
-      'Cheap and cached',
-      'Two small LLM calls and one Jev call per order, about 3 cents. Repeat emails replay from cache for free.',
-    ],
-  ];
   return (
     <section className={styles.section} aria-labelledby="notes-heading">
-      <h2 id="notes-heading" className={styles.h2}>
-        Design choices
-      </h2>
-      <ul className={styles.notes}>
-        {notes.map(([title, text]) => (
-          <li key={title}>
-            <strong>{title}</strong>
-            <span>{text}</span>
-          </li>
-        ))}
-      </ul>
+      <SectionHead titleId="notes-heading" title="Design choices" flush />
+      <NoteGrid className={styles.notes} items={NOTES} />
     </section>
   );
 }

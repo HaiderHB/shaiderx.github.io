@@ -1,0 +1,107 @@
+/* --- tool panel: tool list | definition | try it ---------------------------------------- */
+
+.panel {
+  --uiCardPad: var(--spaceM);
+
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: var(--spaceL);
+}
+
+.pane {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--spaceL);
+  min-width: 0;
+  padding: var(--spaceS) var(--spaceS) var(--spaceS) 0;
+}
+
+.definition,
+.tryBox {
+  min-width: 0;
+}
+
+.description {
+  margin: -6px 0 0;
+  font-size: var(--fontSizeBodyXS);
+  color: rgb(var(--rgbText) / 0.8);
+}
+
+.tryBox {
+  padding-top: var(--uiGapXS);
+}
+
+.runRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spaceS) var(--spaceM);
+  margin-top: var(--spaceM);
+}
+
+.hint {
+  color: var(--uiMuted);
+  font-size: var(--fontSizeBodyXS);
+}
+
+.error {
+  margin-top: var(--spaceM);
+}
+
+.exchange {
+  display: grid;
+  gap: var(--uiGapL);
+  margin-top: var(--spaceM);
+}
+
+/* --- connect command ------------------------------------------------------------------- */
+
+.connect {
+  min-width: 0;
+}
+
+.connectRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spaceS);
+}
+
+.command {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  overflow-x: auto;
+  white-space: nowrap;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCode);
+  color: rgb(var(--rgbText) / 0.9);
+  background: var(--uiWell);
+  border-radius: var(--uiRadiusS);
+}
+
+@media (max-width: 1040px) {
+  .pane {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 880px) {
+  .panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .toolList {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .pane {
+    padding: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .connectRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

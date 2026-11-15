@@ -1,4 +1,4 @@
-import styles from './GreatQuestion.module.css';
+import { BadgeMeta, BadgeRow, ScoreBadge, percent, riskTone } from 'demos/ui';
 
 const CHECKS = [
   ['leading', 'Leading', 'Suggests an answer, assumes a feeling, or invites agreement'],
@@ -9,9 +9,6 @@ const CHECKS = [
     'Neither a guide question nor a follow-up on the last answer',
   ],
 ];
-
-const percent = p => (p == null ? '–' : p < 0.01 ? '<1%' : `${Math.round(p * 100)}%`);
-const tone = p => (p == null ? 'muted' : p >= 0.6 ? 'bad' : p >= 0.3 ? 'warn' : 'ok');
 
 function positionLabel(position) {
   if (!position?.choice) return null;
@@ -26,47 +23,46 @@ export function Badges({ check, showMeta = true }) {
 
   if (check.pending) {
     return (
-      <div className={styles.badges} aria-live="polite">
-        <span className={styles.badgePending}>Checking with Jev…</span>
-      </div>
+      <BadgeRow aria-live="polite">
+        <ScoreBadge variant="pending">Checking with Jev…</ScoreBadge>
+      </BadgeRow>
     );
   }
 
   if (check.error) {
     return (
-      <div className={styles.badges}>
-        <span className={styles.badgeMuted}>Guardrail skipped ({check.error})</span>
-      </div>
+      <BadgeRow>
+        <ScoreBadge variant="muted">Guardrail skipped ({check.error})</ScoreBadge>
+      </BadgeRow>
     );
   }
 
   const position = positionLabel(check.position);
 
   return (
-    <div className={styles.badges}>
+    <BadgeRow>
       {CHECKS.map(([key, label, help]) => (
-        <span
+        <ScoreBadge
           key={key}
-          className={styles.badge}
-          data-tone={tone(check[key])}
+          label={label}
+          value={percent(check[key])}
+          tone={riskTone(check[key])}
           title={`${label}: ${help}. Probability from Jev.`}
-        >
-          {label} <strong>{percent(check[key])}</strong>
-        </span>
+        />
       ))}
       {position && (
-        <span
-          className={styles.badgeNeutral}
+        <ScoreBadge
+          variant="neutral"
+          label={position}
+          value={percent(check.position.p)}
           title="Which part of the discussion guide this turn covers, per Jev"
-        >
-          {position} <strong>{percent(check.position.p)}</strong>
-        </span>
+        />
       )}
       {showMeta && (
-        <span className={styles.badgeMeta}>
+        <BadgeMeta>
           Jev{check.ms ? ` · ${check.ms} ms` : check.cached ? ' · cached' : ''}
-        </span>
+        </BadgeMeta>
       )}
-    </div>
+    </BadgeRow>
   );
 }

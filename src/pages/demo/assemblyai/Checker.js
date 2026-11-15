@@ -1,8 +1,18 @@
 import { streamFromApi } from 'demos/client';
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Button,
+  Caret,
+  ChoiceChips,
+  CodeView,
+  MarkdownLite,
+  Notice,
+  RichText,
+  StatusIcon,
+  srOnly,
+} from 'demos/ui';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import styles from './AssemblyAI.module.css';
 import { CHECK_COUNT, GROUPS, runChecks, STATUS_ORDER } from './checks';
-import { CodeView, Rich } from './CodeView';
 import { SAMPLES } from './reference';
 
 const MAX_CHARS = 12000;
@@ -19,87 +29,10 @@ function verdict({ fail, warn, pass }) {
   return { tone: 'na', text: 'Nothing streaming-related found to check' };
 }
 
-export function StatusIcon({ status }) {
-  const paths = {
-    fail: <path d="M5 5l6 6M11 5l-6 6" />,
-    warn: <path d="M8 4.5v4.5M8 11.2v.3" />,
-    pass: <path d="M4.5 8.3l2.3 2.3 4.7-5" />,
-    na: <path d="M5 8h6" />,
-  };
-  return (
-    <span className={`${styles.icon} ${styles[`icon_${status}`]}`} aria-hidden="true">
-      <svg viewBox="0 0 16 16" width="16" height="16">
-        {paths[status]}
-      </svg>
-    </span>
-  );
-}
-
-/** Minimal markdown for the model's reply: headings, bullets, `code`, **bold**, fenced blocks. */
-function Reply({ text }) {
-  const blocks = [];
-  const fence = /```(\w*)\n?([\s\S]*?)(?:```|$)/g;
-  let last = 0;
-  let match;
-  while ((match = fence.exec(text))) {
-    if (match.index > last) blocks.push({ type: 'text', body: text.slice(last, match.index) });
-    blocks.push({ type: 'code', lang: match[1] || 'js', body: match[2] });
-    last = fence.lastIndex;
-    if (match[0] === '') break;
-  }
-  if (last < text.length) blocks.push({ type: 'text', body: text.slice(last) });
-
-  const inline = line =>
-    line.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
-      part.startsWith('**') && part.endsWith('**') ? (
-        <strong key={i}>
-          <Rich text={part.slice(2, -2)} />
-        </strong>
-      ) : (
-        <Rich key={i} text={part} />
-      )
-    );
-
-  return blocks.map((block, i) => {
-    if (block.type === 'code') {
-      const diff = block.lang === 'diff';
-      return (
-        <CodeView
-          key={i}
-          code={block.body}
-          lang={diff ? 'diff' : 'js'}
-          title={diff ? 'Proposed patch' : 'Code'}
-          numbers={false}
-        />
-      );
-    }
-    return block.body
-      .split(/\n{2,}/)
-      .filter(para => para.trim())
-      .map((para, j) => {
-        const lines = para.split('\n').filter(line => line.trim());
-        if (lines.every(line => /^\s*[-*]\s+/.test(line))) {
-          return (
-            <ul key={`${i}-${j}`} className={styles.replyList}>
-              {lines.map((line, k) => (
-                <li key={k}>{inline(line.replace(/^\s*[-*]\s+/, ''))}</li>
-              ))}
-            </ul>
-          );
-        }
-        return (
-          <p key={`${i}-${j}`} className={styles.replyPara}>
-            {lines.map((line, k) => (
-              <Fragment key={k}>
-                {k > 0 && <br />}
-                {/^#{1,4}\s/.test(line) ? <strong>{inline(line.replace(/^#{1,4}\s+/, ''))}</strong> : inline(line)}
-              </Fragment>
-            ))}
-          </p>
-        );
-      });
-  });
-}
+const SAMPLE_OPTIONS = [
+  ...SAMPLES.map(sample => ({ value: sample.id, label: sample.label })),
+  { value: 'own', label: 'Paste your own' },
+];
 
 export function Checker({ request }) {
   const [sampleId, setSampleId] = useState(INITIAL.id);
@@ -187,22 +120,12 @@ export function Checker({ request }) {
 
   return (
     <div className={styles.checker}>
-      <div className={styles.samples} role="group" aria-label="Code to check">
-        {SAMPLES.map(sample => (
-          <button
-            key={sample.id}
-            type="button"
-            className={styles.sampleButton}
-            aria-pressed={sampleId === sample.id}
-            onClick={() => pick(sample.id)}
-          >
-            {sample.label}
-          </button>
-        ))}
-        <button type="button" className={styles.sampleButton} aria-pressed={sampleId === 'own'} onClick={pasteOwn}>
-          Paste your own
-        </button>
-      </div>
+      <ChoiceChips
+        label="Code to check"
+        options={SAMPLE_OPTIONS}
+        value={sampleId}
+        onChange={id => (id === 'own' ? pasteOwn() : pick(id))}
+      />
       <p className={styles.sampleHint}>
         {sampleId === 'own'
           ? 'Paste a token route and the browser code (separate files with a // ---- path ---- line). Nothing leaves your browser for the rule checks.'
@@ -213,7 +136,7 @@ export function Checker({ request }) {
         <div className={styles.editorPane}>
           {showCode ? (
             <div className={styles.editorWrap}>
-              <label className={styles.srOnly} htmlFor="aai-code">
+              <label className={srOnly} htmlFor="aai-code">
                 Code to check
               </label>
               <textarea
@@ -240,13 +163,13 @@ export function Checker({ request }) {
             />
           )}
           <div className={styles.editorBar}>
-            <button type="button" className={styles.primary} onClick={() => check()} disabled={!code.trim()}>
+            <Button size="s" onClick={() => check()} disabled={!code.trim()}>
               {stale || showCode ? 'Run checks' : 'Run again'}
-            </button>
+            </Button>
             {!showCode && (
-              <button type="button" className={styles.secondary} onClick={() => setEditing(true)}>
+              <Button variant="secondary" size="s" onClick={() => setEditing(true)}>
                 Edit code
-              </button>
+              </Button>
             )}
             <span className={styles.charCount}>
               {code.length.toLocaleString('en-US')} / {MAX_CHARS.toLocaleString('en-US')}
@@ -288,12 +211,12 @@ export function Checker({ request }) {
                           </div>
                           {item.status !== 'pass' && item.status !== 'na' && (
                             <p className={styles.resultSummary}>
-                              <Rich text={item.summary} />
+                              <RichText text={item.summary} />
                             </p>
                           )}
                           {(item.status === 'pass' || item.status === 'na') && (
                             <p className={styles.resultSummaryMuted}>
-                              <Rich text={item.summary} />
+                              <RichText text={item.summary} />
                             </p>
                           )}
                           {(item.lines.length > 0 || (item.gap && item.status !== 'pass' && item.status !== 'na')) && (
@@ -339,27 +262,22 @@ export function Checker({ request }) {
               each one breaks; each Fix line is reviewed text for that check. Repeat runs are cached.
             </p>
           </div>
-          <button
-            type="button"
-            className={styles.primary}
-            onClick={explain}
-            disabled={llm.state === 'running' || stale || !findings.length}
-          >
+          <Button size="s" onClick={explain} disabled={llm.state === 'running' || stale || !findings.length}>
             {llm.state === 'running' ? 'Explaining…' : findings.length ? 'Explain failures' : 'Nothing to explain'}
-          </button>
+          </Button>
         </div>
-        {llm.state === 'error' && (
-          <p className={llm.keyNeeded ? styles.keyNotice : styles.error}>
-            {llm.keyNeeded
-              ? `${llm.error} The ${CHECK_COUNT} rule checks above are free and already ran in your browser.`
-              : llm.error}
-          </p>
-        )}
+        {llm.state === 'error' &&
+          (llm.keyNeeded ? (
+            <Notice flat className={styles.keyNotice}>
+              {`${llm.error} The ${CHECK_COUNT} rule checks above are free and already ran in your browser.`}
+            </Notice>
+          ) : (
+            <p className={styles.error}>{llm.error}</p>
+          ))}
         {llm.text && (
-          <div className={styles.reply}>
-            <Reply text={llm.text} />
-            {llm.state === 'running' && <span className={styles.cursor} aria-hidden="true" />}
-          </div>
+          <MarkdownLite text={llm.text} className={styles.reply}>
+            {llm.state === 'running' && <Caret variant="block" />}
+          </MarkdownLite>
         )}
       </div>
     </div>

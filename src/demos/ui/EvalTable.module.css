@@ -1,0 +1,26 @@
+.table {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--uiGapM) var(--uiGapXL);
+  align-items: center;
+  font-size: var(--uiFontNote);
+}
+
+.head {
+  font-size: var(--uiFontMicro);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--uiMuted);
+}
+
+.label {
+  color: var(--uiMuted);
+}
+
+.value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapS);
+  min-width: 0;
+  color: rgb(var(--rgbText));
+}

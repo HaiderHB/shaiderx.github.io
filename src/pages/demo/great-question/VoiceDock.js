@@ -1,6 +1,7 @@
+import { Button, formatTime } from 'demos/ui';
 import { FiMic, FiPlay, FiSquare } from 'react-icons/fi';
 import styles from './GreatQuestion.module.css';
-import { MAX_ANSWER_SECONDS, formatTime } from './study';
+import { MAX_ANSWER_SECONDS } from './study';
 
 const PHASES = {
   thinking: { label: 'Moderator thinking', hint: 'Writing the next question' },
@@ -50,22 +51,22 @@ export function VoiceDock({ phase, onAnswer, onDone, onPlay, meterRef, clockRef 
       </div>
 
       {listening ? (
-        <button type="button" className={styles.primaryButton} onClick={onDone}>
+        <Button pill className={styles.dockButton} onClick={onDone}>
           <FiSquare aria-hidden /> Done
-        </button>
+        </Button>
       ) : phase === 'blocked' ? (
-        <button type="button" className={styles.primaryButton} onClick={onPlay}>
+        <Button pill className={styles.dockButton} onClick={onPlay}>
           <FiPlay aria-hidden /> Play reply
-        </button>
+        </Button>
       ) : (
-        <button
-          type="button"
-          className={styles.primaryButton}
+        <Button
+          pill
+          className={styles.dockButton}
           onClick={onAnswer}
           disabled={phase !== 'ready' && phase !== 'speaking'}
         >
           <FiMic aria-hidden /> Answer
-        </button>
+        </Button>
       )}
     </div>
   );

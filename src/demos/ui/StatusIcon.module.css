@@ -1,0 +1,72 @@
+.icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-top: 1px;
+
+  & svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &[data-status='fail'] {
+    color: rgb(var(--rgbBackground));
+    background: rgb(var(--uiRgbBad));
+  }
+
+  &[data-status='warn'] {
+    color: rgb(var(--rgbBackground));
+    background: rgb(var(--uiRgbWarn));
+  }
+
+  &[data-status='pass'] {
+    color: rgb(var(--uiRgbOk));
+    background: rgb(var(--uiRgbOk) / 0.16);
+  }
+
+  &[data-status='na'] {
+    color: rgb(var(--rgbText) / 0.5);
+    background: rgb(var(--rgbText) / 0.08);
+  }
+}
+
+/* Solid: filled circle, dark tick on pass, white cross on fail */
+.solid {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  color: rgb(17 17 17);
+  background: rgb(var(--uiRgbOk));
+
+  & svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &[data-status='fail'] {
+    color: rgb(255 255 255);
+    background: rgb(var(--uiRgbBad));
+  }
+
+  &[data-status='warn'] {
+    background: rgb(var(--uiRgbWarn));
+  }
+}
+
+.idle {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  color: var(--uiMuted);
+}

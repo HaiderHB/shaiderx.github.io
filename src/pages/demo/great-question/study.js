@@ -279,10 +279,5 @@ export const EXAMPLE_CHECKS = [
   },
 ];
 
-export function formatTime(seconds) {
-  const s = Math.max(0, Math.round(seconds || 0));
-  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(
-    2,
-    '0'
-  )}`;
-}
+// mm:ss, shared with the findings route; lives in the demo kit (pure JS, no styles).
+export { formatTime } from 'demos/ui/format';

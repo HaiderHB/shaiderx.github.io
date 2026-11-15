@@ -1,5 +1,6 @@
+import { Tag, formatTime } from 'demos/ui';
 import styles from './GreatQuestion.module.css';
-import { GOALS, formatTime } from './study';
+import { GOALS } from './study';
 
 const goalName = id => {
   const goal = GOALS.find(item => item.id === id);
@@ -13,7 +14,7 @@ export function FindingCards({ findings, onQuote }) {
       {findings.map(finding => (
         <article key={finding.id} className={styles.finding}>
           <div className={styles.findingHead}>
-            <span className={styles.goalTag}>{goalName(finding.goal)}</span>
+            <Tag soft>{goalName(finding.goal)}</Tag>
             <span className={styles.findingId}>{finding.id}</span>
           </div>
           <h3 className={styles.findingTitle}>{finding.title}</h3>

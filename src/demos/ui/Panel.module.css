@@ -1,0 +1,287 @@
+/* --- card ------------------------------------------------------------------------------ */
+
+/* Padding follows --uiCardPad, so a demo can tighten every card at once in a media query. */
+.card {
+  min-width: 0;
+  padding: var(--uiCardPad, var(--spaceL));
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusXL);
+  background: var(--uiPanel);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--uiGapM);
+  margin-bottom: var(--spaceM);
+
+  &[data-nowrap] {
+    flex-wrap: nowrap;
+  }
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: var(--fontSizeBodyM);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText));
+
+  & code {
+    font-family: var(--uiMono);
+    font-size: 0.95em;
+  }
+
+  &[data-size='s'] {
+    min-width: 0;
+    font-size: var(--fontSizeBodyS);
+  }
+}
+
+.headAside {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spaceS);
+}
+
+/* --- labels ---------------------------------------------------------------------------- */
+
+.miniLabel {
+  display: block;
+  margin-bottom: var(--uiGapXS);
+  font-size: var(--uiFontLabel);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--uiMuted);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spaceS);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--rgbText) / 0.55);
+}
+
+.step {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: var(--uiFontMicro);
+  letter-spacing: 0;
+  color: rgb(var(--uiRgbAccent));
+  border: 1px solid rgb(var(--uiRgbAccent) / 0.5);
+}
+
+.kicker {
+  margin: 0 0 var(--uiGapS);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--uiMuted);
+}
+
+/* --- section heads --------------------------------------------------------------------- */
+
+/* plain: title and lede */
+.head[data-variant='plain'] {
+  margin-bottom: var(--spaceL);
+
+  &[data-flush] {
+    margin-bottom: 0;
+  }
+
+  & .title {
+    font-size: var(--fontSizeH5);
+    font-weight: var(--fontWeightMedium);
+    line-height: 1.2;
+    margin: 0 0 var(--spaceS);
+    color: rgb(var(--rgbText));
+  }
+
+  & .lede {
+    margin: 0;
+    max-width: 78ch;
+    color: rgb(var(--rgbText) / 0.75);
+  }
+
+  & .lede code {
+    font-family: var(--uiMono);
+    font-size: 0.9em;
+  }
+}
+
+/* eyebrow: uppercase kicker with an optional step number, title, lede, action on the right */
+.head[data-variant='eyebrow'] {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--spaceM) var(--spaceL);
+  flex-wrap: wrap;
+
+  &[data-compact] {
+    align-items: flex-start;
+    gap: var(--spaceM);
+    margin-bottom: var(--spaceS);
+  }
+
+  & .title {
+    margin: 6px 0 0;
+    font-size: var(--fontSizeH5);
+    font-weight: var(--fontWeightMedium);
+    line-height: 1.25;
+    color: rgb(var(--rgbText));
+  }
+
+  & .lede {
+    margin: var(--spaceS) 0 0;
+    max-width: 68ch;
+    font-size: var(--fontSizeBodyS);
+    line-height: 1.55;
+    color: rgb(var(--rgbText) / 0.7);
+  }
+}
+
+/* numbered: "01" in the margin, kicker, large title, lede */
+.head[data-variant='numbered'] {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--spaceM);
+  margin-bottom: var(--spaceL);
+
+  & .number {
+    font-family: var(--uiMono);
+    font-size: var(--uiFontSmall);
+    color: rgb(var(--rgbAccent));
+    padding-top: var(--uiGapXS);
+  }
+
+  & .title {
+    margin: 0;
+    font-size: var(--fontSizeH4);
+    font-weight: var(--fontWeightMedium);
+    line-height: 1.15;
+  }
+
+  & .lede {
+    margin: var(--spaceS) 0 0;
+    color: var(--uiMuted);
+    max-width: 72ch;
+  }
+}
+
+:global(body[data-theme='light']) .head[data-variant='numbered'] .number {
+  color: rgb(var(--rgbText));
+}
+
+/* --- key / value grid ------------------------------------------------------------------ */
+
+.keyValues {
+  display: grid;
+  grid-template-columns: repeat(var(--uiKvColumns, 2), minmax(0, 1fr));
+  gap: var(--uiKvGap, 8px 16px);
+
+  & dt {
+    font-size: var(--uiFontLabel);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--uiMuted);
+  }
+
+  & dd {
+    margin: 0;
+    font-size: var(--fontSizeBodyXS);
+    color: rgb(var(--rgbText));
+    overflow-wrap: anywhere;
+  }
+}
+
+/* --- note grids: design choices, how it works ----------------------------------------- */
+
+.notes[data-variant='accent'] {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--uiNoteColumns, 4), minmax(0, 1fr));
+  gap: var(--spaceM);
+
+  & li {
+    display: grid;
+    align-content: start;
+    gap: var(--uiGapS);
+    padding: var(--spaceM);
+    border-top: 2px solid rgb(var(--uiRgbAccent) / 0.6);
+    background: var(--uiPanel);
+    border-radius: 0 0 var(--uiRadiusL) var(--uiRadiusL);
+    font-size: var(--fontSizeBodyXS);
+    color: rgb(var(--rgbText) / 0.78);
+  }
+
+  & strong {
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText));
+  }
+}
+
+.notes[data-variant='boxed'] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spaceM);
+
+  & > div {
+    padding: var(--spaceL);
+    border: 1px solid var(--uiLine);
+    border-radius: var(--uiRadiusXL);
+  }
+
+  & h3 {
+    margin: 0 0 var(--spaceS);
+    font-size: var(--fontSizeBodyS);
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText));
+  }
+
+  & p {
+    margin: 0;
+    font-size: var(--fontSizeBodyXS);
+    line-height: 1.6;
+    color: rgb(var(--rgbText) / 0.72);
+  }
+}
+
+@media (max-width: 1040px) {
+  .notes[data-variant='accent'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .notes[data-variant='boxed'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 696px) {
+  .head[data-variant='numbered'] {
+    gap: var(--uiGapL);
+  }
+}
+
+@media (max-width: 600px) {
+  .notes[data-variant='accent'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .notes[data-variant='boxed'] > div {
+    padding: var(--spaceM);
+  }
+}

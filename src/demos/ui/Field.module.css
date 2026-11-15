@@ -1,0 +1,44 @@
+/* plain: block field with an accent outline on focus */
+.field[data-variant='plain'] {
+  display: block;
+  width: 100%;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: var(--fontSizeBodyXS);
+  line-height: 1.55;
+  color: rgb(var(--rgbText));
+  background: rgb(var(--rgbBackground));
+  border: 1px solid rgb(var(--rgbText) / 0.18);
+  border-radius: var(--uiRadiusM);
+  resize: vertical;
+
+  &:focus {
+    outline: 2px solid rgb(var(--uiRgbAccent) / 0.6);
+    outline-offset: 1px;
+  }
+}
+
+/* ring: inline field with a soft focus ring, for forms and composers */
+.field[data-variant='ring'] {
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: var(--uiRadiusL);
+  font: inherit;
+  font-size: var(--fontSizeBodyXS);
+  line-height: 1.45;
+  color: rgb(var(--rgbText));
+  background: rgb(var(--rgbBackground));
+  border: 1px solid var(--uiLineStrong);
+
+  &:focus {
+    outline: none;
+    border-color: rgb(var(--uiRgbAccent));
+    box-shadow: 0 0 0 3px rgb(var(--uiRgbAccent) / 0.2);
+  }
+}
+
+.field[data-code] {
+  min-height: 0;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCode);
+}

@@ -1,0 +1,286 @@
+/* --- pill: run kind, model, cost, hints ---------------------------------------------- */
+
+.pill {
+  --uiPillTone: var(--rgbText);
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapXS);
+  padding: 2px 9px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontCaption);
+  line-height: 1.6;
+  white-space: nowrap;
+  color: rgb(var(--rgbText) / 0.8);
+  border: 1px solid rgb(var(--rgbText) / 0.2);
+
+  &[data-tone='live'] {
+    --uiPillTone: var(--uiRgbAccent);
+
+    color: rgb(var(--rgbText));
+    border-color: rgb(var(--uiRgbAccent) / 0.55);
+    background: rgb(var(--uiRgbAccent) / 0.12);
+  }
+
+  &[data-tone='ok'] {
+    --uiPillTone: var(--uiRgbOk);
+
+    border-color: rgb(var(--uiRgbOk) / 0.5);
+    background: rgb(var(--uiRgbOk) / 0.1);
+  }
+
+  &[data-tone='warn'] {
+    --uiPillTone: var(--uiRgbWarn);
+
+    border-color: rgb(var(--uiRgbWarn) / 0.5);
+    background: rgb(var(--uiRgbWarn) / 0.1);
+  }
+
+  &[data-tone='bad'] {
+    --uiPillTone: var(--uiRgbBad);
+
+    border-color: rgb(var(--uiRgbBad) / 0.55);
+    background: rgb(var(--uiRgbBad) / 0.12);
+  }
+
+  /* Uppercase outline: "design only", "beta", "not run yet" */
+  &[data-caps] {
+    padding: 3px 8px;
+    font-size: var(--uiFontMicro);
+    font-weight: var(--fontWeightMedium);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: inherit;
+    white-space: normal;
+    color: rgb(var(--uiPillTone));
+    border-color: rgb(var(--uiPillTone) / 0.5);
+    background: none;
+  }
+}
+
+/* --- tag: short uppercase label next to a value --------------------------------------- */
+
+.tag {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: var(--uiRadiusXS);
+  font-size: var(--uiFontMicro);
+  line-height: 1.6;
+  font-weight: var(--fontWeightMedium);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+  color: rgb(var(--rgbText));
+
+  &[data-tone='ok'] {
+    background: rgb(var(--uiRgbOk) / 0.2);
+  }
+
+  &[data-tone='warn'] {
+    background: rgb(var(--uiRgbWarn) / 0.22);
+  }
+
+  &[data-tone='bad'] {
+    background: rgb(var(--uiRgbBad) / 0.2);
+  }
+
+  /* Neutral id tag: goal ids, categories */
+  &[data-soft] {
+    padding: 2px 7px;
+    border-radius: var(--uiRadiusS);
+    line-height: inherit;
+    text-transform: none;
+    vertical-align: baseline;
+    white-space: nowrap;
+    color: rgb(var(--rgbText) / 0.8);
+    background: rgb(var(--rgbText) / 0.08);
+  }
+}
+
+/* --- decision badge: the route / verdict a run ended on -------------------------------- */
+
+.decision {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--uiRadiusS);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgb(var(--rgbText));
+  border: 1px solid transparent;
+
+  &[data-size='l'] {
+    padding: 5px 14px;
+    font-size: 14px;
+  }
+
+  &[data-tone='ok'] {
+    background: rgb(var(--uiRgbOk) / 0.18);
+    border-color: rgb(var(--uiRgbOk) / 0.6);
+  }
+
+  &[data-tone='warn'] {
+    background: rgb(var(--uiRgbWarn) / 0.18);
+    border-color: rgb(var(--uiRgbWarn) / 0.6);
+  }
+
+  &[data-tone='bad'] {
+    background: rgb(var(--uiRgbBad) / 0.18);
+    border-color: rgb(var(--uiRgbBad) / 0.6);
+  }
+}
+
+/* --- score badge: one model probability, coloured by risk ------------------------------ */
+
+.badgeRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--uiGapS);
+  margin-top: var(--uiGapM);
+}
+
+.score {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px 4px 8px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontCaption);
+  line-height: 1.2;
+  white-space: nowrap;
+  color: rgb(var(--rgbText) / 0.85);
+
+  & strong {
+    font-weight: var(--fontWeightMedium);
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--rgbText));
+  }
+
+  &[data-variant='score'] {
+    --tone: var(--rgbText);
+
+    background: rgb(var(--tone) / 0.1);
+    border: 1px solid rgb(var(--tone) / 0.35);
+
+    &::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgb(var(--tone));
+    }
+  }
+
+  &[data-variant='score'][data-tone='ok'] {
+    --tone: var(--uiRgbOk);
+  }
+
+  &[data-variant='score'][data-tone='warn'] {
+    --tone: var(--uiRgbWarn);
+  }
+
+  &[data-variant='score'][data-tone='bad'] {
+    --tone: var(--uiRgbBad);
+
+    background: rgb(var(--tone) / 0.16);
+  }
+
+  &[data-variant='neutral'] {
+    border: 1px solid rgb(var(--rgbText) / 0.18);
+    background: rgb(var(--rgbText) / 0.05);
+  }
+
+  &[data-variant='pending'] {
+    border: 1px dashed rgb(var(--rgbText) / 0.25);
+    color: var(--uiMuted);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+
+  &[data-variant='muted'] {
+    border: 1px solid var(--uiLine);
+    color: var(--uiMuted);
+  }
+}
+
+.badgeMeta {
+  font-size: var(--uiFontMicro);
+  color: rgb(var(--rgbText) / 0.45);
+  white-space: nowrap;
+}
+
+/* --- dots and run status --------------------------------------------------------------- */
+
+.dot {
+  display: inline-block;
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--uiMuted);
+
+  &[data-tone='ok'] {
+    background: rgb(var(--uiRgbOk));
+  }
+
+  &[data-tone='warn'] {
+    background: rgb(var(--uiRgbWarn));
+  }
+
+  &[data-tone='bad'] {
+    background: rgb(var(--uiRgbBad));
+  }
+
+  &[data-tone='idle'] {
+    background: rgb(var(--rgbText) / 0.35);
+  }
+
+  &[data-motion='pulse'] {
+    animation: pulse 1s ease-in-out infinite;
+  }
+
+  &[data-motion='ring'] {
+    box-shadow: 0 0 0 0 rgb(var(--uiRgbBad) / 0.6);
+    animation: ring 1.6s ease-out infinite;
+  }
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapM);
+  font-size: var(--uiFontSmall);
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--rgbText) / 0.8);
+}
+
+/* The dot may give up a pixel when long status text wraps on narrow screens */
+.status > .dot {
+  flex: 0 1 auto;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@keyframes ring {
+  0% {
+    box-shadow: 0 0 0 0 rgb(var(--uiRgbBad) / 0.55);
+  }
+
+  100% {
+    box-shadow: 0 0 0 8px rgb(var(--uiRgbBad) / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .score[data-variant='pending'],
+  .dot {
+    animation: none !important;
+  }
+}
