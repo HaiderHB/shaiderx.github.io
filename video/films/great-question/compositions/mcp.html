@@ -1,7 +1,10 @@
 <!--
-  mcp: the same findings as MCP tools, on the same take. get_quote runs in the browser (no model call).
-    mc-v1  0.00-1.00   cursor to the get_quote tool, click
-    mc-v2  1.00-4.50   jump over 0.75 s; Run tool -> the JSON-RPC result with the verbatim quote, turn, time
+  mcp (film 37.47-44.42): get_quote over MCP, from take3b (the second and last take, same scripted answers;
+  labelled "Second take" in the captions). take3a's result box ran 41 px past the recorded window; take3b
+  scrolled it into view. take3b's T2-1 quote, turn and timestamp equal take3a's (T2, 00:16, finding F1).
+  The tools run in the browser over the findings (no model call).
+    mc-v1  0.00-3.00  116.20-119.20  get_quote picked (116.73), Run tool (118.50): request + result appear
+    mc-v2  3.00-6.95  121.65-125.60  cut over the page scroll: the whole result (structuredContent: the quote)
 -->
 <template>
   <style>
@@ -15,14 +18,17 @@
   <div id="root" data-composition-id="mcp" data-width="1920" data-height="1080">
     <div id="mc-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="mc-cam" class="kit-cam">
-        <video id="mc-v1" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="0" data-duration="1" data-media-start="83.15" data-track-index="0" muted playsinline></video>
-        <video id="mc-v2" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="1" data-duration="3.5" data-media-start="84.9" data-track-index="0" muted playsinline></video>
+        <video id="mc-v1" class="clip kit-footage" src="assets/footage/take3b.mp4" data-kit-clip="take3b" data-start="0" data-duration="3" data-media-start="116.2" data-track-index="0" muted playsinline></video>
+        <video id="mc-v2" class="clip kit-footage" src="assets/footage/take3b.mp4" data-kit-clip="take3b" data-start="3" data-duration="3.95" data-media-start="121.65" data-track-index="0" muted playsinline></video>
       </div>
     </div>
+
+    <div id="mc-ann-quote" class="clip kit-ann" data-start="3.3" data-duration="3.4" data-kit-focus="mcpQuote" data-kit-pad="3" data-kit-side="right" data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Exact words, ready to cite</div></div>
+
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": ["toolSeg", "callBox"], "cut": true, "label": "pick get_quote, Run tool" },
-        { "t": 2.0, "focus": "mcpPre2", "dur": 0.6, "label": "the result an MCP client receives" }
+        { "t": 0, "focus": ["mcpHead", "toolPicker", "callBox"], "maxZoom": 1.5, "cut": true, "label": "pick get_quote, Run tool" },
+        { "t": 3, "focus": "mcpPre2", "maxZoom": 1.8, "align": "left", "pad": 29, "fill": false, "cut": true, "label": "the result an MCP client receives" }
       ]
     </script>
   </div>

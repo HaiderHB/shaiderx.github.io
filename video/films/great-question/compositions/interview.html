@@ -1,13 +1,14 @@
 <!--
-  interview: the live voice interview from take 1 (2026-11-15), one take, real Fish ASR / DeepSeek V3.2 /
-  Fish TTS 1.15x / Jev calls. Media times are footage seconds of assets/footage/take.mp4 (= DOM time + 0.05 s
-  screencast lag, kit/scripts/frame-lag.py). Sound is placed separately (index.html, kit/scripts/place-audio.mjs).
-    iv-v1   0.00-1.45   "I'm an AI moderator," (the opening line continues from the cold open; a 0.4 s pause cut)
-    iv-v2   1.45-15.43  jump over "this takes about three minutes, and there are no right or wrong answers."
-                        -> "To start, walk me through ..." (Q1), Your turn, Answer tapped, simulated answer 1
-    iv-v3  15.43-17.58  2x: pause detected -> Fish ASR -> DeepSeek -> Fish TTS (labelled 2x in the captions)
-    iv-v4  17.58-30.90  the moderator's probe ("Got it. Who is involved ...?"), Answer, simulated answer 2
-    iv-v5  30.90-32.10  hard cut over 1.6 s of waiting: answer 2 transcribed, the moderator thinking
+  interview (film 2.20-25.40): the live voice interview of take3a (2026-11-15, revamped demo page): real
+  Fish ASR / DeepSeek V3.2 via fal / Fish TTS 1.15x / Jev on every moderator line. No sound in the film.
+  Media times = take3a footage seconds (DOM time + ~0.05 s screencast lag).
+    iv-v1   0.00-3.60   T1 (opening + Q1) with Jev's scores, dock "Moderator speaking" (continues the cold open)
+    iv-v2   3.60-7.60   3x: cursor taps Answer, dock "Listening", the simulated answer goes into the page's mic
+    iv-v3   7.60-13.15  1x: pause detected -> Transcribing -> T2 text (Fish ASR) -> Moderator thinking -> T3
+    iv-v4  13.15-17.35  T3 "Tell me about the last time an account got stuck during single sign-on setup."
+                        Jev: leading 64% (red), scored live in 115 ms
+    iv-v5  17.35-23.20  cut over answer 2's recording (media 43.5-55.45): T4 text, then T5 "How did your team
+                        find out that account was stuck?" leading 13%, on Q3
 -->
 <template>
   <style>
@@ -21,23 +22,26 @@
   <div id="root" data-composition-id="interview" data-width="1920" data-height="1080">
     <div id="iv-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="iv-cam" class="kit-cam">
-        <video id="iv-v1" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="0" data-duration="1.45" data-media-start="8.81" data-track-index="0" muted playsinline></video>
-        <video id="iv-v2" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="1.45" data-duration="13.98" data-media-start="14.21" data-track-index="0" muted playsinline></video>
-        <video id="iv-v3" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="15.43" data-duration="2.145" data-media-start="28.19" data-playback-rate="2" data-track-index="0" muted playsinline></video>
-        <video id="iv-v4" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="17.575" data-duration="13.32" data-media-start="32.48" data-track-index="0" muted playsinline></video>
-        <video id="iv-v5" class="clip kit-footage" src="assets/footage/take.mp4" data-kit-clip="take" data-start="30.895" data-duration="1.2" data-media-start="47.4" data-track-index="0" muted playsinline></video>
-
-        <div id="iv-ring-b1" class="clip kit-ring" data-start="2.4" data-duration="2.6" data-kit-focus="badges1" data-kit-pad="5" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
-        <div id="iv-ring-b2" class="clip kit-ring" data-start="19.4" data-duration="2.3" data-kit-focus="badges2" data-kit-pad="5" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+        <video id="iv-v1" class="clip kit-footage" src="assets/footage/take3a.mp4" data-kit-clip="take3a" data-start="0" data-duration="3.6" data-media-start="8.15" data-track-index="0" muted playsinline></video>
+        <video id="iv-v2" class="clip kit-footage" src="assets/footage/take3a.mp4" data-kit-clip="take3a" data-start="3.6" data-duration="4" data-media-start="21.75" data-playback-rate="3" data-track-index="0" muted playsinline></video>
+        <video id="iv-v3" class="clip kit-footage" src="assets/footage/take3a.mp4" data-kit-clip="take3a" data-start="7.6" data-duration="5.55" data-media-start="33.75" data-track-index="0" muted playsinline></video>
+        <video id="iv-v4" class="clip kit-footage" src="assets/footage/take3a.mp4" data-kit-clip="take3a" data-start="13.15" data-duration="4.2" data-media-start="39.3" data-track-index="0" muted playsinline></video>
+        <video id="iv-v5" class="clip kit-footage" src="assets/footage/take3a.mp4" data-kit-clip="take3a" data-start="17.35" data-duration="5.85" data-media-start="55.45" data-track-index="0" muted playsinline></video>
+        <div id="iv-ring-q3" class="clip kit-ring no-dim" data-start="20.45" data-duration="2.75" data-kit-focus="currentQ" data-kit-pad="6" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
       </div>
     </div>
+
+    <div id="iv-ann-tts" class="clip kit-ann" data-start="0.9" data-duration="2.5" data-kit-focus="dock" data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Spoken with Fish TTS</div></div>
+    <div id="iv-ann-mic" class="clip kit-ann" data-start="4.6" data-duration="2.85" data-kit-focus="dock" data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Stops on a 1.2-second pause</div></div>
+    <div id="iv-ann-asr" class="clip kit-ann" data-start="9.6" data-duration="2.4" data-kit-focus="partText1" data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Fish ASR 0.5 s</div></div>
+    <div id="iv-ann-jev" class="clip kit-ann" data-start="14.0" data-duration="2.9" data-kit-focus="badges2" data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Scored live in 115 ms</div></div>
+
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": ["mod1", "dock"], "zoom": 1.2, "align": "bottom", "cut": true, "label": "the opening question + Jev badges + dock (continues the cold open); bottom-aligned so the frame top falls in the gap above the card controls" },
-        { "t": 7.6, "focus": "card", "dur": 0.8, "pad": 8, "margin": 4, "label": "the whole interview card: Your turn, Answer tapped, simulated answer 1" },
-        { "t": 15.43, "focus": ["status", "transcript", "dock"], "zoom": 1.2, "align": "bottom", "dur": 0.6, "label": "answer -> reply pipeline (2x), same framing as the opening" },
-        { "t": 17.575, "focus": ["part1", "mod2", "dock"], "dur": 0.6, "label": "the probe under the answer it follows; answer 2 with the dock" },
-        { "t": 30.895, "focus": ["mod2", "part2", "dock"], "cut": true, "label": "answer 2 transcribed, moderator thinking" }
+        { "t": 0, "focus": ["coverage", "dock", "status", "mod1"], "zoom": 1.5, "cut": true, "label": "the guide + Q1 spoken + Jev's scores; then the answer (3x); same framing as the cold open, edges in the page margins" },
+        { "t": 7.6, "focus": ["cardHead", "coverage", "dock", "part1", "mod2"], "dur": 0.7, "maxZoom": 1.08, "window": [9.5, 13.15], "label": "the voice turn: dock phases, T2 transcript, T3 arriving; both column heads whole, top edge below the site bar" },
+        { "t": 13.15, "focus": ["currentQ", "part1", "mod2"], "dur": 0.6, "maxZoom": 1.8, "window": [13.6, 17.35], "label": "T3 under the answer it follows, the guide now on Q2; Jev flags T3" },
+        { "t": 17.35, "focus": ["currentQ", "mod2", "part2", "mod3"], "cut": true, "maxZoom": 1.5, "window": [18.3, 23.2], "label": "flagged T3, answer 2, the neutral probe T5, the guide now on Q3; edges in the page margins" }
       ]
     </script>
   </div>

@@ -1,0 +1,24 @@
+<!--
+  kit/components/annotation.html — SNIPPET (kit 1.1): a short label next to a recorded component, with a
+  ring on it. Put it in a footage scene OUTSIDE .kit-stage (screen space, above the footage).
+  Kit.scene.footage places it from the component's recorded DOM box under the camera in force:
+  ring = the box + data-kit-pad; label beside the ring (auto: right, left, below, above) inside the safe
+  area, never over the shot's focus box, the ring or the caption band; when nothing fits beside the
+  ring, just outside the focus box with a thin leader line. Animation: fade + ring settle, label blur-in.
+
+  Rules (QA, fail): label <= 6 words; on screen >= 0.6 s + 0.35 s per word (6 words = 2.7 s); inside ONE
+  camera hold (it appears after the move lands and leaves before the next move); a placement exists;
+  at most one annotation on screen at a time (plus one caption). No room? Lower the shot's maxZoom (so the
+  focus leaves space), pick data-kit-side, or shorten the label.
+
+  Variables
+    data-kit-focus   component name, "name@clip", or JSON array of names (union)
+    data-kit-pad     footage px between component and ring (default 6)
+    data-kit-side    auto | right | left | below | above
+    class "dim"      also dim the rest of the frame
+    .kit-ann-label   the text (accent label, Inter 700 32 px)
+-->
+<div id="SCENE-ann-NAME" class="clip kit-ann" data-start="2.0" data-duration="2.8" data-kit-focus="component"
+  data-kit-pad="6" data-kit-side="auto" data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion>
+  <div class="kit-ann-label">Five words or so here</div>
+</div>

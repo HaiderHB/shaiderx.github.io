@@ -1,64 +1,66 @@
-# Review: AssemblyAI launch film v2
+# Review: AssemblyAI launch film v3
 
-## What changed from v1 (82.5 s -> 45.95 s)
-- Rebuilt on video/kit: cold-open, next-steps and end-card blocks; four footage scenes driven by shot
-  JSON; one captions host animated by Kit.captions. No title card, no north-star quote card: real page
-  from frame 0 (the hero: the task and "3 failures"), headline in the band.
-- All footage recaptured today with kit/scripts/capture.cjs, so every focus has true DOM boxes and the
-  UI is the current demo ("Explain and fix", reviewed Fix lines). The old takes were not reused: they
-  had no DOM boxes, two predated the demo's latest copy, and the Explain take was from an older prompt.
-- New beats: the proposed MCP tools and the one-line README fix (closes the L9 SyntaxError story).
-  Dropped: the separate north-star card, the eval design card (it is visible under the README fix shot
-  with its own "Design only. No results yet." badge), the HB monogram end animation.
+## What changed from v2 (45.95 s silent -> 53.0 s text-first with a music bed)
+- Haider's new direction: no voice of any kind; the caption band carries everything in a product-demo
+  format (kit 1.1 v2 cues: step kicker, one headline, optional detail, a 6-step progress stepper) over one
+  instrumental bed (bright-pluck-112, -20 LUFS). Annotations (ring + <= 6-word label) point at the proof.
+- No "If I join / First 30 days" card, and the page's own "What I'd do in the first 30 days" section is
+  never on screen (the closest frames stop at the eval box in section 04; the site bar with its
+  "First 30 days" nav link is kept out of every frame).
+- All footage re-recorded on the demo UI revamp (d0c6407): new hero verdict card (cold open), the
+  checker's split-bar tally, the green 14-pass bar, the section heads, the -1/+1 README card.
+- New beats: the task prompt itself (step 1); the reference fix's 14-pass tally against "Was 3 fail,
+  5 warn"; the gaps section head ("Checked 13 Nov 2026 · 8 verified gaps"). Kept: L9 SyntaxError, L43-44
+  Terminate, one live Explain run, MCP tools, README fix. Dropped: next steps.
 
-## QA (kit/scripts/qa.mjs)
-- 45.95 s, first product frame 0.00 s, 11 camera keyframes + 3 rings inside the safe area, 1 speed change
-  (4x) labelled, 0 fail, 0 warn. hyperframes check: 0 errors; kept warnings: film_silent (requested),
-  nested_media_start_basis_ambiguous (starts are composition-local), timeline_track_too_dense (one
-  captions host by design).
-- kit/scripts/edges.mjs (new): no tracked neighbour sliced at a frame edge except the checker's
-  Run again button at the explain start, which sits under the demo's own sticky header (not visible).
-- Looked at: renders/qa/contact-sheet.jpg and framing-sheet.jpg from snapshots and again from the
-  rendered MP4, full-resolution crops of the frame tops (1.0, 5.5, 22.05 s) and frames of the MP4 at
-  8.0, 12.2, 20.6, 24.8, 37.8, 45.85 s.
-- Render: H.264 1920x1080 30 fps, 45.97 s (1379 frames), 11.5 MB, no audio track.
+## QA (kit 1.1 qa.mjs)
+- `qa.mjs --video renders/assemblyai-launch-v3.mp4`: PASS, 0 fail, 1 warn. 53.00 s, first product frame
+  0.00 s, cold open 2.5 s (5-word headline), end card 3.0 s, 10 v2 cues each on screen >= its reading
+  time, 7 annotations, 1 speed change (6x) labelled, H.264 1920x1080 30 fps + AAC, 13.2 MB, -20.0 LUFS
+  integrated, true peak -6.3 dBTP, fade-in (first 30 ms -48.7 dB) and fade-out on the last frame
+  (-92.5 dB). Exactly one music bed, no other audio.
+- Kept warning: the "Was 3 fail, 5 warn" label sits over the results list's group header (no whitespace
+  beside the tally at that zoom; it covers "Keys and tokens 6", nothing that changes meaning).
+- `hyperframes check`: 0 errors; kept lint warnings nested_media_start_basis_ambiguous (starts are
+  composition-local) and timeline_track_too_dense (one captions host by design).
+- `edges.mjs`: 1 advisory hit, the cold open's h1 box (its text ends left of the frame edge; nothing
+  visible is sliced).
+- Looked at: renders/qa/contact-sheet.jpg and framing-sheet.jpg (from the render), and full frames of the
+  MP4 at 1.2, 4.5, 10.5, 13.8, 18.8, 22.0, 28.5/28.6, 33.0, 38.5, 42.0, 47.5, 51.8 s.
 
 ## Framing notes
-- Every shot shows its focus whole above the band. Beyond QA, the frame edges were moved into
-  whitespace so no neighbouring card, button or text line is sliced at the top or sides:
-  checker push-ins use `align: top, pad: 0, margin: 4` (top edge between the hint line and the panels),
-  the Reference fix shot `align: top, margin: 52` (keeps the section title, half under the page's sticky
-  header, out), gaps `align: bottom, pad: 0, margin: 0` (top edge below the section intro), tools
-  `pad: 0, margin: 0`, the README fix `align: top-left` at column-fit zoom after a recapture that scrolls
-  the README to the top of the viewport (at 2x the tool cards above it were cut at the top edge).
-- The L9 and L43-44 focus uses code rows recorded with capture.cjs's new `clip` option (only the part
-  visible in the code pane), so the rings sit on the visible line, not on the 947 px row.
-- The 4x model wait and the reply arrival are framed on the whole panel head; the findings are shown at
-  1.46x (reply text ~22 px on a 1080p frame).
+- Frame edges sit in whitespace: the task shot (2.79x) puts its top edge between the page title and the
+  tagline and its right edge just before the verdict card, with the stat tiles under the band; the
+  Run-again shot (2.18x) puts its left edge in the gap between the code and results panes so the label
+  sits in the page margin; checker/fix shots put the top edge between the site bar and the sample chips
+  or between the chips and the panes; the README shot's top edge is in the 16 px gap above the card.
+- The cold open is left-aligned on the verdict card (2.0x): centring it would slice the hero tagline at
+  the left edge. The right third of that frame is the page's dark margin, where the pointer enters.
+- Explain: the wait is framed on the panel with a ring + dim on the button ("Explaining…"); the gaps
+  section below it shows dimmed. The reply is framed on the panel head + the three failures (1.54x).
+- An annotation on the L9 finding was replaced by a ring + dim: its label (forced below the finding)
+  covered the start of the next sentence and left "...documented GET endpoint" readable, the opposite
+  of what the model wrote.
 
 ## Honesty
-- Explain and fix: ONE live, uncached run (DeepSeek V3.2 via fal) on First try, right after a server
-  restart (in-memory cache empty). Labelled "Live run · uncached". The 7.2 s model wait is shown at 4x
-  (tagged). The server streams the finished answer word by word (8 ms/word) once the call returns; the
-  film does not claim token streaming. Reply text kept in capture/explain-reply.txt; read in full: no
-  contradictions (L7 stays GET with force-dynamic, L8's fetch uses POST, L9 defers to L8, L43-44
-  Terminate then wait).
-- "Each Fix line is reviewed text": true of this demo version (b99700c onwards): the model writes the
-  "what breaks" sentence per check; the Fix line is canonical text for that check.
-- First try: the caption says "built from AssemblyAI's own snippets" and does not claim an agent run
-  (the demo README: assembled by hand from the material an agent reads). The page's own hero label
-  "The agent's first try" is visible in the cold open.
-- Reference fix: "Rule checks only; no live AssemblyAI session yet" (the demo never opened a real session).
-- Proposals are captioned "Proposed, not shipped"; the eval box carries the page's "Design only. No
-  results yet." badge.
-- Jump cuts over page scrolls only (hero -> checker, checker -> gaps, tools -> README fix). No held
-  frames, no stills. Silent: no music, no voice, no avatar, no AssemblyAI logo.
+- Explain and fix: ONE live, uncached run (DeepSeek V3.2 via fal) on First try on a fresh `next start`
+  (in-memory cache empty), labelled "Live run · uncached"; the 13.2 s model wait is shown at 6x (tagged
+  "6x"). The server streams the finished answer at 8 ms/word after the call; the film does not claim
+  token streaming. Full reply in capture/explain-reply.txt, read in full. The three failures shown are
+  correct. One warning finding (L8, "Token minted on the documented endpoint") calls GET /v3/token
+  "undocumented" although the system prompt says not to; it is visible only dimmed under the L9 ring for
+  ~2 s and is not captioned. Fix lines are canonical per check (b99700c onwards), so "Fix lines are
+  reviewed" is true.
+- First try: "First try assembled by hand from AssemblyAI's own snippets" (the demo README: no agent was
+  run); the page's own label "The agent's first try" is visible in the cold open.
+- Reference fix: "Rule checks only, not run live yet" (no real AssemblyAI session was opened).
+- Proposals: the kicker reads "Proposed, not shipped" (also the page's own section kicker). The eval box
+  below the README card shows dimmed with its "Design only. No results yet." badge.
+- Jump cuts over page scrolls only (task -> checker, reference fix -> gaps, tools -> README fix). No held
+  frames, no stills. Sound: one instrumental bed; no voice, no avatar, no AssemblyAI logo.
 
 ## Weakest shots
-- Explain findings at 1.46x: readable on a laptop, small on a phone. A tighter push would slice the
-  panel head or the button at the frame edge; the caption carries the point.
-- The checker holds one 1.77x framing for ~8.7 s (4.6-13.3 s); the motion comes from the cursor, two
-  rings, the L43 click, the code-pane scroll and the line flash, not the camera.
-- The README fix shot is top-left with the eval design box filling the lower frame; it reads, but the
-  diff is not centred.
-- Next steps is 3.5 s (the brief's cap) for three short lines.
+- The cold open's card sits left of centre (see framing notes).
+- The task prompt at 2.79x is soft (upscaled 1080p screen capture); it reads clearly but is not crisp.
+- The Explain findings at 1.54x are ~23 px text: fine on a laptop, small on a phone; the captions carry
+  the point.

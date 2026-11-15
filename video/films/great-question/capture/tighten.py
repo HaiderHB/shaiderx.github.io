@@ -1,8 +1,8 @@
 # Cap pauses longer than 0.45 s at 0.4 s and trim edge silence (0.08 s lead, 0.1 s tail), so the page's
 # 1.2 s end-of-answer detector never fires mid-answer and the simulated answers stay short.
-# Writes raw/answers/<id>.tight.wav (48 kHz mono s16).
+# Writes raw/answers3/<id>.tight.wav (48 kHz mono s16). v2's answers (raw/answers): pass "answers".
 import sys, os, glob, numpy as np
-DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'raw', 'answers')
+DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'raw', sys.argv[1] if len(sys.argv) > 1 else 'answers3')
 from scipy.io import wavfile
 MAXP, KEEP, FR = 0.45, 0.40, 0.01
 for f in sorted(glob.glob(os.path.join(DIR, '*.wav'))):

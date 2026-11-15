@@ -1,8 +1,9 @@
 <!--
-  captions: one host over the footage scenes (film 2.00-47.12; times here are local = film - 2.00).
-  Speech subtitles (.kit-voice) between the kit:voice-cues markers are WRITTEN by
-  node ../../kit/scripts/place-audio.mjs . --write  from capture/voice.json, so they follow the placed audio.
-  The other cues are hand-written notes for the silent stretches.
+  captions (kit 1.1 v2 band): one host over the footage scenes, film 2.20-44.42 (local = film - 2.20).
+  One cue at a time: kicker = step, one-line headline, optional detail. Reading time >= 0.6 s + 0.35 s per word
+  of head + detail + chips. Steps: Interview (local 0-13.1), Guardrail (13.15-26.4), Findings (26.5-35.22),
+  MCP (35.3-41.9). Scenes (local): interview 0-23.2, trace 23.2-26.45, findings 26.45-35.27, mcp 35.27-42.22.
+  Speed tags cover the sped-up clips: iv-v2 3x (local 3.6-7.6), fd-v2 6x (local 27.65-30.05).
 -->
 <template>
   <style>
@@ -13,61 +14,69 @@
     }
   </style>
   <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
-    <div id="cap-band" class="clip" data-start="0" data-duration="45.12" data-track-index="0" data-layout-ignore><div class="kit-band"></div></div>
+    <div id="cap-band" class="clip" data-start="0" data-duration="42.22" data-track-index="0" data-layout-ignore>
+      <div class="kit-band kit-band2"></div>
+    </div>
+    <div id="cap-progress" class="clip kit-progress" data-start="0" data-duration="42.22" data-track-index="2"
+      data-kit-steps="Interview,Guardrail,Findings,MCP" data-layout-ignore></div>
 
-    <!-- speech (interview 0.00-32.10 local) -->
-    <!-- kit:voice-cues:start -->
-    <div id="vc-mod1-1" class="clip kit-cap kit-voice" data-start="0.120" data-duration="5.180" data-track-index="1" data-kit-voice="mod1">
-      <div class="kit-cap-label"><span>AI moderator</span><span class="kit-chip">Real run · Fish stock voice Adrian, 1.15x</span></div>
-      <div class="kit-cap-main">I'm an AI moderator. To start, walk me through what happens after a new customer signs,</div>
-      <div class="kit-cap-note">Leading questions ruin research, so Jev scores every line live.</div>
-    </div>
-    <div id="vc-mod1-2" class="clip kit-cap kit-voice" data-start="5.300" data-duration="4.250" data-track-index="1" data-kit-voice="mod1">
-      <div class="kit-cap-label"><span>AI moderator</span></div>
-      <div class="kit-cap-main">up to the point they're using the product on their own.</div>
-    </div>
-    <div id="vc-a1-1" class="clip kit-cap kit-voice" data-start="9.678" data-duration="5.750" data-track-index="1" data-kit-voice="a1">
-      <div class="kit-cap-label"><span>Participant</span><span class="kit-chip">Simulated participant · Fish voice Selene, 1.15x</span></div>
-      <div class="kit-cap-main">We run a kickoff call, then their admin sets up single sign-on. That's usually where it stalls.</div>
-    </div>
-    <div id="vc-mod2-1" class="clip kit-cap kit-voice" data-start="17.799" data-duration="4.320" data-track-index="1" data-kit-voice="mod2">
-      <div class="kit-cap-label"><span>AI moderator · follow-up probe</span></div>
-      <div class="kit-cap-main">Got it. Who is involved from your side in that kickoff call?</div>
-      <div class="kit-cap-note">Neutral: it reuses the participant's own words. Jev: leading 13%.</div>
-    </div>
-    <div id="vc-a2-1" class="clip kit-cap kit-voice" data-start="23.797" data-duration="2.490" data-track-index="1" data-kit-voice="a2">
-      <div class="kit-cap-label"><span>Participant</span><span class="kit-chip">Simulated participant · Fish voice Selene, 1.15x</span></div>
-      <div class="kit-cap-main">Me and one onboarding specialist.</div>
-    </div>
-    <div id="vc-a2-2" class="clip kit-cap kit-voice" data-start="26.287" data-duration="5.260" data-track-index="1" data-kit-voice="a2">
-      <div class="kit-cap-label"><span>Participant</span><span class="kit-chip">Simulated participant · Fish voice Selene, 1.15x</span></div>
-      <div class="kit-cap-main">On their side, the admin, and their IT person for single sign-on.</div>
-    </div>
-    <!-- kit:voice-cues:end -->
-
-    <!-- answer -> reply, shown at 2x (iv-v3: local 15.43-17.575) -->
-    <div id="cap-pipe" class="clip kit-cap" data-start="15.45" data-duration="2.3" data-track-index="2">
-      <div class="kit-cap-label"><span>Answer to reply</span><span class="kit-speed" data-rate="2" data-tag-start="15.45" data-tag-end="17.575">2x</span></div>
-      <div class="kit-cap-main">Fish ASR 0.5 s · DeepSeek V3.2 1.4 s · Fish TTS 1.2 s</div>
+    <!-- interview -->
+    <div id="cap-ask" class="clip kit-cap kit-cap2" data-start="0.05" data-duration="3.5" data-kit-step="1" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 1 · Voice interview</span></div>
+      <div class="kit-cap-head">An AI moderator asks the guide's questions *aloud*</div>
     </div>
 
-    <!-- check (film 34.095-37.295 = local 32.095-35.295) -->
-    <div id="cap-check" class="clip kit-cap" data-start="32.15" data-duration="3.1" data-track-index="2">
-      <div class="kit-cap-label"><span>What Jev flags</span><span class="kit-chip">The page's example check</span></div>
-      <div class="kit-cap-main">A leading question scores 96% leading and 89% off-guide.</div>
+    <div id="cap-answer" class="clip kit-cap kit-cap2" data-start="3.6" data-duration="3.95" data-kit-step="1" data-track-index="1">
+      <div class="kit-cap-kicker">
+        <span>Step 1 · Voice interview</span>
+        <span class="kit-speed" data-rate="3" data-tag-start="3.6" data-tag-end="7.6">3x</span>
+        <span class="kit-chip">Simulated participant</span>
+      </div>
+      <div class="kit-cap-head">The participant answers by *voice*</div>
     </div>
 
-    <!-- findings (film 37.295-42.62 = local 35.295-40.62); fd-v2 at 5x = local 36.595-37.813 -->
-    <div id="cap-findings" class="clip kit-cap" data-start="35.35" data-duration="5.22" data-track-index="2">
-      <div class="kit-cap-label"><span>Findings</span><span class="kit-speed" data-rate="5" data-tag-start="36.595" data-tag-end="37.813">5x</span></div>
-      <div class="kit-cap-main">Each finding cites the participant's exact words, checked against the transcript.</div>
-      <div class="kit-cap-note">DeepSeek V3.2 drafts them; the server keeps only verbatim quotes (0 dropped).</div>
+    <div id="cap-turn" class="clip kit-cap kit-cap2" data-start="7.65" data-duration="5.45" data-kit-step="1" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 1 · Voice interview</span></div>
+      <div class="kit-cap-head">Voice turn: speech-to-text → DeepSeek → speech, *4.2 s*</div>
     </div>
 
-    <!-- mcp (film 42.62-47.12 = local 40.62-45.12) -->
-    <div id="cap-mcp" class="clip kit-cap" data-start="40.67" data-duration="4.4" data-track-index="2">
-      <div class="kit-cap-label"><span>MCP · get_quote</span></div>
-      <div class="kit-cap-main">An agent gets the exact quote, its turn and timestamp, ready to cite.</div>
+    <!-- guardrail -->
+    <div id="cap-flag" class="clip kit-cap kit-cap2" data-start="13.15" data-duration="4.15" data-kit-step="2" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 2 · Live guardrail</span></div>
+      <div class="kit-cap-head">Jev *flags* this follow-up: 64% leading</div>
+    </div>
+
+    <div id="cap-probe" class="clip kit-cap kit-cap2" data-start="17.32" data-duration="5.88" data-kit-step="2" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 2 · Live guardrail</span></div>
+      <div class="kit-cap-head">The next probe stays *neutral*: 13% leading</div>
+      <div class="kit-cap-detail">Jev also moves the guide to Q3</div>
+    </div>
+
+    <div id="cap-trace" class="clip kit-cap kit-cap2" data-start="23.25" data-duration="3.15" data-kit-step="2" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 2 · Live guardrail</span></div>
+      <div class="kit-cap-head">Trace view: leading *peaks* at T3</div>
+    </div>
+
+    <!-- findings -->
+    <div id="cap-gen" class="clip kit-cap kit-cap2" data-start="26.5" data-duration="3.55" data-kit-step="3" data-track-index="1">
+      <div class="kit-cap-kicker">
+        <span>Step 3 · Findings</span>
+        <span class="kit-speed" data-rate="6" data-tag-start="27.65" data-tag-end="30.05">6x</span>
+      </div>
+      <div class="kit-cap-head">DeepSeek turns the transcript into *findings*</div>
+    </div>
+
+    <div id="cap-quotes" class="clip kit-cap kit-cap2" data-start="30.12" data-duration="5.1" data-kit-step="3" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 3 · Findings</span></div>
+      <div class="kit-cap-head">Every finding quotes the participant *word for word*</div>
+      <div class="kit-cap-detail">Server-checked against the transcript</div>
+    </div>
+
+    <!-- mcp (take3b) -->
+    <div id="cap-mcp" class="clip kit-cap kit-cap2" data-start="35.3" data-duration="6.88" data-kit-step="4" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 4 · MCP tools</span><span class="kit-chip">Second take</span></div>
+      <div class="kit-cap-head">Findings become *MCP tools* for agents</div>
+      <div class="kit-cap-detail">get_quote returns the quote, turn and timestamp</div>
     </div>
   </div>
   <script>

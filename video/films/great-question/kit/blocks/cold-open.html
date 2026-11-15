@@ -13,7 +13,9 @@
 
   Variables
     kicker    small cyan line above the headline (who / for whom)
-    headline  one line, <= ~42 characters at 66 px; *word* = the one cyan word
+    headline  one line, <= ~42 characters at 66 px; *word* = the one accent word. Kit 1.1 reading time
+              (QA fail): slot >= 0.6 s + 0.35 s per headline word, so a 2.2 s cold open carries <= 4 words,
+              2.5 s <= 5 (the kicker is a label and is not counted)
     focus     component name(s) from data/clips/hook.json ("email" or "email,runButton") or "x,y,w,h"
     zoom      zoom wanted (lowered automatically if the component would not fit above the band)
     push      slow push-in over the block, as a fraction of zoom (0 = static)
@@ -21,6 +23,7 @@
     reveal    "instant" (default: kicker + headline crisp from frame 0, so the thumbnail reads) or
               "words" (word-by-word blur-in; costs ~0.4 s of reading time in a 2 s cold open)
   Slot: 1.5-2.5 s (QA warns above 2.5 s). Element windows are 3 s so any slot up to 3 s works.
+  Kit 1.1: the band is the v2 solid band (.kit-band2), the same as the caption band that follows.
 -->
 <template>
   <style>
@@ -62,7 +65,7 @@
       </div>
     </div>
     <div id="co-band-w" class="clip" data-start="0" data-duration="3" data-track-index="1" data-layout-ignore>
-      <div id="co-band" class="kit-band"></div>
+      <div id="co-band" class="kit-band kit-band2"></div>
     </div>
     <div id="co-text" class="clip kit-headline" data-start="0" data-duration="3" data-track-index="2" data-layout-allow-caption-zone>
       <div id="co-kicker" class="kit-kicker" data-var-text="kicker">Prototype for Company · Haider Bokhari</div>

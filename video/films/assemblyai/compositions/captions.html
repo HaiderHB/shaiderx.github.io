@@ -1,4 +1,6 @@
 <template>
+  <!-- kit 1.1 caption band: one v2 cue at a time (kicker = step, one-line headline, optional detail),
+       the 6-step progress stepper, a solid band. Reading time: >= 0.6 s + 0.35 s per word of head + detail + chips. -->
   <style>
     #root {
       position: absolute;
@@ -7,54 +9,65 @@
     }
   </style>
   <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
-    <!-- one host over the four footage scenes, 2.30-39.45 s (captions-local = absolute - 2.30) -->
-    <div id="cap-band" class="clip" data-start="0" data-duration="37.15" data-track-index="0" data-layout-ignore>
-      <div class="kit-band"></div>
+    <!-- one host over the four footage scenes, 2.50-50.00 s (captions-local = absolute - 2.50) -->
+    <div id="cap-band" class="clip" data-start="0" data-duration="47.5" data-track-index="0" data-layout-ignore>
+      <div class="kit-band kit-band2"></div>
     </div>
+    <div id="cap-progress" class="clip kit-progress" data-start="0" data-duration="47.5" data-track-index="2"
+      data-kit-steps="Task,Checker,Explain,Fix,Gaps,Proposals" data-layout-ignore></div>
 
     <!-- checker (scene-local = captions-local) -->
-    <div id="cap-check" class="clip kit-cap" data-start="0.1" data-duration="4.05" data-track-index="1">
-      <div class="kit-cap-label"><span>Integration checker · 14 rules · free</span></div>
-      <div class="kit-cap-main">First try, built from AssemblyAI’s own snippets: 3 fail.</div>
+    <div id="cap-task" class="clip kit-cap kit-cap2" data-start="0.1" data-duration="6.25" data-kit-step="1" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 1 · The task</span></div>
+      <div class="kit-cap-head">A common task for a *coding agent*</div>
+      <div class="kit-cap-detail">First try assembled by hand from AssemblyAI’s own snippets.</div>
     </div>
-    <div id="cap-l9" class="clip kit-cap" data-start="4.25" data-duration="3.0" data-track-index="1">
-      <div class="kit-cap-label"><span>L9 · from the SDK README</span></div>
-      <div class="kit-cap-main">The README’s token snippet is a SyntaxError.</div>
+    <div id="cap-check" class="clip kit-cap kit-cap2" data-start="6.45" data-duration="2.85" data-kit-step="2" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 2 · Free checker</span></div>
+      <div class="kit-cap-head">14 free rules flag *3 failures*</div>
     </div>
-    <div id="cap-l43" class="clip kit-cap" data-start="7.35" data-duration="3.55" data-track-index="1">
-      <div class="kit-cap-label"><span>L43–44 · fail</span></div>
-      <div class="kit-cap-main"><code>close()</code> right after Terminate drops the last sentence.</div>
+    <div id="cap-l9" class="clip kit-cap kit-cap2" data-start="9.4" data-duration="3.6" data-kit-step="2" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 2 · Free checker</span></div>
+      <div class="kit-cap-head">L9, pasted from the SDK README: a *SyntaxError*</div>
     </div>
-
-    <!-- explain (captions-local = 11.00 + scene-local) -->
-    <div id="cap-explain" class="clip kit-cap" data-start="11.1" data-duration="3.05" data-track-index="1">
-      <div class="kit-cap-label"><span>Explain and fix</span><span class="kit-chip">Live run · uncached</span><span class="kit-speed" data-rate="4" data-tag-start="12.4" data-tag-end="14.2">4x</span></div>
-      <div class="kit-cap-main">DeepSeek V3.2 via fal explains each failing check.</div>
-    </div>
-    <div id="cap-reviewed" class="clip kit-cap" data-start="14.3" data-duration="5.05" data-track-index="1">
-      <div class="kit-cap-label"><span>Reviewed fixes</span></div>
-      <div class="kit-cap-main">The model writes what breaks. Each Fix line is reviewed text.</div>
+    <div id="cap-l43" class="clip kit-cap kit-cap2" data-start="13.1" data-duration="4.6" data-kit-step="2" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 2 · Free checker</span></div>
+      <div class="kit-cap-head">close() right after Terminate drops the *last sentence*</div>
     </div>
 
-    <!-- fix (captions-local = 19.45 + scene-local) -->
-    <div id="cap-fix" class="clip kit-cap" data-start="19.55" data-duration="4.95" data-track-index="1">
-      <div class="kit-cap-label"><span>Reference fix · 3 files</span></div>
-      <div class="kit-cap-main">Same checker: all 14 checks pass.</div>
-      <div class="kit-cap-note">Rule checks only; no live AssemblyAI session yet.</div>
+    <!-- explain (captions-local = 17.80 + scene-local) -->
+    <div id="cap-explain" class="clip kit-cap kit-cap2" data-start="17.9" data-duration="4.2" data-kit-step="3" data-track-index="1">
+      <div class="kit-cap-kicker">
+        <span>Step 3 · Explain and fix</span>
+        <span class="kit-chip">Live run · uncached</span>
+        <span class="kit-speed" data-rate="6" data-tag-start="19.15" data-tag-end="21.35">6x</span>
+      </div>
+      <div class="kit-cap-head">DeepSeek V3.2 explains what each failure *breaks*</div>
     </div>
-    <div id="cap-gaps" class="clip kit-cap" data-start="24.65" data-duration="4.2" data-track-index="1">
-      <div class="kit-cap-label"><span>8 verified gaps · checked 13 Nov</span></div>
-      <div class="kit-cap-main">Each one quotes the AssemblyAI source that misleads the agent.</div>
+    <div id="cap-reviewed" class="clip kit-cap kit-cap2" data-start="22.2" data-duration="4.8" data-kit-step="3" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 3 · Explain and fix</span></div>
+      <div class="kit-cap-head">The model writes the why; *Fix lines* are reviewed</div>
     </div>
 
-    <!-- prop (captions-local = 28.95 + scene-local) -->
-    <div id="cap-tools" class="clip kit-cap" data-start="29.05" data-duration="4.2" data-track-index="1">
-      <div class="kit-cap-label"><span>Proposed, not shipped</span></div>
-      <div class="kit-cap-main">Two MCP tools so agents test streaming instead of guessing.</div>
+    <!-- fix (captions-local = 27.10 + scene-local) -->
+    <div id="cap-fix" class="clip kit-cap kit-cap2" data-start="27.2" data-duration="5.8" data-kit-step="4" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 4 · The fix</span></div>
+      <div class="kit-cap-head">Reference fix: *all 14 checks pass*</div>
+      <div class="kit-cap-detail">Rule checks only, not run live yet.</div>
     </div>
-    <div id="cap-readme" class="clip kit-cap" data-start="33.45" data-duration="3.6" data-track-index="1">
-      <div class="kit-cap-label"><span>Proposed · README fix</span></div>
-      <div class="kit-cap-main">One line in the SDK README fixes the SyntaxError.</div>
+    <div id="cap-gaps" class="clip kit-cap kit-cap2" data-start="33.3" data-duration="4.2" data-kit-step="5" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 5 · Verified gaps</span></div>
+      <div class="kit-cap-head">8 gaps, each with the source that *misleads* agents</div>
+    </div>
+
+    <!-- prop (captions-local = 37.70 + scene-local) -->
+    <div id="cap-tools" class="clip kit-cap kit-cap2" data-start="37.8" data-duration="5.05" data-kit-step="6" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 6 · Proposed, not shipped</span></div>
+      <div class="kit-cap-head">Two MCP tools let agents *test* streaming</div>
+    </div>
+    <div id="cap-readme" class="clip kit-cap kit-cap2" data-start="43.05" data-duration="4.35" data-kit-step="6" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 6 · Proposed, not shipped</span></div>
+      <div class="kit-cap-head">One README line fixes the *SyntaxError*</div>
     </div>
   </div>
   <script>

@@ -1,4 +1,6 @@
 <template>
+  <!-- Distru v3 · the same tool layer as an MCP server (clip mcp): check_license called by hand in the page's
+       MCP box (runs in the browser on the sample data; free). -->
   <style>
     #root {
       position: absolute;
@@ -10,26 +12,28 @@
   <div id="root" data-composition-id="mcp" data-width="1920" data-height="1080">
     <div id="mc-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="mc-cam" class="kit-cam">
-        <!-- the MCP section's "call a tool" box: the same tool layer the agent uses, run in the browser on sample data -->
-        <video id="mc-v1" class="clip kit-footage" src="assets/footage/mcp.mp4" data-kit-clip="mcp" data-start="0" data-duration="2.1" data-media-start="5.6" data-track-index="0" muted playsinline></video>
-        <!-- jump cut: 1.3 s of cursor travel to Call tool is skipped -->
-        <video id="mc-v2" class="clip kit-footage" src="assets/footage/mcp.mp4" data-kit-clip="mcp" data-start="2.1" data-duration="1.4" data-media-start="9" data-track-index="0" muted playsinline></video>
-        <!-- jump cut over the page scroll to the result -->
-        <video id="mc-v3" class="clip kit-footage" src="assets/footage/mcp.mp4" data-kit-clip="mcp" data-start="3.5" data-duration="3" data-media-start="13" data-track-index="0" muted playsinline></video>
-        <!-- crops (ground patches, footage px): keep the "claude mcp add ... localhost" row (and the next section) out of frame -->
-        <!-- the row sits 20 px lower once check_license's longer definition opens (media 6.73 s); not in frame during the Call tool close-up -->
-        <div id="mc-crop-a" class="clip kit-crop" data-start="0" data-duration="1.13" data-track-index="2" data-layout-ignore style="left: 380px; top: 846px; width: 1160px; height: 240px"></div>
-        <div id="mc-crop-a2" class="clip kit-crop" data-start="1.13" data-duration="0.97" data-track-index="2" data-layout-ignore style="left: 380px; top: 866px; width: 1160px; height: 220px"></div>
-        <div id="mc-crop-b" class="clip kit-crop" data-start="3.5" data-duration="3" data-track-index="2" data-layout-ignore style="left: 380px; top: 990px; width: 1160px; height: 90px"></div>
-
-        <div id="mc-ring-status" class="clip kit-ring" data-start="4" data-duration="2.3" data-kit-focus="statusLine" data-kit-pad="8" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+        <video id="mc-v1" class="clip kit-footage" src="assets/footage/mcp.mp4" data-kit-clip="mcp" data-start="0" data-duration="2.9" data-media-start="0.1" data-track-index="0" muted playsinline></video>
+        <!-- jump cut over the scroll and the cursor travel to Call tool (clicked at media 6.79 s) -->
+        <video id="mc-v2" class="clip kit-footage" src="assets/footage/mcp.mp4" data-kit-clip="mcp" data-start="2.9" data-duration="1" data-media-start="5.9" data-track-index="0" muted playsinline></video>
+        <!-- jump cut over the scroll to the result -->
+        <video id="mc-v3" class="clip kit-footage" src="assets/footage/mcp.mp4" data-kit-clip="mcp" data-start="3.9" data-duration="4.1" data-media-start="9.2" data-track-index="0" muted playsinline></video>
+        <!-- ground patches (footage px): keep the "claude mcp add ... http://localhost:3160/..." row of the local
+             recording out of frame (on the live site it reads haiderb.com); it moves down when the result opens -->
+        <div id="mc-crop-a" class="clip kit-crop" data-start="2.9" data-duration="0.89" data-track-index="2" data-layout-ignore style="left: 340px; top: 690px; width: 1240px; height: 80px"></div>
+        <div id="mc-crop-b" class="clip kit-crop" data-start="3.79" data-duration="0.11" data-track-index="2" data-layout-ignore style="left: 340px; top: 1026px; width: 1240px; height: 80px"></div>
+        <div id="mc-crop-c" class="clip kit-crop" data-start="3.9" data-duration="4.1" data-track-index="2" data-layout-ignore style="left: 340px; top: 1001px; width: 1240px; height: 80px"></div>
       </div>
     </div>
+
+    <div id="mc-ann-result" class="clip kit-ann" data-start="4.1" data-duration="3.7" data-kit-focus="mcpResult" data-kit-pad="6" data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion>
+      <div class="kit-ann-label">Same verdict the agent got</div>
+    </div>
+
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": "toolPanel", "label": "7 tools; check_license picked" },
-        { "t": 2.1, "focus": "args", "cut": true, "label": "Call tool" },
-        { "t": 3.5, "focus": "result", "cut": true, "maxZoom": 2, "label": "the result" }
+        { "t": 0, "focus": ["mcpHead", "callers"], "edge": { "top": 12 }, "label": "same tools, served over MCP (frame top at the header pill, page text under the bar hidden)" },
+        { "t": 2.9, "focus": "mcpPanel", "cut": true, "maxZoom": 1.36, "pad": 0, "margin": 0, "edge": { "top": 80 }, "window": [2.9, 3.67], "label": "check_license: Call tool" },
+        { "t": 3.9, "focus": "mcpResult", "cut": true, "maxZoom": 2, "pad": 0, "margin": 0, "edge": { "left": 1079, "top": 628 }, "label": "the result (frame edges in the column gutter and the blank rows above it)" }
       ]
     </script>
   </div>

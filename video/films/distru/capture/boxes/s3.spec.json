@@ -1,7 +1,0 @@
-{"ground": 17, "threshold": 4, "region": [0, 47, 1920, 1033],
- "queries": [
-  {"name": "email", "point": [446, 500], "every": 0.5, "from": 0.5, "to": 18.5},
-  {"name": "trace", "point": [1180, 60], "every": 0.25, "from": 6.5, "to": 18.5},
-  {"name": "decision", "point": [446, 200], "every": 0.5, "from": 18.7, "to": 25.4},
-  {"name": "reply", "point": [1180, 60], "every": 0.5, "from": 18.7, "to": 25.4}
- ]}

@@ -14,7 +14,7 @@
  */
 (function (g) {
   const Kit = (g.Kit = g.Kit || {});
-  Kit.version = "1.0.2";
+  Kit.version = "1.1.1";
   Kit.FRAME = { w: 1920, h: 1080, fps: 30 };
 
   Kit.time = {
@@ -47,6 +47,103 @@
   if (typeof module === "object" && module.exports) module.exports = Kit;
 })(typeof window !== "undefined" ? window : globalThis);
 
+/* ---- kit/lib/text.js ---- */
+/*
+ * kit/lib/text.js — text measures shared by the page and QA (kit 1.1): word counts, reading time,
+ * and widths of Inter text from its glyph advances, so a check in Node agrees with what renders.
+ *
+ * Kit.text.READ                      {perWord: 0.35, base: 0.6}: reading time = 0.6 s + 0.35 s per word
+ * Kit.text.CAP2                      the v2 caption band geometry (keep in sync with tokens.css --kit-cap2-*)
+ * Kit.text.ANN                       the annotation label geometry (keep in sync with kit.css .kit-ann-label)
+ * Kit.text.plain(htmlOrText)         strip tags, *accent* stars and entities -> plain text
+ * Kit.text.words(text)               words a viewer reads (tokens with a letter or digit; "·" / "—" don't count)
+ * Kit.text.readingTime(words)        0.6 + 0.35 * words (seconds)
+ * Kit.text.width(text, size, weight = 700, tracking = 0)   px width of Inter text (tracking in em);
+ *                                    advances measured from Inter 4 (Bold / Regular) without kerning,
+ *                                    so it errs ~0.5% wide; unknown glyphs count as a wide letter
+ * Kit.text.lines(text, size, weight, tracking, maxWidth)   greedy word-wrap line count
+ * Kit.text.annSize(label)            {w, h} of an annotation label box (what kit.css draws)
+ */
+(function (g) {
+  const Kit = (g.Kit = g.Kit || {});
+
+  const CHARS = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~·’‘“”–—…×→✓€";
+  const ADV700 = [237, 338, 552, 649, 655, 1016, 672, 339, 377, 377, 559, 679, 334, 468, 334, 388, 674, 431, 630, 646, 676, 639, 649, 582, 651, 649, 334, 343, 679, 679, 679, 560, 1016, 747, 662, 740, 722, 607, 587, 750, 747, 281, 584, 719, 565, 932, 762, 771, 648, 777, 657, 655, 667, 732, 747, 1038, 738, 731, 664, 377, 388, 377, 487, 476, 365, 581, 630, 588, 630, 596, 398, 632, 623, 271, 271, 580, 271, 913, 623, 613, 630, 630, 407, 560, 366, 623, 600, 850, 580, 602, 573, 469, 372, 469, 679, 334, 311, 311, 540, 532, 500, 1000, 1002, 679, 954, 882, 685];
+  const ADV400 = [281, 288, 466, 633, 642, 982, 644, 300, 365, 365, 501, 662, 288, 460, 288, 360, 631, 407, 610, 618, 646, 608, 620, 566, 619, 620, 288, 302, 662, 662, 662, 511, 966, 690, 654, 730, 722, 601, 590, 746, 743, 269, 571, 672, 565, 903, 753, 765, 639, 765, 644, 642, 646, 744, 690, 985, 682, 679, 629, 365, 360, 365, 471, 456, 323, 562, 612, 571, 612, 583, 370, 613, 591, 242, 242, 549, 242, 876, 591, 600, 612, 612, 376, 528, 327, 591, 562, 818, 546, 562, 552, 426, 333, 426, 662, 288, 261, 261, 440, 440, 500, 1000, 864, 662, 954, 884, 666];
+  const ADV = { 700: {}, 400: {} };
+  for (let i = 0; i < CHARS.length; i++) {
+    ADV[700][CHARS[i]] = ADV700[i];
+    ADV[400][CHARS[i]] = ADV400[i];
+  }
+
+  const READ = { perWord: 0.35, base: 0.6 };
+  // v2 caption band (px at 1080p): left/right gutter, kicker / head / detail sizes and tracking
+  const CAP2 = { gutter: 120, width: 1920 - 2 * 120, top: 864, kicker: 28, head: 58, headTracking: -0.02, detail: 32, detailTracking: 0, minHead: 52, maxHeadWords: 10, maxDetailWords: 14 };
+  // annotation label box: Inter 700 at 32 px, line 40 px, padding 9 / 18, 2 px slack each side
+  const ANN = { size: 32, line: 40, padX: 18, padY: 9, slack: 4, maxWords: 6 };
+
+  function decode(s) {
+    return String(s)
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;|&apos;/g, "'")
+      .replace(/&rsquo;/g, "’")
+      .replace(/&middot;/g, "·");
+  }
+
+  function plain(s) {
+    return decode(String(s == null ? "" : s).replace(/<[^>]+>/g, " ").replace(/\*([^*]+)\*/g, "$1"))
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function words(s) {
+    return plain(s)
+      .split(" ")
+      .filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+  }
+
+  function readingTime(n) {
+    return +(READ.base + READ.perWord * n).toFixed(2);
+  }
+
+  function width(s, size, weight, tracking) {
+    const table = ADV[weight === 400 || weight === "400" ? 400 : 700];
+    const t = plain(s);
+    let u = 0;
+    for (const ch of t) u += table[ch] != null ? table[ch] : 760;
+    return (u / 1000) * size + (tracking || 0) * size * t.length;
+  }
+
+  function lines(s, size, weight, tracking, maxWidth) {
+    const ws = plain(s).split(" ").filter(Boolean);
+    if (!ws.length) return 0;
+    let n = 1;
+    let cur = "";
+    ws.forEach((w) => {
+      const next = cur ? cur + " " + w : w;
+      if (cur && width(next, size, weight, tracking) > maxWidth) {
+        n++;
+        cur = w;
+      } else cur = next;
+    });
+    return n;
+  }
+
+  function annSize(label) {
+    return {
+      w: Math.ceil(width(label, ANN.size, 700, 0) + 2 * ANN.padX + ANN.slack),
+      h: ANN.line + 2 * ANN.padY,
+    };
+  }
+
+  Kit.text = { READ, CAP2, ANN, plain, words, readingTime, width, lines, annSize };
+  if (typeof module === "object" && module.exports) module.exports = Kit;
+})(typeof window !== "undefined" ? window : globalThis);
+
 /* ---- kit/lib/camera.js ---- */
 /*
  * kit/lib/camera.js — the framing guarantee.
@@ -71,6 +168,11 @@
  *     opts.captions true (default) keeps the box above the caption band; false = full frame
  *     opts.fill     true (default): slide inside the slack so footage edges stay off screen
  *     opts.partial  true = may crop; needs opts.reason; uses opts.zoom and opts.center [cx, cy]
+ *     opts.edge     {left | right, top | bottom}: footage x / y to put ON the frame edge (kit 1.1.1), e.g.
+ *                   the gutter between two page columns, so the edge falls in whitespace instead of
+ *                   slicing a neighbour; applied only while the box still fits the safe area (+ pad),
+ *                   otherwise ignored and listed in edgeIgnored. Uncovered frame beyond the footage
+ *                   shows the stage ground (the demo canvas colour).
  * Kit.camera.project(t, box) -> screen rect of a footage box under transform t
  * Kit.camera.inside(rect, area, eps = 0.5) -> boolean
  * Kit.camera.union([box, ...]) -> box; Kit.camera.grow(box, px) -> box
@@ -162,6 +264,36 @@
         y += clamp(wantY, Math.min(0, loY), Math.max(0, hiY));
       }
     }
+    const edgeIgnored = [];
+    if (opts.edge && !partial) {
+      const e = opts.edge;
+      const okX = (nx) => {
+        const r = project({ scale, x: nx, y }, b);
+        return r.x >= safe.x + pad - 0.5 && r.x + r.w <= safe.x + safe.w - pad + 0.5;
+      };
+      const okY = (ny) => {
+        const r = project({ scale, x, y: ny }, b);
+        return r.y >= safe.y + pad - 0.5 && r.y + r.h <= safe.y + safe.h - pad + 0.5;
+      };
+      if (e.left != null) {
+        const nx = -scale * e.left;
+        if (okX(nx)) x = nx;
+        else edgeIgnored.push("left");
+      } else if (e.right != null) {
+        const nx = FRAME.w - scale * e.right;
+        if (okX(nx)) x = nx;
+        else edgeIgnored.push("right");
+      }
+      if (e.top != null) {
+        const ny = -scale * e.top;
+        if (okY(ny)) y = ny;
+        else edgeIgnored.push("top");
+      } else if (e.bottom != null) {
+        const ny = FRAME.h - scale * e.bottom;
+        if (okY(ny)) y = ny;
+        else edgeIgnored.push("bottom");
+      }
+    }
     const t = { scale: +scale.toFixed(4), x: +x.toFixed(2), y: +y.toFixed(2) };
     const rect = project(t, box);
     const ok = inside(rect, safe);
@@ -176,6 +308,7 @@
       fitScale: +fitScale.toFixed(4),
       lowered: !partial && wanted > fitScale,
       small: opts.minZoom != null && scale < opts.minZoom,
+      edgeIgnored,
     };
   }
 
@@ -415,19 +548,27 @@
  * kit/lib/captions.js — animates a caption band composition written as plain timed cues.
  * Timing lives only in the HTML (data-start / data-duration), so Studio edits stay the truth.
  *
- * Markup (see kit/components/caption-band.html):
- *   <div id="cap-band" class="clip" data-start="0" data-duration="44" data-layout-ignore><div class="kit-band"></div></div>
- *   <div id="cap-run" class="clip kit-cap" data-start="5.7" data-duration="3.2">
- *     <div class="kit-cap-label"><span>Step 1 · Extract</span>
- *       <span class="kit-speed" data-rate="6" data-tag-start="5.75" data-tag-end="8.6">6x</span></div>
- *     <div class="kit-cap-main">DeepSeek turns the email into JSON.</div>
- *     <div class="kit-cap-note">optional small honesty note</div>
+ * v2 cue (kit 1.1, text-first films: the band carries the whole story; see kit/components/caption-band.html)
+ *   <div id="cap-band" class="clip" data-start="0" data-duration="44" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+ *   <div id="cap-progress" class="clip kit-progress" data-start="0" data-duration="44"
+ *        data-kit-steps="Email,Extract,Check,Decide,Reply,Evals,MCP" data-layout-ignore></div>
+ *   <div id="cap-check" class="clip kit-cap kit-cap2" data-start="7.9" data-duration="4.2" data-kit-step="3">
+ *     <div class="kit-cap-kicker"><span>Step 3 · Check</span>
+ *       <span class="kit-speed" data-rate="6" data-tag-start="7.9" data-tag-end="9.5">6x</span></div>
+ *     <div class="kit-cap-head">Seven tools check it against the *ERP*</div>        (<= ~10 words, one line)
+ *     <div class="kit-cap-detail">Stock, license, credit and price: code, not the model.</div>  (optional, <= ~14 words)
  *   </div>
+ *   kicker blurs in at the cue start, head at +0.06 s, detail at +0.15 s; the cue fades out at end - 0.16 s.
+ *   *word* in the head (or detail) becomes the accent word. data-kit-step (1-based) lights that step of
+ *   the .kit-progress stepper while the cue is on (past steps ink, current accent, later steps faint).
+ *   Reading time (QA, fail): on screen >= 0.6 s + 0.35 s per word of head + detail + honesty chips.
  *
- * Kit.captions.animate(tl, rootOrId) -> cues [{id, start, end, speeds: [{rate, start, end, text}]}]
- *   cue: label + main blur in (0.2 s), note fades in at +0.4 s, whole cue fades out at end - 0.16 s
+ * v1 cue (kit 1.0, still supported): .kit-cap > .kit-cap-label / .kit-cap-main / .kit-cap-note
+ *
+ * Kit.captions.animate(tl, rootOrId) -> cues [{id, start, end, step, speeds: [{rate, start, end, text}]}]
  *   tags (.kit-speed / .kit-chip / .kit-tag): shown for the cue, or for [data-tag-start, data-tag-end)
  *   band (.kit-band inside a timed wrapper): fades in at its start, out before its end
+ * Kit.captions.accent(el) turns *word* into <span class="hi">word</span> (idempotent)
  * QA rule: every footage clip with data-playback-rate != 1 must be covered by a .kit-speed tag whose
  * text shows that rate ("6x"), in the caption band or in the scene itself.
  */
@@ -437,6 +578,67 @@
   function rootOf(r) {
     if (typeof r !== "string") return r;
     return document.querySelector('[data-composition-id="' + r + '"]') || document.querySelector(r);
+  }
+
+  function accent(el) {
+    if (!el || el.getAttribute("data-kit-accented") === "1") return;
+    const walk = (node) => {
+      Array.prototype.slice.call(node.childNodes).forEach((ch) => {
+        if (ch.nodeType === 3 && /\*[^*]+\*/.test(ch.textContent)) {
+          const span = document.createElement("span");
+          span.innerHTML = ch.textContent
+            .replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" })[c])
+            .replace(/\*([^*]+)\*/g, '<span class="hi">$1</span>');
+          while (span.firstChild) node.insertBefore(span.firstChild, ch);
+          node.removeChild(ch);
+        } else if (ch.nodeType === 1) walk(ch);
+      });
+    };
+    walk(el);
+    el.setAttribute("data-kit-accented", "1");
+  }
+
+  function buildProgress(el) {
+    const steps = (el.getAttribute("data-kit-steps") || "")
+      .split(/[,|]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (el.getAttribute("data-kit-built") !== "1") {
+      el.innerHTML = "";
+      const count = document.createElement("span");
+      count.className = "kit-progress-count";
+      steps.forEach((name, i) => {
+        const n = document.createElement("span");
+        n.className = "kit-progress-n";
+        n.setAttribute("data-i", String(i + 1));
+        n.textContent = i + 1 + " / " + steps.length;
+        count.appendChild(n);
+      });
+      el.appendChild(count);
+      const bar = document.createElement("span");
+      bar.className = "kit-progress-bar";
+      steps.forEach((name, i) => {
+        const s = document.createElement("span");
+        s.className = "kit-progress-seg";
+        s.setAttribute("data-i", String(i + 1));
+        s.setAttribute("data-state", "next");
+        s.setAttribute("title", name);
+        bar.appendChild(s);
+      });
+      el.appendChild(bar);
+      el.setAttribute("data-kit-built", "1");
+    }
+    return steps;
+  }
+
+  function setStep(tl, el, step, at) {
+    Array.prototype.forEach.call(el.querySelectorAll(".kit-progress-seg"), (s) => {
+      const i = +s.getAttribute("data-i");
+      tl.set(s, { attr: { "data-state": i < step ? "done" : i === step ? "now" : "next" } }, at);
+    });
+    Array.prototype.forEach.call(el.querySelectorAll(".kit-progress-n"), (n) => {
+      tl.set(n, { opacity: +n.getAttribute("data-i") === step ? 1 : 0 }, at);
+    });
   }
 
   function animate(tl, r) {
@@ -453,12 +655,20 @@
     Array.prototype.forEach.call(root.querySelectorAll(".kit-cap.clip"), (cap) => {
       const start = parseFloat(cap.getAttribute("data-start")) || 0;
       const end = start + (parseFloat(cap.getAttribute("data-duration")) || 0);
-      const lab = cap.querySelector(".kit-cap-label");
-      const main = cap.querySelector(".kit-cap-main");
-      const note = cap.querySelector(".kit-cap-note");
+      const v2 = cap.classList.contains("kit-cap2");
+      const lab = cap.querySelector(v2 ? ".kit-cap-kicker" : ".kit-cap-label");
+      const main = cap.querySelector(v2 ? ".kit-cap-head" : ".kit-cap-main");
+      const note = cap.querySelector(v2 ? ".kit-cap-detail" : ".kit-cap-note");
+      if (v2) {
+        accent(main);
+        accent(note);
+      }
       if (lab) tl.fromTo(lab, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "expo.out" }, start);
       if (main) tl.fromTo(main, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, start + 0.06);
-      if (note) tl.fromTo(note, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, start + 0.4);
+      if (note) {
+        if (v2) tl.fromTo(note, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, start + 0.15);
+        else tl.fromTo(note, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, start + 0.4);
+      }
       const speeds = [];
       Array.prototype.forEach.call(cap.querySelectorAll(".kit-speed, .kit-chip, .kit-tag"), (tag) => {
         const ts = tag.hasAttribute("data-tag-start") ? parseFloat(tag.getAttribute("data-tag-start")) : start;
@@ -470,12 +680,25 @@
         if (tag.classList.contains("kit-speed")) speeds.push({ rate: parseFloat(tag.getAttribute("data-rate")), start: ts, end: te, text: tag.textContent.trim() });
       });
       tl.to(cap, { opacity: 0, duration: 0.14, ease: "power2.in" }, end - 0.16);
-      cues.push({ id: cap.id, start, end, speeds });
+      const step = cap.hasAttribute("data-kit-step") ? parseInt(cap.getAttribute("data-kit-step"), 10) : null;
+      cues.push({ id: cap.id, start, end, step, speeds });
+    });
+    // progress stepper: follows data-kit-step of the cues (holds the last step through gaps)
+    Array.prototype.forEach.call(root.querySelectorAll(".kit-progress"), (el) => {
+      buildProgress(el);
+      const w = el.classList.contains("clip") ? el : el.closest(".clip");
+      const s = w ? parseFloat(w.getAttribute("data-start")) || 0 : 0;
+      const d = w ? parseFloat(w.getAttribute("data-duration")) || 0 : 0;
+      const stepped = cues.filter((c) => c.step != null).sort((a, b) => a.start - b.start);
+      setStep(tl, el, stepped.length && stepped[0].start <= s + 0.05 ? stepped[0].step : 0, s);
+      stepped.forEach((c) => setStep(tl, el, c.step, c.start));
+      tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, s + 0.05);
+      if (d) tl.to(el, { opacity: 0, duration: 0.25, ease: "power2.in" }, s + d - 0.27);
     });
     return cues;
   }
 
-  Kit.captions = { animate };
+  Kit.captions = { animate, accent };
   if (typeof module === "object" && module.exports) module.exports = Kit;
 })(typeof window !== "undefined" ? window : globalThis);
 
@@ -499,7 +722,8 @@
  *             QA warns), or an array of these (union). Boxes are unioned over the whole hold,
  *             so a component that grows or moves while the camera holds stays fully in frame.
  *   dur, ease move length (default 0.8 s, "power2.inOut"); cut: true = hard cut to the framing
- *   maxZoom, zoom, minZoom, pad, margin, align, fill   -> Kit.camera.fit options
+ *   maxZoom, zoom, minZoom, pad, margin, align, fill, edge   -> Kit.camera.fit options
+ *             (edge, kit 1.1.1: {"left": 859} puts footage x 859, e.g. a column gutter, on the frame edge)
  *   captions  true (default): keep the focus above the caption band; false: full frame
  *             (QA fails the shot if a caption cue is on screen during its hold)
  *   partial   true + reason: the shot may crop the component on purpose (zoom, center)
@@ -512,8 +736,16 @@
  *        data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
  *   The ring box is placed from the recorded DOM box; QA checks it is inside the safe area.
  *
+ * Annotations (kit 1.1; see lib/annotate.js), in the scene markup OUTSIDE .kit-stage (screen space):
+ *   <div id="r2-ann-route" class="clip kit-ann" data-start="11.2" data-duration="3" data-kit-focus="finalRoute"
+ *        data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion>
+ *     <div class="kit-ann-label">Rules overrule the model</div></div>
+ *   Ring + label (<= 6 words), placed inside the safe area beside the component, never over the shot's
+ *   focus box or the caption band; it must sit inside one camera hold (the camera does not move under it).
+ *
  * Kit.scene.footage({id, tl, duration?, shots?, root?, cam?}) -> plan   (call in the scene script)
- * Kit.scene.plan({scene, shots, sceneClips, duration, rings?, cues?})   (pure; QA calls this in Node)
+ * Kit.scene.plan({scene, shots, sceneClips, duration, rings?, cues?, annotations?})   (pure; QA calls this in Node)
+ *   annotations: [{id, start, end, focus, pad, side, text}] -> plan.annotations [{ring, label, leader, focusRect, ok, problems}]
  * window.__kitShots collects every planned keyframe in the page for debugging.
  */
 (function (g) {
@@ -605,6 +837,7 @@
         hold: [+h0.toFixed(3), +h1.toFixed(3)],
         window: [+win[0].toFixed(3), +win[1].toFixed(3)],
         focus: describe(s.focus),
+        focusSpec: s.focus,
         label: s.label || "",
         partial: !!s.partial,
         reason: s.reason || "",
@@ -625,6 +858,7 @@
         k.lowered = f.lowered;
         if (!s.partial && !f.ok) k.problems.push("focus does not fit the safe area");
         if (f.small) k.warnings.push("zoom " + f.scale + " is below minZoom " + s.minZoom + " (component is large)");
+        if (f.edgeIgnored && f.edgeIgnored.length) k.warnings.push("edge " + f.edgeIgnored.join("/") + " ignored: the focus would leave the safe area (lower the zoom or move the edge)");
         if (f.scale < 1 && !s.partial) k.warnings.push("zoom " + f.scale + " < 1: footage is shown smaller than captured");
       } else if (!k.problems.length) k.problems.push("no box to frame");
       if (!k.captions && o.cues)
@@ -659,7 +893,97 @@
       out.ok = !out.problems.length;
       return out;
     });
-    return { scene: o.scene, duration, keyframes, rings };
+    const annotations = (o.annotations || []).map((an) => planAnnotation(o, an, keyframes, sceneClips));
+    return { scene: o.scene, duration, keyframes, rings, annotations };
+  }
+
+  // tracked components in frame during an annotation, other than its target, the shot's focus and
+  // anything that contains the ring (sections, cards around it) or fills most of the frame
+  function neighbours(an, sceneClips, k, ring) {
+    const own = focusList(an.focus).concat(focusList(k.focusSpec)).filter((x) => typeof x === "string").map((x) => x.split("@")[0]);
+    const out = [];
+    const seen = {};
+    const area = k.safe.w * k.safe.h;
+    [an.start + 0.001, (an.start + an.end) / 2, an.end - 0.001].forEach((t) => {
+      const at = Kit.clips.mediaAt(sceneClips, t);
+      const c = at && Kit.clips.get(at.clip);
+      if (!c || !c.boxes) return;
+      Object.keys(c.boxes).forEach((name) => {
+        if (own.indexOf(name) >= 0) return;
+        const b = Kit.clips.boxAt(c, name, at.m);
+        if (!b) return;
+        const r = Kit.camera.project(k.fit, b);
+        if (r.x <= ring.x + 1 && r.y <= ring.y + 1 && r.x + r.w >= ring.x + ring.w - 1 && r.y + r.h >= ring.y + ring.h - 1) return;
+        if (r.w * r.h > 0.5 * area) return;
+        if (r.x > 1920 || r.y > 1080 || r.x + r.w < 0 || r.y + r.h < 0) return;
+        const key = name + Math.round(r.x) + "," + Math.round(r.y);
+        if (seen[key]) return;
+        seen[key] = 1;
+        out.push({ name, rect: r });
+      });
+    });
+    return out;
+  }
+
+  function planAnnotation(o, an, keyframes, sceneClips) {
+    const text = Kit.text ? Kit.text.plain(an.text || "") : String(an.text || "");
+    const words = Kit.text ? Kit.text.words(text) : text.split(/\s+/).filter(Boolean).length;
+    const out = { scene: o.scene, id: an.id, start: an.start, end: an.end, focus: describe(an.focus), text, words, problems: [], warnings: [] };
+    const r = resolve(an.focus, sceneClips, an.start, an.end);
+    out.problems.push.apply(out.problems, r.problems);
+    out.warnings.push.apply(out.warnings, r.warnings);
+    if (!text) out.problems.push("annotation without a label (.kit-ann-label)");
+    const maxWords = Kit.text ? Kit.text.ANN.maxWords : 6;
+    if (words > maxWords) out.problems.push(`label is ${words} words (max ${maxWords})`);
+    if (Kit.text) {
+      const need = Kit.text.readingTime(words);
+      out.reading = need;
+      if (an.end - an.start < need - 1e-6) out.problems.push(`on screen ${(an.end - an.start).toFixed(2)} s, reading time ${need.toFixed(2)} s (0.6 + 0.35 x ${words} words)`);
+    }
+    if (!r.box) {
+      if (!out.problems.length) out.problems.push("no box for the annotation");
+      out.ok = false;
+      return out;
+    }
+    let k = null;
+    keyframes.forEach((kf) => {
+      if (kf.t <= an.start + 1e-6) k = kf;
+    });
+    if (!k || !k.fit) {
+      out.problems.push("no camera keyframe before the annotation");
+      out.ok = false;
+      return out;
+    }
+    out.shot = k.i;
+    if (an.start < k.hold[0] - 1e-6) out.problems.push(`appears at ${an.start.toFixed(2)} s while the camera still moves (hold starts ${k.hold[0].toFixed(2)} s)`);
+    if (an.end > k.hold[1] + 1e-6) out.problems.push(`stays on until ${an.end.toFixed(2)} s but the camera moves at ${k.hold[1].toFixed(2)} s (keep it inside one hold)`);
+    const box = Kit.camera.grow(r.box, an.pad != null ? an.pad : 6);
+    const ring = Kit.camera.project(k.fit, box);
+    out.ring = { x: Math.round(ring.x), y: Math.round(ring.y), w: Math.round(ring.w), h: Math.round(ring.h) };
+    out.safe = k.safe;
+    out.focusRect = k.rect;
+    if (!Kit.camera.inside(ring, k.safe)) out.problems.push(`ring is outside the safe area under shot ${k.i} (${k.focus})`);
+    const size = Kit.text ? Kit.text.annSize(text) : { w: 24 * text.length, h: 58 };
+    // the label never covers the shot's focus box (nor the ring, nor the band: the safe area ends above it);
+    // it prefers whitespace: first try clear of every other tracked component in frame
+    const soft = neighbours(an, sceneClips, k, ring);
+    let p = Kit.annotate ? Kit.annotate.place({ ring: out.ring, focus: k.rect, safe: k.safe, size, side: an.side, avoid: soft.map((n) => n.rect) }) : null;
+    if (!p && Kit.annotate) {
+      p = Kit.annotate.place({ ring: out.ring, focus: k.rect, safe: k.safe, size, side: an.side });
+      if (p) {
+        const hit = soft.filter((n) => Kit.annotate.overlap(p.rect, n.rect)).map((n) => n.name);
+        if (hit.length) out.warnings.push(`label covers ${hit.join(", ")} (no clear space): lower the shot's maxZoom or pick data-kit-side`);
+      }
+    }
+    if (!p) out.problems.push(`no room for the label (${size.w}x${size.h}) beside the ring or outside the focus box inside the safe area: lower the shot's maxZoom, pick another side, or shorten it`);
+    else {
+      out.label = p.rect;
+      out.side = p.side;
+      out.anchor = p.anchor;
+      out.leader = p.leader;
+    }
+    out.ok = !out.problems.length;
+    return out;
   }
 
   function hostOf(id) {
@@ -688,6 +1012,26 @@
     });
   }
 
+  function annotationsFromDom(root) {
+    return Array.prototype.map.call(root.querySelectorAll(".kit-ann[data-kit-focus]"), (el) => {
+      const start = parseFloat(el.getAttribute("data-start")) || 0;
+      const dur = parseFloat(el.getAttribute("data-duration")) || 1;
+      let focus = el.getAttribute("data-kit-focus");
+      if (focus && focus.trim().charAt(0) === "[") focus = JSON.parse(focus);
+      const lab = el.querySelector(".kit-ann-label");
+      return {
+        el,
+        id: el.id,
+        start,
+        end: start + dur,
+        focus,
+        pad: el.hasAttribute("data-kit-pad") ? parseFloat(el.getAttribute("data-kit-pad")) : 6,
+        side: el.getAttribute("data-kit-side") || "auto",
+        text: lab ? lab.textContent : "",
+      };
+    });
+  }
+
   function footage(o) {
     const tl = o.tl;
     const host = o.root ? (typeof o.root === "string" ? document.querySelector(o.root) : o.root) : hostOf(o.id);
@@ -700,7 +1044,8 @@
     const duration = o.duration != null ? o.duration : parseFloat(host.getAttribute("data-duration")) || undefined;
     const sceneClips = Kit.clips.fromDom(host);
     const rings = ringsFromDom(host);
-    const p = plan({ scene: o.id, shots, sceneClips, duration, rings });
+    const anns = annotationsFromDom(host);
+    const p = plan({ scene: o.id, shots, sceneClips, duration, rings, annotations: anns });
 
     p.keyframes.forEach((k, i) => {
       if (!k.fit) return;
@@ -729,14 +1074,148 @@
       tl.to(rg.el, { opacity: 0, duration: 0.15, ease: "power2.in" }, Math.max(rg.start + 0.3, rg.end - 0.17));
     });
 
-    g.__kitShots = (g.__kitShots || []).concat(p.keyframes, p.rings);
-    p.keyframes.concat(p.rings).forEach((k) => {
+    anns.forEach((an, i) => {
+      const pa = p.annotations[i];
+      if (pa && pa.label && Kit.annotate) Kit.annotate.render(tl, an.el, pa);
+      else if (an.el) tl.set(an.el, { opacity: 0 }, 0);
+    });
+
+    g.__kitShots = (g.__kitShots || []).concat(p.keyframes, p.rings, p.annotations);
+    p.keyframes.concat(p.rings, p.annotations).forEach((k) => {
       if (!k.ok) Kit.warn(o.id + " " + (k.id || "shot " + k.i) + ": " + k.problems.join("; "));
     });
     return p;
   }
 
   Kit.scene = { plan, footage, resolve };
+  if (typeof module === "object" && module.exports) module.exports = Kit;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* ---- kit/lib/annotate.js ---- */
+/*
+ * kit/lib/annotate.js — annotations (kit 1.1): a short label (<= 6 words) next to a recorded component,
+ * with a ring on the component. Placed automatically inside the safe area, never over the shot's focus
+ * box, the ring itself or the caption band; when there is no room beside the ring, the label goes just
+ * outside the focus box with a thin leader line back to the ring.
+ *
+ * Markup, in a footage scene OUTSIDE .kit-stage (screen space; one camera hold, so it never drifts):
+ *   <div id="r2-ann-route" class="clip kit-ann" data-start="11.2" data-duration="3.0"
+ *        data-kit-focus="finalRoute" data-kit-pad="6" data-kit-side="auto" data-track-index="3"
+ *        data-layout-allow-overlap data-layout-allow-occlusion>
+ *     <div class="kit-ann-label">Rules overrule the model</div>
+ *   </div>
+ *   data-kit-focus  component name / "name@clip" / JSON array (union), from the clip's recorded boxes
+ *   data-kit-pad    footage px between component and ring (default 6)
+ *   data-kit-side   auto (default: right, left, below, above) | right | left | below | above
+ *   class "dim"     also dim the rest of the frame (like a callout ring)
+ * Kit.scene.footage() places and animates every .kit-ann of the scene; QA plans the same placement.
+ *
+ * Kit.annotate.place({ring, focus, safe, size: {w, h}, side = "auto", gap = 16, avoid = []})
+ *     -> {rect, side, anchor: "ring" | "focus", leader: [x1, y1, x2, y2] | null} or null (no room)
+ * Kit.annotate.overlap(a, b, eps = 0.5) -> true if two rects overlap
+ */
+(function (g) {
+  const Kit = (g.Kit = g.Kit || {});
+
+  function clamp(v, lo, hi) {
+    return Math.max(lo, Math.min(hi, v));
+  }
+
+  function overlap(a, b, eps) {
+    eps = eps == null ? 0.5 : eps;
+    if (!a || !b) return false;
+    return a.x < b.x + b.w - eps && b.x < a.x + a.w - eps && a.y < b.y + b.h - eps && b.y < a.y + a.h - eps;
+  }
+
+  function inside(r, s) {
+    return r.x >= s.x - 0.5 && r.y >= s.y - 0.5 && r.x + r.w <= s.x + s.w + 0.5 && r.y + r.h <= s.y + s.h + 0.5;
+  }
+
+  function leaderFor(R, L, side) {
+    // from the ring edge facing the label to the label edge facing the ring
+    if (side === "right" || side === "left") {
+      const y = clamp(L.y + L.h / 2, R.y + 6, R.y + R.h - 6);
+      const ly = clamp(y, L.y + 8, L.y + L.h - 8);
+      return side === "right" ? [R.x + R.w, y, L.x, ly] : [R.x, y, L.x + L.w, ly];
+    }
+    const x = clamp(L.x + Math.min(L.w / 2, 40), R.x + 6, R.x + R.w - 6);
+    const lx = clamp(x, L.x + 10, L.x + L.w - 10);
+    return side === "below" ? [x, R.y + R.h, lx, L.y] : [x, R.y, lx, L.y + L.h];
+  }
+
+  function place(o) {
+    const R = o.ring;
+    const F = o.focus || null;
+    const S = o.safe;
+    const w = o.size.w;
+    const h = o.size.h;
+    const gap = o.gap != null ? o.gap : 16;
+    const avoid = (o.avoid || []).filter(Boolean);
+    const sides = o.side && o.side !== "auto" ? [o.side] : ["right", "left", "below", "above"];
+    const cy = R.y + R.h / 2;
+    const cands = [];
+    const at = (A, side, anchor) => {
+      let x, y;
+      if (side === "right") (x = A.x + A.w + gap), (y = clamp(cy - h / 2, S.y, S.y + S.h - h));
+      else if (side === "left") (x = A.x - gap - w), (y = clamp(cy - h / 2, S.y, S.y + S.h - h));
+      else if (side === "below") (y = A.y + A.h + gap), (x = clamp(R.x, S.x, S.x + S.w - w));
+      else (y = A.y - gap - h), (x = clamp(R.x, S.x, S.x + S.w - w));
+      cands.push({ rect: { x: Math.round(x), y: Math.round(y), w, h }, side, anchor });
+    };
+    sides.forEach((s) => at(R, s, "ring"));
+    if (F) sides.forEach((s) => at(F, s, "focus"));
+    for (const c of cands) {
+      const L = c.rect;
+      if (!inside(L, S)) continue;
+      if (overlap(L, R)) continue;
+      if (F && overlap(L, F)) continue;
+      if (avoid.some((a) => overlap(L, a))) continue;
+      const far = c.anchor === "focus" || Math.max(L.x - (R.x + R.w), R.x - (L.x + L.w), L.y - (R.y + R.h), R.y - (L.y + L.h)) > gap + 2;
+      c.leader = far ? leaderFor(R, L, c.side).map((v) => Math.round(v)) : null;
+      return c;
+    }
+    return null;
+  }
+
+  // browser: draw and animate one planned annotation (called by Kit.scene.footage)
+  function render(tl, el, a) {
+    if (!a || !a.ring || !a.label) return;
+    const doc = el.ownerDocument;
+    let ring = el.querySelector(".kit-ann-ring");
+    if (!ring) {
+      ring = doc.createElement("div");
+      ring.className = "kit-ann-ring";
+      el.insertBefore(ring, el.firstChild);
+    }
+    Object.assign(ring.style, { left: a.ring.x + "px", top: a.ring.y + "px", width: a.ring.w + "px", height: a.ring.h + "px" });
+    const label = el.querySelector(".kit-ann-label");
+    Object.assign(label.style, { left: a.label.x + "px", top: a.label.y + "px", width: a.label.w + "px", height: a.label.h + "px" });
+    let line = null;
+    if (a.leader) {
+      const NS = "http://www.w3.org/2000/svg";
+      let svg = el.querySelector("svg.kit-ann-leader");
+      if (!svg) {
+        svg = doc.createElementNS(NS, "svg");
+        svg.setAttribute("class", "kit-ann-leader");
+        svg.setAttribute("viewBox", "0 0 1920 1080");
+        svg.setAttribute("width", "1920");
+        svg.setAttribute("height", "1080");
+        line = doc.createElementNS(NS, "line");
+        svg.appendChild(line);
+        el.insertBefore(svg, label);
+      } else line = svg.querySelector("line");
+      line.setAttribute("x1", a.leader[0]);
+      line.setAttribute("y1", a.leader[1]);
+      line.setAttribute("x2", a.leader[2]);
+      line.setAttribute("y2", a.leader[3]);
+    }
+    tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power2.out" }, a.start);
+    tl.fromTo(ring, { scale: 1.06 }, { scale: 1, duration: 0.4, ease: "expo.out" }, a.start);
+    tl.fromTo(label, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, a.start + 0.08);
+    tl.to(el, { opacity: 0, duration: 0.15, ease: "power2.in" }, Math.max(a.start + 0.3, a.end - 0.17));
+  }
+
+  Kit.annotate = { place, overlap, render };
   if (typeof module === "object" && module.exports) module.exports = Kit;
 })(typeof window !== "undefined" ? window : globalThis);
 
@@ -849,5 +1328,82 @@
   }
 
   Kit.blocks = { vars, rich, parseFocus, coldOpenShots };
+  if (typeof module === "object" && module.exports) module.exports = Kit;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* ---- kit/lib/music.js ---- */
+/*
+ * kit/lib/music.js — the instrumental bed under every film (kit 1.1). Pure planning and checks,
+ * shared by kit/scripts/music-bed.mjs (which writes the <audio>) and kit/scripts/qa.mjs (which checks it).
+ * The page needs no script: HyperFrames mixes the <audio> from its attributes (data-volume,
+ * data-fade-in, data-fade-out are linear gains at the clip edges), identically in preview and render.
+ *
+ * Kit.music.TARGET  {lufs: -20, min: -22, max: -18, truePeak: -1, fadeIn: 0.3, fadeOut: 1.5}
+ * Kit.music.plan({film, bed, align = "end", mediaStart, fadeIn = 0.3, fadeOut = 1.5})
+ *     film   film length (root data-duration), s
+ *     bed    {name, duration, end}: end = where the bed's own outro has died away (kit/music/beds.json)
+ *     align  "end": the bed's natural ending lands on the film's last frame (media starts at end - film);
+ *            "start": the bed plays from its first second and is cut by the fade-out
+ *     -> {start: 0, duration: film, mediaStart, fadeIn, fadeOut, problems: []}
+ * Kit.music.volume(gainDb) -> data-volume (linear, 3 decimals)
+ * Kit.music.check(attrs, film) -> {problems, warnings}: one bed from 0 to the film's end, fade in
+ *     <= 0.3 s, fade out 1-2 s landing on the last frame, a level set (data-volume)
+ *
+ * Markup (written by music-bed.mjs between <!-- kit:music:start --> and <!-- kit:music:end --> in index.html):
+ *   <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112.mp3" data-kit-music="bright-pluck-112"
+ *     data-start="0" data-duration="50.2" data-media-start="9.1" data-volume="0.55" data-fade-in="0.3"
+ *     data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
+ */
+(function (g) {
+  const Kit = (g.Kit = g.Kit || {});
+  const TARGET = { lufs: -20, min: -22, max: -18, truePeak: -1, fadeIn: 0.3, fadeOut: 1.5 };
+
+  function plan(o) {
+    const film = +o.film;
+    const bed = o.bed || {};
+    const fadeIn = o.fadeIn != null ? +o.fadeIn : TARGET.fadeIn;
+    const fadeOut = o.fadeOut != null ? +o.fadeOut : TARGET.fadeOut;
+    const end = bed.end || bed.duration || 0;
+    const problems = [];
+    let mediaStart;
+    if (o.mediaStart != null) mediaStart = +o.mediaStart;
+    else if ((o.align || "end") === "end") mediaStart = Math.max(0, end - film);
+    else mediaStart = 0;
+    if (bed.duration && mediaStart + film > bed.duration + 0.01) problems.push(`bed ${bed.name || "?"} (${bed.duration} s) is shorter than the film from ${mediaStart.toFixed(2)} s`);
+    if (fadeIn > TARGET.fadeIn + 1e-6) problems.push(`fade-in ${fadeIn} s is longer than ${TARGET.fadeIn} s`);
+    return { start: 0, duration: +film.toFixed(3), mediaStart: +mediaStart.toFixed(3), fadeIn, fadeOut, problems };
+  }
+
+  function volume(gainDb) {
+    return +Math.pow(10, gainDb / 20).toFixed(3);
+  }
+
+  function num(v) {
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function check(a, film) {
+    const problems = [];
+    const warnings = [];
+    const start = num(a["data-start"]);
+    const dur = num(a["data-duration"]);
+    const fi = num(a["data-fade-in"]);
+    const fo = num(a["data-fade-out"]);
+    const vol = num(a["data-volume"]);
+    if (start == null || Math.abs(start) > 1e-3) problems.push(`starts at ${start} s, not 0 (the bed runs under the whole film)`);
+    if (dur == null || Math.abs((start || 0) + dur - film) > 1 / 60) problems.push(`ends at ${((start || 0) + (dur || 0)).toFixed(3)} s, not on the film's end ${film} s (re-run music-bed.mjs after changing the film length)`);
+    if (fi == null || fi <= 0) problems.push("no fade-in (data-fade-in, <= 0.3 s)");
+    else if (fi > TARGET.fadeIn + 1e-6) problems.push(`fade-in ${fi} s > ${TARGET.fadeIn} s`);
+    if (fo == null || fo <= 0) problems.push("no fade-out (data-fade-out, ~1.5 s)");
+    else if (fo < 1 || fo > 2) warnings.push(`fade-out ${fo} s (aim for ~1.5 s)`);
+    if (vol == null) problems.push("no data-volume (set the level with music-bed.mjs)");
+    else if (vol > 1) warnings.push(`data-volume ${vol} boosts the bed above 0 dB`);
+    if ("muted" in a) problems.push("the bed is muted");
+    if (!/^assets\/music\/[^/]+$/.test(a.src || "")) problems.push(`src "${a.src || ""}" is not under assets/music/ (sync vendors kit/music/<bed> there)`);
+    return { problems, warnings };
+  }
+
+  Kit.music = { TARGET, plan, volume, check };
   if (typeof module === "object" && module.exports) module.exports = Kit;
 })(typeof window !== "undefined" ? window : globalThis);

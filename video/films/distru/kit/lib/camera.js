@@ -21,6 +21,11 @@
  *     opts.captions true (default) keeps the box above the caption band; false = full frame
  *     opts.fill     true (default): slide inside the slack so footage edges stay off screen
  *     opts.partial  true = may crop; needs opts.reason; uses opts.zoom and opts.center [cx, cy]
+ *     opts.edge     {left | right, top | bottom}: footage x / y to put ON the frame edge (kit 1.1.1), e.g.
+ *                   the gutter between two page columns, so the edge falls in whitespace instead of
+ *                   slicing a neighbour; applied only while the box still fits the safe area (+ pad),
+ *                   otherwise ignored and listed in edgeIgnored. Uncovered frame beyond the footage
+ *                   shows the stage ground (the demo canvas colour).
  * Kit.camera.project(t, box) -> screen rect of a footage box under transform t
  * Kit.camera.inside(rect, area, eps = 0.5) -> boolean
  * Kit.camera.union([box, ...]) -> box; Kit.camera.grow(box, px) -> box
@@ -112,6 +117,36 @@
         y += clamp(wantY, Math.min(0, loY), Math.max(0, hiY));
       }
     }
+    const edgeIgnored = [];
+    if (opts.edge && !partial) {
+      const e = opts.edge;
+      const okX = (nx) => {
+        const r = project({ scale, x: nx, y }, b);
+        return r.x >= safe.x + pad - 0.5 && r.x + r.w <= safe.x + safe.w - pad + 0.5;
+      };
+      const okY = (ny) => {
+        const r = project({ scale, x, y: ny }, b);
+        return r.y >= safe.y + pad - 0.5 && r.y + r.h <= safe.y + safe.h - pad + 0.5;
+      };
+      if (e.left != null) {
+        const nx = -scale * e.left;
+        if (okX(nx)) x = nx;
+        else edgeIgnored.push("left");
+      } else if (e.right != null) {
+        const nx = FRAME.w - scale * e.right;
+        if (okX(nx)) x = nx;
+        else edgeIgnored.push("right");
+      }
+      if (e.top != null) {
+        const ny = -scale * e.top;
+        if (okY(ny)) y = ny;
+        else edgeIgnored.push("top");
+      } else if (e.bottom != null) {
+        const ny = FRAME.h - scale * e.bottom;
+        if (okY(ny)) y = ny;
+        else edgeIgnored.push("bottom");
+      }
+    }
     const t = { scale: +scale.toFixed(4), x: +x.toFixed(2), y: +y.toFixed(2) };
     const rect = project(t, box);
     const ok = inside(rect, safe);
@@ -126,6 +161,7 @@
       fitScale: +fitScale.toFixed(4),
       lowered: !partial && wanted > fitScale,
       small: opts.minZoom != null && scale < opts.minZoom,
+      edgeIgnored,
     };
   }
 

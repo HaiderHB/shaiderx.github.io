@@ -1,0 +1,35 @@
+{
+  "default": "bright-pluck-112",
+  "beds": {
+    "bright-pluck-112": {
+      "file": "bright-pluck-112.mp3",
+      "duration": 60.024,
+      "end": 59.2,
+      "outro": 52,
+      "bpm": 112,
+      "lufs": -15.0,
+      "truePeak": -1.3,
+      "feel": "light, upbeat minimal electronic pop; steady from 0 s"
+    },
+    "marimba-tech-120": {
+      "file": "marimba-tech-120.mp3",
+      "duration": 60.024,
+      "end": 59.3,
+      "outro": 56,
+      "bpm": 120,
+      "lufs": -12.1,
+      "truePeak": -0.5,
+      "feel": "bright corporate-tech marimba; very even, busier"
+    },
+    "lofi-keys-92": {
+      "file": "lofi-keys-92.mp3",
+      "duration": 60.024,
+      "end": 59.7,
+      "outro": 57,
+      "bpm": 92,
+      "lufs": -14.8,
+      "truePeak": -0.5,
+      "feel": "calm lo-fi Rhodes; quiet first ~20 s"
+    }
+  }
+}

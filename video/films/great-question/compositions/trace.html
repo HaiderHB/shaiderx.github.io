@@ -1,0 +1,37 @@
+<!--
+  trace (film 25.40-28.65): take3a 96.35-99.60, the page's Trace view ("Wording risk, turn by turn") for the
+  interview just recorded: 5 moderator lines scored by Jev (avg 190 ms); leading peaks at 64% on T3, the only
+  point above the dashed 30% line.
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="trace" data-width="1920" data-height="1080">
+    <div id="tr-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="tr-cam" class="kit-cam">
+        <video id="tr-v1" class="clip kit-footage" src="assets/footage/take3a.mp4" data-kit-clip="take3a" data-start="0" data-duration="3.25" data-media-start="96.35" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+
+    <div id="tr-ann-peak" class="clip kit-ann" data-start="0.3" data-duration="2.85" data-kit-focus="tracePlot1" data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Only T3 crosses the 30% line</div></div>
+
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": "trace", "maxZoom": 2, "align": "top-right", "fill": false, "cut": true, "label": "the Trace view of this interview; right edge in the gap before the page's example check" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "trace", tl });
+      window.__timelines["trace"] = tl;
+    })();
+  </script>
+</template>

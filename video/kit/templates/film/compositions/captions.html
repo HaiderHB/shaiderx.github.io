@@ -1,4 +1,6 @@
 <template>
+  <!-- kit 1.1 caption band: one v2 cue at a time (kicker = step, one-line headline, optional detail),
+       the progress stepper, a solid band. Reading time: >= 0.6 s + 0.35 s per word of head + detail + chips. -->
   <style>
     #root {
       position: absolute;
@@ -7,27 +9,29 @@
     }
   </style>
   <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
-    <div id="cap-band" class="clip" data-start="0" data-duration="38" data-track-index="0" data-layout-ignore>
-      <div class="kit-band"></div>
+    <div id="cap-band" class="clip" data-start="0" data-duration="45.2" data-track-index="0" data-layout-ignore>
+      <div class="kit-band kit-band2"></div>
+    </div>
+    <div id="cap-progress" class="clip kit-progress" data-start="0" data-duration="45.2" data-track-index="2"
+      data-kit-steps="Input,Run,Result" data-layout-ignore></div>
+
+    <div id="cap-input" class="clip kit-cap kit-cap2" data-start="0.2" data-duration="3.7" data-kit-step="1" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 1 · The input</span></div>
+      <div class="kit-cap-head">What the viewer is *looking at*</div>
     </div>
 
-    <div id="cap-input" class="clip kit-cap" data-start="0.2" data-duration="3" data-track-index="1">
-      <div class="kit-cap-label"><span>The input</span></div>
-      <div class="kit-cap-main">One sentence on what the viewer is looking at.</div>
-    </div>
-
-    <div id="cap-run" class="clip kit-cap" data-start="3.4" data-duration="3" data-track-index="1">
-      <div class="kit-cap-label">
-        <span>Step 1 · Extract</span>
+    <div id="cap-run" class="clip kit-cap kit-cap2" data-start="4" data-duration="3.2" data-kit-step="2" data-track-index="1">
+      <div class="kit-cap-kicker">
+        <span>Step 2 · Run</span>
         <span class="kit-speed" data-rate="4" data-tag-start="4" data-tag-end="6">4x</span>
       </div>
-      <div class="kit-cap-main">What the step does, in plain words.</div>
+      <div class="kit-cap-head">What the step *does*, plainly</div>
     </div>
 
-    <div id="cap-cache" class="clip kit-cap" data-start="6.5" data-duration="3" data-track-index="1">
-      <div class="kit-cap-label"><span>Evals</span><span class="kit-chip">Replayed from cache</span></div>
-      <div class="kit-cap-main">3 of 3 samples pass.</div>
-      <div class="kit-cap-note">Samples 2 and 3 replayed today's cached live runs.</div>
+    <div id="cap-cache" class="clip kit-cap kit-cap2" data-start="7.4" data-duration="6.2" data-kit-step="3" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 3 · Result</span><span class="kit-chip">Cached replay</span></div>
+      <div class="kit-cap-head">3 of 3 samples *pass*</div>
+      <div class="kit-cap-detail">Samples 2 and 3 replayed today's live runs.</div>
     </div>
   </div>
   <script>

@@ -10,20 +10,30 @@
   <div id="root" data-composition-id="checker" data-width="1920" data-height="1080">
     <div id="ck-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="ck-cam" class="kit-cam">
-        <!-- clip "top" (free, recorded 2026-11-15): the checker on the "First try" sample after the page
-             scroll (jump cut from the cold open), Run again, the pointer on L9, then L43 clicked. One take, 1x. -->
-        <video id="ck-v1" class="clip kit-footage" src="assets/footage/top.mp4" data-kit-clip="top" data-start="0" data-duration="11" data-media-start="5" data-track-index="0" muted playsinline></video>
-
-        <!-- L9: `expires_in_seconds = 60` from the SDK README (SyntaxError); then L43-44: Terminate, then close() -->
-        <div id="ck-ring-l9" class="clip kit-ring" data-start="4.4" data-duration="2.6" data-kit-focus="l9" data-kit-pad="4" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
-        <div id="ck-ring-l43" class="clip kit-ring" data-start="8.6" data-duration="2.3" data-kit-focus='["l43", "l44"]' data-kit-pad="4" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+        <!-- clip "top" (free, recorded 2026-11-15 on the UI revamp). v1 continues the cold open (hook = top 0-2.5 s):
+             the pointer leaves the verdict card for the task prompt. Jump cut over the page scroll (6.4-7.6 s);
+             v2: the checker on the default "First try" sample, Run again, pointer on L9, L43 clicked. All 1x. -->
+        <video id="ck-v1" class="clip kit-footage" src="assets/footage/top.mp4" data-kit-clip="top" data-start="0" data-duration="3.9" data-media-start="2.5" data-track-index="0" muted playsinline></video>
+        <video id="ck-v2" class="clip kit-footage" src="assets/footage/top.mp4" data-kit-clip="top" data-start="3.9" data-duration="13.9" data-media-start="7.6" data-track-index="0" muted playsinline></video>
       </div>
     </div>
+
+    <!-- annotations (screen space, one camera hold each) -->
+    <div id="ck-ann-tally" class="clip kit-ann" data-start="7.2" data-duration="2.05" data-kit-focus="tally" data-kit-side="right"
+      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">No model: deterministic rules</div></div>
+    <div id="ck-ann-l9" class="clip kit-ann" data-start="10.2" data-duration="2.45" data-kit-focus="l9" data-kit-pad="4"
+      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Won’t parse in Node 22</div></div>
+    <div id="ck-ann-l43" class="clip kit-ann" data-start="15.0" data-duration="2.5" data-kit-focus='["l43", "l44"]' data-kit-pad="4"
+      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">From the v2→v3 migration guide</div></div>
+
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": ["code", "resultsPane", "runAgain"], "label": "the checker: Run again, results rise" },
-        { "t": 2.3, "focus": ["l1", "l12", "verdict", "failTerminate"], "dur": 0.6, "align": "top", "pad": 0, "margin": 4, "label": "token route + verdict: 3 fail (frame top falls between the hint line and the panels)" },
-        { "t": 7.0, "focus": ["verdict", "failTerminate", "l42", "l45"], "dur": 0.6, "align": "top", "pad": 0, "margin": 4, "window": [8.55, 11], "label": "L43 clicked: Terminate then close()" }
+        { "t": 0, "focus": "hero", "zoom": 2.03, "align": "left", "cut": true, "label": "continues the cold open (same framing)" },
+        { "t": 0.05, "focus": "taskPrompt", "zoom": 2.79, "pad": 0, "margin": 0, "align": "bottom-right", "dur": 0.95, "label": "the task prompt (edges in whitespace: top between the title and the tagline, right before the verdict card; tiles under the band)" },
+        { "t": 3.9, "focus": ["samples", "verdict"], "align": "top", "pad": 0, "margin": 0, "cut": true, "label": "the checker on First try: sample chips + hint, code, verdict (top edge under the site bar)" },
+        { "t": 6.3, "focus": ["verdict", "failTerminate"], "zoom": 2.18, "align": "top-left", "pad": 0, "margin": 11, "dur": 0.7, "window": [6.3, 9.3], "label": "Run again: verdict + the first failure (left edge in the gap between the panes)" },
+        { "t": 9.3, "focus": ["l1", "l12", "verdict"], "maxZoom": 1.6, "align": "top", "pad": 0, "margin": 6, "dur": 0.7, "label": "token route L1-L12 + verdict: L9" },
+        { "t": 13.1, "focus": ["verdict", "failTerminate", "l42", "l45"], "align": "top", "pad": 0, "margin": 6, "dur": 0.7, "window": [14.6, 17.8], "label": "L43 clicked: Terminate then close()" }
       ]
     </script>
   </div>

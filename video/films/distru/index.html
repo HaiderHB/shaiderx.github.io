@@ -1,14 +1,15 @@
 <!doctype html>
 <!--
-  Distru launch film v2 (built on video/kit). 48.3 s, silent.
-    coldopen   0.00-2.00   kit block: sample 2 picked on the live page, headline in the band
-    run2       2.00-19.52  sample 2 live run: input, extract (6x), check, decide, reply, sales order
-    run3      19.52-28.77  sample 3 live run (6x): Hold by hard rule, reply asks for the renewed license
-    evals     28.77-35.62  Run evals (6x): 9/9 checks; samples 2-3 replayed from same-day cache
-    mcp       35.62-42.12  the same tools over MCP: check_license called by hand
-    nextsteps 42.12-45.62  kit block
-    endcard   45.62-48.32  kit block
-    captions   2.00-42.12  one host over the footage scenes
+  Distru launch film v3 (kit 1.1: text-first, music bed, no voice, no next-steps card). 50.24 s.
+  Re-recorded 2026-11-15 on the revamped demo UI with kit/scripts/capture.cjs (DOM boxes).
+    coldopen   0.00-2.40   kit block: the run at a glance (live run of sample 2), headline in the band
+    run2       2.40-21.64  sample 2 live: email, extract (6x), six tool calls, Jev's decision, reply + order
+    run3      21.64-31.24  sample 3 live (6x): the license rule holds the order
+    evals     31.24-39.74  Run evals (6x): 9/9 checks; samples 2-3 replayed from today's cache
+    mcp       39.74-47.74  the same tools over MCP: check_license called by hand
+    endcard   47.74-50.24  kit block: Haider Bokhari · haiderb.com
+    captions   2.40-47.74  one host: v2 cues (kicker = step, headline, detail) + the 8-step progress stepper
+    music      0.00-50.24  bright-pluck-112, written by: node ../../kit/scripts/music-bed.mjs .
   QA: node ../../kit/scripts/qa.mjs . --frames
 -->
 <html lang="en">
@@ -32,46 +33,47 @@
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background: #111111;
+        background: #0a0a0f;
       }
       #root {
         position: relative;
         width: 1920px;
         height: 1080px;
         overflow: hidden;
-        background: #111111;
+        background: #0a0a0f;
         font-family: "Inter", sans-serif;
       }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="48.32" data-width="1920" data-height="1080">
+    <div id="root" data-composition-id="main" data-kit-accent="iris" data-start="0" data-duration="50.24" data-width="1920" data-height="1080">
       <div id="coldopen" data-composition-id="coldopen" data-composition-src="kit/blocks/cold-open.html" data-kit-role="cold-open"
-        data-variable-values='{"kicker": "Prototype for Distru · Haider Bokhari", "headline": "Order email in. *Priced order* out.", "focus": "emailHead,samples,emailText", "zoom": 1.5, "push": 0.06}'
-        data-start="0" data-duration="2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
+        data-variable-values='{"kicker": "Prototype for Distru · Haider Bokhari", "headline": "Email in, *priced order* out", "focus": "340,132,1240,503", "zoom": 1.5, "push": 0.05}'
+        data-start="0" data-duration="2.4" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
 
       <div id="run2" data-composition-id="run2" data-composition-src="compositions/run2.html" data-kit-role="footage"
-        data-start="2" data-duration="17.52" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
+        data-start="2.4" data-duration="19.24" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
 
       <div id="run3" data-composition-id="run3" data-composition-src="compositions/run3.html" data-kit-role="footage"
-        data-start="19.52" data-duration="9.25" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
+        data-start="21.64" data-duration="9.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
 
       <div id="evals" data-composition-id="evals" data-composition-src="compositions/evals.html" data-kit-role="footage"
-        data-start="28.77" data-duration="6.85" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+        data-start="31.24" data-duration="8.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
 
       <div id="mcp" data-composition-id="mcp" data-composition-src="compositions/mcp.html" data-kit-role="footage"
-        data-start="35.62" data-duration="6.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
-
-      <div id="nextsteps" data-composition-id="nextsteps" data-composition-src="kit/blocks/next-steps.html" data-kit-role="next-steps"
-        data-variable-values='{"label": "If I join", "head": "First 30 days", "row1": "Put this harness behind the live Order Agent", "row2": "Evals on real orders (anonymized)", "row3": "Same tools over MCP for Claude and Codex"}'
-        data-start="42.12" data-duration="3.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
+        data-start="39.74" data-duration="8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
 
       <div id="endcard" data-composition-id="endcard" data-composition-src="kit/blocks/end-card.html" data-kit-role="end-card"
-        data-variable-values='{"question": "Where does the Order Agent need a *human* most today?", "name": "Haider Bokhari", "url": "haiderb.com"}'
-        data-start="45.62" data-duration="2.7" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 7"></div>
+        data-variable-values='{"question": "", "name": "Haider Bokhari", "url": "haiderb.com"}'
+        data-start="47.74" data-duration="2.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
 
       <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-kit-role="captions"
-        data-start="2" data-duration="40.12" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
+        data-start="2.4" data-duration="45.34" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
+
+      <!-- the instrumental bed under the whole film: written by node ../../kit/scripts/music-bed.mjs . -->
+      <!-- kit:music:start -->
+      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112.mp3" data-kit-music="bright-pluck-112" data-start="0" data-duration="50.24" data-media-start="8.96" data-volume="0.569" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
+      <!-- kit:music:end -->
     </div>
     <script>
       window.__timelines = window.__timelines || {};

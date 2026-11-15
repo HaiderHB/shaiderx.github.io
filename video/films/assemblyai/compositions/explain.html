@@ -11,20 +11,24 @@
     <div id="ex-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="ex-cam" class="kit-cam">
         <!-- clip "explain" (recorded 2026-11-15): ONE live, uncached "Explain failures" run on First try
-             (DeepSeek V3.2 via fal; fresh server, empty cache). Click at 1x; the 7.2 s model wait at 4x
+             (DeepSeek V3.2 via fal; fresh server, empty cache). Click at 1x; the 13.2 s model wait at 6x
              (tagged); the reply arriving and the finished reply at 1x. -->
-        <video id="ex-v1" class="clip kit-footage" src="assets/footage/explain.mp4" data-kit-clip="explain" data-start="0" data-duration="1.4" data-media-start="0.55" data-track-index="0" muted playsinline></video>
-        <video id="ex-v2" class="clip kit-footage" src="assets/footage/explain.mp4" data-kit-clip="explain" data-start="1.4" data-duration="1.8" data-media-start="1.95" data-playback-rate="4" data-track-index="0" muted playsinline></video>
-        <video id="ex-v3" class="clip kit-footage" src="assets/footage/explain.mp4" data-kit-clip="explain" data-start="3.2" data-duration="5.25" data-media-start="9.15" data-track-index="0" muted playsinline></video>
-
-        <!-- the L9 finding (the README snippet's SyntaxError), whose Fix line is the reviewed text for that check -->
-        <div id="ex-ring-l9" class="clip kit-ring" data-start="6" data-duration="2.3" data-kit-focus="rp2" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+        <video id="ex-v1" class="clip kit-footage" src="assets/footage/explain.mp4" data-kit-clip="explain" data-start="0" data-duration="1.35" data-media-start="0.6" data-track-index="0" muted playsinline></video>
+        <video id="ex-v2" class="clip kit-footage" src="assets/footage/explain.mp4" data-kit-clip="explain" data-start="1.35" data-duration="2.2" data-media-start="1.95" data-playback-rate="6" data-track-index="0" muted playsinline></video>
+        <video id="ex-v3" class="clip kit-footage" src="assets/footage/explain.mp4" data-kit-clip="explain" data-start="3.55" data-duration="5.75" data-media-start="15.15" data-track-index="0" muted playsinline></video>
+        <!-- ring + dim on the L9 finding (the README snippet's SyntaxError: what breaks + its reviewed Fix line).
+             A ring, not an annotation: a label below it would cover the start of the next finding's sentence. -->
+        <div id="ex-ring-l9" class="clip kit-ring" data-start="6.9" data-duration="2.3" data-kit-focus="rp2" data-kit-pad="6" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+        <!-- ring + dim on the button through the click and the sped-up wait ("Explaining…") -->
+        <div id="ex-ring-btn" class="clip kit-ring" data-start="0.25" data-duration="3.2" data-kit-focus="explainBtn" data-kit-pad="8" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
       </div>
     </div>
+
+
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": "llmPanel", "label": "Explain and fix: click, then the model wait (4x)" },
-        { "t": 3.1, "focus": ["llmHead", "rp0", "rp3"], "dur": 0.6, "margin": 4, "pad": 8, "window": [4.95, 8.45], "label": "the panel head and the first four findings as they arrive" }
+        { "t": 0, "focus": "llmPanel", "window": [0, 3.5], "align": "top", "pad": 0, "margin": 0, "label": "Explain and fix: click, then the model wait (6x) (top edge under the site bar)" },
+        { "t": 3.45, "focus": ["llmHead", "rp0", "rp2"], "align": "top", "pad": 0, "margin": 12, "dur": 0.6, "window": [4.6, 9.3], "label": "the panel head and the three failures as they arrive" }
       ]
     </script>
   </div>

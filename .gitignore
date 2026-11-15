@@ -71,6 +71,7 @@ video/films/*/node_modules
 video/films/*/raw/
 video/films/*/renders/
 video/films/*/assets/footage/
+video/films/*/assets/music/
 video/films/*/.hyperframes/
 video/**/*.mp4
 video/**/*.mov

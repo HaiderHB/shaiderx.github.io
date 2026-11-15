@@ -17,7 +17,8 @@
  *             QA warns), or an array of these (union). Boxes are unioned over the whole hold,
  *             so a component that grows or moves while the camera holds stays fully in frame.
  *   dur, ease move length (default 0.8 s, "power2.inOut"); cut: true = hard cut to the framing
- *   maxZoom, zoom, minZoom, pad, margin, align, fill   -> Kit.camera.fit options
+ *   maxZoom, zoom, minZoom, pad, margin, align, fill, edge   -> Kit.camera.fit options
+ *             (edge, kit 1.1.1: {"left": 859} puts footage x 859, e.g. a column gutter, on the frame edge)
  *   captions  true (default): keep the focus above the caption band; false: full frame
  *             (QA fails the shot if a caption cue is on screen during its hold)
  *   partial   true + reason: the shot may crop the component on purpose (zoom, center)
@@ -30,8 +31,16 @@
  *        data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
  *   The ring box is placed from the recorded DOM box; QA checks it is inside the safe area.
  *
+ * Annotations (kit 1.1; see lib/annotate.js), in the scene markup OUTSIDE .kit-stage (screen space):
+ *   <div id="r2-ann-route" class="clip kit-ann" data-start="11.2" data-duration="3" data-kit-focus="finalRoute"
+ *        data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion>
+ *     <div class="kit-ann-label">Rules overrule the model</div></div>
+ *   Ring + label (<= 6 words), placed inside the safe area beside the component, never over the shot's
+ *   focus box or the caption band; it must sit inside one camera hold (the camera does not move under it).
+ *
  * Kit.scene.footage({id, tl, duration?, shots?, root?, cam?}) -> plan   (call in the scene script)
- * Kit.scene.plan({scene, shots, sceneClips, duration, rings?, cues?})   (pure; QA calls this in Node)
+ * Kit.scene.plan({scene, shots, sceneClips, duration, rings?, cues?, annotations?})   (pure; QA calls this in Node)
+ *   annotations: [{id, start, end, focus, pad, side, text}] -> plan.annotations [{ring, label, leader, focusRect, ok, problems}]
  * window.__kitShots collects every planned keyframe in the page for debugging.
  */
 (function (g) {
@@ -123,6 +132,7 @@
         hold: [+h0.toFixed(3), +h1.toFixed(3)],
         window: [+win[0].toFixed(3), +win[1].toFixed(3)],
         focus: describe(s.focus),
+        focusSpec: s.focus,
         label: s.label || "",
         partial: !!s.partial,
         reason: s.reason || "",
@@ -143,6 +153,7 @@
         k.lowered = f.lowered;
         if (!s.partial && !f.ok) k.problems.push("focus does not fit the safe area");
         if (f.small) k.warnings.push("zoom " + f.scale + " is below minZoom " + s.minZoom + " (component is large)");
+        if (f.edgeIgnored && f.edgeIgnored.length) k.warnings.push("edge " + f.edgeIgnored.join("/") + " ignored: the focus would leave the safe area (lower the zoom or move the edge)");
         if (f.scale < 1 && !s.partial) k.warnings.push("zoom " + f.scale + " < 1: footage is shown smaller than captured");
       } else if (!k.problems.length) k.problems.push("no box to frame");
       if (!k.captions && o.cues)
@@ -177,7 +188,97 @@
       out.ok = !out.problems.length;
       return out;
     });
-    return { scene: o.scene, duration, keyframes, rings };
+    const annotations = (o.annotations || []).map((an) => planAnnotation(o, an, keyframes, sceneClips));
+    return { scene: o.scene, duration, keyframes, rings, annotations };
+  }
+
+  // tracked components in frame during an annotation, other than its target, the shot's focus and
+  // anything that contains the ring (sections, cards around it) or fills most of the frame
+  function neighbours(an, sceneClips, k, ring) {
+    const own = focusList(an.focus).concat(focusList(k.focusSpec)).filter((x) => typeof x === "string").map((x) => x.split("@")[0]);
+    const out = [];
+    const seen = {};
+    const area = k.safe.w * k.safe.h;
+    [an.start + 0.001, (an.start + an.end) / 2, an.end - 0.001].forEach((t) => {
+      const at = Kit.clips.mediaAt(sceneClips, t);
+      const c = at && Kit.clips.get(at.clip);
+      if (!c || !c.boxes) return;
+      Object.keys(c.boxes).forEach((name) => {
+        if (own.indexOf(name) >= 0) return;
+        const b = Kit.clips.boxAt(c, name, at.m);
+        if (!b) return;
+        const r = Kit.camera.project(k.fit, b);
+        if (r.x <= ring.x + 1 && r.y <= ring.y + 1 && r.x + r.w >= ring.x + ring.w - 1 && r.y + r.h >= ring.y + ring.h - 1) return;
+        if (r.w * r.h > 0.5 * area) return;
+        if (r.x > 1920 || r.y > 1080 || r.x + r.w < 0 || r.y + r.h < 0) return;
+        const key = name + Math.round(r.x) + "," + Math.round(r.y);
+        if (seen[key]) return;
+        seen[key] = 1;
+        out.push({ name, rect: r });
+      });
+    });
+    return out;
+  }
+
+  function planAnnotation(o, an, keyframes, sceneClips) {
+    const text = Kit.text ? Kit.text.plain(an.text || "") : String(an.text || "");
+    const words = Kit.text ? Kit.text.words(text) : text.split(/\s+/).filter(Boolean).length;
+    const out = { scene: o.scene, id: an.id, start: an.start, end: an.end, focus: describe(an.focus), text, words, problems: [], warnings: [] };
+    const r = resolve(an.focus, sceneClips, an.start, an.end);
+    out.problems.push.apply(out.problems, r.problems);
+    out.warnings.push.apply(out.warnings, r.warnings);
+    if (!text) out.problems.push("annotation without a label (.kit-ann-label)");
+    const maxWords = Kit.text ? Kit.text.ANN.maxWords : 6;
+    if (words > maxWords) out.problems.push(`label is ${words} words (max ${maxWords})`);
+    if (Kit.text) {
+      const need = Kit.text.readingTime(words);
+      out.reading = need;
+      if (an.end - an.start < need - 1e-6) out.problems.push(`on screen ${(an.end - an.start).toFixed(2)} s, reading time ${need.toFixed(2)} s (0.6 + 0.35 x ${words} words)`);
+    }
+    if (!r.box) {
+      if (!out.problems.length) out.problems.push("no box for the annotation");
+      out.ok = false;
+      return out;
+    }
+    let k = null;
+    keyframes.forEach((kf) => {
+      if (kf.t <= an.start + 1e-6) k = kf;
+    });
+    if (!k || !k.fit) {
+      out.problems.push("no camera keyframe before the annotation");
+      out.ok = false;
+      return out;
+    }
+    out.shot = k.i;
+    if (an.start < k.hold[0] - 1e-6) out.problems.push(`appears at ${an.start.toFixed(2)} s while the camera still moves (hold starts ${k.hold[0].toFixed(2)} s)`);
+    if (an.end > k.hold[1] + 1e-6) out.problems.push(`stays on until ${an.end.toFixed(2)} s but the camera moves at ${k.hold[1].toFixed(2)} s (keep it inside one hold)`);
+    const box = Kit.camera.grow(r.box, an.pad != null ? an.pad : 6);
+    const ring = Kit.camera.project(k.fit, box);
+    out.ring = { x: Math.round(ring.x), y: Math.round(ring.y), w: Math.round(ring.w), h: Math.round(ring.h) };
+    out.safe = k.safe;
+    out.focusRect = k.rect;
+    if (!Kit.camera.inside(ring, k.safe)) out.problems.push(`ring is outside the safe area under shot ${k.i} (${k.focus})`);
+    const size = Kit.text ? Kit.text.annSize(text) : { w: 24 * text.length, h: 58 };
+    // the label never covers the shot's focus box (nor the ring, nor the band: the safe area ends above it);
+    // it prefers whitespace: first try clear of every other tracked component in frame
+    const soft = neighbours(an, sceneClips, k, ring);
+    let p = Kit.annotate ? Kit.annotate.place({ ring: out.ring, focus: k.rect, safe: k.safe, size, side: an.side, avoid: soft.map((n) => n.rect) }) : null;
+    if (!p && Kit.annotate) {
+      p = Kit.annotate.place({ ring: out.ring, focus: k.rect, safe: k.safe, size, side: an.side });
+      if (p) {
+        const hit = soft.filter((n) => Kit.annotate.overlap(p.rect, n.rect)).map((n) => n.name);
+        if (hit.length) out.warnings.push(`label covers ${hit.join(", ")} (no clear space): lower the shot's maxZoom or pick data-kit-side`);
+      }
+    }
+    if (!p) out.problems.push(`no room for the label (${size.w}x${size.h}) beside the ring or outside the focus box inside the safe area: lower the shot's maxZoom, pick another side, or shorten it`);
+    else {
+      out.label = p.rect;
+      out.side = p.side;
+      out.anchor = p.anchor;
+      out.leader = p.leader;
+    }
+    out.ok = !out.problems.length;
+    return out;
   }
 
   function hostOf(id) {
@@ -206,6 +307,26 @@
     });
   }
 
+  function annotationsFromDom(root) {
+    return Array.prototype.map.call(root.querySelectorAll(".kit-ann[data-kit-focus]"), (el) => {
+      const start = parseFloat(el.getAttribute("data-start")) || 0;
+      const dur = parseFloat(el.getAttribute("data-duration")) || 1;
+      let focus = el.getAttribute("data-kit-focus");
+      if (focus && focus.trim().charAt(0) === "[") focus = JSON.parse(focus);
+      const lab = el.querySelector(".kit-ann-label");
+      return {
+        el,
+        id: el.id,
+        start,
+        end: start + dur,
+        focus,
+        pad: el.hasAttribute("data-kit-pad") ? parseFloat(el.getAttribute("data-kit-pad")) : 6,
+        side: el.getAttribute("data-kit-side") || "auto",
+        text: lab ? lab.textContent : "",
+      };
+    });
+  }
+
   function footage(o) {
     const tl = o.tl;
     const host = o.root ? (typeof o.root === "string" ? document.querySelector(o.root) : o.root) : hostOf(o.id);
@@ -218,7 +339,8 @@
     const duration = o.duration != null ? o.duration : parseFloat(host.getAttribute("data-duration")) || undefined;
     const sceneClips = Kit.clips.fromDom(host);
     const rings = ringsFromDom(host);
-    const p = plan({ scene: o.id, shots, sceneClips, duration, rings });
+    const anns = annotationsFromDom(host);
+    const p = plan({ scene: o.id, shots, sceneClips, duration, rings, annotations: anns });
 
     p.keyframes.forEach((k, i) => {
       if (!k.fit) return;
@@ -247,8 +369,14 @@
       tl.to(rg.el, { opacity: 0, duration: 0.15, ease: "power2.in" }, Math.max(rg.start + 0.3, rg.end - 0.17));
     });
 
-    g.__kitShots = (g.__kitShots || []).concat(p.keyframes, p.rings);
-    p.keyframes.concat(p.rings).forEach((k) => {
+    anns.forEach((an, i) => {
+      const pa = p.annotations[i];
+      if (pa && pa.label && Kit.annotate) Kit.annotate.render(tl, an.el, pa);
+      else if (an.el) tl.set(an.el, { opacity: 0 }, 0);
+    });
+
+    g.__kitShots = (g.__kitShots || []).concat(p.keyframes, p.rings, p.annotations);
+    p.keyframes.concat(p.rings, p.annotations).forEach((k) => {
       if (!k.ok) Kit.warn(o.id + " " + (k.id || "shot " + k.i) + ": " + k.problems.join("; "));
     });
     return p;

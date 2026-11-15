@@ -29,3 +29,111 @@ Add, don't rename. Any API change after `READY` is listed here with what films m
 - Fix: `qa.mjs` did not count `<audio>` (or `<video data-has-audio>`) in the root `index.html`, so a film with placed voice reported "silent". It now warns "audio on: main#...". No film change needed.
 - Open items: expose `clip.t0` in capture.cjs; add a `beforeFinish` hook so page-side logs are collected before the browser closes; a `clipTo` option for list items.
 
+
+## 1.1.0 (2026-11-15) — text-first films with a music bed (Haider's new direction)
+
+Why: no voice of any kind in demo films; on-screen text carries everything over a light instrumental bed;
+no "If I join / First 30 days" card (a demo shows skill, not plans); every demo's UI was revamped
+(commit "demo UI revamp"), so all footage is re-recorded and the palette follows the new UI.
+
+New
+- Music bed: `music/beds.json`, `lib/music.js` (`Kit.music.plan/volume/check/TARGET`),
+  `scripts/music-bed.mjs` (plans the bed for the film's length, measures the excerpt, writes `#music` with
+  the gain for -20 LUFS between `<!-- kit:music:start -->` / `<!-- kit:music:end -->`), `components/music-bed.html`.
+  `sync` now vendors the film's bed into `films/<slug>/assets/music/` (git-ignored).
+- Caption v2 (`.kit-cap.kit-cap2` > `.kit-cap-kicker` / `.kit-cap-head` / `.kit-cap-detail`, `data-kit-step`),
+  solid band `.kit-band.kit-band2`, progress stepper `.kit-progress[data-kit-steps]` (built and driven by
+  `Kit.captions.animate`), `*word*` accents in v2 heads. Headline 58 px (QA floor 52 px), detail 32 px.
+- Annotations: `.kit-ann[data-kit-focus] > .kit-ann-label` in footage scenes (`components/annotation.html`,
+  `lib/annotate.js`, planned in `Kit.scene.plan`, rendered by `Kit.scene.footage`): ring + ≤ 6-word label,
+  auto-placed in the safe area, off the focus box, the ring and the band, preferring whitespace.
+- `lib/text.js`: word counts, reading time, Inter glyph widths (QA's one-line checks), annotation sizes.
+- `end-card` block: `question` may be "" (sign-off alone, larger).
+- Tokens: palette of the revamped demo UI (ground #0a0a0f, ink #f2f1f9) and per-film accents via
+  `data-kit-accent` on the root: `iris` #8e78ff (default; Distru), `cobalt` #6896ff (AssemblyAI),
+  `coral` #ff8060 (Great Question), `cyan` #00e5ff (kit 1.0). `--kit-ground-rgb`, `--kit-accent-rgb`,
+  `--kit-on-accent`, `--kit-gutter2`, `--kit-cap2-*`, `--kit-ann-size`.
+
+Changed (look only; no attribute or function renamed)
+- Default accent cyan -> iris; ground #111111 -> #0a0a0f; ink #fafafa -> #f2f1f9. `.kit-chip` border and
+  the v1 band fade follow the tokens.
+- The cold-open block uses the v2 solid band and `.kit-headline` is now top-anchored at y 864 (the v2 cue
+  position), left gutter 120 px.
+- QA: reading time is a FAIL (was a WARN under 1.8 s): every cue, annotation and the cold-open headline
+  stays on screen >= 0.6 s + 0.35 s per word (head + detail + chips). Cues may not overlap; annotations
+  may not overlap. v1 cues WARN. Exactly one music bed is required; any other `<audio>`, `<video
+  data-has-audio>` or un-muted video with sound FAILS unless flagged `data-kit-audio-reason="..."`. The
+  "silent" expectation is retired. A `next-steps` host FAILS. `--video` measures loudness (-22..-18 LUFS
+  integrated, true peak <= -1 dBTP), fades (quiet first 30 ms, last 50 ms below -45 dB), streams (H.264
+  1920x1080 30 fps + AAC) and size (< 20 MB). WARN when the root has no `data-kit-accent`.
+- Template (`new-film`): no next-steps host; end card without a question; v2 captions with a stepper; an
+  annotation in the demo scene; music markers; `data-kit-accent="iris"`; `npm run music`, `qa:render`.
+- `next-steps` block and `voice-subtitle` / `place-audio` are kept but marked "not for demo films".
+
+What films must change to adopt 1.1 (`npm run sync -- <slug>`, then QA)
+1. Remove the `nextsteps` host from index.html; move the end card up; set the root `data-duration`.
+2. Remove every voice `<audio>` (and the `kit:voice` markers) and voice cues; no `.kit-voice` cues.
+3. Add `data-kit-accent="<demo accent>"` to the root (`iris` | `cobalt` | `coral`).
+4. Add `<!-- kit:music:start -->` / `<!-- kit:music:end -->` inside the root after the scene hosts, then
+   `node kit/scripts/music-bed.mjs films/<slug>` (re-run whenever the length changes).
+5. Rewrite captions as v2 cues (`kit-cap kit-cap2`, kicker / head / detail, `data-kit-step`), add the
+   `.kit-progress` stepper, switch the band to `kit-band kit-band2`; give each cue its reading time.
+6. Cold-open headline: <= 4 words for a 2.2 s slot (5 for 2.5 s).
+7. Optional: annotations (`.kit-ann`) on the proof points; leave the focus room for the label.
+8. Render, then `qa.mjs --video renders/<slug>-launch.mp4` (loudness, fades, size) must PASS.
+
+## 1.1.1 (2026-11-15) — additive
+
+- `Kit.camera.fit` / shot data: `"edge": {"left": x}` (or `right`, `top`, `bottom`) puts footage x / y ON
+  the frame edge, e.g. the 24 px gutter between two page columns, so a close-up on one column does not
+  slice the other. Applied only while the focus still fits the safe area (+ pad); otherwise ignored with
+  a QA warning. Beyond the footage edge the frame shows the stage ground (the demo canvas colour).
+  No film change needed. Used by distru.
+- Template (`templates/film/compositions/captions.html`) and `components/caption-band.html`: the sample cues
+  are retimed so they pass the 1.1 reading-time rule as written. No film change needed.
+
+## Open suggestions from the v3 films (2026-11-15, not applied)
+
+No kit files changed for AssemblyAI or Great Question v3. Notes kept for a later version:
+
+### From assemblyai
+
+No kit files were added or changed for this film: it is built on kit 1.1.0 as vendored by
+`node kit/scripts/sync.mjs assemblyai`. Notes for the kit maintainer, from building it (none blocking):
+
+- capture.cjs under load: on this 2-core box the CDP screencast drops to ~10 fps while another capture or
+  render runs (~25-35 fps during motion when idle). A README line ("record when nothing else is
+  capturing or rendering") would save re-takes. Tracking fewer components per take did not change the rate.
+- annotate.js: when the focus box spans the frame width, the label can only go below the focus box, over
+  the next component. On running text that can leave a misleading fragment visible (here it hid
+  "un" of "undocumented"). A `data-kit-side="none"` / ring-only fallback, or a QA warning when the label
+  covers text that continues on the same line, would catch it. The film uses a callout ring instead.
+- cold-open block: `pad` / `margin` variables (like scene shots) would let a cold open reach the same
+  zoom as a scene's matching first keyframe without relying on the "lowered to fit" value.
+- The page header on the revamped demo UI is a floating sticky pill (y 12-68): frames whose top edge is
+  under ~70 px of a scrolled page show a sliver of it; `align: "top", pad: 0, margin: 0` on a focus that
+  starts ~85 px down keeps it out.
+
+### From great-question
+
+Kit changes made: none. The film uses kit 1.1.0 as vendored by `npm run sync -- great-question`; no file under
+`video/kit/` was edited (this note is the only addition).
+
+Suggestions for a later kit release (not applied; observed while cutting great-question v3):
+
+1. `lib/camera.js`: `pad` applies to every side, so a shot cannot put the left edge in a column gap
+   (needs pad ~50) and the top edge in a row gap (needs pad ~0) at once. A per-axis option
+   (`padX` / `padY`) or an explicit `edge: {left: x, top: y}` in footage px would let shots land every
+   frame edge in whitespace (scripts/edges.mjs advisories).
+2. `lib/annotate.js`: placement fails by 1-4 px when a label just fits beside the focus box
+   (e.g. 304 px label, 300 px room). Trying a 12 px gap before giving up, or letting the label
+   shrink its padding, would save a re-label.
+3. `lib/annotate.js`: a leader from a ring in the left column to a label beyond the right column crosses the
+   neighbouring card's text (findings grid). Prefer the side whose leader crosses no other tracked component.
+4. `scripts/qa.mjs --video <path>` resolves the path against the film folder; passing
+   `films/<slug>/renders/x.mp4` from `video/` throws an ffmpeg stack trace instead of "file not found".
+5. `scripts/capture.cjs`: with ~110 tracked components sampled every animation frame, the screencast lag
+   (frame-lag.py) was median 0.09 s but spiked to ~0.4-0.5 s when a turn's TTS started and new transcript
+   nodes rendered. Sampling at most every 2nd frame, or only components named in a `focus` list, would cut it.
+6. `scripts/capture.cjs`: a `deviceScaleFactor` option (record at 2x, downscale in build-footage) would keep
+   small UI text sharp at 1.5-2x camera zoom; text-first films zoom into transcripts and JSON a lot.

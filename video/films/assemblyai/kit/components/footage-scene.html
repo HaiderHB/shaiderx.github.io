@@ -9,6 +9,8 @@
     img.kit-footage[data-kit-media-time]  a held frame (export with build-footage --still); say so in REVIEW.md
     .kit-ring[data-kit-focus]        callout ring + dim on a recorded component (callout-ring.html)
     .kit-crop                        ground patch in footage px (e.g. keep a localhost URL out of frame)
+    .kit-ann (outside .kit-stage)    kit 1.1 annotation: ring + short label on a recorded component,
+                                     auto-placed in screen space (annotation.html); one camera hold
     script.kit-shots                 camera keyframes: see kit/lib/scene.js for every field.
                                      Default = whole component in frame above the caption band.
                                      A deliberate crop needs "partial": true and a "reason".
@@ -33,6 +35,8 @@
           data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
       </div>
     </div>
+    <div id="demo-ann1" class="clip kit-ann" data-start="4.6" data-duration="2.8" data-kit-focus="runButton"
+      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">One click, one live run</div></div>
     <script type="application/json" class="kit-shots">
       [
         { "t": 0, "focus": "email", "maxZoom": 1.6, "label": "the input" },

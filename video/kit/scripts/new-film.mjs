@@ -4,15 +4,16 @@
  *
  *   node kit/scripts/new-film.mjs <slug> --company "Acme" [--force]
  *
- * Creates video/films/<slug>/ from kit/templates/film/ (index.html with cold open -> footage scene ->
- * next steps -> end card + captions, compositions/demo.html, compositions/captions.html, SPEC.md,
- * capture/record.cjs, capture/cuts.json, package.json), makes raw/, renders/, assets/footage/,
- * data/clips/, links node_modules and vendors the kit (sync). Then:
+ * Creates video/films/<slug>/ from kit/templates/film/ (kit 1.1: index.html with cold open -> footage
+ * scene -> end card + captions + the music bed, compositions/demo.html, compositions/captions.html (v2
+ * cues + progress stepper), SPEC.md, capture/record.cjs, capture/cuts.json, package.json), makes raw/,
+ * renders/, assets/footage/, data/clips/, links node_modules and vendors the kit and the bed (sync). Then:
  *   1. write capture/record.cjs, run it          -> raw/<clip>/
  *   2. node kit/scripts/build-footage.mjs films/<slug>   -> assets/footage, data/clips
- *   3. edit compositions + index.html variables; npx hyperframes check
- *   4. node kit/scripts/qa.mjs films/<slug> --frames     -> renders/qa/contact-sheet.jpg
- *   5. npx hyperframes render --quality delivery -o renders/<slug>-launch.mp4
+ *   3. edit compositions + index.html variables (data-kit-accent = the demo's accent); npx hyperframes check
+ *   4. node kit/scripts/music-bed.mjs films/<slug>       -> the bed levelled to -20 LUFS for the final length
+ *   5. node kit/scripts/qa.mjs films/<slug> --frames     -> renders/qa/contact-sheet.jpg
+ *   6. npx hyperframes render --quality delivery -o renders/<slug>-launch.mp4; qa.mjs --video (loudness)
  */
 import fs from "node:fs";
 import path from "node:path";

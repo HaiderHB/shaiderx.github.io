@@ -18,11 +18,24 @@
  *   rings           every callout ring is inside the safe area under the shot in force
  *   speed labels    every footage clip with data-playback-rate != 1 is covered by a .kit-speed tag
  *                   whose text shows that rate (FAIL)
- *   captions        cue >= 1.8 s, <= 90 characters (WARN); captions:false shots with a cue (FAIL)
- *   style           glow / glass / decorative gradients / audio (WARN)
+ *   captions        (kit 1.1) one cue on screen at a time (FAIL); reading time: on screen >= 0.6 s +
+ *                   0.35 s per word of head + detail + chips (FAIL; the cold-open headline too); v2 cue
+ *                   head <= ~10 words and detail <= ~14 (WARN 11-12 / 15-16, FAIL above), each fits one
+ *                   line (FAIL), head >= 52 px (FAIL); v1 cues WARN; progress steps match the stepper;
+ *                   captions:false shots with a cue (FAIL)
+ *   annotations     (kit 1.1) label <= 6 words, reading time, inside one camera hold, ring in the safe
+ *                   area, a label placement off the focus box and the band, one at a time (FAIL)
+ *   music + voice   (kit 1.1) exactly one music bed (<audio class="kit-music">) from 0 to the film's end,
+ *                   fade in <= 0.3 s, fade out ~1.5 s, a level, the file vendored (FAIL); any other
+ *                   <audio>, <video data-has-audio> or un-muted video with sound FAILS unless it carries
+ *                   data-kit-audio-reason="..." (WARN); next-steps block in a demo film (FAIL)
+ *   style           glow / glass / decorative gradients (WARN); data-kit-accent on the root (WARN)
  * With --frames (HyperFrames snapshot) or --video (frames from a render): a contact sheet at every
  * --every seconds (default 3), every scene seam (-0.2 / +0.2 s) and --at times, plus a framing sheet
- * (one frame per keyframe hold, focus rect cyan, safe area dashed). Written to --out (renders/qa).
+ * (one frame per keyframe hold and per annotation: focus rect cyan, safe area dashed, ring and label).
+ * --video also measures the render (kit 1.1): integrated loudness -22..-18 LUFS and true peak <= -1 dBTP
+ * (FAIL), an audio stream (AAC), a quiet first 30 ms and a faded last 50 ms (FAIL), 1920x1080 30 fps
+ * H.264 and < 20 MB (FAIL). Written to --out (renders/qa).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -133,6 +146,14 @@ hosts.forEach((h) => {
   if (h.id !== h.cid) FAIL("index", `#${h.id}: host id must equal data-composition-id (${h.cid})`);
 });
 
+// ---------- kit 1.1: demo films carry no next-steps card; one accent per film ----------
+hosts.forEach((h) => {
+  if (h.role === "next-steps") FAIL("scenes", `#${h.id}: the next-steps block is not for demo films (kit 1.1: a demo shows skill, not plans); remove it`);
+});
+const accentAttr = rootTag && rootTag.attrs["data-kit-accent"];
+if (!accentAttr) WARN("style", 'root has no data-kit-accent: set the demo page\'s accent ("iris", "cobalt" or "coral"; tokens.css)');
+else PASS("style", `accent: ${accentAttr}`);
+
 // ---------- duration ----------
 if (!Number.isFinite(duration)) FAIL("duration", "root data-duration missing");
 else if (duration >= 60) FAIL("duration", `${duration.toFixed(2)} s: films must be under 60 s`);
@@ -144,7 +165,12 @@ const product = [];
 const speedClips = [];
 const speedTags = [];
 const cues = [];
-const audio = [];
+const sounds = []; // every element that can make sound: {where, id, kind, attrs}
+const unmuted = []; // <video> without muted / data-has-audio: silent only if its file has no audio stream
+const pick = (body, cls) => {
+  const m = body.match(new RegExp(`class="[^"]*\\b${cls}\\b[^"]*"[^>]*>([\\s\\S]*?)<\\/div>`));
+  return m ? m[1] : null;
+};
 hosts.forEach((h) => {
   const ts = tags(h.html);
   const capTags = ts.filter((t) => hasClass(t, "kit-cap") && hasClass(t, "clip"));
@@ -158,7 +184,8 @@ hosts.forEach((h) => {
       const rate = num(a["data-playback-rate"], 1);
       if (Math.abs(rate - 1) > 1e-3 && t.name === "video") speedClips.push({ host: h.id, id: a.id, rate, start: s, end: Math.min(h.start + h.duration, s + d) });
     }
-    if (t.name === "audio" || (t.name === "video" && a["data-has-audio"] === "true")) audio.push(`${h.id}#${a.id || "?"}`);
+    if (t.name === "audio" || (t.name === "video" && a["data-has-audio"] === "true")) sounds.push({ where: h.id, id: a.id || "?", kind: t.name, attrs: a });
+    else if (t.name === "video" && !("muted" in a)) unmuted.push({ where: h.id, id: a.id || "?", src: a.src || "" });
     if (hasClass(t, "kit-speed")) {
       // the cue it sits in (captions) or its own data-tag window
       const cue = capTags.filter((c) => c.index < t.index).pop();
@@ -175,14 +202,32 @@ hosts.forEach((h) => {
       const d = num(c.attrs["data-duration"]);
       const next = capTags.find((x) => x.index > c.index);
       const body = h.html.slice(c.end, next ? next.index : h.html.length);
-      const mm = body.match(/class="kit-cap-main"[^>]*>([\s\S]*?)<\/div>/);
-      const main = (mm ? mm[1] : body).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-      cues.push({ id: c.attrs.id, start: s, end: s + d, duration: d, text: main });
+      const v2 = hasClass(c, "kit-cap2");
+      const head = pick(body, v2 ? "kit-cap-head" : "kit-cap-main");
+      const detail = pick(body, v2 ? "kit-cap-detail" : "kit-cap-note");
+      const kicker = pick(body, v2 ? "kit-cap-kicker" : "kit-cap-label");
+      const chips = [...body.matchAll(/<span[^>]*class="[^"]*\bkit-chip\b[^"]*"[^>]*>([\s\S]*?)<\/span>/g)].map((m) => Kit.text.plain(m[1]));
+      const main = Kit.text.plain(head != null ? head : body);
+      cues.push({
+        id: c.attrs.id,
+        start: s,
+        end: s + d,
+        duration: d,
+        v2,
+        text: main,
+        head: main,
+        detail: detail != null ? Kit.text.plain(detail) : "",
+        kicker: kicker != null ? Kit.text.plain(kicker.replace(/<span[^>]*class="[^"]*\bkit-(speed|chip|tag)\b[\s\S]*?<\/span>/g, "")) : "",
+        chips,
+        step: c.attrs["data-kit-step"] != null ? parseInt(c.attrs["data-kit-step"], 10) : null,
+        voice: hasClass(c, "kit-voice"),
+      });
     });
 });
-// root-level sound in index.html (e.g. voice placed by place-audio.mjs) also counts
+// root-level sound in index.html (the music bed, or voice placed by place-audio.mjs) also counts
 itags.forEach((t) => {
-  if (t.name === "audio" || (t.name === "video" && t.attrs["data-has-audio"] === "true")) audio.push(`main#${t.attrs.id || "?"}`);
+  if (t.name === "audio" || (t.name === "video" && t.attrs["data-has-audio"] === "true")) sounds.push({ where: "main", id: t.attrs.id || "?", kind: t.name, attrs: t.attrs });
+  else if (t.name === "video" && !("muted" in t.attrs)) unmuted.push({ where: "main", id: t.attrs.id || "?", src: t.attrs.src || "" });
 });
 
 // ---------- first product frame ----------
@@ -226,6 +271,9 @@ if (pics.length && Number.isFinite(duration)) {
 
 // ---------- framing ----------
 const plans = [];
+function blockDefaultsOf(html) {
+  return blockDefaults(html);
+}
 function blockDefaults(html) {
   const m = html.match(/data-composition-variables='([^']*)'/);
   const out = {};
@@ -270,7 +318,19 @@ hosts.forEach((h) => {
         return { id: t.attrs.id, start: s, end: s + num(t.attrs["data-duration"], 1), focus, pad: t.attrs["data-kit-pad"] != null ? num(t.attrs["data-kit-pad"]) : 6 };
       });
     const localCues = cues.map((c) => ({ id: c.id, start: c.start - h.start, end: c.end - h.start }));
-    const p = Kit.scene.plan({ scene: h.id, shots, sceneClips: sceneClipsOf(h), duration: h.duration, rings, cues: localCues });
+    const annotations = tags(h.html)
+      .filter((t) => hasClass(t, "kit-ann") && t.attrs["data-kit-focus"])
+      .map((t) => {
+        let focus = t.attrs["data-kit-focus"];
+        if (focus.trim().startsWith("[")) focus = JSON.parse(focus);
+        const s = num(t.attrs["data-start"]);
+        const lm = h.html.slice(t.end).match(/class="[^"]*\bkit-ann-label\b[^"]*"[^>]*>([\s\S]*?)<\/div>/);
+        return { id: t.attrs.id, start: s, end: s + num(t.attrs["data-duration"], 1), focus, pad: t.attrs["data-kit-pad"] != null ? num(t.attrs["data-kit-pad"]) : 6, side: t.attrs["data-kit-side"] || "auto", text: lm ? lm[1] : "" };
+      });
+    tags(h.html)
+      .filter((t) => hasClass(t, "kit-ann") && !t.attrs["data-kit-focus"])
+      .forEach((t) => FAIL("annotations", `#${h.id} #${t.attrs.id || "?"}: .kit-ann without data-kit-focus (an annotation points at a recorded component)`));
+    const p = Kit.scene.plan({ scene: h.id, shots, sceneClips: sceneClipsOf(h), duration: h.duration, rings, cues: localCues, annotations });
     plans.push(Object.assign(p, { host: h }));
     // hand-written camera tweens bypass the guarantee
     const camTag = tags(h.html).find((t) => hasClass(t, "kit-cam"));
@@ -297,8 +357,19 @@ plans.forEach((p) => {
     else PASS("rings", at);
     r.warnings.forEach((w) => WARN("rings", `${h.id} ring #${r.id}: ${w}`));
   });
+  (p.annotations || []).forEach((a) => {
+    const at = `${h.id} #${a.id} @${(h.start + a.start).toFixed(2)}-${(h.start + a.end).toFixed(2)}s "${a.text}" on ${a.focus}`;
+    const where = a.label ? ` label ${fmt(a.label)} (${a.side}${a.leader ? ", leader" : ""})` : "";
+    if (!a.ok) FAIL("annotations", at + " :: " + a.problems.join("; "));
+    else PASS("annotations", at + where + ` · ${a.words} words, needs ${a.reading} s`);
+    a.warnings.forEach((w) => WARN("annotations", `${h.id} #${a.id}: ${w}`));
+  });
   if (!p.keyframes.length) FAIL("framing", `#${h.id}: no camera keyframes`);
 });
+// one annotation on screen at a time (film time)
+const allAnns = plans.flatMap((p) => (p.annotations || []).map((a) => ({ id: a.id, start: p.host.start + a.start, end: p.host.start + a.end }))).sort((a, b) => a.start - b.start);
+for (let i = 1; i < allAnns.length; i++)
+  if (allAnns[i].start < allAnns[i - 1].end - 0.01) FAIL("annotations", `#${allAnns[i - 1].id} and #${allAnns[i].id} overlap (${allAnns[i].start.toFixed(2)} < ${allAnns[i - 1].end.toFixed(2)} s): one annotation at a time`);
 
 // ---------- speed labels ----------
 speedClips.forEach((c) => {
@@ -313,13 +384,76 @@ speedTags.forEach((t) => {
   if (!speedClips.some((c) => Math.min(t.end, c.end) - Math.max(t.start, c.start) > 0.2)) WARN("speed", `speed tag "${t.text}" at ${t.start.toFixed(2)}-${t.end.toFixed(2)} s has no sped-up clip under it`);
 });
 
-// ---------- captions ----------
+// ---------- captions (kit 1.1: text-first, the band carries the whole story) ----------
+const C2 = Kit.text.CAP2;
+const filmCss = [path.join(film, "index.html")]
+  .concat(fs.existsSync(path.join(film, "compositions")) ? fs.readdirSync(path.join(film, "compositions")).filter((f) => f.endsWith(".html")).map((f) => path.join(film, "compositions", f)) : [])
+  .map((f) => stripComments(fs.readFileSync(f, "utf8")))
+  .join("\n");
+let headSize = C2.head;
+const ov = filmCss.match(/--kit-cap2-head:\s*([\d.]+)px/) || filmCss.match(/\.kit-cap-head[^{]*\{[^}]*font-size:\s*([\d.]+)px/);
+if (ov) headSize = parseFloat(ov[1]);
+let detailSize = C2.detail;
+const ovd = filmCss.match(/--kit-cap2-detail:\s*([\d.]+)px/);
+if (ovd) detailSize = parseFloat(ovd[1]);
+if (cues.some((c) => c.v2)) {
+  if (headSize < C2.minHead) FAIL("captions", `headline size ${headSize} px < ${C2.minHead} px (must read on a phone)`);
+  else PASS("captions", `headline ${headSize} px, detail ${detailSize} px (kit 1.1 band)`);
+}
+const byStart = cues.slice().sort((a, b) => a.start - b.start);
+for (let i = 1; i < byStart.length; i++)
+  if (byStart[i].start < byStart[i - 1].end - 0.01) FAIL("captions", `#${byStart[i - 1].id} and #${byStart[i].id} overlap (${byStart[i].start.toFixed(2)} < ${byStart[i - 1].end.toFixed(2)} s): one caption at a time`);
+const progressTags = hosts.filter((h) => h.role === "captions").flatMap((h) => tags(h.html).filter((t) => hasClass(t, "kit-progress")));
+const steps = progressTags.length ? (progressTags[0].attrs["data-kit-steps"] || "").split(/[,|]/).map((x) => x.trim()).filter(Boolean) : [];
+let readFails = 0;
 cues.forEach((c) => {
-  if (c.duration < 1.8) WARN("captions", `#${c.id} on screen ${c.duration.toFixed(2)} s (< 1.8 s)`);
-  const main = c.text;
-  if (main.length > 90) WARN("captions", `#${c.id} is ${main.length} characters: "${main.slice(0, 60)}..."`);
+  const words = Kit.text.words(c.head) + Kit.text.words(c.detail) + c.chips.reduce((n, x) => n + Kit.text.words(x), 0);
+  const need = Kit.text.readingTime(words);
+  c.words = words;
+  c.need = need;
+  const tag = `#${c.id} ${c.start.toFixed(2)}-${c.end.toFixed(2)} s`;
+  if (c.duration < need - 1e-6) {
+    readFails++;
+    FAIL("captions", `${tag}: on screen ${c.duration.toFixed(2)} s < reading time ${need.toFixed(2)} s (0.6 + 0.35 x ${words} words) "${c.head}"${c.detail ? ` / "${c.detail}"` : ""}`);
+  }
+  if (!c.v2) {
+    WARN("captions", `${tag}: v1 cue (.kit-cap-main); kit 1.1 films use .kit-cap2 (kicker, head, detail)`);
+    return;
+  }
+  const hw = Kit.text.words(c.head);
+  const dw = Kit.text.words(c.detail);
+  if (!c.head) FAIL("captions", `${tag}: v2 cue without a .kit-cap-head`);
+  if (hw > C2.maxHeadWords + 2) FAIL("captions", `${tag}: headline is ${hw} words (<= ~${C2.maxHeadWords})`);
+  else if (hw > C2.maxHeadWords) WARN("captions", `${tag}: headline is ${hw} words (<= ~${C2.maxHeadWords})`);
+  if (dw > C2.maxDetailWords + 2) FAIL("captions", `${tag}: detail is ${dw} words (<= ~${C2.maxDetailWords})`);
+  else if (dw > C2.maxDetailWords) WARN("captions", `${tag}: detail is ${dw} words (<= ~${C2.maxDetailWords})`);
+  const hpx = Kit.text.width(c.head, headSize, 700, C2.headTracking);
+  if (hpx > C2.width) FAIL("captions", `${tag}: headline is ${Math.round(hpx)} px wide at ${headSize} px, more than the band's ${C2.width} px: one line only ("${c.head}")`);
+  if (c.detail) {
+    const dpx = Kit.text.width(c.detail, detailSize, 400, C2.detailTracking);
+    if (dpx > C2.width) FAIL("captions", `${tag}: detail is ${Math.round(dpx)} px wide, more than ${C2.width} px: one line only ("${c.detail}")`);
+  }
+  if (!c.kicker) WARN("captions", `${tag}: no kicker (e.g. "Step 2 · Check")`);
+  if (c.step != null) {
+    if (!progressTags.length) WARN("captions", `${tag}: data-kit-step ${c.step} but no .kit-progress stepper in the captions host`);
+    else if (!(c.step >= 1 && c.step <= steps.length)) FAIL("captions", `${tag}: data-kit-step ${c.step} is not one of the ${steps.length} steps (${steps.join(", ")})`);
+  } else if (progressTags.length) WARN("captions", `${tag}: no data-kit-step (the stepper holds the previous step)`);
 });
-if (cues.length) PASS("captions", `${cues.length} cues, ${cues[0].start.toFixed(2)}-${cues[cues.length - 1].end.toFixed(2)} s`);
+if (cues.length) {
+  const v2n = cues.filter((c) => c.v2).length;
+  if (!readFails) PASS("captions", `${cues.length} cues (${v2n} v2), ${byStart[0].start.toFixed(2)}-${byStart[byStart.length - 1].end.toFixed(2)} s, every one on screen >= its reading time`);
+  if (progressTags.length) PASS("captions", `progress stepper: ${steps.length} steps (${steps.join(" · ")})`);
+}
+// the cold open's headline is read in its slot too
+hosts
+  .filter((h) => h.role === "cold-open")
+  .forEach((h) => {
+    const v = Object.assign(blockDefaultsOf(h.html), h.vars);
+    const words = Kit.text.words(v.headline || "");
+    const need = Kit.text.readingTime(words);
+    if (h.duration < need - 1e-6) FAIL("captions", `cold open "${Kit.text.plain(v.headline)}": ${words} words need ${need.toFixed(2)} s, slot is ${h.duration.toFixed(2)} s (shorten the headline or lengthen the slot to <= 2.5 s)`);
+    else PASS("captions", `cold open "${Kit.text.plain(v.headline)}": ${words} words, ${need.toFixed(2)} s <= ${h.duration.toFixed(2)} s`);
+  });
 
 // ---------- style ----------
 const styleFiles = [path.join(film, "index.html")].concat(fs.existsSync(path.join(film, "compositions")) ? fs.readdirSync(path.join(film, "compositions")).filter((f) => f.endsWith(".html")).map((f) => path.join(film, "compositions", f)) : []);
@@ -336,8 +470,41 @@ styleFiles.forEach((f) => {
     if (/\b\d+px\s+\d+px\s+[1-9]\d*px/.test(b)) WARN("style", `${rel}: blurred ${b.trim()} (glow)`);
   });
 });
-if (audio.length) WARN("honesty", `audio on: ${audio.join(", ")} (allowed only for the demo's own recorded sound; no music, no narrator, no cloned voice)`);
-else PASS("honesty", "silent: no audio elements");
+// ---------- music bed + no voice (kit 1.1) ----------
+const isBed = (x) => x.kind === "audio" && x.where === "main" && (hasClass({ attrs: x.attrs }, "kit-music") || x.attrs["data-kit-music"] != null);
+const beds = sounds.filter(isBed);
+const others = sounds.filter((x) => !isBed(x));
+if (!beds.length) FAIL("music", 'no music bed: run node kit/scripts/music-bed.mjs <film> (one <audio class="kit-music"> under the whole film)');
+else if (beds.length > 1) FAIL("music", `${beds.length} music beds (${beds.map((b) => b.id).join(", ")}): exactly one`);
+beds.forEach((b) => {
+  const r = Kit.music.check(b.attrs, duration);
+  const desc = `#${b.id} ${b.attrs["data-kit-music"] || path.basename(b.attrs.src || "")} 0-${(num(b.attrs["data-start"]) + num(b.attrs["data-duration"])).toFixed(2)} s, media from ${num(b.attrs["data-media-start"]).toFixed(2)} s, volume ${b.attrs["data-volume"]}, fades ${b.attrs["data-fade-in"]}/${b.attrs["data-fade-out"]} s`;
+  if (r.problems.length) FAIL("music", desc + " :: " + r.problems.join("; "));
+  else PASS("music", desc);
+  r.warnings.forEach((w) => WARN("music", `#${b.id}: ${w}`));
+  const file = path.join(film, b.attrs.src || "");
+  if (!b.attrs.src || !fs.existsSync(file)) FAIL("music", `#${b.id}: ${b.attrs.src} is missing in the film (npm run sync -- <slug> vendors it from kit/music/)`);
+});
+const hasAudioStream = (src) => {
+  const f = path.join(film, src || "");
+  if (!src || !fs.existsSync(f)) return false;
+  try {
+    return execFileSync("ffprobe", ["-v", "error", "-select_streams", "a", "-show_entries", "stream=index", "-of", "csv=p=0", f], { encoding: "utf8" }).trim().length > 0;
+  } catch (e) {
+    return false;
+  }
+};
+others.forEach((x) => {
+  const reason = x.attrs["data-kit-audio-reason"];
+  const at = `${x.where}#${x.id} (<${x.kind}${x.attrs.src ? ` ${x.attrs.src}` : ""}>)`;
+  if (reason) WARN("music", `${at} sounds, flagged: ${reason}`);
+  else FAIL("music", `${at} adds sound besides the music bed: demo films carry no voice of any kind (remove it, or flag a real need with data-kit-audio-reason="...")`);
+});
+unmuted.forEach((x) => {
+  if (hasAudioStream(x.src)) FAIL("music", `${x.where}#${x.id}: <video ${x.src}> is not muted and its file has sound (add muted)`);
+  else WARN("music", `${x.where}#${x.id}: <video> without muted (its file is silent; add muted anyway)`);
+});
+if (beds.length === 1 && !others.length) PASS("honesty", "no voice: the only sound is the instrumental bed");
 const chips = [];
 hosts.forEach((h) => tags(h.html).forEach((t) => hasClass(t, "kit-chip") && chips.push(textAfter(h.html, t))));
 if (chips.length) PASS("honesty", `labels on screen: ${[...new Set(chips)].join(" | ")}`);
@@ -369,6 +536,13 @@ if (WANT_FRAMES) {
       const a = p.host.start + k.hold[0], b = p.host.start + k.hold[1];
       if (b - a < 0.05) return;
       frameItems.push({ t: +Math.min(b - 0.05, a + Math.min(0.6, (b - a) / 2)).toFixed(3), kind: "shot", k, scene: p.host.id });
+    })
+  );
+  plans.forEach((p) =>
+    (p.annotations || []).forEach((a) => {
+      if (!a.ring) return;
+      const t0 = p.host.start + a.start, t1 = p.host.start + a.end;
+      frameItems.push({ t: +Math.min(t1 - 0.05, t0 + Math.min(0.9, (t1 - t0) / 2)).toFixed(3), kind: "ann", a, scene: p.host.id });
     })
   );
   const all = sheetItems.concat(frameItems);
@@ -412,17 +586,80 @@ if (WANT_FRAMES) {
       cols: 4,
       thumb: 480,
       title: `${path.basename(film)} framing: focus box (cyan) inside safe area (dashed), one frame per shot hold`,
-      items: frameItems.map((x) => ({
-        path: pathFor[x.t.toFixed(3)],
-        label: `${x.t.toFixed(2)} s  ${x.scene} #${x.k.i}${x.k.partial ? " PARTIAL" : ""}`,
-        sub: `${x.k.focus} · zoom ${x.k.fit ? x.k.fit.scale : "-"}${x.k.ok ? "" : " · FAIL"}`,
-        fail: !x.k.ok,
-        rects: [x.k.safe && Object.assign({ color: "#bbbbbb", dash: true }, x.k.safe), x.k.rect && Object.assign({ color: x.k.ok ? "#00e5ff" : "#ff3b3b" }, x.k.rect)].filter(Boolean),
-      })),
+      items: frameItems.map((x) =>
+        x.kind === "ann"
+          ? {
+              path: pathFor[x.t.toFixed(3)],
+              label: `${x.t.toFixed(2)} s  ${x.scene} annotation #${x.a.id}`,
+              sub: `"${x.a.text}" on ${x.a.focus}${x.a.ok ? "" : " · FAIL"}`,
+              fail: !x.a.ok,
+              rects: [
+                x.a.safe && Object.assign({ color: "#bbbbbb", dash: true }, x.a.safe),
+                x.a.focusRect && Object.assign({ color: "#00e5ff", dash: true }, x.a.focusRect),
+                x.a.label && Object.assign({ color: "#ffd166" }, x.a.label),
+              ].filter(Boolean),
+            }
+          : {
+              path: pathFor[x.t.toFixed(3)],
+              label: `${x.t.toFixed(2)} s  ${x.scene} #${x.k.i}${x.k.partial ? " PARTIAL" : ""}`,
+              sub: `${x.k.focus} · zoom ${x.k.fit ? x.k.fit.scale : "-"}${x.k.ok ? "" : " · FAIL"}`,
+              fail: !x.k.ok,
+              rects: [x.k.safe && Object.assign({ color: "#bbbbbb", dash: true }, x.k.safe), x.k.rect && Object.assign({ color: x.k.ok ? "#00e5ff" : "#ff3b3b" }, x.k.rect)].filter(Boolean),
+            }
+      ),
     };
     fs.writeFileSync(path.join(OUT, "framing.json"), JSON.stringify(fspec));
     execFileSync("python3", [path.join(HERE, "contact_sheet.py"), path.join(OUT, "framing.json")], { stdio: "ignore" });
     framingSheet = fspec.out;
+  }
+}
+
+// ---------- the render itself (kit 1.1): streams, size, loudness, fades ----------
+let loud = null;
+if (VIDEO) {
+  const vid = path.resolve(film, VIDEO);
+  const pr = JSON.parse(execFileSync("ffprobe", ["-v", "error", "-show_entries", "stream=codec_type,codec_name,width,height,r_frame_rate:format=duration,size", "-of", "json", vid], { encoding: "utf8" }));
+  const v = (pr.streams || []).find((x) => x.codec_type === "video");
+  const au = (pr.streams || []).find((x) => x.codec_type === "audio");
+  const mb = +pr.format.size / 1e6;
+  const fr = v ? v.r_frame_rate.split("/").reduce((a, b) => a / b) : 0;
+  const vdesc = v ? `${v.codec_name} ${v.width}x${v.height} ${fr.toFixed(2)} fps, ${(+pr.format.duration).toFixed(2)} s, ${mb.toFixed(1)} MB` : "no video stream";
+  if (!v || v.codec_name !== "h264" || v.width !== 1920 || v.height !== 1080 || Math.abs(fr - 30) > 0.01) FAIL("render", `${vdesc} (want H.264 1920x1080 30 fps)`);
+  else PASS("render", vdesc);
+  if (mb >= 20) FAIL("render", `${mb.toFixed(1)} MB: keep the file under 20 MB (re-encode with ffmpeg -crf 23)`);
+  if (Number.isFinite(duration) && Math.abs(+pr.format.duration - duration) > 0.1) WARN("render", `render is ${(+pr.format.duration).toFixed(2)} s, the film is ${duration.toFixed(2)} s`);
+  if (!au) FAIL("render", "no audio stream: the music bed is missing from the render");
+  else {
+    if (au.codec_name !== "aac") WARN("render", `audio codec ${au.codec_name} (want AAC)`);
+    const run = (args) => {
+      const r = spawnSync("ffmpeg", ["-nostats", "-hide_banner"].concat(args), { encoding: "utf8", maxBuffer: 64 << 20 });
+      return (r.stderr || "") + (r.stdout || "");
+    };
+    const sum = run(["-i", vid, "-map", "0:a:0", "-af", "ebur128=peak=true", "-f", "null", "-"]);
+    const tail = sum.slice(sum.lastIndexOf("Summary:"));
+    const I = parseFloat((tail.match(/I:\s*(-?[\d.]+) LUFS/) || [])[1]);
+    const TP = parseFloat((tail.match(/Peak:\s*(-?[\d.]+) dBFS/) || [])[1]);
+    const T = Kit.music.TARGET;
+    loud = { I, TP };
+    if (!Number.isFinite(I)) FAIL("loudness", "could not measure the render's loudness");
+    else if (I < T.min || I > T.max) FAIL("loudness", `integrated ${I.toFixed(1)} LUFS (want ${T.min}..${T.max}, target ${T.lufs}): re-run music-bed.mjs`);
+    else PASS("loudness", `integrated ${I.toFixed(1)} LUFS (want ${T.min}..${T.max})`);
+    if (!Number.isFinite(TP)) WARN("loudness", "no true-peak reading");
+    else if (TP > T.truePeak) FAIL("loudness", `true peak ${TP.toFixed(1)} dBTP > ${T.truePeak} dBTP`);
+    else PASS("loudness", `true peak ${TP.toFixed(1)} dBTP (<= ${T.truePeak})`);
+    const rms = (args) => {
+      const o = run(args.concat(["-map", "0:a:0", "-af", "astats=measure_overall=RMS_level:measure_perchannel=none", "-f", "null", "-"]));
+      const m = o.match(/RMS level dB:\s*(-?[\d.]+|-inf)/);
+      return m ? (m[1] === "-inf" ? -120 : parseFloat(m[1])) : NaN;
+    };
+    const vdur = +pr.format.duration;
+    const head = rms(["-t", "0.03", "-i", vid]);
+    const body = rms(["-ss", "2", "-t", "4", "-i", vid]);
+    const end = rms(["-ss", String(Math.max(0, vdur - 0.05)), "-i", vid]);
+    if (Number.isFinite(head) && Number.isFinite(body) && head > body - 12) FAIL("fades", `first 30 ms at ${head.toFixed(1)} dB vs ${body.toFixed(1)} dB at 2-6 s: no fade-in`);
+    else PASS("fades", `fade-in: first 30 ms ${Number.isFinite(head) ? head.toFixed(1) : "?"} dB vs ${Number.isFinite(body) ? body.toFixed(1) : "?"} dB at 2-6 s`);
+    if (Number.isFinite(end) && end > -45) FAIL("fades", `last 50 ms at ${end.toFixed(1)} dB: the fade-out does not land on the last frame`);
+    else PASS("fades", `fade-out lands on the last frame (last 50 ms ${Number.isFinite(end) ? end.toFixed(1) : "?"} dB)`);
   }
 }
 
@@ -431,7 +668,7 @@ console.warn = origWarn;
 const fails = results.filter((r) => r.level === "FAIL");
 const warns = results.filter((r) => r.level === "WARN");
 if (JSON_OUT) {
-  console.log(JSON.stringify({ film, duration, firstProduct, ok: !fails.length, fails: fails.length, warns: warns.length, results, sheet, framingSheet }, null, 1));
+  console.log(JSON.stringify({ film, duration, firstProduct, ok: !fails.length, fails: fails.length, warns: warns.length, loudness: loud, results, sheet, framingSheet }, null, 1));
 } else {
   console.log(`QA ${path.relative(process.cwd(), film) || film}  (kit lib: ${path.relative(film, libDir)})`);
   let area = null;

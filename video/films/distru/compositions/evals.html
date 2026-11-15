@@ -1,4 +1,6 @@
 <template>
+  <!-- Distru v3 · Run evals, recorded 2026-11-15 (clip evals): sample 1 ran live (16.6 s); samples 2 and 3
+       replayed the same-day cache of the s2 / s3 live runs (328 ms, 270 ms). Result 9/9 checks. -->
   <style>
     #root {
       position: absolute;
@@ -10,22 +12,16 @@
   <div id="root" data-composition-id="evals" data-width="1920" data-height="1080">
     <div id="ev-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="ev-cam" class="kit-cam">
-        <!-- eval run recorded 2026-11-14: sample 1 ran live (13.7 s); samples 2 and 3 replayed the same-day cached live runs above -->
-        <video id="ev-v1" class="clip kit-footage" src="assets/footage/evals.mp4" data-kit-clip="evals" data-start="0" data-duration="1.6" data-media-start="2.9" data-track-index="0" muted playsinline></video>
-        <video id="ev-v2" class="clip kit-footage" src="assets/footage/evals.mp4" data-kit-clip="evals" data-start="1.6" data-duration="2.25" data-media-start="4.5" data-playback-rate="6" data-track-index="0" muted playsinline></video>
-        <video id="ev-v3" class="clip kit-footage" src="assets/footage/evals.mp4" data-kit-clip="evals" data-start="3.85" data-duration="3" data-media-start="18" data-track-index="0" muted playsinline></video>
-
-        <!-- crop (ground patch, footage px): the "Design choices" section under the eval cards would sit against the caption band -->
-        <div id="ev-crop" class="clip kit-crop" data-start="0" data-duration="6.85" data-track-index="2" data-layout-ignore style="left: 380px; top: 762px; width: 1160px; height: 330px"></div>
-        <!-- crop: the MCP section's "claude mcp add ... localhost" row just above the Evals heading -->
-        <div id="ev-crop-top" class="clip kit-crop" data-start="0" data-duration="6.85" data-track-index="2" data-layout-ignore style="left: 380px; top: 160px; width: 1160px; height: 160px"></div>
-        <div id="ev-ring-score" class="clip kit-ring" data-start="4.45" data-duration="2.2" data-kit-focus="score" data-kit-pad="8" data-track-index="1" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
+        <!-- Run evals clicked at media 2.51 s -->
+        <video id="ev-v1" class="clip kit-footage" src="assets/footage/evals.mp4" data-kit-clip="evals" data-start="0" data-duration="1.6" data-media-start="1.1" data-track-index="0" muted playsinline></video>
+        <!-- waiting for sample 1's live run (16.2 s) at 6x, labelled in the caption -->
+        <video id="ev-v2" class="clip kit-footage" src="assets/footage/evals.mp4" data-kit-clip="evals" data-start="1.6" data-duration="2.7" data-media-start="2.7" data-playback-rate="6" data-track-index="0" muted playsinline></video>
+        <video id="ev-v3" class="clip kit-footage" src="assets/footage/evals.mp4" data-kit-clip="evals" data-start="4.3" data-duration="4.2" data-media-start="18.9" data-track-index="0" muted playsinline></video>
       </div>
     </div>
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": "evalsSection", "zoom": 1.5, "label": "Evals section" },
-        { "t": 3.5, "focus": "evalsSection", "dur": 0.9, "maxZoom": 1.8, "label": "results: push in" }
+        { "t": 0, "focus": ["evalsHead", "evalBar", "evalGrid"], "label": "evals: 3 samples, 9 checks" }
       ]
     </script>
   </div>

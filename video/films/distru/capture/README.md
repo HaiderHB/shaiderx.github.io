@@ -1,18 +1,20 @@
-# Distru capture notes
+# Distru capture notes (v3)
 
-The footage is the four live takes recorded on 2026-11-14 (demo commit 46abc99) with the earlier
-Playwright CDP recorder (scratchpad rec/record.js), reused for v2: s2, s3, evals, mcp. Marks came with
-them. Those takes predate `kit/scripts/capture.cjs`, so they have no DOM boxes; `boxes/` holds the
-frame-measured equivalent:
+All footage is re-recorded on the revamped demo UI ("demo UI revamp", 2026-11-15) with
+`kit/scripts/capture.cjs`, so every component has its true DOM box per frame (`raw/<clip>/boxes.json` ->
+`data/clips/<clip>.json`). The v2 frame-measured boxes (`capture/boxes/`) are gone.
 
-- `boxes/<clip>.spec.json` -> `python3 ../../kit/scripts/measure-boxes.py assets/footage/<clip>.mp4 boxes/<clip>.spec.json --out boxes/<clip>.boxes.json`
-  (card boxes, flood mode below the page's sticky header)
-- `boxes/compose.py` adds the inner components measured on full-resolution frames, with their media-time
-  windows, and writes `boxes/<clip>.final.json`
-- `node ../../kit/scripts/build-footage.mjs . --import <clip>=assets/footage/<clip>.mp4 --boxes <clip>=capture/boxes/<clip>.final.json`
-- `cuts.json` makes `hook` (s2 1.0-3.1 s) for the cold open; `--still s2@35.45` made the held frame.
+- Server: an isolated copy of the repo (no `node_modules`, `.next`, `video`; `node_modules` linked from the
+  portfolio worktree; `.env.local` copied), `next build && next start -p 3160`. Several agents run demo servers
+  on this machine, so never run `next` inside the shared worktree. The run cache is in memory: record s2 and s3
+  before `evals` and do not restart the server in between, so samples 2-3 replay from cache in the eval run.
+- Private link: pass it as `DEMO_URL` (host swapped for `localhost:3160`); never commit or print it.
+- `node films/distru/capture/record.cjs <clip>` for `s2`, `s3`, `evals`, `mcp` (`DRY=1 ... s2` replays the
+  page's example instead of a live run, to check selectors and scroll targets for free).
+- `capture/cuts.json` makes `hook` (s2 33.3-36.1 s, the page top after the live run).
+- `node kit/scripts/build-footage.mjs films/distru --still s2@27.2` made the held frame.
 
-A recapture would use capture.cjs with `track` selectors for the same component names (emailCard,
-samples, emailText, runButton, trace, extract, check, decision, routeBars, finalRoute, reply, replyBody,
-oneQuestion, orderBody, evalsSection, score, toolPanel, args, result, statusLine) and needs up to three
-live runs (sample 2, sample 3, and sample 1 inside Run evals); the MCP call is free.
+Takes of 2026-11-15: s2 live (12.48 s, $2,352.00), s3 live (Jev Hold 63%), evals (sample 1 live 16.6 s,
+samples 2-3 from cache, 9/9), mcp (free). Live runs used: 3.
+Note: the pipeline strip is `Timeline_flow__` (fixed in record.cjs after these takes; the takes did not
+track it, so the cold open frames the hero with a measured box).

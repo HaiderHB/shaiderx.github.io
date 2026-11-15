@@ -10,17 +10,23 @@
   <div id="root" data-composition-id="fix" data-width="1920" data-height="1080">
     <div id="fx-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="fx-cam" class="kit-cam">
-        <!-- clip "fix" (free, recorded 2026-11-15): the Reference fix sample run through the same checker,
-             then the 8 verified gaps, row 1, pointer on gap 02 (jump cut over the page scroll). 1x. -->
-        <video id="fx-v1" class="clip kit-footage" src="assets/footage/fix.mp4" data-kit-clip="fix" data-start="0" data-duration="5.1" data-media-start="0.9" data-track-index="0" muted playsinline></video>
-        <!-- jump cut over the page scroll to the gaps -->
-        <video id="fx-v2" class="clip kit-footage" src="assets/footage/fix.mp4" data-kit-clip="fix" data-start="5.1" data-duration="4.4" data-media-start="7.2" data-track-index="0" muted playsinline></video>
+        <!-- clip "fix" (free, recorded 2026-11-15): the "Reference fix" sample (the three files of section 03)
+             clicked at 1.77 s -> 0 fail 0 warn 14 pass. Jump cut over the page scroll (6.74-7.87 s) to the
+             8 verified gaps; the pointer rests on gap 02's evidence (the SDK README snippet). All 1x. -->
+        <video id="fx-v1" class="clip kit-footage" src="assets/footage/fix.mp4" data-kit-clip="fix" data-start="0" data-duration="6.1" data-media-start="0.6" data-track-index="0" muted playsinline></video>
+        <video id="fx-v2" class="clip kit-footage" src="assets/footage/fix.mp4" data-kit-clip="fix" data-start="6.1" data-duration="4.5" data-media-start="7.95" data-track-index="0" muted playsinline></video>
       </div>
     </div>
+
+    <div id="fx-ann-tally" class="clip kit-ann" data-start="2.4" data-duration="2.45" data-kit-focus="tally"
+      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Was 3 fail, 5 warn</div></div>
+    <div id="fx-ann-ev" class="clip kit-ann" data-start="7.9" data-duration="2.5" data-kit-focus="gap2Evidence"
+      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Verbatim from the SDK README</div></div>
+
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": ["samples", "verdict"], "align": "top", "margin": 52, "label": "Reference fix clicked: 0 fail 0 warn 14 pass (top margin keeps the half-hidden section title out)" },
-        { "t": 5.1, "focus": ["gap1", "gap2"], "cut": true, "align": "bottom", "pad": 0, "margin": 0, "label": "gaps 01-02, pointer on gap 02's evidence (frame top below the section intro)" }
+        { "t": 0, "focus": ["samples", "verdict"], "align": "top", "pad": 0, "margin": 0, "label": "sample chips + verdict: Reference fix -> 14 pass (top edge under the site bar)" },
+        { "t": 6.1, "focus": ["gapsHead", "gap2Evidence"], "align": "top", "pad": 0, "margin": 4, "cut": true, "label": "8 verified gaps: section head, gaps 01-02 (gap 02's README evidence)" }
       ]
     </script>
   </div>

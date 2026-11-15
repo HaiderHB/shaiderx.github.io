@@ -1,0 +1,7 @@
+{
+  "model": "elevenlabs/music/v2.5 (fal)",
+  "settings": {"music_length_ms": 60000, "force_instrumental": true, "output_format": "mp3_48000_192"},
+  "bright-pluck-112.mp3": "Light, upbeat, modern instrumental background music for a software product demo video. Minimal electronic pop: soft plucked synth arpeggio, warm pads, clean muted electric guitar accents, gentle four-on-the-floor kick with light claps and shaker, 112 BPM, major key, optimistic and focused. Steady energy all the way through with no big drops, no risers, no vocals. Sits quietly under on-screen text. Clean ending with a soft final chord.",
+  "lofi-keys-92.mp3": "Calm, confident lo-fi tech instrumental for a product walkthrough video. Mellow Rhodes electric piano chords, round sub bass, soft brushed drums with a laid-back groove, subtle vinyl texture, 92 BPM, warm and curious mood. Consistent level throughout, no vocals, no dramatic build-ups, unobtrusive background bed under text. Ends on a gentle resolved chord.",
+  "marimba-tech-120.mp3": "Bright, clean corporate-tech instrumental for a startup product launch demo. Light marimba and bell melody over staccato synth chords, tight electronic drums, punchy but soft bass, 120 BPM, positive and energetic yet uncluttered. Even dynamics from start to finish, no vocals, no heavy drops, leaves space for on-screen captions. Short clean outro."
+}

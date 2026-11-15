@@ -1,43 +1,67 @@
-# SPEC: Great Question launch film v2 (kit 1.0.1)
+# SPEC: Great Question launch film v3 (kit 1.1, text-first, music bed, no voice)
 
-GOAL:    A hiring manager at Great Question watches ~53 s and leaves knowing Haider built a working voice
-         AI moderator: it asks the guide's questions out loud, probes neutrally on the participant's own
-         words, has every line scored by Jev for leading / double-barreled / off-guide, and turns the
-         interview into quote-backed findings an agent can fetch over MCP.
-OUTPUT:  HyperFrames 1920x1080, 30 fps, H.264 + AAC, < 20 MB.
-TIME:    53.32 s (target 45-55, cap < 60). Product footage from frame 0; the moderator speaks from 0.3 s.
-SOUND:   only the recorded interview, no music, no narrator: the AI moderator's real replies from the take
-         (Fish stock voice Adrian, 1.15x, the MP3s the page played) and a SIMULATED participant (Fish stock
-         voice Selene, 1.15x, fed through the page's real mic path). Both normalized to -18 LUFS.
+GOAL:    A hiring manager at Great Question watches 47 s with the sound off or on and leaves knowing Haider
+         built a working VOICE AI moderator: it asks the guide's questions out loud, runs each voice turn
+         (speech-to-text -> DeepSeek -> speech) in a few seconds, has every line scored live by Jev
+         (leading / double-barreled / off-guide), probes neutrally, shows the scores over time (Trace view),
+         and turns the interview into quote-backed findings an agent can fetch over MCP.
+OUTPUT:  HyperFrames 1920x1080, 30 fps, H.264 + AAC, < 20 MB. renders/great-question-launch-v3.mp4.
+TIME:    47.02 s (target 45-55 s), product footage from frame 0, end card <= 3 s, no next steps.
+SOUND:   one light instrumental bed (kit music-bed, -20 LUFS, fades), NO voice of any kind: not the moderator's
+         TTS, not the simulated participant. On-screen text carries everything (kit 1.1 caption v2 + annotations).
+UI:      the revamped demo page (commit "demo UI revamp"): coral accent (data-kit-accent="coral").
 
-FOOTAGE: one live take, 2026-11-15, recorded with kit/scripts/capture.cjs + kit/scripts/fake-mic.cjs
-         against `next start` on :3180 (raw/take; DOM boxes for every component; 0.05 s frame lag measured
-         with kit/scripts/frame-lag.py). Plus raw/check: the guide's static example check (no API call).
-         A second take (raw/take2) was recorded and not used (same probes, an off-guide-ish third line).
+FOOTAGE: take3a, 2026-11-15, one live interview on the new UI, recorded with kit/scripts/capture.cjs +
+         kit/scripts/fake-mic.cjs against `next start -p 3180` (isolated copy of the repo). Real Fish ASR,
+         DeepSeek V3.2 via fal, Fish TTS 1.15x, Jev on every moderator line (all 5 scored live, none cached),
+         DeepSeek findings (4 findings, 4 quotes, 0 dropped), MCP get_quote in the browser. The simulated
+         participant (Fish stock voice Selene, scripted answers picked to fit each live question) only drives
+         the page's real mic path; none of its audio is in the film.
+         take3b (second and last take): same script, same flag (leading 65%), but Jev/TTS answered three
+         lines from cache ("Jev · cached" on the badges), so it is not used for the interview. Its MCP
+         ending scrolls the get_quote result fully into view: used for the MCP beat only, labelled "Second take".
 
-SHOTS (absolute s; scene; focus; sound / caption)
-  0.00-2.00   coldopen   mod1+dock 1.2x (bottom) T1 arrives live with Jev badges; "Hi, thanks for joining."
-                                                 headline "Voice AI interviews, *checked* for leading"
-  2.00-3.45   interview  mod1+dock 1.2x          "I'm an AI moderator," (0.4 s pause cut)
-  3.45-9.60   interview  mod1+dock 1.2x          jump over "this takes about three minutes, ..." to Q1:
-                                                 "To start, walk me through ... on their own." ring on Jev
-                                                 badges 4.40-7.00; note: leading questions ruin research
-  9.60-17.43  interview  card (whole) 1.02x      Your turn -> cursor taps Answer -> Listening; simulated
-                                                 answer 1 "We run a kickoff call ... where it stalls."
-  17.43-19.58 interview  status..dock 1.2x       2x: pause -> Transcribing -> thinking -> speaking [2x]
-  19.58-32.90 interview  part1+mod2+dock 1.8x    probe "Got it. Who is involved from your side in that
-                                                 kickoff call?" ring on badges 21.40-23.70; Answer;
-                                                 simulated answer 2 "Me and one onboarding specialist. ..."
-  32.90-34.10 interview  mod2+part2+dock 1.76x   hard cut over 1.6 s: answer 2 transcribed, moderator thinking
-  34.10-37.30 check      exampleCheck 1.9x       the page's example check: "Don't you think ...?" 96% leading
-  37.30-42.62 findings   head+F1+F2 1.72x        Generate findings, wait at 5x [5x], 3 findings, ring on F2,
-                                                 last 0.68 s = the static page's frame held
-  42.62-47.12 mcp        toolSeg+callBox 1.72x   get_quote, Run tool; 44.62 -> result JSON (mcpPre2) 1.8x
-  47.12-50.62 nextsteps                          First 30 days (3 rows)
-  50.62-53.32 endcard                            "How do you measure *moderator quality* today?"
+THE TAKE (take3a, DOM seconds; footage = +0.05 s screencast lag)
+  T1  6.08  opening + Q1 ("... walk me through what happens after a new customer signs ...")
+            Jev: leading 9%, double-barreled 6%, off-guide 2%, on Q1 100% (357 ms)
+  T2 22.98-33.58 simulated answer 1 (a1): "Sales hands the account to my team. We run a kickoff call, then
+            their admin sets up single sign-on. Honestly, single sign-on is a nightmare. That's where accounts stall."
+  T3 39.22  "Tell me about the last time an account got stuck during single sign-on setup."
+            Fish ASR 0.5 s · DeepSeek 2.5 s · Fish TTS 1.2 s (= 4.2 s); Jev: LEADING 64% (red, live, 115 ms), on Q2
+  T4 45.76-53.63 "Last month, their IT person went on leave, so single sign-on sat untouched for nine days, and nobody told us."
+  T5 58.19  "How did your team find out that account was stuck?" 0.5/1.3/0.7 s; Jev: leading 13%, on Q3 99% (139 ms)
+  T6 "Honestly, by accident. I check a spreadsheet of every account in setup on Fridays. There's no alert for it."
+  T7 73.71  "What do you do today, outside the product, to keep onboarding on track?" leading 22%, on Q4 (216 ms)
+  T8 "A spreadsheet of every account in setup, plus a Slack reminder to ping anyone who goes quiet for a week."
+  T9 89.88  "Thanks. That's everything I had." wrap-up 83% -> interview ends itself (92.43)
+  Trace 96.31-99.5 (5 lines, Jev avg 190 ms, leading peak 64% at T3) · Findings: click 102.18, shown 116.96,
+  grid 120.30 · MCP: get_quote 125.83, Run tool 127.63 (T2-1 "Honestly, single sign-on is a nightmare. ...", T2, 00:16, F1)
 
-HONESTY: chips "Real run · Fish stock voice Adrian, 1.15x", "Simulated participant · Fish voice Selene, 1.15x",
-         "The page's example check"; speed tags 2x (pipeline) and 5x (findings wait). Cuts: 0.4 s pause and
-         the opening line's middle sentence, 1.6 s wait before turn 3 thinking, turn 3 and turn 4 of the take,
-         0.75 s cursor travel before Run tool. Ground patches: the example run's transcript next to the
-         example check; the next page section under the band while findings load.
+STORY (final, film s; steps on the progress indicator: Interview, Guardrail, Findings, MCP)
+  film s      footage (media s)                 caption (kicker / head / detail)                    annotation (<= 6 words)
+  0.00-2.20   hook = take3a 5.95-8.15           cold open: "Prototype for Great Question · Haider Bokhari" / "Voice interviews, *checked* live"
+  2.20-5.80   take3a 8.15-11.75 1x              Step 1 · Voice interview / "An AI moderator asks the guide's questions *aloud*"
+                                                                                                  dock: "Spoken with Fish TTS"
+  5.80-9.80   take3a 21.75-33.75 3x [3x]        Step 1 + chip "Simulated participant" / "The participant answers by *voice*"
+                                                                                                  dock: "Stops on a 1.2-second pause"
+  9.80-15.35  take3a 33.75-39.30 1x             Step 1 / "Voice turn: speech-to-text → DeepSeek → speech, *4.2 s*"
+                                                                                                  T2 text: "Fish ASR 0.5 s"
+  15.35-19.55 take3a 39.30-43.50 1x             Step 2 · Live guardrail / "Jev *flags* this follow-up: 64% leading"
+                                                                                                  T3 badges: "Scored live in 115 ms"
+  19.55-25.40 take3a 55.45-61.30 1x (cut)       Step 2 / "The next probe stays *neutral*: 13% leading" / "Jev also moves the guide to Q3"
+                                                                                                  ring on the guide's Q3 (Now)
+  25.40-28.65 take3a 96.35-99.60 1x             Step 2 / "Trace view: leading *peaks* at T3"   leading plot: "Only T3 crosses the 30% line"
+  28.65-32.25 take3a 101.25-102.45 1x + 102.45-116.85 6x [6x]   Step 3 · Findings / "DeepSeek turns the transcript into *findings*"
+  32.25-37.47 take3a 116.85-119.27 + 120.10-122.90  Step 3 / "Every finding quotes the participant *word for word*"
+                                                / "Server-checked against the transcript"        F2's quote: "From T6, 00:57"
+  37.47-44.42 take3b 116.20-119.20 + 121.65-125.60  Step 4 · MCP tools + chip "Second take" / "Findings become *MCP tools* for agents"
+                                                / "get_quote returns the quote, turn and timestamp" result text: "Exact words, ready to cite"
+  44.42-47.02 end card, sign-off only (Haider Bokhari · haiderb.com)
+  Music: bright-pluck-112, media 12.18-59.20 s, data-volume 0.569 (-20 LUFS), fades 0.3 / 1.5 s.
+
+HONESTY: the live flag is real (T3, leading 64%, scored by Jev during the take; not the page's example check).
+         Chip "Simulated participant" while the participant answers. Speed tags on every sped-up clip (3x answer,
+         6x findings wait). Cuts: dead time before Answer, the answer-2 recording, turns 3-4 and the wrap-up,
+         cursor travel, page scrolls. A ground patch hides the next page section (MCP heading) under the empty
+         findings section while they load. MCP beat from take3b, labelled "Second take". No avatar, no cloned
+         voice, no narrator, no voice audio; music bed only.

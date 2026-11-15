@@ -11,16 +11,24 @@
     <div id="pr-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="pr-cam" class="kit-cam">
         <!-- clip "prop" (free, recorded 2026-11-15): section 04 "Proposed, not shipped": the two MCP tool
-             definitions, then the one-line README fix (jump cut over one page scroll). 1x. -->
-        <video id="pr-v1" class="clip kit-footage" src="assets/footage/prop.mp4" data-kit-clip="prop" data-start="0" data-duration="4.4" data-media-start="0.5" data-track-index="0" muted playsinline></video>
-        <!-- jump cut over the page scroll that lifts the README fix to the top of the viewport -->
-        <video id="pr-v2" class="clip kit-footage" src="assets/footage/prop.mp4" data-kit-clip="prop" data-start="4.4" data-duration="3.8" data-media-start="6" data-track-index="0" muted playsinline></video>
+             definitions (pointer beside each name), jump cut over the scroll (5.68-6.61 s) that lifts the
+             one-line README fix to the top; pointer beside its "+" line. All 1x. -->
+        <video id="pr-v1" class="clip kit-footage" src="assets/footage/prop.mp4" data-kit-clip="prop" data-start="0" data-duration="5.25" data-media-start="0.4" data-track-index="0" muted playsinline></video>
+        <video id="pr-v2" class="clip kit-footage" src="assets/footage/prop.mp4" data-kit-clip="prop" data-start="5.25" data-duration="4.55" data-media-start="6.7" data-track-index="0" muted playsinline></video>
       </div>
     </div>
+
+    <div id="pr-ann-t0" class="clip kit-ann" data-start="0.55" data-duration="2.45" data-kit-focus="toolName0" data-kit-pad="4"
+      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Mints a short-lived streaming token</div></div>
+    <div id="pr-ann-t1" class="clip kit-ann" data-start="3.1" data-duration="2.1" data-kit-focus="toolName1" data-kit-pad="4"
+      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Tests config before “done”</div></div>
+    <div id="pr-ann-readme" class="clip kit-ann dim" data-start="5.7" data-duration="3.85" data-kit-focus="readmeCode"
+      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Fixes L9 at the source</div></div>
+
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": ["tool0", "tool1"], "pad": 0, "margin": 0, "label": "two proposed MCP tools (frame top below the section intro)" },
-        { "t": 4.4, "focus": ["readmeHead", "readmeCode"], "cut": true, "maxZoom": 1.72, "align": "top-left", "pad": 0, "margin": 6, "label": "the one-line README fix (full column width in frame)" }
+        { "t": 0, "focus": ["proposalHead", "toolHead0", "toolHead1"], "align": "top", "pad": 0, "margin": 4, "label": "section 04 head + both tool names and why" },
+        { "t": 5.25, "focus": "readmeFix", "align": "top", "pad": 0, "margin": 0, "cut": true, "label": "the README fix (top edge in the gap above it)" }
       ]
     </script>
   </div>
