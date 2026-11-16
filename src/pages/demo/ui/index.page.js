@@ -67,6 +67,7 @@ import {
   riskTone,
   seconds,
 } from 'demos/ui';
+import { AuditTrail, ChatThread, ScheduleStrip } from 'demos/ui';
 import Head from 'next/head';
 import { useState } from 'react';
 import {
@@ -107,6 +108,7 @@ const NAV = [
   ['code', 'Code'],
   ['states', 'States'],
   ['mcp', 'MCP'],
+  ['schedule', 'Scheduling'],
 ].map(([id, label]) => ({ href: `#${id}`, label }));
 
 // Layers, back to front
@@ -297,6 +299,123 @@ const TOOLS = [
       required: ['order', 'units'],
     },
     annotations: { readOnlyHint: true, openWorldHint: false },
+  },
+];
+
+// ScheduleStrip, ChatThread, AuditTrail (from the GoodTime demo)
+const STRIP_DAYS = [
+  { id: 'wed', label: 'Wed', sub: 'Nov 18' },
+  { id: 'thu', label: 'Thu', sub: 'Nov 19' },
+  { id: 'fri', label: 'Fri', sub: 'Nov 20' },
+];
+const STRIP_BLOCKS = [
+  {
+    id: 'a',
+    day: 'wed',
+    start: 720,
+    end: 780,
+    title: 'Design',
+    sub: 'Wei (was Priya)',
+    meta: '10 AM MST',
+    state: 'changed',
+  },
+  {
+    id: 'b',
+    day: 'wed',
+    start: 795,
+    end: 855,
+    title: 'Coding',
+    sub: 'moved',
+    tone: 'muted',
+    state: 'removed',
+  },
+  {
+    id: 'c',
+    day: 'wed',
+    start: 870,
+    end: 915,
+    title: 'Values',
+    sub: 'Grace',
+    meta: '2:30 PM EST',
+  },
+  {
+    id: 'd',
+    day: 'thu',
+    start: 840,
+    end: 900,
+    title: 'Coding',
+    sub: 'Elena',
+    meta: '2 PM EST',
+    state: 'held',
+  },
+  {
+    id: 'e',
+    day: 'fri',
+    start: 600,
+    end: 645,
+    title: 'Manager',
+    sub: 'Ravi: out sick',
+    tone: 'bad',
+    state: 'dropped',
+  },
+];
+const STRIP_WINDOWS = [
+  { day: 'wed', start: 600, end: 1020 },
+  { day: 'thu', start: 720, end: 1020 },
+  { day: 'fri', start: 600, end: 1020 },
+];
+const STRIP_LEGEND = [
+  { state: 'window', label: 'Available' },
+  { state: 'held', label: 'Held' },
+  { state: 'changed', label: 'Just changed' },
+  { state: 'removed', label: 'Moved away' },
+  { state: 'dropped', label: 'Dropped out' },
+];
+const CHAT_MESSAGES = [
+  {
+    id: 1,
+    side: 'end',
+    name: 'Jordan Ellis',
+    meta: 'Candidate · SMS',
+    text: 'Could we move the coding round to Thursday afternoon?',
+  },
+  {
+    id: 2,
+    side: 'start',
+    name: 'Scheduling agent',
+    avatar: 'AI',
+    meta: 'Live',
+    text: 'Done: coding is now Thu 2:00 PM EST with Elena.',
+  },
+  {
+    id: 3,
+    side: 'end',
+    name: 'Jordan Ellis',
+    text: 'Thanks! What time is that in Denver?',
+  },
+  { id: 4, side: 'start', name: 'Scheduling agent', avatar: 'AI', pending: true },
+];
+const AUDIT_ITEMS = [
+  {
+    id: 1,
+    at: '4:05:12 PM',
+    actor: 'Agent',
+    tone: 'accent',
+    text: "Read Priya Raman's message: out sick.",
+  },
+  {
+    id: 2,
+    at: '4:05:13 PM',
+    actor: 'Jev',
+    tone: 'ok',
+    text: 'Picked "Swap interviewer, same time" (90%). Rules agree.',
+  },
+  {
+    id: 3,
+    at: '4:06:40 PM',
+    actor: 'You',
+    tone: 'bad',
+    text: 'Overrode the repair: "Reschedule this interview".',
   },
 ];
 
@@ -1104,6 +1223,43 @@ export default function UiGallery() {
             <McpConnectCommand
               label="Connect from Claude Code"
               command="claude mcp add --transport http sample-orders https://haiderb.com/api/demo/sample/mcp/"
+            />
+          </Specimen>
+        </Group>
+
+        <Group
+          id="schedule"
+          title="Scheduling and conversation"
+          lede="A calendar strip that shows what changed, a two-sided chat, and the audit trail of what an agent and people did."
+        >
+          <Specimen name="ScheduleStrip" note="windows, held, changed, removed, dropped">
+            <ScheduleStrip
+              days={STRIP_DAYS}
+              from={9}
+              to={18}
+              blocks={STRIP_BLOCKS}
+              windows={STRIP_WINDOWS}
+              tz="EST"
+              legend={STRIP_LEGEND}
+              label="Sample interview week"
+            />
+          </Specimen>
+          <Specimen name="ChatThread" note="sides, meta, pending">
+            <ChatThread messages={CHAT_MESSAGES} label="Sample conversation" />
+          </Specimen>
+          <Specimen name="AuditTrail" note="actor tones, an action on the right" wide>
+            <AuditTrail
+              items={[
+                ...AUDIT_ITEMS.slice(0, 2),
+                {
+                  ...AUDIT_ITEMS[2],
+                  action: (
+                    <Button variant="link" size="s">
+                      Undo
+                    </Button>
+                  ),
+                },
+              ]}
             />
           </Specimen>
         </Group>

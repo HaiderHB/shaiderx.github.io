@@ -19,8 +19,8 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 
 ## Catalog
 
-Demos: **D** Distru, **A** AssemblyAI, **G** Great Question. "via" means used inside another
-kit component.
+Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime. "via" means used
+inside another kit component.
 
 | Component | What it is | Props | Used by |
 | --- | --- | --- | --- |
@@ -71,6 +71,9 @@ kit component.
 | `formatMs`, `seconds`, `pct`, `percent`, `riskTone`, `formatTime` | Timings, probabilities, risk tone, mm:ss (`demos/ui/format`, pure JS) | see `format.js` | D, G (and G's findings API via `study.js`) |
 | `highlightLines`, `tokenizeJson`, `splitFences` | The tokenizers behind CodeView, JsonView and MarkdownLite | text in, pieces out | via components |
 | `srOnly`, `tokens` | Screen-reader-only class; the token class (DemoLayout applies it) | class names | D, A, G |
+| `ScheduleStrip` | A few days of a calendar as columns, blocks placed by time; shows what is held, just changed, moved away or dropped, over shaded availability | `days` `[{ id, label, sub }]`, `from`, `to` (hours), `blocks` `[{ id, day, start, end (minutes), title, sub, meta, tone, state, hint }]` (`state`: `changed`, `held`, `removed`, `dropped`), `windows`, `tz`, `legend` `[{ state, label }]`; `--uiStripHour` | GT |
+| `ChatThread` | Two-sided conversation with avatars, meta line, typing dots and a streaming caret; children under a bubble (change chips, a trace) | `messages` `[{ id, side (`start`, `end`), name, avatar, meta, text, pending, streaming, children }]`, `empty`, `follow`; `--uiChatHeight` | GT |
+| `AuditTrail` | Time-stamped record of what an agent and people did, actor pill by tone, optional action per row | `items` `[{ id, at, actor, tone, text, action }]`, `empty`, `label` | GT |
 
 ## Tokens
 

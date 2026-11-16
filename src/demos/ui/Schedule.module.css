@@ -1,0 +1,320 @@
+/* --- schedule strip: days as columns, blocks placed by time ---------------------------- */
+
+.strip {
+  margin: 0;
+  min-width: 0;
+}
+
+.head,
+.grid {
+  display: grid;
+  grid-template-columns: var(--uiStripGutter, 34px) repeat(var(--uiStripDays), minmax(0, 1fr));
+  column-gap: var(--uiGapS);
+}
+
+.head {
+  align-items: end;
+  margin-bottom: var(--uiGapM);
+}
+
+.tz {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  color: var(--uiFaint);
+}
+
+.dayHead {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0 var(--uiGapS);
+  min-width: 0;
+  padding-left: 2px;
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+
+  & strong {
+    font-size: var(--uiFontSmall);
+    font-weight: 600;
+    color: rgb(var(--rgbText));
+  }
+}
+
+.grid {
+  height: calc(var(--uiStripHour, 44px) * var(--uiStripHours));
+}
+
+.gutter {
+  position: relative;
+
+  & span {
+    position: absolute;
+    right: 2px;
+    transform: translateY(-50%);
+    font-family: var(--uiMono);
+    font-size: var(--uiFontMicro);
+    font-variant-numeric: tabular-nums;
+    color: var(--uiFaint);
+  }
+
+  & span:last-child {
+    transform: translateY(-100%);
+  }
+
+  & span:first-child {
+    transform: none;
+  }
+}
+
+.day {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  border-radius: var(--uiRadiusM);
+  background-color: rgb(var(--uiRgbInset));
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--uiLine) 0 1px,
+    transparent 1px var(--uiStripHour, 44px)
+  );
+  box-shadow: inset 0 0 0 1px var(--uiLine);
+}
+
+/* when the person said they can meet */
+.window {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: var(--uiRadiusS);
+  background: rgb(var(--uiRgbOk) / 0.07);
+  box-shadow: inset 2px 0 0 rgb(var(--uiRgbOk) / 0.45);
+}
+
+.block {
+  --blockRgb: var(--uiRgbAccent);
+
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1px;
+  overflow: hidden;
+  padding: 4px 6px;
+  border-radius: var(--uiRadiusS);
+  font-size: var(--uiFontMicro);
+  line-height: 1.2;
+  color: rgb(var(--rgbText));
+  background: rgb(var(--blockRgb) / 0.2);
+  box-shadow: inset 3px 0 0 rgb(var(--blockRgb)), inset 0 0 0 1px rgb(var(--blockRgb) / 0.32);
+  transition: background var(--durationS) ease, box-shadow var(--durationS) ease;
+
+  & strong {
+    overflow: hidden;
+    font-size: var(--uiFontLabel);
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  & span,
+  & em {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--uiMuted);
+  }
+
+  & em {
+    font-family: var(--uiMono);
+    font-style: normal;
+    font-size: 10.5px;
+  }
+
+  &[data-short] {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+
+  &[data-short] em {
+    display: none;
+  }
+
+  &[data-tone='ok'] {
+    --blockRgb: var(--uiRgbOk);
+  }
+
+  &[data-tone='warn'] {
+    --blockRgb: var(--uiRgbWarn);
+  }
+
+  &[data-tone='bad'] {
+    --blockRgb: var(--uiRgbBad);
+  }
+
+  &[data-tone='muted'] {
+    --blockRgb: var(--rgbText);
+
+    background: rgb(var(--rgbText) / 0.06);
+    box-shadow: inset 3px 0 0 var(--uiFaint), inset 0 0 0 1px var(--uiLine);
+  }
+
+  /* tentative: a dashed outline */
+  &[data-state='held'] {
+    background: rgb(var(--blockRgb) / 0.14);
+    box-shadow: inset 3px 0 0 rgb(var(--blockRgb));
+    outline: 1.5px dashed rgb(var(--blockRgb) / 0.75);
+    outline-offset: -1.5px;
+  }
+
+  /* just moved here: pops in and rings once */
+  &[data-state='changed'] {
+    z-index: 2;
+    background: rgb(var(--blockRgb) / 0.3);
+    box-shadow: inset 3px 0 0 rgb(var(--blockRgb)), 0 0 0 2px rgb(var(--blockRgb));
+    animation: blockIn 700ms var(--uiEase) both;
+  }
+
+  /* where something used to be */
+  &[data-state='removed'] {
+    z-index: 0;
+    color: var(--uiFaint);
+    background: var(--uiHatch);
+    box-shadow: inset 0 0 0 1px var(--uiLineStrong);
+
+    & strong {
+      font-weight: 500;
+      text-decoration: line-through;
+    }
+  }
+
+  /* cancelled by a person (a dropout) */
+  &[data-state='dropped'] {
+    --blockRgb: var(--uiRgbBad);
+
+    background: rgb(var(--uiRgbBad) / 0.16);
+    box-shadow: inset 3px 0 0 rgb(var(--uiRgbBad)), inset 0 0 0 1px rgb(var(--uiRgbBad) / 0.5);
+    animation: blockShake 520ms var(--uiEase) both;
+
+    & strong {
+      text-decoration: line-through;
+      text-decoration-color: rgb(var(--uiRgbBad));
+    }
+
+    & span {
+      color: rgb(var(--uiRgbBad));
+    }
+  }
+}
+
+@keyframes blockIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.03);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes blockShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-3px);
+  }
+
+  50% {
+    transform: translateX(3px);
+  }
+
+  75% {
+    transform: translateX(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .block[data-state='changed'],
+  .block[data-state='dropped'] {
+    animation: none;
+  }
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapS) var(--spaceM);
+  margin-top: var(--uiGapXL);
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+
+  & span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--uiGapS);
+  }
+
+  & i {
+    width: 14px;
+    height: 10px;
+    border-radius: 3px;
+    background: rgb(var(--uiRgbAccent) / 0.25);
+    box-shadow: inset 2px 0 0 rgb(var(--uiRgbAccent));
+  }
+
+  & [data-state='held'] i {
+    background: transparent;
+    outline: 1.5px dashed rgb(var(--uiRgbAccent) / 0.8);
+    outline-offset: -1.5px;
+    box-shadow: none;
+  }
+
+  & [data-state='changed'] i {
+    box-shadow: 0 0 0 1.5px rgb(var(--uiRgbAccent));
+  }
+
+  & [data-state='removed'] i {
+    background: var(--uiHatch);
+    box-shadow: inset 0 0 0 1px var(--uiLineStrong);
+  }
+
+  & [data-state='dropped'] i {
+    background: rgb(var(--uiRgbBad) / 0.25);
+    box-shadow: inset 2px 0 0 rgb(var(--uiRgbBad));
+  }
+
+  & [data-state='window'] i {
+    background: rgb(var(--uiRgbOk) / 0.12);
+    box-shadow: inset 2px 0 0 rgb(var(--uiRgbOk) / 0.6);
+  }
+}
+
+@media (max-width: 600px) {
+  .head,
+  .grid {
+    grid-template-columns: var(--uiStripGutter, 26px) repeat(var(--uiStripDays), minmax(0, 1fr));
+  }
+
+  .head,
+  .grid {
+    column-gap: var(--uiGapXS);
+  }
+
+  .block {
+    left: 2px;
+    right: 2px;
+    padding: 3px 4px;
+  }
+}
