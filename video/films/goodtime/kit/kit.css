@@ -1,0 +1,428 @@
+/*
+ * kit/kit.css — styles for every kit component and block. Loaded once by index.html after
+ * tokens.css. Class names are the components' public API: add new classes, never rename.
+ *
+ * Footage stage   .kit-stage > .kit-cam > video.kit-footage / img.kit-footage
+ * Callout ring    .kit-ring (timed wrapper, full frame in footage px) > .kit-ring-box
+ * Caption band    .kit-band (scrim) + .kit-cap (one cue) > .kit-cap-label / .kit-cap-main / .kit-cap-note
+ * Caption v2      .kit-band.kit-band2 (solid band) + .kit-cap.kit-cap2 > .kit-cap-kicker / .kit-cap-head /
+ *                 .kit-cap-detail, and .kit-progress (step indicator, built by Kit.captions)   (kit 1.1)
+ * Annotation      .kit-ann (timed, screen space) > .kit-ann-ring + svg.kit-ann-leader + .kit-ann-label (kit 1.1)
+ * Tags            .kit-tag (generic), .kit-speed (speed change, e.g. "2.5x"), .kit-chip (honesty label)
+ * Headline        .kit-headline > .kit-kicker + .kit-head (sits in the caption band over footage)
+ * Text cards      .kit-card > .kit-card-label + .kit-card-head + .kit-rows > .kit-row
+ * Words           .kit-w (one word span made by Kit.reveal.split)
+ * Cursor          .kit-cursor (overlay arrow drawn at the real recorded cursor path)
+ */
+
+/* ---------- footage stage + virtual camera ---------- */
+.kit-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--kit-ground);
+}
+.kit-cam {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  transform-origin: 0 0;
+}
+.kit-cam > video,
+.kit-cam > img,
+.kit-footage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  object-fit: contain;
+}
+/* a solid ground patch in footage px, e.g. to keep a local dev URL out of frame */
+.kit-crop {
+  position: absolute;
+  background: var(--kit-ground);
+}
+
+/* ---------- callout ring + dim (lives inside .kit-cam so it moves with the footage) ---------- */
+.kit-ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  opacity: 0;
+  pointer-events: none;
+}
+.kit-ring-box {
+  position: absolute;
+  border: var(--kit-ring) solid var(--kit-accent);
+  border-radius: var(--kit-ring-radius);
+  /* spread-only shadow = flat dim of everything outside the ring (no blur, no glow) */
+  box-shadow: 0 0 0 4000px var(--kit-dim);
+}
+.kit-ring.no-dim .kit-ring-box {
+  box-shadow: none;
+}
+
+/* ---------- caption band ---------- */
+.kit-band {
+  position: absolute;
+  left: 0;
+  top: var(--kit-band-top);
+  width: 1920px;
+  height: calc(1080px - var(--kit-band-top));
+  /* v1: the one allowed gradient, a 40 px fade into the solid band */
+  background: linear-gradient(to bottom, rgb(var(--kit-ground-rgb) / 0) 0, rgb(var(--kit-ground-rgb) / 0.94) 40px, rgb(var(--kit-ground-rgb) / 0.97) 100%);
+  opacity: 0;
+}
+/* v2 (kit 1.1): a solid band with a hairline top edge, no gradient at all */
+.kit-band.kit-band2 {
+  background: var(--kit-ground);
+  border-top: 1px solid var(--kit-line);
+}
+.kit-cap {
+  position: absolute;
+  left: var(--kit-gutter);
+  width: calc(1920px - 2 * var(--kit-gutter));
+  bottom: var(--kit-cap-bottom);
+  font-family: var(--kit-font);
+  color: var(--kit-ink);
+}
+.kit-cap-label {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+  font-size: var(--kit-cap-label);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kit-accent);
+  white-space: nowrap;
+}
+.kit-cap-main {
+  font-size: var(--kit-cap-main);
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.012em;
+  max-width: 1600px;
+}
+.kit-cap-main code,
+.kit-mono {
+  font-family: var(--kit-mono);
+  font-weight: 700;
+  font-size: 0.86em;
+  color: var(--kit-accent);
+  letter-spacing: -0.02em;
+}
+.kit-cap-main .hi {
+  color: var(--kit-accent);
+}
+.kit-cap-note {
+  margin-top: 8px;
+  font-size: var(--kit-cap-note);
+  font-weight: 400;
+  color: var(--kit-quiet);
+}
+
+/* ---------- tags ---------- */
+.kit-tag,
+.kit-speed,
+.kit-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 12px 3px 10px;
+  border: 2px solid rgb(var(--kit-ink-rgb) / 0.45);
+  border-radius: 8px;
+  font-family: var(--kit-font);
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: none;
+  color: var(--kit-ink);
+  white-space: nowrap;
+}
+.kit-speed::before {
+  /* fast-forward glyph (two triangles), drawn in CSS so it needs no icon file */
+  content: "";
+  width: 22px;
+  height: 15px;
+  background: currentColor;
+  clip-path: polygon(0 0, 50% 50%, 50% 0, 100% 50%, 50% 100%, 50% 50%, 0 100%);
+}
+.kit-chip {
+  border-color: rgb(var(--kit-accent-rgb) / 0.75);
+  color: var(--kit-accent);
+}
+
+/* ---------- headline over footage (cold open) ---------- */
+.kit-headline {
+  position: absolute;
+  left: var(--kit-gutter2);
+  width: calc(1920px - 2 * var(--kit-gutter2));
+  /* kit 1.1: top-anchored like the v2 cues, so the cold open hands over without a jump */
+  top: var(--kit-cap2-top);
+  font-family: var(--kit-font);
+  color: var(--kit-ink);
+}
+.kit-kicker {
+  height: 34px;
+  line-height: 34px;
+  font-size: var(--kit-cap-label);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--kit-accent);
+  margin-bottom: 10px;
+  white-space: nowrap;
+}
+.kit-kicker .quiet {
+  color: var(--kit-quiet);
+}
+.kit-head {
+  font-size: 66px;
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+}
+.kit-head .hi,
+.kit-card-head .hi {
+  color: var(--kit-accent);
+}
+
+/* ---------- full-screen text cards (title, next steps, end card) ---------- */
+.kit-card {
+  position: absolute;
+  inset: 0;
+  background: var(--kit-ground);
+  font-family: var(--kit-font);
+  color: var(--kit-ink);
+}
+.kit-card-label {
+  position: absolute;
+  left: var(--kit-gutter);
+  font-size: var(--kit-label);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--kit-accent);
+  white-space: nowrap;
+}
+.kit-card-head {
+  position: absolute;
+  left: var(--kit-gutter);
+  width: calc(1920px - 2 * var(--kit-gutter));
+  font-size: var(--kit-display);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+.kit-rows {
+  position: absolute;
+  left: var(--kit-gutter);
+  width: calc(1920px - 2 * var(--kit-gutter));
+}
+.kit-row {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 116px;
+}
+.kit-num {
+  flex: 0 0 auto;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  border: 3px solid var(--kit-accent);
+  color: var(--kit-accent);
+  font-size: 34px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.kit-row-text {
+  font-size: var(--kit-line-size);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.kit-row-text .q {
+  color: var(--kit-quiet);
+  font-weight: 400;
+}
+
+/* ---------- words ---------- */
+.kit-w {
+  display: inline-block;
+  white-space: pre;
+}
+
+/* ---------- overlay cursor ---------- */
+.kit-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 30px;
+  height: 38px;
+  opacity: 0;
+  transform-origin: 2px 2px;
+  pointer-events: none;
+}
+
+/* ================= kit 1.1: text-first caption band (v2) ================= */
+/* one cue: kicker (step), headline (<= ~10 words, one line), optional detail line. Top-anchored, so the
+   kicker always sits in the same place; QA checks that head and detail each fit one line. */
+.kit-cap.kit-cap2 {
+  left: var(--kit-gutter2);
+  width: calc(1920px - 2 * var(--kit-gutter2));
+  top: var(--kit-cap2-top);
+  bottom: auto;
+}
+.kit-cap-kicker {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 34px;
+  line-height: 34px;
+  margin-bottom: 10px;
+  font-size: var(--kit-cap2-kicker);
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--kit-accent);
+  white-space: nowrap;
+}
+.kit-cap-kicker .kit-speed,
+.kit-cap-kicker .kit-chip,
+.kit-cap-kicker .kit-tag {
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+.kit-cap-head {
+  font-size: var(--kit-cap2-head);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--kit-ink);
+  white-space: nowrap;
+}
+.kit-cap-detail {
+  margin-top: 10px;
+  font-size: var(--kit-cap2-detail);
+  font-weight: 400;
+  line-height: 1.3;
+  color: rgb(var(--kit-ink-rgb) / 0.78);
+  white-space: nowrap;
+}
+.kit-cap-head .hi,
+.kit-cap-detail .hi {
+  color: var(--kit-accent);
+}
+.kit-cap-head code,
+.kit-cap-detail code {
+  font-family: var(--kit-mono);
+  font-weight: 700;
+  font-size: 0.86em;
+  color: var(--kit-accent);
+  letter-spacing: -0.02em;
+}
+
+/* progress stepper: right end of the kicker row; one segment per step of the demo */
+.kit-progress {
+  position: absolute;
+  right: var(--kit-gutter2);
+  top: var(--kit-cap2-top);
+  height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-family: var(--kit-font);
+  opacity: 0;
+}
+.kit-progress-count {
+  position: relative;
+  width: 84px;
+  height: 34px;
+}
+.kit-progress-n {
+  position: absolute;
+  right: 0;
+  top: 0;
+  line-height: 34px;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--kit-quiet);
+  white-space: nowrap;
+  opacity: 0;
+}
+.kit-progress-bar {
+  display: flex;
+  gap: 6px;
+}
+.kit-progress-seg {
+  display: block;
+  width: 40px;
+  height: 8px;
+  border-radius: 4px;
+  background: rgb(var(--kit-ink-rgb) / 0.16);
+}
+.kit-progress-seg[data-state="done"] {
+  background: rgb(var(--kit-ink-rgb) / 0.62);
+}
+.kit-progress-seg[data-state="now"] {
+  background: var(--kit-accent);
+}
+
+/* ================= kit 1.1: annotation (ring + short label, screen space) ================= */
+.kit-ann {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  opacity: 0;
+  pointer-events: none;
+}
+.kit-ann-ring {
+  position: absolute;
+  border: var(--kit-ring) solid var(--kit-accent);
+  border-radius: var(--kit-ring-radius);
+}
+.kit-ann.dim .kit-ann-ring {
+  box-shadow: 0 0 0 4000px var(--kit-dim);
+}
+.kit-ann-leader {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  overflow: visible;
+}
+.kit-ann-leader line {
+  stroke: var(--kit-accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.kit-ann-label {
+  position: absolute;
+  box-sizing: border-box;
+  padding: 9px 18px;
+  border-radius: 10px;
+  background: var(--kit-accent);
+  color: var(--kit-on-accent);
+  font-family: var(--kit-font);
+  font-size: var(--kit-ann-size);
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: 0;
+  text-align: center;
+  white-space: nowrap;
+}

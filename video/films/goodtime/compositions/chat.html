@@ -1,0 +1,46 @@
+<template>
+  <!-- GoodTime · the candidate chat, the drafts and the audit trail (clip main, example run in preview mode).
+       The candidate's recorded message plays when the chat scrolls into view (media ~20.2 s); the reply and the
+       calendar change land at 22.6 s. Jump cuts skip the page scrolls; no speed changes. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="chat" data-width="1920" data-height="1080">
+    <div id="ch-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="ch-cam" class="kit-cam">
+        <!-- the chat beside the sticky calendar: request, reply, coding and manager move to Thursday -->
+        <video id="ch-v1" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main"
+          data-start="0" data-duration="9.2" data-media-start="20.8" data-track-index="0" muted playsinline></video>
+        <!-- jump cut over the scroll to the drafted messages -->
+        <video id="ch-v2" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main"
+          data-start="9.2" data-duration="6" data-media-start="31.2" data-track-index="0" muted playsinline></video>
+        <!-- jump cut over the scroll to the audit trail -->
+        <video id="ch-v3" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main"
+          data-start="15.2" data-duration="6.1" data-media-start="38.3" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+
+    <div id="ch-ann-thu" class="clip kit-ann" data-start="2.6" data-duration="2.6" data-kit-focus="dayThu" data-kit-pad="4"
+      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Manager moved to stay last</div></div>
+
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": ["thread", "strip", "changes"], "maxZoom": 1.5, "window": [1.9, 9.2], "label": "the chat and the calendar" },
+        { "t": 9.2, "focus": ["strip", "drafts"], "cut": true, "maxZoom": 1.5, "label": "drafted messages beside the calendar" },
+        { "t": 15.2, "focus": "audit", "cut": true, "maxZoom": 1.45, "label": "audit trail (the calendar has scrolled up with the end of the page)" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "chat", tl });
+      window.__timelines["chat"] = tl;
+    })();
+  </script>
+</template>
