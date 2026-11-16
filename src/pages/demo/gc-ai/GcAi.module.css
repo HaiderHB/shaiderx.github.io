@@ -646,6 +646,27 @@
   }
 }
 
+.fit {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiMuted);
+
+  &[data-tone='warn'] {
+    color: rgb(var(--uiRgbWarn));
+  }
+
+  &[data-tone='bad'] {
+    color: rgb(var(--uiRgbBad));
+  }
+}
+
+.fitWarn {
+  font-size: var(--uiFontCaption);
+  line-height: 1.4;
+  color: rgb(var(--uiRgbWarn));
+}
+
 .changeId {
   margin-left: auto;
   font-family: var(--uiMono);

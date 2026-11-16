@@ -751,7 +751,8 @@ function ClauseGroup({ n, edits, decision, running, activeId, onSelect, onDecide
             choice={decision.choice}
           />
           <span className={styles.jevMeta}>
-            Jev · 1 typed question{decision.ms != null ? ` · ${formatMs(decision.ms)}` : ''}
+            Jev · {1 + Object.keys(decision.fit || {}).length} typed questions
+            {decision.ms != null ? ` · ${formatMs(decision.ms)}` : ''}
           </span>
         </div>
       )}
@@ -761,6 +762,7 @@ function ClauseGroup({ n, edits, decision, running, activeId, onSelect, onDecide
           <ChangeCard
             key={edit.id}
             edit={edit}
+            fit={decision?.fit?.[edit.id]}
             active={edit.id === activeId}
             onSelect={onSelect}
             onDecide={onDecide}
@@ -771,7 +773,10 @@ function ClauseGroup({ n, edits, decision, running, activeId, onSelect, onDecide
   );
 }
 
-function ChangeCard({ edit, active, onSelect, onDecide }) {
+// Jev's "does this redline enforce the rule it cites?" as a badge; below 50% it reads as a warning
+const fitTone = p => (p >= 0.7 ? 'ok' : p >= 0.5 ? 'warn' : 'bad');
+
+function ChangeCard({ edit, fit, active, onSelect, onDecide }) {
   const { anchor } = edit;
   return (
     <li
@@ -787,9 +792,23 @@ function ChangeCard({ edit, active, onSelect, onDecide }) {
             {anchor.status === 'anchored' ? <FiCheck aria-hidden /> : <FiCornerUpLeft aria-hidden />}
             {ANCHOR_LABEL[anchor.status]}
           </span>
+          {fit != null && (
+            <span
+              className={styles.fit}
+              data-tone={fitTone(fit)}
+              title={`Jev: probability this redline enforces ${edit.rule || 'its rule'}`}
+            >
+              Rule fit {pct(fit)}
+            </span>
+          )}
           <span className={styles.changeId}>{edit.id}</span>
         </span>
         <span className={styles.why}>{edit.why || 'Playbook change.'}</span>
+        {fit != null && fit < 0.5 && (
+          <span className={styles.fitWarn}>
+            Jev doubts this enforces {edit.rule || 'the cited rule'}: check before sending.
+          </span>
+        )}
         <span className={styles.diff}>
           <del>{anchor.original}</del>
           {edit.insert && <ins>{edit.insert}</ins>}
@@ -850,7 +869,7 @@ function RefusedList({ edits }) {
 const FLOW = [
   { label: 'Stream', what: 'DeepSeek returns edits as JSON that quote the text', cost: '1 call' },
   { label: 'Anchor', what: 'Exact, then normalised, then other clause; else refuse', cost: 'code, free' },
-  { label: 'Decide', what: 'Jev per flagged clause: accept, negotiate, escalate', cost: '~0.2 s each' },
+  { label: 'Decide', what: 'Jev per clause: accept, negotiate, escalate; rule fit per edit', cost: '1 call per clause' },
   { label: 'Export', what: '.docx with w:ins / w:del revisions and comments', cost: 'in browser' },
 ];
 
@@ -938,7 +957,7 @@ const NOTES = [
   },
   {
     title: 'Probabilities, not adjectives',
-    text: 'Jev answers one typed question per flagged clause with a distribution over accept, negotiate and escalate, so a legal team can set its own bar for pulling in counsel.',
+    text: 'One Jev call per flagged clause: a distribution over accept, negotiate and escalate, plus the chance each edit really enforces the rule it cites, so a team can set its own bars.',
   },
   {
     title: 'Word-native output',
