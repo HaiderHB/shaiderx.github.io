@@ -1,0 +1,37 @@
+<template>
+  <!-- Reacher · step 2 (clip main). Redraft invite clicked at media 22.93: the page replays the invite DeepSeek
+       wrote for @lenaslabnotes in the recorded run; the checks (rate vs max, sample, length) land at 25.57. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="invite" data-width="1920" data-height="1080">
+    <div id="i-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="i-cam" class="kit-cam">
+        <video id="i-v1" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="0" data-duration="8.6" data-media-start="22.04" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+
+    <div id="i-ann-checks" class="clip kit-ann" data-start="4" data-duration="3.4" data-kit-focus="checks" data-kit-pad="6" data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion>
+      <div class="kit-ann-label">Checked against the 18% max</div>
+    </div>
+
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": ["creatorCard", "inviteCard"], "maxZoom": 1.3, "pad": 0, "margin": 4, "edge": { "top": 212 }, "label": "the creator and her invite" },
+        { "t": 1.4, "focus": "inviteCard", "dur": 0.7, "maxZoom": 1.2, "pad": 0, "margin": 4, "edge": { "top": 212 }, "label": "the invite streams, then the checks" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "invite", tl });
+      window.__timelines["invite"] = tl;
+    })();
+  </script>
+</template>

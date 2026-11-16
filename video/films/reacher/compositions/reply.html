@@ -1,0 +1,40 @@
+<template>
+  <!-- Reacher · step 3 (clip main). The first sample reply ("Love it! Can you do 20% and send 2 samples first?")
+       is picked at media 34.17 and Decide clicked at 36.04: the page replays Jev's recorded next_action answer
+       (counter-offer, 100%) and DeepSeek's recorded reply; the ask parsing, the guardrail (20% -> 18%, 2 -> 1
+       sample) and the output check run in the browser. Draft complete at 38.91. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="reply" data-width="1920" data-height="1080">
+    <div id="r-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="r-cam" class="kit-cam">
+        <video id="r-v1" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="0" data-duration="14.5" data-media-start="31.85" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+
+    <div id="r-ann-guard" class="clip kit-ann" data-start="9.3" data-duration="3.4" data-kit-focus="guardCommission" data-kit-pad="4" data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion>
+      <div class="kit-ann-label">Asked 20%, offered 18%</div>
+    </div>
+
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": ["thread", "composer"], "maxZoom": 1.1, "pad": 0, "margin": 4, "edge": { "top": 72 }, "label": "the thread and the creator's reply" },
+        { "t": 4.2, "focus": ["thread", "decisionCard"], "dur": 0.7, "maxZoom": 1.2, "pad": 0, "margin": 0, "edge": { "top": 66 }, "label": "Jev's next action beside the thread" },
+        { "t": 8.4, "focus": ["thread", "actionBars", "guard", "replyTimes"], "dur": 0.7, "maxZoom": 1.25, "pad": 0, "margin": 0, "edge": { "top": 140 }, "label": "the guardrail and the drafted reply" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "reply", tl });
+      window.__timelines["reply"] = tl;
+    })();
+  </script>
+</template>

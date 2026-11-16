@@ -512,7 +512,7 @@ const NOTES = [
   },
   {
     title: 'Cheap enough to run on every product',
-    text: 'About 22 Jev calls (input tokens only, ~120 ms each) and three short LLM calls per creator thread; identical requests replay from cache for free.',
+    text: 'Ranking a product takes about 22 Jev calls (input tokens only, ~120 ms each) and one short LLM call; the invite and the reply take one more each. Identical requests replay from cache for free.',
   },
   {
     title: 'Same code, three callers',
