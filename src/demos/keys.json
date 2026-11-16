@@ -46,5 +46,19 @@
       "created": "2026-11-15",
       "expires": "2026-12-30"
     }
+  ],
+  "gc-ai": [
+    {
+      "hash": "d2274f1c220932a0ee73582a91a0d39b589c382f67bb6f26e04819f07e71c651",
+      "label": "GC AI application form, 2026-11-16",
+      "created": "2026-11-16",
+      "expires": "2026-12-31"
+    },
+    {
+      "hash": "45ecc537d26bc2a86d4b391e9ab9afb3d27d00e8a8cb33735173aa87a2cf1f40",
+      "label": "Bardia Pourvakil (CTO) outreach, 2026-11-16",
+      "created": "2026-11-16",
+      "expires": "2026-12-31"
+    }
   ]
 }
