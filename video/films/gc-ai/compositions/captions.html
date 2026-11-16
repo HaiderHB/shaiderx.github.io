@@ -1,0 +1,67 @@
+<template>
+  <!-- GC AI captions (kit 1.1 text-first band). Captions-local time = film time - 2.2 = review scene time;
+       the checks scene starts at captions-local 33.53. One cue at a time; each on screen >= 0.6 s + 0.35 s per
+       word of head + detail + chips. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band" class="clip" data-start="0" data-duration="40.33" data-track-index="0" data-layout-ignore>
+      <div class="kit-band kit-band2"></div>
+    </div>
+    <div id="cap-progress" class="clip kit-progress" data-start="0" data-duration="40.33" data-track-index="2"
+      data-kit-steps="Playbook,Stream,Anchor,Decide,Review,Export,Checks" data-layout-ignore></div>
+
+    <div id="cap-playbook" class="clip kit-cap kit-cap2" data-start="0" data-duration="3" data-kit-step="1" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 1 · Playbook</span></div>
+      <div class="kit-cap-head">Pick a negotiating *playbook*, then Review</div>
+    </div>
+
+    <div id="cap-stream" class="clip kit-cap kit-cap2" data-start="3" data-duration="5.8" data-kit-step="2" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 2 · Stream</span><span class="kit-chip">Example run</span></div>
+      <div class="kit-cap-head">Redlines *stream* into the document</div>
+      <div class="kit-cap-detail">Recorded live run, replayed 2x.</div>
+    </div>
+
+    <div id="cap-anchor" class="clip kit-cap kit-cap2" data-start="8.8" data-duration="7.75" data-kit-step="3" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 3 · Anchor</span></div>
+      <div class="kit-cap-head">Each quote must match its clause *exactly once*</div>
+      <div class="kit-cap-detail">Otherwise the edit is refused, never guessed.</div>
+    </div>
+
+    <div id="cap-decide" class="clip kit-cap kit-cap2" data-start="16.55" data-duration="5.55" data-kit-step="4" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 4 · Decide</span></div>
+      <div class="kit-cap-head">Jev decides each clause with *probabilities*</div>
+      <div class="kit-cap-detail">Plus a rule-fit score for every edit.</div>
+    </div>
+
+    <div id="cap-review" class="clip kit-cap kit-cap2" data-start="22.1" data-duration="6.9" data-kit-step="5" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 5 · Review</span></div>
+      <div class="kit-cap-head">Accept, reject or *accept all*</div>
+      <div class="kit-cap-detail">No markup shows the clean contract.</div>
+    </div>
+
+    <div id="cap-export" class="clip kit-cap kit-cap2" data-start="29" data-duration="4.53" data-kit-step="6" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 6 · Export</span></div>
+      <div class="kit-cap-head">Download a *.docx* with tracked changes</div>
+      <div class="kit-cap-detail">Real w:ins and w:del revisions.</div>
+    </div>
+
+    <div id="cap-checks" class="clip kit-cap kit-cap2" data-start="33.53" data-duration="6.8" data-kit-step="7" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 7 · Checks</span></div>
+      <div class="kit-cap-head">Six anchoring checks run in your *browser*</div>
+      <div class="kit-cap-detail">Paraphrases and duplicate quotes are refused.</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

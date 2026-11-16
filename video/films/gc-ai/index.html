@@ -1,0 +1,76 @@
+<!doctype html>
+<!--
+  GC AI launch film (gc-ai), kit 1.1: text-first, music bed, no voice, no next-steps card.
+    coldopen   0.0-2.2     hook cut of s1 (redlines landing in the document), headline in the band
+    review     2.2-35.73   clip s1: playbook, Review, redlines stream (the page's 2x example replay), refusals,
+                           Jev per clause, accept / accept all, No markup, .docx
+    checks     35.73-42.53 clip s2: the six anchoring checks and one raw edit
+    endcard    42.53-45.23 Haider Bokhari · haiderb.com
+    captions   one host over the footage scenes: v2 cues + a 7-step stepper
+    music      one instrumental bed under the whole film: node ../../kit/scripts/music-bed.mjs .
+  Hard cap 60 s. QA: node ../../kit/scripts/qa.mjs .   (or: npm run qa -- films/gc-ai)
+  data-kit-role on each host tells QA what the scene is; data-kit-accent = the demo page's accent (cobalt).
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="kit/tokens.css" />
+    <link rel="stylesheet" href="kit/kit.css" />
+    <script src="kit/kit.js"></script>
+    <script src="data/clips.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0a0a0f;
+      }
+      #root {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #0a0a0f;
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-kit-accent="cobalt" data-start="0" data-duration="45.23" data-width="1920" data-height="1080">
+      <div id="coldopen" data-composition-id="coldopen" data-composition-src="kit/blocks/cold-open.html" data-kit-role="cold-open"
+        data-variable-values='{"kicker": "Prototype for GC AI · Haider Bokhari", "headline": "Redlines, *anchored* in code", "focus": "300,150,920,640", "zoom": 1.25, "push": 0.04}'
+        data-start="0" data-duration="2.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
+
+      <div id="review" data-composition-id="review" data-composition-src="compositions/review.html" data-kit-role="footage"
+        data-start="2.2" data-duration="33.53" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
+
+      <div id="checks" data-composition-id="checks" data-composition-src="compositions/checks.html" data-kit-role="footage"
+        data-start="35.73" data-duration="6.8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
+
+      <div id="endcard" data-composition-id="endcard" data-composition-src="kit/blocks/end-card.html" data-kit-role="end-card"
+        data-variable-values='{"question": "", "name": "Haider Bokhari", "url": "haiderb.com"}'
+        data-start="42.53" data-duration="2.7" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+
+      <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-kit-role="captions"
+        data-start="2.2" data-duration="40.33" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
+
+      <!-- the instrumental bed under the whole film: written by node ../../kit/scripts/music-bed.mjs . -->
+      <!-- kit:music:start -->
+      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112.mp3" data-kit-music="bright-pluck-112" data-start="0" data-duration="45.23" data-media-start="13.97" data-volume="0.569" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
+      <!-- kit:music:end -->
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

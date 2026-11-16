@@ -15,7 +15,7 @@ GC AI branding.
 | --- | --- | --- |
 | Stream | One streamed LLM call (`DEMO_LLM`, DeepSeek V3.2 via fal) returns edits as JSON objects, one per line: `{ c, quote, insert, rule, why }`. The route cuts each object out of the token stream as its closing brace arrives | `COST.llm` x2 (one long call) |
 | Anchor | `anchor.js` turns each quote into an exact range: exact unique match in the cited clause, then a match with quote marks, dashes, spacing and case normalised ("re-anchored"), then a unique match in another clause (model cited the wrong §). Not found, found twice, elided with "…" or overlapping another change: refused and listed, never guessed | free (code) |
-| Decide | When the model moves past a clause, one `askJev` call with one typed `choice` question for that clause (accept / negotiate / escalate), on the clause text, the cited rules and the anchored redline | `COST.decision` |
+| Decide | When the model moves past a clause, one `askJev` call for that clause, on the clause text, the cited rules and the anchored redline: a `choice` question (accept / negotiate / escalate) plus one `noul` question per edit, "does this redline enforce the rule it cites without weakening our position?" (shown as "Rule fit"; under 50% the card warns) | `COST.decision` |
 | Export | `docx.js` writes WordprocessingML by hand (STORE-only zip, no dependency): pending changes as `w:del` / `w:ins` revisions with the reason (and Jev's call) as a Word comment; accepted and rejected ones as plain text; `w:trackRevisions` on | free (browser) |
 
 The route bills `COST.llm * 2 + COST.decision` (3 units). The same playbook and house rule on the
@@ -85,10 +85,24 @@ the model's quote, so a near-miss quote cannot change what a redline appears to 
 - Comments and replies in the `.docx` round-trip: read the counterparty's comments and tracked
   changes back in, so the next turn negotiates against their redline, not the original.
 
+## What the live runs showed
+
+- DeepSeek copies quotes exactly, curly apostrophes included: no re-anchors in seven live runs, so
+  the re-anchor path is shown by the in-browser checks. Refusals happen for real: in the recorded
+  Customer-side run it quoted "California", which appears twice in §12 (refused, so governing law
+  stays unchanged and the reviewer sees why), and once sent a replacement identical to its quote.
+- The model sometimes proposes edits no rule asks for, or cites the wrong rule. Prompting cut this
+  down but not to zero; Jev's rule-fit question catches most of them (10%, 8% and 6% fit on three
+  such edits in one run) and the card says so. That check is cheap enough to run on every edit.
+- Whole-sentence quotes made heavy redlines and 30 s runs; asking for "only the words that change"
+  brought runs to about 20 s and Word-like phrase-level changes.
+
 ## Testing
 
 - `anchor.js`, `review.js` and `docx.js` were exercised in Node with a fake streamed model
   (chunked at 6-7 characters, wrapped in a code fence) before wiring the route; the `.docx` opens
   in LibreOffice with the revisions shown as tracked changes and parses with python-docx.
-- The preview deployment was tested with a key at desktop and 390 px widths, with live runs
-  recorded for all three playbooks (`example.js`).
+- On the Vercel preview with a key: live runs for all three playbooks (recorded into
+  `example.js`), one with a house rule ("Payment within 45 days of invoice", cited as H1), a cached
+  replay, and the 401 (no key), 400 (unknown playbook) and 405 (GET) responses. The page was then
+  checked at 1440 px and 390 px: keyed review, Accept all and the `.docx` download.

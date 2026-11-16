@@ -1,0 +1,23 @@
+<!--
+  kit/components/music-bed.html — SNIPPET (kit 1.1): the one instrumental bed under the whole film.
+  Do not hand-write it: kit/scripts/music-bed.mjs writes it between the two markers in index.html (inside
+  the root, after the scene hosts), measures the excerpt and sets data-volume so the film integrates at
+  -20 LUFS (true peak <= -1.5 dBTP), and sync vendors kit/music/<bed>.mp3 into assets/music/.
+
+    node kit/scripts/music-bed.mjs films/<slug> [--bed bright-pluck-112] [--align end|start]
+
+  What it writes (HyperFrames mixes it from the attributes, the same in preview and render):
+    data-start 0, data-duration = the film's length     the bed runs under every frame
+    data-media-start                                     align end: the bed's own ending lands on the last frame
+    data-fade-in 0.3 / data-fade-out 1.5                 linear fades; the fade-out ends on the last frame
+    data-volume                                          the measured gain for -20 LUFS integrated
+  Rules (QA): exactly one bed; any other <audio> or sounding <video> fails unless it carries
+  data-kit-audio-reason="..." (no voice of any kind in demo films); --video measures the render:
+  -22..-18 LUFS integrated, true peak <= -1 dBTP, silent first frame and faded last frame.
+  Beds: kit/music/README.md and beds.json (default bright-pluck-112).
+-->
+<!-- kit:music:start -->
+<audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112.mp3" data-kit-music="bright-pluck-112"
+  data-start="0" data-duration="50" data-media-start="9.2" data-volume="0.55" data-fade-in="0.3" data-fade-out="1.5"
+  data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
+<!-- kit:music:end -->
