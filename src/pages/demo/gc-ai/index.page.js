@@ -347,6 +347,10 @@ function ReviewGlance({ review, playbook }) {
   const applied = review.edits.filter(isApplied);
   const refused = review.edits.length - applied.length;
   const reanchored = applied.filter(edit => edit.anchor.status === 'reanchored').length;
+  // Edits Jev gives under 50% of enforcing the rule they cite
+  const doubted = Object.values(review.decisions).flatMap(decision =>
+    Object.values(decision.fit || {}).filter(p => p < 0.5)
+  ).length;
   const reviewed =
     review.status === 'done' ? CONTRACT.clauses.length : review.scanning ? review.scanning - 1 : 0;
   const counts = DECISIONS.map(option => ({
@@ -378,7 +382,14 @@ function ReviewGlance({ review, playbook }) {
         </strong>
         <span className={styles.glanceWhy}>
           {review.edits.length
-            ? `${applied.length - reanchored} anchored exactly · ${reanchored} re-anchored · ${refused} refused`
+            ? [
+                `${applied.length - reanchored} anchored exactly`,
+                reanchored && `${reanchored} re-anchored`,
+                `${refused} refused`,
+                doubted && `${doubted} doubted by Jev`,
+              ]
+                .filter(Boolean)
+                .join(' · ')
             : review.status === 'running'
             ? 'Reading the agreement…'
             : 'Pick a playbook and run a review.'}
