@@ -18,7 +18,7 @@ import {
 import { INTERVIEWERS, SESSIONS, WEEK, zoned } from 'pages/demo/goodtime/data';
 
 export const MODEL = DEMO_LLM.model();
-export const VERSION = 'goodtime-v1';
+export const VERSION = 'goodtime-v2';
 export const CACHE_SECONDS = 6 * 3600;
 
 // Reasoning models (o-series, gpt-5) reject a custom temperature

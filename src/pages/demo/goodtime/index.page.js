@@ -52,6 +52,7 @@ import {
   presetCall,
   runChatTurn,
   runRescue,
+  templateMessages,
 } from './agent';
 import {
   CANDIDATE,
@@ -499,7 +500,7 @@ export default function GoodTimeDemo() {
     const before = state.history.length ? state.history[0].world : initialWorld();
     const changes = diffWorlds(before, out.world);
     const recipients = recipientsFor(changes);
-    const drafts = templateDrafts(changes, recipients);
+    const drafts = templateMessages({ changes, recipients });
     setState(current => ({
       ...current,
       history: [
@@ -650,43 +651,6 @@ const EXAMPLE_AFTER_RESCUE = (() => {
   return planSignature(world);
 })();
 
-function templateDrafts(changes, recipients) {
-  return recipients.map(recipient => {
-    const lines = changes.map(c => `${c.title}: ${c.to} with ${c.interviewer}`);
-    if (recipient.id === 'candidate')
-      return {
-        to: 'candidate',
-        text: `Hi ${firstName(
-          CANDIDATE
-        )}, a quick update to your ${COMPANY.loop.toLowerCase()}:\n${lines.join(
-          '\n'
-        )}\nEverything else stays the same. Reply here if anything doesn't work.\n${
-          COMPANY.name
-        } Recruiting`,
-      };
-    if (recipient.id === 'recruiter')
-      return {
-        to: 'recruiter',
-        text: `Override applied for ${CANDIDATE.name}: ${lines.join(
-          '; '
-        )}.\nHolds are tentative until accepted.`,
-      };
-    const change = changes.find(c => c.interviewer === recipient.name);
-    return {
-      to: recipient.id,
-      text: change
-        ? `Hi ${firstName(recipient)}, ${
-            CANDIDATE.name
-          }'s ${change.title.toLowerCase()} interview is now ${
-            change.interviewer_local
-          } your time${
-            change.swapped ? '. Could you take it?' : ''
-          } I've put a hold on your calendar.`
-        : `Hi ${firstName(recipient)}, you're off ${CANDIDATE.name}'s loop. Thanks!`,
-    };
-  });
-}
-
 // --- hero ----------------------------------------------------------------------------------------
 
 /** "Wed 12p", "Thu 1:15p" in the candidate's time zone */
@@ -825,18 +789,15 @@ function blocksFor(state) {
       day: at.date,
       start: at.minutes,
       end: at.minutes + session.minutes,
-      title: session.short,
+      title: `${session.short} · ${firstName(person)}`,
       sub: isDropped
-        ? `${firstName(person)}: ${dropout.reason}`
-        : `${firstName(person)}${
-            wasPerson && changed.includes(session.id)
-              ? ` (was ${firstName(interviewerById(prev.plan[session.id].interviewer))})`
-              : ''
-          }`,
-      meta: `${fmtTime(item.start, person.tz).replace(':00', '')} ${tzAbbr(
-        item.start,
-        person.tz
-      )}`,
+        ? dropout.reason
+        : wasPerson && changed.includes(session.id)
+        ? `was ${firstName(interviewerById(prev.plan[session.id].interviewer))}`
+        : `${fmtTime(item.start, person.tz).replace(':00', '')} ${tzAbbr(
+            item.start,
+            person.tz
+          )}`,
       tone: isDropped ? 'bad' : session.id === 'manager' ? 'warn' : 'accent',
       state: isDropped
         ? 'dropped'
