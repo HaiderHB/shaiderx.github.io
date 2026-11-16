@@ -1230,6 +1230,7 @@ export function applyEvent(run, event) {
 // Every tool call, check, option, hold and calendar change is computed live in the browser by the same
 // code the API runs.
 
+// Recorded from live runs on the Vercel preview (DeepSeek V3.2 via fal + Jev) on 2026-11-16.
 export const EXAMPLE = {
   recordedOn: '2026-11-16',
   model: 'deepseek/deepseek-v3.2',
@@ -1239,53 +1240,90 @@ export const EXAMPLE = {
         name: 'report_dropout',
         args: {
           is_dropout: true,
-          interviewer: 'Priya',
+          interviewer: 'Priya Raman',
           reason: 'out sick',
           out_from: '2026-11-16',
           out_until: '2026-11-19',
-          availability_note: 'back Friday',
+          availability_note: '',
         },
+        via: 'tool call',
       },
       answers: {
         repair: {
           type: 'choice',
           choice: 'swap',
-          confidence: 0.9,
-          probabilities: { swap: 0.9, reschedule_one: 0.08, reschedule_loop: 0.02 },
+          confidence: 0.48,
+          probabilities: {
+            swap: 0.65,
+            reschedule_one: 0.19,
+            reschedule_loop: 0.16,
+          },
         },
       },
-      draft: `[to:candidate]
-Hi Jordan, a quick update for Wednesday: your system design interview is still at 12:00–1:00 PM EST, now with Wei Zhang. Everything else is unchanged. Reply here if you have any questions.
-Larkspur Labs Recruiting
-[to:wei]
-Hi Wei, could you cover a system design interview with Jordan Ellis on Wednesday, 10:00–11:00 AM your time? I've put a tentative hold on your calendar.
-[to:priya]
-Hi Priya, you're off Wednesday's system design with Jordan, Wei is covering. Feel better soon!
-[to:recruiter]
-Jordan Ellis: system design Wed 12:00 PM EST moved from Priya Raman to Wei Zhang, same time.
-Wei's hold is tentative until he accepts.`,
-      recordedMs: { intake: 2400, decide: 140, draftMessages: 4100 },
+      draft:
+        "[to:candidate]\nHi Jordan, your system design interview is now with Wei Zhang, still on Wed, Nov 18, 12:00–1:00 PM EST. All other times are unchanged. We look forward to speaking with you!\nLarkspur Labs Recruiting\n\n[to:wei]\nHi Wei, can you cover the system design interview for Jordan Ellis? Please accept the tentative hold for Wed, Nov 18, 10:00–11:00 AM MST.\n\n[to:priya]\nHi Priya, you're all set and no longer needed for the system design interview. It's been covered. Thanks for your help!\n\n[to:recruiter]\nSwapped Priya for Wei on the system design interview at the same time. The holds remain tentative until each interviewer accepts.",
+      recordedMs: {
+        intake: 7876,
+        decide: 105,
+        draftMessages: 4277,
+      },
+    },
+    board: {
+      tool: {
+        name: 'report_dropout',
+        args: {
+          is_dropout: true,
+          interviewer: 'Ravi Iyer',
+          reason: 'board prep all day',
+          out_from: '2026-11-18',
+          out_until: '2026-11-18',
+          availability_note: 'free Thursday',
+        },
+        via: 'tool call',
+      },
+      answers: {
+        repair: {
+          type: 'choice',
+          choice: 'reschedule_one',
+          confidence: 0.92,
+          probabilities: {
+            swap: 0,
+            reschedule_one: 0.95,
+            reschedule_loop: 0.05,
+          },
+        },
+      },
+      draft:
+        '[to:candidate]\nJordan, your hiring manager interview is now Thu, Nov 19, 12:00–12:45 PM EST. Please let us know if this new time works for you. We look forward to speaking with you.\n\nLarkspur Labs Recruiting\n\n[to:ravi]\nHi Ravi, your hiring manager interview with Jordan Ellis is now on Thu, Nov 19, 9:00–9:45 AM PST. Please accept the updated hold in the calendar.\n\n[to:recruiter]\nHiring manager interview rescheduled to Thu, Nov 19, 12:00–12:45 PM EST.\nHolds remain tentative until each interviewer accepts.',
+      recordedMs: {
+        intake: 12874,
+        decide: 104,
+        draftMessages: 4734,
+      },
     },
   },
   chat: {
     text: CHAT_PRESETS[0],
     tool: {
       name: 'reschedule_interview',
-      args: { session: 'coding', day: 'thu', window: 'afternoon' },
+      args: {
+        session: 'coding',
+        day: 'thu',
+        window: 'afternoon',
+      },
+      via: 'tool call',
     },
-    draft: `[to:explain]
-Done: coding is now Thu 2:00 PM EST with Elena, and your hiring manager chat moved to Thu 4:00 PM so it stays last.
-[to:candidate]
-Hi Jordan, your coding interview is now Thursday, Nov 19, 2:00–3:00 PM EST with Elena Ruiz, and your hiring manager interview with Ravi Iyer is Thursday 4:00–4:45 PM EST. Wednesday's other interviews are unchanged.
-Larkspur Labs Recruiting
-[to:elena]
-Hi Elena, Jordan Ellis's coding interview moved to Thursday 2:00–3:00 PM your time. I've updated the hold on your calendar.
-[to:ravi]
-Hi Ravi, your interview with Jordan Ellis moved to Thursday 1:00–1:45 PM your time so it stays the last one in the loop. Hold updated.
-[to:recruiter]
-Jordan asked to move coding to Thursday afternoon: coding Thu 2:00 PM EST with Elena, manager Thu 4:00 PM EST with Ravi (kept last).
-Both holds are tentative until accepted.`,
-    recordedMs: { understand: 1900, draftMessages: 4300 },
+    draft:
+      '[to:explain]\nDone: Coding moved to Thu, Nov 19, 2:00–3:00 PM EST and hiring manager moved to Thu, Nov 19, 4:00–4:45 PM EST to keep the loop order.\n\n[to:candidate]\nHi Jordan, your schedule is updated. Coding is now Thu, Nov 19, 2:00–3:00 PM EST. Your hiring manager round is now Thu, Nov 19, 4:00–4:45 PM EST. Larkspur Labs Recruiting\n\n[to:elena]\nHi Elena, the coding interview with Jordan is now on Thu, Nov 19, 2:00–3:00 PM EST. Please accept the updated hold in the system.\n\n[to:ravi]\nHi Ravi, your hiring manager interview with Jordan is now Thu, Nov 19, 1:00–1:45 PM PST. Please accept the updated hold.\n\n[to:recruiter]\nCoding moved to Thu 2:00 PM EST, hiring manager to Thu 4:00 PM EST.\nHolds for Elena and Ravi are tentative until they accept.',
+    recordedMs: {
+      understand: 4862,
+      draftMessages: 8250,
+    },
   },
-  timings: { intake: 1300, decide: 220, understand: 1100, wordMs: 9 },
+  timings: {
+    intake: 1300,
+    decide: 220,
+    understand: 1100,
+    wordMs: 9,
+  },
 };

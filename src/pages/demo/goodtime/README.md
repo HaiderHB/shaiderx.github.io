@@ -53,9 +53,15 @@ fails a check. `holdSlot` re-validates the whole loop and refuses on any violati
 
 Routes: `POST /api/demo/goodtime/rescue/` (3 units: two LLM calls and one Jev call) and
 `POST /api/demo/goodtime/chat/` (2 units). Both stream NDJSON events, clamp inputs (1,200 and 400
-characters), keep max tokens small (300 for tool calls, 600 for drafts) and cache every model call
-and every full run for 6 hours, so a repeated request replays for free. The chat route sanitizes the
-schedule the page sends (known ids, times inside the week) before using it.
+characters), cap output (1,200 tokens for a tool-calling turn, which leaves the model room to think
+before it calls; 900 for drafts) and cache every model call and every full run for 6 hours, so a
+repeated request replays for free. The chat route sanitizes the schedule the page sends (known ids,
+times inside the week) before using it.
+
+Tool calls go through `chatTools()` in `demos/models` (OpenAI-style function calling via fal's
+router). If a turn comes back without a tool call, the same tool schemas go into a JSON-mode prompt
+(one more call) and the trace records `via: "JSON mode fallback"`; if a draft skips the chat line,
+only that line comes from a template. With no draft at all, the whole draft is a labelled template.
 
 ## Modes
 
@@ -111,8 +117,19 @@ schedule the page sends (known ids, times inside the week) before using it.
 ## Testing
 
 Scheduler and both graphs were run end to end in Node with scripted model outputs (both samples,
-the rules escalation in sample 2, all three chat presets, infeasible requests). Live DeepSeek and Jev
-calls were tested on the Vercel preview; the example runs are recordings of those live runs.
+a forced rules escalation, all three chat presets, infeasible requests). Live DeepSeek and Jev calls
+were tested on the Vercel preview on 2026-11-16, and the example runs are those recordings:
+
+- "Out sick": DeepSeek called `report_dropout` (Priya, out Mon to Thu) via a real tool call. Of four
+  qualified interviewers only Wei passed (Marcus at his cap, Dana outside London hours, Tomás
+  double-booked). Jev: swap 65%, move one 19%, move loop 16%; rules agree. 35 of 35 checks pass.
+- "Manager pulled away": the only backup (Lena) is at her cap, so the rules floor is "reschedule
+  this interview". Jev: move one 95%. The manager round moves to Thu 12:00 PM EST.
+- Chat: `reschedule_interview(coding, thu, afternoon)`. Coding moves to Thu 2:00 PM EST with Elena;
+  the hiring manager round follows to Thu 4:00 PM so it stays last.
+
+The first live run came back without a tool call at a 300-token budget; raising it fixed that, and
+the JSON-mode fallback stays as a safety net.
 
 ## Take-down
 
