@@ -504,6 +504,7 @@ export const RESCUE_GRAPH = {
               session: sessionById(dropout.session).title,
               out: dropout.label,
               reason: dropout.reason,
+              ...(tool?.via && { via: tool.via }),
             }
           : { error: dropout.reason },
       });
@@ -850,6 +851,7 @@ export const CHAT_GRAPH = {
               : name === 'answer_candidate'
               ? 'answer'
               : 'handoff',
+          ...(tool?.via && { via: tool.via }),
         },
       });
       ctx.emit({ t: 'audit', actor: 'Candidate', text: `“${state.text}”` });

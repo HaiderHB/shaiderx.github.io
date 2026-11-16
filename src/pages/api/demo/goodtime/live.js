@@ -3,7 +3,7 @@
 // Jev for the repair decision. Every result is cached, so a repeated request costs nothing.
 import crypto from 'crypto';
 import { clampText, startStream } from 'demos/api';
-import { askJev, chatStream, chatTools, DEMO_LLM, jevQuestion } from 'demos/models';
+import { askJev, chat, chatStream, chatTools, DEMO_LLM, jevQuestion } from 'demos/models';
 import { cached, getJSON, setJSON } from 'demos/store';
 import {
   CHAT_DRAFT_SYSTEM,
@@ -44,21 +44,57 @@ function pickToolCall({ content, toolCalls }, names) {
   return null;
 }
 
+/**
+ * One tool-calling turn. The budget leaves room for models that think before they call a tool.
+ * If the model answers without a tool call, the same tools go into the prompt and JSON mode
+ * (one more call); `via` records which path produced the call, and the trace shows it.
+ */
+async function toolTurn({ system, messages, tools }) {
+  const names = tools.map(item => item.function.name);
+  const turn = await chatTools({
+    provider: DEMO_LLM.provider,
+    model: MODEL,
+    system,
+    messages,
+    tools,
+    maxTokens: 1200,
+    temperature: temperature(0),
+  });
+  const direct = pickToolCall(turn, names);
+  if (direct && turn.toolCalls.length) return { ...direct, via: 'tool call' };
+  if (direct) return { ...direct, via: 'tool call (JSON in text)' };
+  console.warn(
+    '[goodtime] no tool call:',
+    turn.finishReason,
+    JSON.stringify(String(turn.content).slice(0, 240))
+  );
+  const text = await chat({
+    provider: DEMO_LLM.provider,
+    model: MODEL,
+    system: `${system}
+
+Reply with only a JSON object {"name": <one tool name>, "arguments": {...}} for one of these tools (JSON Schema):
+${JSON.stringify(tools.map(item => item.function))}`,
+    messages,
+    maxTokens: 1200,
+    temperature: temperature(0),
+    json: true,
+  });
+  const fallback = pickToolCall({ content: text, toolCalls: [] }, names);
+  if (fallback) return { ...fallback, via: 'JSON mode fallback' };
+  return null;
+}
+
 export function readDropout(message, world) {
   return cached(
     `goodtime:intake:${hash(VERSION, MODEL, message)}`,
     CACHE_SECONDS,
     async () => {
-      const turn = await chatTools({
-        provider: DEMO_LLM.provider,
-        model: MODEL,
+      const tool = await toolTurn({
         system: intakeSystem(world),
         messages: [{ role: 'user', content: message }],
         tools: INTAKE_TOOLS,
-        maxTokens: 300,
-        temperature: temperature(0),
       });
-      const tool = pickToolCall(turn, ['report_dropout']);
       if (!tool) throw new Error('The model did not call report_dropout');
       return tool;
     }
@@ -92,24 +128,12 @@ export function understand({ world, history, text }) {
     )}`,
     CACHE_SECONDS,
     async () => {
-      const turn = await chatTools({
-        provider: DEMO_LLM.provider,
-        model: MODEL,
+      const tool = await toolTurn({
         system: chatSystem(world),
         messages: historyMessages(history, text),
         tools: CHAT_TOOLS,
-        maxTokens: 300,
-        temperature: temperature(0),
       });
-      const tool = pickToolCall(
-        turn,
-        CHAT_TOOLS.map(item => item.function.name)
-      );
-      if (tool) return tool;
-      // A plain-text answer is still an answer
-      return turn.content
-        ? { name: 'answer_candidate', args: { answer: turn.content.slice(0, 300) } }
-        : null;
+      return tool;
     }
   );
 }
@@ -121,7 +145,7 @@ export function draft(system) {
       model: MODEL,
       system,
       messages: [{ role: 'user', content: JSON.stringify(facts) }],
-      maxTokens: 600,
+      maxTokens: 900,
       temperature: temperature(0.3),
     });
 }
