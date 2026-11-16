@@ -238,6 +238,15 @@
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
 }
 
+/* named so tests and the launch-film capture can find each card */
+.runCard,
+.listCard,
+.inviteCard,
+.threadCard,
+.decisionCard {
+  min-width: 0;
+}
+
 .gridInvite {
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
 }
