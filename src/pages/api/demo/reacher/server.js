@@ -17,7 +17,7 @@ import {
 } from 'pages/demo/reacher/matchmaker';
 
 export const MODEL = DEMO_LLM.model();
-export const VERSION = 'reacher-v1';
+export const VERSION = 'reacher-v2';
 export const CACHE_SECONDS = 6 * 3600;
 
 export const hash = (...parts) =>
