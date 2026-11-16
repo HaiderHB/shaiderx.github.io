@@ -485,7 +485,8 @@ export default function GoodTimeDemo() {
           sendChat(EXAMPLE.chat.text);
         }
       },
-      { threshold: 0.45 }
+      // only once the chat's top reaches the upper half of the screen, not while it peeks in below
+      { rootMargin: '0px 0px -50% 0px', threshold: 0 }
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -667,7 +668,9 @@ function LoopGlance({ state, validation }) {
   const run = state.rescue;
   const done = RESCUE_NODES.filter(node => run.nodes[node.id]?.status === 'done').length;
   const decision = run.decision;
-  const rescued = run.status === 'done' && !state.dropout;
+  // rescued as soon as the slot is held (the drafts may still be streaming)
+  const rescued = Boolean(run.decision && run.world) && !state.dropout;
+  const finished = run.status === 'done';
   const atRisk = Boolean(state.dropout);
   const totalMs = RESCUE_NODES.reduce(
     (sum, node) => sum + (run.nodes[node.id]?.ms || 0),
@@ -704,7 +707,7 @@ function LoopGlance({ state, validation }) {
   }
 
   const stats = [
-    ['Repair time', rescued ? formatMs(totalMs) : null],
+    ['Repair time', rescued && finished ? formatMs(totalMs) : null],
     ['Tool calls', run.calls.length || null],
     [
       'Rule checks',

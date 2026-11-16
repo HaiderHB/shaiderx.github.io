@@ -248,7 +248,8 @@ export const CHAT_TOOLS = [
           window: { type: 'string', enum: ['morning', 'afternoon', 'evening', 'any'] },
           after: {
             type: 'string',
-            description: 'Optional HH:MM (24 h, EST) the interview must start after',
+            description:
+              'Optional earliest start, HH:MM (24 h, EST). For a specific time ("at 11am") set 11:00',
           },
           before: {
             type: 'string',

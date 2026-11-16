@@ -389,6 +389,10 @@
 
 /* --- message ------------------------------------------------------------------------------- */
 
+.messageCard {
+  position: relative;
+}
+
 .samples {
   margin-bottom: var(--spaceM);
 }
