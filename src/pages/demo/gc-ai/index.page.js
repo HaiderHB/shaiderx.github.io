@@ -151,6 +151,7 @@ export default function GcAiDemo() {
     player.current?.cancel();
     runId.current += 1;
     follow.current = true;
+    docPane.current?.scrollTo({ top: 0 }); // each review reads the contract from the top
     setActiveId(null);
     setMarkup('all');
     setReview({ ...emptyReview('example', id), status: 'running' });
@@ -201,6 +202,7 @@ export default function GcAiDemo() {
     player.current?.cancel();
     const id = (runId.current += 1);
     follow.current = true;
+    docPane.current?.scrollTo({ top: 0 });
     setActiveId(null);
     setMarkup('all');
     setReview({ ...emptyReview('live', playbookId), status: 'running' });
