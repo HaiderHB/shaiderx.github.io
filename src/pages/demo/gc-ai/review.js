@@ -48,7 +48,7 @@ Output format: one JSON object per line and nothing else (no prose, no array, no
 {"c": 11, "quote": "three (3) months", "insert": "twelve (12) months", "rule": "R1", "why": "Cap must be at least 12 months of Fees."}
 
 - c: the clause number.
-- quote: text copied character for character from that clause, with the same words, punctuation, quote marks and capitals. Keep it short: the smallest span you are replacing, at most one sentence. It must match only once in the clause: if a word repeats, include a neighbouring word. Never paraphrase and never use "...".
+- quote: text copied character for character from that clause, with the same words, punctuation, quote marks and capitals. Quote only the words that change, usually a short phrase as in the example; a whole sentence only when most of it changes. It must match only once in the clause: if a phrase repeats, add a neighbouring word. Never paraphrase and never use "...".
 - insert: the text that replaces the quote, written so the sentence still reads correctly. "" deletes the quote.
 - To add a sentence, quote the last words of the sentence before it (with its period) and repeat them in insert, followed by the new sentence.
 - rule: the id of the playbook rule the change enforces. Every edit must enforce the rule it cites: no clarifications, style or drafting improvements that no rule asks for, and never delete or weaken text that protects the party we act for.

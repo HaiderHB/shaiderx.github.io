@@ -15,7 +15,7 @@ export const config = { api: { bodyParser: { sizeLimit: '8kb' } } };
 const MODEL = DEMO_LLM.model();
 // Reasoning models (o-series, gpt-5) reject a custom temperature
 const temperature = value => (/^(o\d|gpt-5)/.test(MODEL) ? undefined : value);
-const VERSION = 'gc-ai-v3';
+const VERSION = 'gc-ai-v4';
 // One long-ish streamed LLM call (~2.5k tokens in, ~1k out) plus a handful of tiny Jev calls
 const RUN_COST = COST.llm * 2 + COST.decision;
 const CACHE_SECONDS = 12 * 3600;
