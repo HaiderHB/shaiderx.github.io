@@ -303,7 +303,7 @@ export const RESCUE_DRAFT_SYSTEM = `You write scheduling messages for ${COMPANY.
 ${MESSAGE_RULES}`;
 
 export const CHAT_DRAFT_SYSTEM = `You write for ${COMPANY.name}'s scheduling assistant after a candidate asked to change their interview loop.
-First line: the marker [to:explain], then ONE sentence of at most 30 words to the candidate in the chat: what changed, and why anything else moved. If nothing changed, say why and offer the alternative.
+First line: the marker [to:explain], then ONE sentence of at most 30 words to the candidate in the chat, starting with "Done:" when something changed: each new day and time (EST), and why anything else moved. If nothing changed, say why and offer the alternative.
 ${MESSAGE_RULES}`;
 
 export const REPAIR_QUESTION = {
