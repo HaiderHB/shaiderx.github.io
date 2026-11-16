@@ -46,5 +46,25 @@
       "created": "2026-11-15",
       "expires": "2026-12-30"
     }
+  ],
+  "goodtime": [
+    {
+      "hash": "7e7199e443813e29c6192255f61f017b58304405ade343b26b5d1ed7a50921fb",
+      "label": "GoodTime application form, 2026-11-16",
+      "created": "2026-11-16",
+      "expires": "2026-12-31"
+    },
+    {
+      "hash": "4478ea704fffd89fee221282fa8323baa3df6bf4323e67fba21fe64cc53f27a0",
+      "label": "Ahryun Moon (CEO) outreach, 2026-11-16",
+      "created": "2026-11-16",
+      "expires": "2026-12-31"
+    },
+    {
+      "hash": "1135f6e24721a043bca380a94f581506ad68710946850bbc1b587c44f9b6da16",
+      "label": "Haider preview test, 2026-11-16",
+      "created": "2026-11-16",
+      "expires": "2026-11-30"
+    }
   ]
 }
