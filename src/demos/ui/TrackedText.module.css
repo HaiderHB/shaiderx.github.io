@@ -1,0 +1,125 @@
+/*
+ * TrackedText: a redline in running prose. Deletions are struck through in --uiRedlineDel,
+ * insertions underlined in --uiRedlineIns (rgb channels). A new pending change draws its strike
+ * left to right across line breaks (a background line, not text-decoration, so it can animate),
+ * then its words blur in. Accepting or rejecting flashes the spot once.
+ */
+.tracked {
+  --redlineDel: var(--uiRedlineDel, var(--uiRgbBad));
+  --redlineIns: var(--uiRedlineIns, var(--uiRgbAccent));
+}
+
+.change {
+  border-radius: 3px;
+  transition: background-color 0.2s var(--uiEase), box-shadow 0.2s var(--uiEase);
+
+  &[role='button'] {
+    cursor: pointer;
+  }
+
+  &[role='button']:hover,
+  &[data-active] {
+    background-color: rgb(var(--redlineIns) / 0.1);
+    box-shadow: 0 0 0 2px rgb(var(--redlineIns) / 0.1);
+  }
+
+  &[data-active] {
+    background-color: rgb(var(--redlineIns) / 0.16);
+    box-shadow: 0 0 0 2px rgb(var(--redlineIns) / 0.35);
+  }
+
+  &[data-state='accepted'] {
+    animation: settleIn 1.4s ease-out;
+  }
+
+  &[data-state='rejected'] {
+    animation: settleOut 1.4s ease-out;
+  }
+}
+
+.del {
+  color: rgb(var(--redlineDel));
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+
+.ins {
+  color: rgb(var(--redlineIns));
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+.del + .ins {
+  margin-left: 0.2em;
+}
+
+.word {
+  display: inline;
+}
+
+[data-animate] .change[data-state='pending'] {
+  & .del {
+    text-decoration: none;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-repeat: no-repeat;
+    background-position: 0 56%;
+    background-size: 100% 1.5px;
+    animation: strike 0.5s var(--uiEase) backwards;
+  }
+
+  & .word {
+    animation: wordIn 0.45s var(--uiEase) backwards;
+    animation-delay: calc(0.35s + var(--uiWordIndex, 0) * 0.035s);
+  }
+}
+
+@keyframes strike {
+  from {
+    background-size: 0% 1.5px;
+  }
+
+  to {
+    background-size: 100% 1.5px;
+  }
+}
+
+@keyframes wordIn {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes settleIn {
+  from {
+    background-color: rgb(var(--uiRgbOk) / 0.3);
+  }
+
+  to {
+    background-color: transparent;
+  }
+}
+
+@keyframes settleOut {
+  from {
+    background-color: rgb(var(--rgbText) / 0.12);
+  }
+
+  to {
+    background-color: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .change,
+  [data-animate] .change[data-state='pending'] .del,
+  [data-animate] .change[data-state='pending'] .word {
+    animation: none;
+  }
+}

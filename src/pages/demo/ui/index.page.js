@@ -1022,6 +1022,9 @@ export default function UiGallery() {
               <Caret variant="block" />
             </MarkdownLite>
           </Specimen>
+          <Specimen name="TrackedText" note="state, activeId, onSelect, animate" wide>
+            <TrackedTextSample />
+          </Specimen>
           <Specimen name="demos/ui/format" note="pure helpers, safe in API routes" wide>
             <dl className={styles.formats}>
               {FORMATS.map(([call, result]) => (
@@ -1109,5 +1112,44 @@ export default function UiGallery() {
         </Group>
       </div>
     </DemoLayout>
+  );
+}
+
+// --- TrackedText sample --------------------------------------------------------------------
+
+const REDLINE_TEXT =
+  'Provider’s total liability will not exceed the Fees paid in the three (3) months before the claim. This Agreement is governed by the laws of the State of California.';
+
+const REDLINE_CHANGES = [
+  { id: 'c1', start: 64, end: 80, insert: 'twelve (12) months', title: 'R1 · Cap at 12 months of Fees' },
+  { id: 'c2', start: 154, end: 164, insert: 'Delaware', title: 'R3 · Delaware law' },
+];
+
+function TrackedTextSample() {
+  const [states, setStates] = useState({ c1: 'pending', c2: 'pending' });
+  const [active, setActive] = useState('c1');
+  const set = state => setStates(current => ({ ...current, [active]: state }));
+  return (
+    <div className={styles.stack}>
+      <p className={styles.small}>
+        <kit.TrackedText
+          text={REDLINE_TEXT}
+          changes={REDLINE_CHANGES.map(change => ({ ...change, state: states[change.id] }))}
+          activeId={active}
+          onSelect={setActive}
+        />
+      </p>
+      <div className={styles.row}>
+        <Button size="s" onClick={() => set('accepted')}>
+          Accept {active}
+        </Button>
+        <Button size="s" variant="secondary" onClick={() => set('rejected')}>
+          Reject {active}
+        </Button>
+        <Button size="s" variant="ghost" onClick={() => set('pending')}>
+          Undo
+        </Button>
+      </div>
+    </div>
   );
 }

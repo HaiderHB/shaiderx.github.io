@@ -52,6 +52,7 @@ export { StatGrid, StatTile } from './Stat';
 export { Caret, EmptyState, Notice, SkeletonGrid, Spinner, TypingDots } from './States';
 export { StatusIcon } from './StatusIcon';
 export { PipelineStrip, Timeline, TimelineStep } from './Timeline';
+export { TrackedText } from './TrackedText';
 
 /** Class that defines the --ui* tokens; DemoLayout applies it to every demo. */
 export const tokens = tokenStyles.tokens;

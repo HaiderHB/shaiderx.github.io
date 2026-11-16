@@ -60,6 +60,7 @@ kit component.
 | `JsonView` | Pretty, coloured JSON without innerHTML | `value`, `variant` (`well`, `boxed`), `tall`, `clip` (chars), `clipNote`, `colon` (`key`, `plain`) | D, G |
 | `JsonDetails` | Raw JSON behind a disclosure | `summary`, `value`, `open`, `tall`, `variant` | D |
 | `CodeView` | Highlighted code with line numbers, line marks, focus-and-flash, copy | `code`, `lang` (`js`, `diff`, `text`), `title`, `copy`, `numbers`, `marks` `{ line: 'fail' \| 'warn' \| 'pass' }`, `focusLine` `{ line, at }`, `maxHeight`, `wrap`; `--uiCodeHeight` | A |
+| `TrackedText` | Prose with tracked changes as a redline: struck deletions, underlined insertions; accept/reject flashes the spot; new changes draw in | `text`, `changes` `[{ id, start, end, insert, state, title }]` (`state`: `pending`, `accepted`, `rejected`), `activeId`, `onSelect`, `animate`, `as`; `--uiRedlineDel` / `--uiRedlineIns` (rgb channels) | GC AI |
 | `RichText`, `InlineCode` | Prose with `` `code` `` spans; one inline code span | `text`; children | A |
 | `MarkdownLite` | Streamed model output: paragraphs, bullets, headings, bold, code, fenced blocks | `text`, `codeTitle`, `diffTitle`, children after the blocks (a Caret) | A |
 | `Caret`, `TypingDots`, `Spinner` | Streaming caret; "typing" dots; inline spinner (inherits a primary button's colour) | `variant` (`bar`, `soft`, `block`); `label`; none | D, A, G; G; D |
