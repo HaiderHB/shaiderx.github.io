@@ -303,7 +303,7 @@ export const RESCUE_DRAFT_SYSTEM = `You write scheduling messages for ${COMPANY.
 ${MESSAGE_RULES}`;
 
 export const CHAT_DRAFT_SYSTEM = `You write for ${COMPANY.name}'s scheduling assistant after a candidate asked to change their interview loop.
-First line: the marker [to:explain], then ONE sentence of at most 30 words to the candidate in the chat, starting with "Done:" when something changed: each new day and time (EST), and why anything else moved. If nothing changed, say why and offer the alternative.
+The first recipient, explain, is the assistant's reply in the chat to the candidate.
 ${MESSAGE_RULES}`;
 
 export const REPAIR_QUESTION = {
@@ -994,7 +994,19 @@ export const CHAT_GRAPH = {
             } in the loop`,
           }),
         })),
-        recipients: recipientFacts(recipients, changes),
+        // The chat reply comes first, as its own recipient, so it is never skipped
+        recipients: [
+          {
+            id: 'explain',
+            name: CANDIDATE.name,
+            role: 'Chat reply',
+            channel: 'Chat',
+            purpose: changes.length
+              ? 'ONE sentence, at most 30 words, starting "Done:": each new day and time (EST), and why anything else moved.'
+              : 'ONE sentence, at most 30 words: why nothing changed, and the alternative if there is one.',
+          },
+          ...recipientFacts(recipients, changes),
+        ],
       };
       if (recipients.length) {
         call(
@@ -1022,7 +1034,8 @@ export const CHAT_GRAPH = {
         if (typeof console !== 'undefined')
           console.error('[goodtime] chat draft failed', failure);
       }
-      if (!parseDrafts(text).some(item => item.to === 'explain')) {
+      const parsed = parseDrafts(text);
+      if (!parsed.some(item => item.to === 'explain')) {
         const explain = handoff
           ? `I've passed this to Sam, your recruiter, who will reply shortly.`
           : changes.length
@@ -1032,13 +1045,23 @@ export const CHAT_GRAPH = {
           : `I couldn't find a slot that keeps your loop valid then${
               state.alternative ? `; the closest is ${state.alternative}` : ''
             }.`;
-        const fallback = templateMessages({ changes, recipients, explain });
-        ctx.emit({
-          t: 'draft',
-          text: fallback.map(item => `[to:${item.to}]\n${item.text}\n`).join('\n'),
-          template: true,
-          reset: true,
-        });
+        if (parsed.length) {
+          // Keep the model's drafts; only the chat line comes from the template
+          ctx.emit({
+            t: 'draft',
+            text: `[to:explain]\n${explain}\n\n${text}`,
+            explainTemplate: true,
+            reset: true,
+          });
+        } else {
+          const fallback = templateMessages({ changes, recipients, explain });
+          ctx.emit({
+            t: 'draft',
+            text: fallback.map(item => `[to:${item.to}]\n${item.text}\n`).join('\n'),
+            template: true,
+            reset: true,
+          });
+        }
       }
       if (recipients.length) {
         ctx.emit({
@@ -1182,6 +1205,7 @@ export function applyEvent(run, event) {
         ...run,
         draft: event.reset ? event.text : run.draft + event.text,
         template: run.template || Boolean(event.template),
+        explainTemplate: run.explainTemplate || Boolean(event.explainTemplate),
       };
     case 'audit':
       return {

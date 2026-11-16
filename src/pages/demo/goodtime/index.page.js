@@ -1442,7 +1442,11 @@ function TurnDetail({ run }) {
       <details className={styles.steps}>
         <summary>
           {steps.length} graph steps · {run.calls.length} tool calls
-          {run.template ? ' · template reply' : ''}
+          {run.template
+            ? ' · template reply'
+            : run.explainTemplate
+            ? ' · reply line from template'
+            : ''}
         </summary>
         <Timeline>
           {steps.map((node, index) => (
