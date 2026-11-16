@@ -3,6 +3,7 @@
 import { DemoLayout } from 'demos/DemoLayout';
 import * as kit from 'demos/ui';
 import {
+  Avatar,
   BadgeMeta,
   BadgeRow,
   Button,
@@ -19,6 +20,7 @@ import {
   EmptyState,
   EvalTable,
   Eyebrow,
+  Funnel,
   Gauge,
   IndexBadge,
   InlineCode,
@@ -649,6 +651,14 @@ export default function UiGallery() {
               </Pill>
             </div>
           </Specimen>
+          <Specimen name="Avatar" note="name, size, tone">
+            <div className={styles.row}>
+              <Avatar name="Maya Lindqvist" size="s" />
+              <Avatar name="Dani Okafor" />
+              <Avatar name="Priya Raman" tone="accent" />
+              <Avatar name="@lenaslabnotes" size="l" aria-label="Lena's lab notes" />
+            </div>
+          </Specimen>
           <Specimen name="Tag" note="tone, soft">
             <div className={styles.row}>
               <Tag tone="warn">vague</Tag>
@@ -852,6 +862,26 @@ export default function UiGallery() {
               marks={[0.5, 0.8]}
             />
             <ProbabilityBar label="Confidence" value={0.81} tone="accent" strong />
+          </Specimen>
+          <Specimen name="Funnel" note="steps, max, size; null = not reached">
+            <Funnel
+              label="Creators left after each step"
+              steps={[
+                { label: 'Sample creators', value: 40 },
+                { label: 'Category and market', value: 12 },
+                { label: 'Acceptance checked', value: 10 },
+                { label: 'Shortlist', value: null, note: 'after ranking' },
+              ]}
+            />
+            <Funnel
+              size="s"
+              label="Compact funnel"
+              steps={[
+                { label: 'Scanned', value: 40 },
+                { label: 'Matched', value: 12 },
+                { label: 'Shortlisted', value: 8 },
+              ]}
+            />
           </Specimen>
           <Specimen name="Gauge" note="value 0..1, ticks, tone, caption">
             <Gauge value={0.81} caption="Needs review" label="Needs review, 81%">

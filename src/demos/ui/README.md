@@ -19,8 +19,8 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 
 ## Catalog
 
-Demos: **D** Distru, **A** AssemblyAI, **G** Great Question. "via" means used inside another
-kit component.
+Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **R** Reacher. "via" means used
+inside another kit component.
 
 | Component | What it is | Props | Used by |
 | --- | --- | --- | --- |
@@ -32,6 +32,7 @@ kit component.
 | `DecisionBadge` | The decision a run ended on (route, verdict) | `tone` (`ok`, `warn`, `bad`), `size` (`m`, `l`), children | D |
 | `ScoreBadge` | One model probability as a badge with a risk dot | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `muted`), `variant` (`score`, `neutral`, `pending`, `muted`), `title`, or children | G |
 | `BadgeRow`, `BadgeMeta` | Row of score badges; small grey trailer ("Jev · 96 ms") | children | G |
+| `Avatar`, `initials` | Initials on a circle for a person or account (no photos in sample data); decorative unless given `aria-label` | `name`, `size` (`s` 28, `m` 36, `l` 52 px), `tone` (`neutral`, `accent` = selected) | R |
 | `Dot` | 8px status dot | `tone` (`ok`, `warn`, `bad`, `idle`), `motion` (`pulse`, `ring`) | D, G via RunStatus |
 | `RunStatus` | Status line for a run: example (recorded), waiting, live, ended, idle | `state` (`example`, `wait`, `live`, `ended`, `idle`), children | G |
 | `StatusIcon` | Pass / fail / warn / n/a icon | `status` (`pass`, `fail`, `warn`, `na`), `variant` (`soft` 20px rule lists, `solid` 18px evals) | A, D via Timeline and EvalTable |
@@ -44,7 +45,8 @@ kit component.
 | `NoteGrid` | "Design choices" / "How it works" notes | `items` `[{ title, text }]`, `variant` (`accent`, `boxed`) | D (accent), G (boxed) |
 | `PipelineStrip` | How a run works: numbered step cards with cost | `steps` `[{ label, what, cost }]`, `label` | D |
 | `Timeline`, `TimelineStep` | Run stages with marker (number, spinner, tick), timing and details | `index`, `status` (`pending`, `running`, `done`, `error`), `title`, `detail`, `ms` (formatted), children | D |
-| `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars on a hatched track, chosen option bold, threshold marks | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `accent`), `strong`, `marks`; `options` `[{ value, label, tone }]`, `probabilities`, `choice` | D |
+| `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars on a hatched track, chosen option bold, threshold marks | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `accent`), `strong`, `marks`; `options` `[{ value, label, tone }]`, `probabilities`, `choice` | D, R |
+| `Funnel` | Narrowing counts, one bar per step (40 → 12 → 10 → 8); pending steps hatched, the last reached step in the accent | `steps` `[{ label, value, note }]` (`value: null` = not reached), `max`, `size` (`m`, `s`), `tone` (`accent`, `ink` on an accent card), `label` | R |
 | `Gauge` | Half-dial of ticks with a big value in the middle | `value` (0..1), `ticks`, `tone`, `caption`, `label`, children | D |
 | `Ring` | Circular progress around a short label | `value` (0..1), `tone`, `size`, `stroke`, `label`, children | D, G |
 | `Meter` | Segmented meter | `value` (0..1), `segments`, `tone`, `size` (`m`, `s`), `label` | D, G |

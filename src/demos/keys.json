@@ -46,5 +46,25 @@
       "created": "2026-11-15",
       "expires": "2026-12-30"
     }
+  ],
+  "reacher": [
+    {
+      "hash": "8fcf31db5e6c2056c295cad66f9a179504815f36e9d1bbd9d94060108d7e8632",
+      "label": "Reacher application form, 2026-11-16",
+      "created": "2026-11-16",
+      "expires": "2026-12-31"
+    },
+    {
+      "hash": "3da9c788d16a1fa73a8b186994cf81be6e1c44efc90425f9c228a0522b728429",
+      "label": "Jerry Qian (CEO) outreach, 2026-11-16",
+      "created": "2026-11-16",
+      "expires": "2026-12-31"
+    },
+    {
+      "hash": "6a3ce600a0929dd3ce63067c38d71a683f14ae499e2077bc2d02ab965821eb29",
+      "label": "Haider preview test, 2026-11-16",
+      "created": "2026-11-16",
+      "expires": "2026-11-30"
+    }
   ]
 }
