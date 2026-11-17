@@ -1,0 +1,112 @@
+/* --- approval card: an agent's action waiting for a person ------------------------------ */
+
+.card {
+  --approvalRgb: var(--uiRgbWarn);
+
+  display: grid;
+  gap: var(--uiGapXL);
+  min-width: 0;
+  padding: var(--uiGap2XL) var(--spaceM);
+  border: 1px solid rgb(var(--approvalRgb) / 0.42);
+  border-radius: var(--uiRadiusXL);
+  background: color-mix(in sRGB, rgb(var(--approvalRgb)) 6%, rgb(var(--uiRgbRaised)));
+  box-shadow: var(--uiShadowRaised);
+  animation: approvalIn 360ms var(--uiEase) both;
+
+  &[data-status='approved'] {
+    --approvalRgb: var(--uiRgbOk);
+  }
+
+  &[data-status='rejected'] {
+    border-color: var(--uiLine);
+    background: rgb(var(--uiRgbRaised));
+    box-shadow: none;
+  }
+}
+
+@keyframes approvalIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation: none;
+  }
+}
+
+.head {
+  display: grid;
+  gap: var(--uiGapXS);
+  min-width: 0;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapM);
+  font-size: var(--uiFontCaption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: color-mix(in sRGB, rgb(var(--approvalRgb)) 72%, rgb(var(--rgbText)));
+
+  .card[data-status='rejected'] & {
+    color: var(--uiMuted);
+  }
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fontSizeBodyS);
+  font-weight: var(--fontWeightMedium);
+  line-height: 1.35;
+  letter-spacing: var(--uiTrackTight);
+  color: rgb(var(--rgbText));
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: grid;
+  gap: var(--uiGapXS);
+  margin: 0;
+  font-size: var(--uiFontSmall);
+}
+
+.metaRow {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: var(--uiGapM);
+
+  & dt {
+    color: var(--uiFaint);
+  }
+
+  & dd {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: rgb(var(--rgbText) / 0.86);
+  }
+}
+
+.body {
+  max-height: 220px;
+  margin: 0;
+  padding: var(--uiGapXL) var(--uiGap2XL);
+  overflow-y: auto;
+  border-radius: var(--uiRadiusM);
+  font-size: var(--uiFontNote);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: rgb(var(--rgbText) / 0.88);
+  background: rgb(var(--uiRgbInset));
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapM);
+}

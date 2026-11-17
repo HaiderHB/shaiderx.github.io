@@ -69,7 +69,7 @@ import {
   riskTone,
   seconds,
 } from 'demos/ui';
-import { AuditTrail, ChatThread, ScheduleStrip } from 'demos/ui';
+import { ApprovalCard, AuditTrail, ChatThread, McpCallLog, ScheduleStrip } from 'demos/ui';
 import Head from 'next/head';
 import { useState } from 'react';
 import {
@@ -1252,6 +1252,12 @@ export default function UiGallery() {
               argsId="gallery-tool-args"
             />
           </Specimen>
+          <Specimen name="McpCallLog" note="scopes, gate status, args, result" wide>
+            <McpCallLog calls={CALL_LOG} pending />
+          </Specimen>
+          <Specimen name="ApprovalCard" note="pending, decided" wide>
+            <ApprovalCardSample />
+          </Specimen>
           <Specimen name="McpConnectCommand" wide>
             <McpConnectCommand
               label="Connect from Claude Code"
@@ -1298,6 +1304,49 @@ export default function UiGallery() {
         </Group>
       </div>
     </DemoLayout>
+  );
+}
+
+// --- McpCallLog and ApprovalCard samples (from the Superhuman demo) ------------------------
+
+const CALL_LOG = [
+  { id: 1, name: 'list_threads', scope: 'read', status: 'allowed', args: { unread_only: true }, result: { total: 9 } },
+  { id: 2, name: 'draft_reply', scope: 'draft', status: 'allowed', args: { thread_id: 't02', body: 'Hi Priya, we are on it.' }, result: { draft_id: 'd1' } },
+  {
+    id: 3,
+    name: 'archive',
+    scope: 'act',
+    status: 'blocked',
+    args: { thread_id: 't04' },
+    note: 'Permission denied: archive needs the "act" scope.',
+    result: { error: 'Permission denied' },
+  },
+  { id: 4, name: 'send', scope: 'act', status: 'awaiting', args: { draft_id: 'd1' }, result: { approval_id: 'a1', status: 'pending_approval' } },
+];
+
+function ApprovalCardSample() {
+  const [status, setStatus] = useState('pending');
+  return (
+    <ApprovalCard
+      status={status}
+      title="Re: Shipment sync failing since 7am"
+      meta={[
+        ['To', 'Priya Natarajan <priya@example.com>'],
+        ['Draft', 'd1'],
+      ]}
+      body={'Hi Priya,\n\nWe found the cause and are rolling it back now, ETA 10:30 AM PT.\n\nAlex'}
+      onApprove={() => setStatus('approved')}
+      onReject={() => setStatus('rejected')}
+    >
+      <BadgeRow>
+        <ScoreBadge label="Grounded" value="96%" tone="ok" />
+        {status !== 'pending' && (
+          <Button variant="link" size="s" onClick={() => setStatus('pending')}>
+            Reset
+          </Button>
+        )}
+      </BadgeRow>
+    </ApprovalCard>
   );
 }
 
