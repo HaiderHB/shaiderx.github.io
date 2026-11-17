@@ -1,0 +1,30 @@
+<template>
+  <!-- GC AI launch film · PROBLEM 10.2-16.2 s: one sentence over the vendor's original contract (clip before: every suggestion rejected in the pre-roll, so the page shows the vendor's own text; the document is scrolled slowly). The frame is the document pane only (data-kit-cam). -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+      --kit-scrim: 0.84; --kit-backdrop-blur: 5px;
+    }
+  </style>
+  <div id="root" data-composition-id="problem" data-width="1920" data-height="1080" data-kit-cam="46.6,179.3,1262.1,875.3">
+    <div id="problem-stage" class="kit-stage kit-backdrop" data-layout-allow-overflow>
+      <div id="problem-cam" class="kit-cam">
+        <video id="problem-v" class="clip kit-footage" src="assets/footage/before.mp4" data-kit-clip="before" data-start="0" data-duration="6" data-media-start="0.6" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <div id="problem-scrim" class="clip kit-scrim" data-start="0" data-duration="6" data-track-index="1" data-layout-ignore></div>
+    <div id="problem-text" class="clip kit-statement" data-start="0" data-duration="6" data-track-index="2">
+      <div class="kit-statement-text">Reviewing a vendor's contract clause by clause is *slow*.</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.launch.statement({ id: "problem", tl });
+      window.__timelines["problem"] = tl;
+    })();
+  </script>
+</template>

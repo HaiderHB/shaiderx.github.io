@@ -1,15 +1,20 @@
 <!doctype html>
 <!--
-  GC AI launch film (gc-ai), kit 1.1: text-first, music bed, no voice, no next-steps card.
-    coldopen   0.0-2.2     hook cut of s1 (redlines landing in the document), headline in the band
-    review     2.2-35.73   clip s1: playbook, Review, redlines stream (the page's 2x example replay), refusals,
-                           Jev per clause, accept / accept all, No markup, .docx
-    checks     35.73-42.53 clip s2: the six anchoring checks and one raw edit
-    endcard    42.53-45.23 Haider Bokhari · haiderb.com
-    captions   one host over the footage scenes: v2 cues + a 7-step stepper
-    music      one instrumental bed under the whole film: node ../../kit/scripts/music-bed.mjs .
-  Hard cap 60 s. QA: node ../../kit/scripts/qa.mjs .   (or: npm run qa -- films/gc-ai)
-  data-kit-role on each host tells QA what the scene is; data-kit-accent = the demo page's accent (cobalt).
+  GC AI launch film (gc-ai), kit 2, launch format: hook, what it is, the problem, ONE task, two features, proof,
+  end card. Text-first, one music bed, no voice. The beat table is in SPEC.md.
+    hook       0.0-4.2     clauses 11-12 while tracked changes land, zoomed; the hook line
+    what       4.2-10.2    statement over the review, blurred
+    problem    10.2-16.2   statement over the vendor's original contract
+    hero       16.2-36.8   press Review, changes land, the rule behind a change, the call per clause
+    pinned     36.8-46.8   feature 2: pinned to the exact words, or refused
+    export     46.8-56.4   feature 3: accept one, download the Word file
+    proof      56.4-63.2   the finished review, wide, with three numbers from the run
+    launchend  63.2-68.2   Built for GC AI by Haider Bokhari / Try it live / haiderb.com
+    captions   0-63.2      hook line, one caption per shot, proof numbers, chapters + progress bar
+    music      one instrumental bed under the whole film: node ../../kit/scripts/music-bed.mjs . --bed bright-pluck-112-long
+  QA: node ../../kit/scripts/qa.mjs .   (or: npm run qa -- films/gc-ai)
+  data-kit-format="launch" turns on the launch rules; data-kit-beat on each host names its beat;
+  data-kit-run="example": the footage is the page's recorded live run (labelled on screen).
 -->
 <html lang="en">
   <head>
@@ -34,6 +39,10 @@
         overflow: hidden;
         background: #0a0a0f;
       }
+      /* captions at 66 px (launch range 64-72) so the longest line, the call per changed clause, stays on one line */
+      :root {
+        --kit-cap3-head: 66px;
+      }
       #root {
         position: relative;
         width: 1920px;
@@ -45,27 +54,38 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-kit-accent="cobalt" data-start="0" data-duration="45.23" data-width="1920" data-height="1080">
-      <div id="coldopen" data-composition-id="coldopen" data-composition-src="kit/blocks/cold-open.html" data-kit-role="cold-open"
-        data-variable-values='{"kicker": "Prototype for GC AI · Haider Bokhari", "headline": "Redlines, *anchored* in code", "focus": "300,150,920,640", "zoom": 1.25, "push": 0.04}'
-        data-start="0" data-duration="2.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
+    <div id="root" data-composition-id="main" data-kit-format="launch" data-kit-accent="cobalt" data-kit-run="example" data-kit-jargon="Jev" data-start="0" data-duration="68.2" data-width="1920" data-height="1080">
+      <div id="hook" data-composition-id="hook" data-composition-src="compositions/hook.html" data-kit-role="footage" data-kit-beat="hook"
+        data-start="0" data-duration="4.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
 
-      <div id="review" data-composition-id="review" data-composition-src="compositions/review.html" data-kit-role="footage"
-        data-start="2.2" data-duration="33.53" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
+      <div id="what" data-composition-id="what" data-composition-src="compositions/what.html" data-kit-role="statement" data-kit-beat="what"
+        data-start="4.2" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
 
-      <div id="checks" data-composition-id="checks" data-composition-src="compositions/checks.html" data-kit-role="footage"
-        data-start="35.73" data-duration="6.8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
+      <div id="problem" data-composition-id="problem" data-composition-src="compositions/problem.html" data-kit-role="statement" data-kit-beat="problem"
+        data-start="10.2" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
 
-      <div id="endcard" data-composition-id="endcard" data-composition-src="kit/blocks/end-card.html" data-kit-role="end-card"
-        data-variable-values='{"question": "", "name": "Haider Bokhari", "url": "haiderb.com"}'
-        data-start="42.53" data-duration="2.7" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+      <div id="hero" data-composition-id="hero" data-composition-src="compositions/hero.html" data-kit-role="footage" data-kit-beat="hero"
+        data-start="16.2" data-duration="20.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+
+      <div id="pinned" data-composition-id="pinned" data-composition-src="compositions/pinned.html" data-kit-role="footage" data-kit-beat="feature"
+        data-start="36.8" data-duration="10" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
+
+      <div id="export" data-composition-id="export" data-composition-src="compositions/export.html" data-kit-role="footage" data-kit-beat="feature"
+        data-start="46.8" data-duration="9.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
+
+      <div id="proof" data-composition-id="proof" data-composition-src="compositions/proof.html" data-kit-role="footage" data-kit-beat="proof"
+        data-start="56.4" data-duration="6.8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 7"></div>
+
+      <div id="launchend" data-composition-id="launchend" data-composition-src="kit/blocks/launch-end.html" data-kit-role="end-card" data-kit-beat="end"
+        data-variable-values='{"built": "Built for *GC AI* by Haider Bokhari", "action": "Try it live: the link is in my message", "url": "haiderb.com"}'
+        data-start="63.2" data-duration="5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 8"></div>
 
       <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-kit-role="captions"
-        data-start="2.2" data-duration="40.33" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
+        data-start="0" data-duration="63.2" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
 
       <!-- the instrumental bed under the whole film: written by node ../../kit/scripts/music-bed.mjs . -->
       <!-- kit:music:start -->
-      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112.mp3" data-kit-music="bright-pluck-112" data-start="0" data-duration="45.23" data-media-start="13.97" data-volume="0.569" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
+      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112-long.mp3" data-kit-music="bright-pluck-112-long" data-start="0" data-duration="68.2" data-media-start="25.3" data-volume="0.575" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
       <!-- kit:music:end -->
     </div>
     <script>

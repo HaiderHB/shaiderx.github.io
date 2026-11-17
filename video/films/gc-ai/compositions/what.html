@@ -1,0 +1,31 @@
+<template>
+  <!-- GC AI launch film · WHAT IT IS 4.2-10.2 s: one sentence over the review streaming (clip review, media 6.0-12.0), blurred and dimmed. The scrim is 0.84 because the contract page is white: the sentence and its accent word keep 4.5:1. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+      --kit-scrim: 0.84;
+    }
+  </style>
+  <div id="root" data-composition-id="what" data-width="1920" data-height="1080">
+    <div id="what-stage" class="kit-stage kit-backdrop" data-layout-allow-overflow>
+      <div id="what-cam" class="kit-cam">
+        <video id="what-v" class="clip kit-footage" src="assets/footage/review.mp4" data-kit-clip="review" data-start="0" data-duration="6" data-media-start="6" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <div id="what-scrim" class="clip kit-scrim" data-start="0" data-duration="6" data-track-index="1" data-layout-ignore></div>
+    <div id="what-text" class="clip kit-statement" data-start="0" data-duration="6" data-track-index="2">
+      <div class="kit-statement-text">An AI assistant that *redlines contracts* against your playbook.</div>
+      <div class="kit-statement-sub">A prototype built for GC AI by Haider Bokhari</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.launch.statement({ id: "what", tl });
+      window.__timelines["what"] = tl;
+    })();
+  </script>
+</template>

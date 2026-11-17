@@ -1,7 +1,7 @@
 <template>
-  <!-- GC AI captions (kit 1.1 text-first band). Captions-local time = film time - 2.2 = review scene time;
-       the checks scene starts at captions-local 33.53. One cue at a time; each on screen >= 0.6 s + 0.35 s per
-       word of head + detail + chips. -->
+  <!-- GC AI launch film · every line of text except the two statement scenes and the end card.
+       Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
+       >= max(2.5, 0.5 + 0.6 x words) s; each cue starts on the cut of its shot. Labels sit under the headline. -->
   <style>
     #root {
       position: absolute;
@@ -10,51 +10,56 @@
     }
   </style>
   <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
-    <div id="cap-band" class="clip" data-start="0" data-duration="40.33" data-track-index="0" data-layout-ignore>
-      <div class="kit-band kit-band2"></div>
-    </div>
-    <div id="cap-progress" class="clip kit-progress" data-start="0" data-duration="40.33" data-track-index="2"
-      data-kit-steps="Playbook,Stream,Anchor,Decide,Review,Export,Checks" data-layout-ignore></div>
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.2" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="16.2" data-duration="47" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="63.2" data-track-index="2"
+      data-kit-chapters="The problem:0|The review:16.2|No guessing:36.8|Word export:46.8" data-layout-ignore></div>
 
-    <div id="cap-playbook" class="clip kit-cap kit-cap2" data-start="0" data-duration="3" data-kit-step="1" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 1 · Playbook</span></div>
-      <div class="kit-cap-head">Pick a negotiating *playbook*, then Review</div>
-    </div>
-
-    <div id="cap-stream" class="clip kit-cap kit-cap2" data-start="3" data-duration="5.8" data-kit-step="2" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 2 · Stream</span><span class="kit-chip">Example run</span></div>
-      <div class="kit-cap-head">Redlines *stream* into the document</div>
-      <div class="kit-cap-detail">Recorded live run, replayed 2x.</div>
+    <!-- HOOK -->
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.2" data-track-index="1">
+      <div class="kit-cap-head">Vendor contract, redlined in *23 seconds*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded live run, replayed 2x</span></div>
     </div>
 
-    <div id="cap-anchor" class="clip kit-cap kit-cap2" data-start="8.8" data-duration="7.75" data-kit-step="3" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 3 · Anchor</span></div>
-      <div class="kit-cap-head">Each quote must match its clause *exactly once*</div>
-      <div class="kit-cap-detail">Otherwise the edit is refused, never guessed.</div>
+    <!-- HERO: one task, four shots -->
+    <div id="cap-review" class="clip kit-cap kit-cap3" data-start="16.2" data-duration="4.7" data-track-index="1">
+      <div class="kit-cap-head">Your playbook sets the rules. Press *Review*.</div>
+    </div>
+    <div id="cap-land" class="clip kit-cap kit-cap3" data-start="20.9" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">Changes land in the document as *tracked changes*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded live run, replayed 2x</span></div>
+    </div>
+    <div id="cap-rule" class="clip kit-cap kit-cap3" data-start="26.2" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">Every change cites the playbook *rule* behind it</div>
+    </div>
+    <div id="cap-call" class="clip kit-cap kit-cap3" data-start="31.5" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">A call per changed clause: accept, *negotiate*, escalate</div>
     </div>
 
-    <div id="cap-decide" class="clip kit-cap kit-cap2" data-start="16.55" data-duration="5.55" data-kit-step="4" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 4 · Decide</span></div>
-      <div class="kit-cap-head">Jev decides each clause with *probabilities*</div>
-      <div class="kit-cap-detail">Plus a rule-fit score for every edit.</div>
+    <!-- FEATURE 2: no guessed edits -->
+    <div id="cap-pinned" class="clip kit-cap kit-cap3" data-start="36.8" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">Every edit is pinned to the *exact words*</div>
+    </div>
+    <div id="cap-refuses" class="clip kit-cap kit-cap3" data-start="42.1" data-duration="4.7" data-track-index="1">
+      <div class="kit-cap-head">If it can't find them, it *refuses*</div>
     </div>
 
-    <div id="cap-review" class="clip kit-cap kit-cap2" data-start="22.1" data-duration="6.9" data-kit-step="5" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 5 · Review</span></div>
-      <div class="kit-cap-head">Accept, reject or *accept all*</div>
-      <div class="kit-cap-detail">No markup shows the clean contract.</div>
+    <!-- FEATURE 3: the Word file -->
+    <div id="cap-accept" class="clip kit-cap kit-cap3" data-start="46.8" data-duration="4.3" data-track-index="1">
+      <div class="kit-cap-head">Accept or reject each change *yourself*</div>
+    </div>
+    <div id="cap-word" class="clip kit-cap kit-cap3" data-start="51.1" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">Download a *Word file* with real tracked changes</div>
     </div>
 
-    <div id="cap-export" class="clip kit-cap kit-cap2" data-start="29" data-duration="4.53" data-kit-step="6" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 6 · Export</span></div>
-      <div class="kit-cap-head">Download a *.docx* with tracked changes</div>
-      <div class="kit-cap-detail">Real w:ins and w:del revisions.</div>
-    </div>
-
-    <div id="cap-checks" class="clip kit-cap kit-cap2" data-start="33.53" data-duration="6.8" data-kit-step="7" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 7 · Checks</span></div>
-      <div class="kit-cap-head">Six anchoring checks run in your *browser*</div>
-      <div class="kit-cap-detail">Paraphrases and duplicate quotes are refused.</div>
+    <!-- PROOF: real numbers from this run, one line for technical viewers -->
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="56.4" data-duration="6.8" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">13</span><span class="kit-stat-l">clauses</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">14</span><span class="kit-stat-l">redlines</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">2</span><span class="kit-stat-l">refused</span></span>
+      </div>
+      <div class="kit-hood">Under the hood: an LLM drafts · code verifies every edit · a decision model routes changed clauses</div>
     </div>
   </div>
   <script>
