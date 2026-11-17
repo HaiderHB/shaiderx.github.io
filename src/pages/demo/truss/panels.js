@@ -28,6 +28,7 @@ import {
 } from 'demos/ui';
 import { FiAlertTriangle, FiCheck, FiRepeat, FiSend, FiUpload } from 'react-icons/fi';
 import {
+  CHECK_LABELS,
   DECISION_LABEL,
   DECISION_TONE,
   matchVendor,
@@ -331,14 +332,35 @@ export function ChecksCard({ run }) {
   const { checks } = run;
   const passed = checks.filter(check => check.pass === true).length;
   const failed = checks.length - passed;
-  const waiting = run.status === 'running' && checks.length === 0;
+  const running = run.status === 'running';
+  // While a run plays, all eight checks are listed and tick as they land (no layout jump)
+  const rows = [
+    ...checks.map(check => ({
+      id: check.id,
+      label: check.label,
+      expected: check.expected,
+      actual: check.actual,
+      pass: check.pass,
+    })),
+    ...(running
+      ? Object.entries(CHECK_LABELS)
+          .filter(([id]) => !checks.some(check => check.id === id))
+          .map(([id, label]) => ({
+            id,
+            label,
+            expected: '…',
+            actual: run.extraction ? 'checking…' : 'waiting for the bill',
+            pass: null,
+          }))
+      : []),
+  ];
   return (
     <Card className={styles.checksCard}>
       <CardHead
         aside={
           checks.length ? (
-            <Pill tone={failed ? 'bad' : 'ok'}>
-              {passed}/{checks.length} passed
+            <Pill tone={failed ? 'bad' : running && checks.length < rows.length ? 'neutral' : 'ok'}>
+              {passed}/{rows.length} passed
             </Pill>
           ) : null
         }
@@ -349,22 +371,14 @@ export function ChecksCard({ run }) {
         Against the vendor file, the purchase order and every payment already made. No model is
         asked whether the numbers add up.
       </p>
-      {checks.length ? (
+      {rows.length ? (
         <EvalTable
           className={styles.checks}
           columns={['Check', 'Vendor file / rule', 'On this bill']}
-          rows={checks.map(check => ({
-            id: check.id,
-            label: check.label,
-            expected: check.expected,
-            actual: check.actual,
-            pass: check.pass,
-          }))}
+          rows={rows}
         />
       ) : (
-        <EmptyState size="s" loading={waiting}>
-          {waiting ? 'Waiting for the typed bill…' : 'Eight checks run once the bill is read.'}
-        </EmptyState>
+        <EmptyState size="s">Eight checks run once the bill is read.</EmptyState>
       )}
     </Card>
   );
@@ -388,10 +402,29 @@ export function DecisionCard({ run }) {
       >
         <CardTitle>Decision</CardTitle>
       </CardHead>
-      {!decision ? (
-        <EmptyState size="s" loading={run.status === 'running' && run.checks.length > 0}>
-          The decision model weighs the checks; code sets the floor.
-        </EmptyState>
+      {!decision && run.status === 'running' ? (
+        <div className={styles.decision} aria-busy>
+          <div>
+            <MiniLabel>Decision model</MiniLabel>
+            <ProbabilityBars className={styles.bars} options={OPTION_BARS} probabilities={{}} pending />
+          </div>
+          <div className={styles.floor}>
+            <MiniLabel>Rules floor (code)</MiniLabel>
+            <p className={styles.floorWait}>
+              {run.checks.length ? <Spinner /> : null} Waiting for the eight checks…
+            </p>
+          </div>
+          <div className={styles.final}>
+            <span className={styles.finalPending}>Deciding…</span>
+            <span className={styles.finalWhy}>The stricter of the model and the rules.</span>
+          </div>
+          <div className={styles.note}>
+            <MiniLabel>Reviewer note · DeepSeek</MiniLabel>
+            <p className={styles.floorWait}>Written once the call is made.</p>
+          </div>
+        </div>
+      ) : !decision ? (
+        <EmptyState size="s">The decision model weighs the checks; code sets the floor.</EmptyState>
       ) : (
         <div className={styles.decision}>
           <div>
@@ -444,9 +477,9 @@ export function DecisionCard({ run }) {
             ) : run.noteError ? (
               <p className={styles.small}>{run.noteError}</p>
             ) : (
-              <EmptyState size="s" loading={noteRunning}>
-                Writing…
-              </EmptyState>
+              <p className={styles.floorWait}>
+                {noteRunning && <Spinner />} Writing…
+              </p>
             )}
           </div>
         </div>

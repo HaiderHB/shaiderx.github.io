@@ -502,6 +502,27 @@
   }
 }
 
+.floorWait {
+  display: flex;
+  align-items: center;
+  gap: var(--uiGapS);
+  margin: var(--uiGapS) 0 0;
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+.finalPending {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontSmall);
+  font-weight: var(--fontWeightMedium);
+  color: var(--uiMuted);
+  background: var(--uiHatch);
+}
+
 .floorMin {
   font-family: var(--uiMono);
   font-size: var(--uiFontMicro);

@@ -103,3 +103,8 @@
     gap: var(--uiGapM);
   }
 }
+
+/* No answer yet: the fill is hidden, the value is a dash */
+.row[data-pending] .fill {
+  opacity: 0;
+}

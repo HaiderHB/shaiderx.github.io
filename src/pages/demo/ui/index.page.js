@@ -1020,12 +1020,15 @@ export default function UiGallery() {
           title="Charts"
           lede="Small, single-colour marks. A chart takes one tone; tracks and the remainder are hatched or faint, never a second hue."
         >
-          <Specimen name="ProbabilityBars" note="options, probabilities, choice">
-            <ProbabilityBars
-              options={ROUTES}
-              probabilities={{ auto: 0.06, review: 0.81, hold: 0.13 }}
-              choice="review"
-            />
+          <Specimen name="ProbabilityBars" note="options, probabilities, choice; pending (no answer yet)">
+            <div className={styles.stack}>
+              <ProbabilityBars
+                options={ROUTES}
+                probabilities={{ auto: 0.06, review: 0.81, hold: 0.13 }}
+                choice="review"
+              />
+              <ProbabilityBars options={ROUTES} pending />
+            </div>
           </Specimen>
           <Specimen name="ProbabilityBar" note="marks = thresholds, tone accent">
             <ProbabilityBar

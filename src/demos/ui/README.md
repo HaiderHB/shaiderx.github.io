@@ -45,7 +45,7 @@ inside another kit component.
 | `NoteGrid` | "Design choices" / "How it works" notes | `items` `[{ title, text }]`, `variant` (`accent`, `boxed`) | D (accent), G (boxed) |
 | `PipelineStrip` | How a run works: numbered step cards with cost | `steps` `[{ label, what, cost }]`, `label` | D |
 | `Timeline`, `TimelineStep` | Run stages with marker (number, spinner, tick), timing and details | `index`, `status` (`pending`, `running`, `done`, `error`), `title`, `detail`, `ms` (formatted), children | D |
-| `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars on a hatched track, chosen option bold, threshold marks | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `accent`), `strong`, `marks`; `options` `[{ value, label, tone }]`, `probabilities`, `choice` | D, R, T |
+| `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars on a hatched track, chosen option bold, threshold marks; `pending` keeps the rows while the model has not answered (empty tracks, "–") | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `accent`), `strong`, `marks`, `pending`; `options` `[{ value, label, tone }]`, `probabilities`, `choice`, `pending` | D, R, T |
 | `Funnel` | Narrowing counts, one bar per step (40 → 12 → 10 → 8); pending steps hatched, the last reached step in the accent | `steps` `[{ label, value, note }]` (`value: null` = not reached), `max`, `size` (`m`, `s`), `tone` (`accent`, `ink` on an accent card), `label` | R |
 | `Gauge` | Half-dial of ticks with a big value in the middle | `value` (0..1), `ticks`, `tone`, `caption`, `label`, children | D |
 | `Ring` | Circular progress around a short label | `value` (0..1), `tone`, `size`, `stroke`, `label`, children | D, G |
