@@ -183,13 +183,6 @@
 
 /* --- step 1: pick, read ---------------------------------------------------------------------------- */
 
-.pickRow {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--spaceM) var(--spaceL);
-  align-items: center;
-}
-
 .picker {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -306,9 +299,10 @@
 }
 
 .runBox {
-  display: grid;
-  gap: var(--uiGapS);
-  justify-items: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--uiGapL) var(--spaceM);
 }
 
 .gridRead {
@@ -319,13 +313,15 @@
   margin-top: var(--spaceL);
 }
 
-.doc {
+.docCol {
   position: sticky;
   top: 96px;
+  display: grid;
+  gap: var(--spaceM);
 }
 
-.billCard {
-  min-height: 100%;
+.docCol .notice {
+  margin-top: 0;
 }
 
 .bill {
@@ -689,19 +685,8 @@
 /* --- responsive ------------------------------------------------------------------------------------- */
 
 @media (max-width: 1100px) {
-  .pickRow {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .picker {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .runBox {
-    grid-auto-flow: column;
-    align-items: center;
-    justify-content: start;
-    gap: var(--spaceM);
   }
 }
 
@@ -712,8 +697,11 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .doc {
+  .docCol {
     position: static;
+  }
+
+  .doc {
     max-width: 420px;
   }
 
@@ -733,10 +721,6 @@
 
   .picker {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .runBox {
-    grid-auto-flow: row;
   }
 
   .doc {

@@ -770,45 +770,45 @@ export default function TrussDemo() {
             title="An invoice image in, a typed bill out"
             lede="Three sample bills from subcontractors on one project: a clean progress bill, a resent invoice that was already paid, and one asking to be paid to a new bank account."
           />
-          <div className={styles.pickRow}>
-            <InvoicePicker
-              samples={SAMPLES}
-              value={sampleId}
-              onPick={pick}
-              upload={upload}
-              onUpload={onUpload}
-              hasKey={hasKey}
-              disabled={busy || payBusy}
-            />
-            <div className={styles.runBox}>
-              <Button onClick={readAndCheck} disabled={busy || payBusy}>
-                {busy ? <Spinner /> : <FiPlay aria-hidden />} {busy ? 'Running' : runLabel}
-              </Button>
-              <span className={styles.muted}>
-                {busy
-                  ? run.kind === 'live'
-                    ? 'Live run'
-                    : 'Replaying the example'
-                  : totalMs
-                  ? `Live run: ${formatMs(totalMs)}`
-                  : hasKey
-                  ? 'Live: about 3 cents a run'
-                  : 'Preview: recorded example'}
-              </span>
-            </div>
-          </div>
-          {notice && (
-            <Notice size="s" className={styles.notice} role="status">
-              {notice}
-            </Notice>
-          )}
-          {run.status === 'error' && (
-            <Notice kind="error" size="s" className={styles.notice} role="alert">
-              {run.error}
-            </Notice>
-          )}
+          <InvoicePicker
+            samples={SAMPLES}
+            value={sampleId}
+            onPick={pick}
+            upload={upload}
+            onUpload={onUpload}
+            hasKey={hasKey}
+            disabled={busy || payBusy}
+          />
           <div className={styles.gridRead}>
-            <InvoiceImage sample={sample} upload={upload} run={run} />
+            <div className={styles.docCol}>
+              <div className={styles.runBox}>
+                <Button onClick={readAndCheck} disabled={busy || payBusy}>
+                  {busy ? <Spinner /> : <FiPlay aria-hidden />} {busy ? 'Running' : runLabel}
+                </Button>
+                <span className={styles.muted}>
+                  {busy
+                    ? run.kind === 'live'
+                      ? 'Live run'
+                      : 'Replaying the example'
+                    : totalMs
+                    ? `Live run: ${formatMs(totalMs)}`
+                    : hasKey
+                    ? 'Live: about 3 cents a run'
+                    : 'Preview: recorded example'}
+                </span>
+              </div>
+              {notice && (
+                <Notice size="s" className={styles.notice} role="status">
+                  {notice}
+                </Notice>
+              )}
+              {run.status === 'error' && (
+                <Notice kind="error" size="s" className={styles.notice} role="alert">
+                  {run.error}
+                </Notice>
+              )}
+              <InvoiceImage sample={sample} upload={upload} run={run} />
+            </div>
             <BillCard run={run} exampleNote={EXAMPLE_NOTE} />
           </div>
         </section>

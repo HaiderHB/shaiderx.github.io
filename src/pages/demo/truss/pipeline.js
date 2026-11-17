@@ -514,7 +514,7 @@ export function noteFacts(bill, checks, decision) {
   return {
     decision: DECISION_LABEL[decision.final],
     decided_by: decision.by === 'rules' ? 'rules in code (stricter than the model)' : 'decision model, within the rules',
-    vendor: bill.vendorName,
+    vendor: vendor?.name || bill.vendorName,
     invoice: bill.invoiceNumber,
     amount_due: `${money(bill.amountDue)} ${bill.currency}`,
     due_date: shortDate(bill.dueDate),

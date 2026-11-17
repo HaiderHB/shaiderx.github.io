@@ -30,6 +30,7 @@ import { FiAlertTriangle, FiCheck, FiRepeat, FiSend, FiUpload } from 'react-icon
 import {
   DECISION_LABEL,
   DECISION_TONE,
+  matchVendor,
   money,
   masked,
   shortDate,
@@ -99,7 +100,11 @@ export function Glance({ run, pay, ledger, sample, upload }) {
         <span className={styles.glanceId}>{bill?.invoiceNumber || (upload ? upload.name : sample?.label)}</span>
       </div>
       <div className={styles.glanceWho}>
-        {bill ? `${bill.vendorName} · ${money(bill.amountDue)} ${bill.currency}` : sample ? `${sample.label} · ${sample.hint}` : 'Your invoice'}
+        {bill
+          ? `${matchVendor(bill)?.name || bill.vendorName} · ${money(bill.amountDue)} ${bill.currency}`
+          : sample
+          ? `${sample.label} · ${sample.hint}`
+          : 'Your invoice'}
       </div>
       <div className={styles.glanceStatus}>
         <strong data-tone={tone}>{status}</strong>
@@ -232,7 +237,7 @@ export function BillCard({ run, exampleNote }) {
   const bill = extraction?.bill;
   const reading = run.status === 'running' && !extraction;
   return (
-    <Card className={styles.billCard} aria-live="polite">
+    <Card aria-live="polite">
       <CardHead
         aside={
           extraction ? (
