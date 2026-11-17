@@ -254,10 +254,11 @@ export default function AffirmDemo() {
 
     const kind = live ? 'live' : 'example';
     const runId = nextId('run');
-    const customerTurn = { id: nextId('t'), role: 'customer', text };
+    const customerTurn = { id: nextId('t'), role: 'customer', text, kind };
     const agentTurn = { id: nextId('t'), role: 'agent', text: '', runId, kind };
+    // The live conversation only: replayed examples are demonstrations, not something she said
     const history = turns
-      .filter(turn => turn.text && !turn.failed)
+      .filter(turn => turn.text && !turn.failed && turn.kind !== 'example')
       .slice(-6)
       .map(turn => ({ role: turn.role, text: turn.text }));
     setTurns(current => [...current, customerTurn, agentTurn]);

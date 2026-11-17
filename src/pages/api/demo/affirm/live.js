@@ -13,7 +13,7 @@ import {
 import { LOANS } from 'pages/demo/affirm/data';
 
 export const MODEL = DEMO_LLM.model();
-export const VERSION = 'affirm-v2';
+export const VERSION = 'affirm-v3';
 export const CACHE_SECONDS = 6 * 3600;
 export const TOOL_MAX_TOKENS = 900; // room to think before a tool call
 export const SUMMARY_MAX_TOKENS = 500;
