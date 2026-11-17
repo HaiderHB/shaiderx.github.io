@@ -560,7 +560,7 @@ function ToolsSection() {
 
 const FLOW = [
   { label: 'Task + grant', what: 'You pick read only, read + draft, or full', cost: 'free' },
-  { label: 'Model turn', what: 'DeepSeek V3.2 picks tools, up to 8 turns', cost: '~2 units' },
+  { label: 'Model turn', what: 'DeepSeek V3.2 picks tools, up to 10 turns', cost: '~2 units' },
   { label: 'Gate', what: "The server checks each call's scope", cost: 'free' },
   { label: 'Tools', what: 'They run on the sample inbox', cost: 'free' },
   { label: 'Approval', what: 'Every send waits for a person', cost: 'free' },
@@ -590,6 +590,6 @@ const NOTES = [
   },
   {
     title: 'Bounded and cached',
-    text: 'At most 8 model turns, 32 calls and 900 output tokens a turn. An identical task replays from cache for free. About 3 units (cents) a run.',
+    text: 'At most 10 model turns, 32 calls and 900 output tokens a turn. An identical task replays from cache for free. About 3 units (cents) a run.',
   },
 ];

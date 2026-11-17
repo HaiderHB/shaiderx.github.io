@@ -35,7 +35,7 @@ fictional people and companies only.
 | Step | What | Cost |
 | --- | --- | --- |
 | Task + grant | From the page; task clamped to 300 characters, grant must be `read`, `draft` or `full` | free |
-| Model turns | DeepSeek V3.2 via fal (`chatTools`, OpenAI-style tool calling, temperature 0, 900 output tokens a turn), up to 8 turns and 32 calls; the last turn has `tool_choice: none` so it must answer | `COST.llm` x 2 |
+| Model turns | DeepSeek V3.2 via fal (`chatTools`, OpenAI-style tool calling, temperature 0, 900 output tokens a turn), up to 10 turns and 32 calls; the last turn has `tool_choice: none` so it must answer | `COST.llm` x 2 |
 | Gate | `mcp.js gate()`: scope not granted → `blocked` (MCP error result, nothing changes); `send` with the act scope → `awaiting` (queued for approval, never sent) | free |
 | Tools | `list_threads`, `read_thread`, `search` (read) · `draft_reply` (draft) · `apply_label`, `snooze`, `archive`, `send` (act) over an immutable world | free |
 | Judge | One Jev call per reply (`grounded`, `answers`), or on the report (`grounded` for the contract summary, `warns` for the scam), noul probabilities | `COST.decision` |

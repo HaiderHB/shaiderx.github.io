@@ -1,6 +1,6 @@
 // POST /api/demo/superhuman/run/  { task, grant } -> NDJSON stream of agent events
 // The agent works the sample inbox through the MCP-style tool server under the grant the page
-// picked (read / draft / full): up to 8 DeepSeek tool-calling turns, every call through the
+// picked (read / draft / full): up to 10 DeepSeek tool-calling turns, every call through the
 // server's gate, then one Jev call per draft (grounded? answers the ask?). Sends never leave:
 // they wait at the page's approval gate. An identical task and grant replays from cache, free.
 import { COST, clampText, demoApi } from 'demos/api';
@@ -10,7 +10,7 @@ import { MODEL, VERSION, cachedEvents, hash, streamAgent } from './live';
 
 export const config = { api: { bodyParser: { sizeLimit: '4kb' } }, maxDuration: 120 };
 
-// Up to 8 short DeepSeek turns (about 2 cents at most) and the judge's Jev calls (input only)
+// Up to 10 short DeepSeek turns (about 2 cents at most) and the judge's Jev calls (input only)
 const RUN_COST = COST.llm * 2 + COST.decision;
 
 function readRun(req) {
