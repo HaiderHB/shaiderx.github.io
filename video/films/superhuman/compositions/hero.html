@@ -1,0 +1,40 @@
+<template>
+  <!-- HERO 16.2-36.2 s: ONE real task, start to finish, in 3-4 shots. Scene time = film time - 16.2. Each shot = one video element (cut the waits between them), one cut in kit-shots, one spotlight, one caption. In a shot: hold still ~1 s, ONE action (the cursor rests 450 ms, then clicks), the result holds >= 1.5 s. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="hero" data-width="1920" data-height="1080">
+    <div id="hero-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="hero-cam" class="kit-cam">
+        <video id="hero-v1" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="0" data-duration="5" data-media-start="0.5" data-track-index="0" muted playsinline></video>
+        <video id="hero-v2" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="5" data-duration="5" data-media-start="6" data-track-index="0" muted playsinline></video>
+        <video id="hero-v3" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="10" data-duration="5" data-media-start="14" data-track-index="0" muted playsinline></video>
+        <video id="hero-v4" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="15" data-duration="5" data-media-start="20" data-track-index="0" muted playsinline></video>
+        <div id="hero-spot-1" class="clip kit-spot" data-start="0" data-duration="5" data-kit-focus="input" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-2" class="clip kit-spot" data-start="5" data-duration="5" data-kit-focus="output" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-3" class="clip kit-spot" data-start="10" data-duration="5" data-kit-focus="card" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-4" class="clip kit-spot" data-start="15" data-duration="5" data-kit-focus="decision" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": "input", "maxZoom": 2, "cut": true, "window": [0, 5], "label": "H1 start the task" },
+        { "t": 5, "focus": "output", "maxZoom": 2, "cut": true, "window": [5, 10], "label": "H2 the work happens" },
+        { "t": 10, "focus": "card", "maxZoom": 2, "cut": true, "window": [10, 15], "label": "H3 the result, one detail" },
+        { "t": 15, "focus": "decision", "maxZoom": 2, "cut": true, "window": [15, 20], "label": "H4 the decision" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "hero", tl });
+      window.__timelines["hero"] = tl;
+    })();
+  </script>
+</template>

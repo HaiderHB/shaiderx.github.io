@@ -201,14 +201,16 @@ export default function SuperhumanDemo() {
   const [notice, setNotice] = useState('');
   const [openThread, setOpenThread] = useState(null);
   const [evals, setEvals] = useState({ kind: 'example', status: 'idle', entries: {} });
-  const [openEvals, setOpenEvals] = useState(() => new Set(['e4']));
+  const [openEvals, setOpenEvals] = useState(() => new Set());
   const [evalNotice, setEvalNotice] = useState('');
   const player = useRef(null);
+  const lastRecorded = useRef(null);
 
   const busy = run.status === 'running';
 
   function playRecorded(rec) {
     player.current?.cancel();
+    lastRecorded.current = rec;
     const instant = prefersReducedMotion();
     const current = createPlayer(event => setRun(r => applyEvent(r, event)), { instant });
     player.current = current;
@@ -393,7 +395,15 @@ export default function SuperhumanDemo() {
               />
             </div>
             <div className={styles.callsCol}>
-              <CallsCard run={run} active={busy ? latest?.id : undefined} />
+              <CallsCard
+                run={run}
+                active={busy ? latest?.id : undefined}
+                onReplay={
+                  run.kind === 'example' && lastRecorded.current
+                    ? () => playRecorded(lastRecorded.current)
+                    : undefined
+                }
+              />
             </div>
             <div className={styles.sideCol}>
               <GateCard

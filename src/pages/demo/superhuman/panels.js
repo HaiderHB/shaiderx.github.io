@@ -30,7 +30,7 @@ import {
   formatMs,
   srOnly,
 } from 'demos/ui';
-import { FiCheck, FiClock, FiEdit3, FiLock, FiSend, FiShield } from 'react-icons/fi';
+import { FiCheck, FiChevronDown, FiClock, FiEdit3, FiLock, FiRotateCcw, FiSend, FiShield } from 'react-icons/fi';
 import { JUDGE_PASS, JUDGE_QUESTIONS, MAX_TASK, PRESETS } from './agent';
 import { NOW_LABEL, THREADS, USER, listDate, threadById } from './inbox';
 import { GRANTS, GRANT_IDS, TOOLS, pendingApprovals } from './mcp';
@@ -82,7 +82,7 @@ export function runCounts(run) {
 export function RunGlance({ run, replay }) {
   const counts = runCounts(run);
   const running = run.status === 'running';
-  const latest = run.calls[run.calls.length - 1];
+  const recent = logCalls(run).slice(-3);
   let headline = 'Ready';
   if (running) headline = run.calls.length ? 'Working the inbox' : 'Reading the task';
   else if (run.status === 'done')
@@ -120,24 +120,39 @@ export function RunGlance({ run, replay }) {
           <dd>{counts.waiting}</dd>
         </div>
       </dl>
-      <p className={styles.glanceLatest}>
-        {latest ? (
-          <>
-            <code>{latest.name}</code>
-            <span>{latest.status === 'awaiting' ? 'awaiting approval' : latest.status}</span>
-          </>
+      <ol className={styles.glanceCalls} aria-label="Latest tool calls">
+        {recent.length ? (
+          recent.map(call => (
+            <li key={call.id} data-status={call.status}>
+              <code>{call.name}</code>
+              <span className={styles.glanceArg}>{callTarget(call)}</span>
+              <span className={styles.glanceStatus}>{STATUS_TEXT[call.status] || call.status}</span>
+            </li>
+          ))
         ) : (
-          <span>{running ? 'Waiting for the model…' : 'No calls yet'}</span>
+          <li data-status="idle">{running ? 'Waiting for the model…' : 'No tool calls yet'}</li>
         )}
-      </p>
+      </ol>
       {counts.waiting > 0 && run.status === 'done' && (
         <Button size="s" className={styles.glanceCta} onClick={() => scrollToId('gate')}>
-          <FiShield aria-hidden /> Review the send
+          <FiShield aria-hidden /> {counts.waiting === 1 ? 'Review the send' : `Review the ${counts.waiting} sends`}
         </Button>
       )}
       {replay && <p className={styles.glanceFoot}>{replay}</p>}
     </Card>
   );
+}
+
+const STATUS_TEXT = { awaiting: 'awaiting approval' };
+
+/** The short target of a call for the glance: a thread id, a draft id or a query. */
+function callTarget(call) {
+  const args = call.args || {};
+  if (args.thread_id) return args.thread_id;
+  if (args.draft_id) return args.draft_id;
+  if (args.query) return `“${String(args.query).slice(0, 24)}”`;
+  if (args.label) return args.label;
+  return '';
 }
 
 function scrollToId(id) {
@@ -247,7 +262,7 @@ export function TaskCard({ grant, onGrant, task, onTask, presetId, onPreset, onR
 
 // --- the tool calls -----------------------------------------------------------------------
 
-export function CallsCard({ run, active }) {
+export function CallsCard({ run, active, onReplay }) {
   const counts = runCounts(run);
   const waitingTurn = run.status === 'running' && run.turns[run.turns.length - 1]?.status === 'running';
   return (
@@ -257,7 +272,14 @@ export function CallsCard({ run, active }) {
           run.kind === 'live' ? (
             <Pill tone="live">{run.cached ? 'Live · cached replay' : 'Live'}</Pill>
           ) : (
-            <Pill>Example run</Pill>
+            <span className={styles.callsAside}>
+              <Pill>Example run</Pill>
+              {onReplay && (
+                <Button variant="ghost" size="s" onClick={onReplay} disabled={run.status === 'running'}>
+                  <FiRotateCcw aria-hidden /> Replay
+                </Button>
+              )}
+            </span>
           )
         }
       >
@@ -584,6 +606,7 @@ export function EvalRow({ index, task, entry, open, onToggle }) {
             <span className={styles.muted}>not run</span>
           )}
         </span>
+        <FiChevronDown className={styles.evalChevron} aria-hidden />
       </button>
       {open && (
         <div className={styles.evalBody}>
