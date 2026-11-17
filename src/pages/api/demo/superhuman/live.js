@@ -10,7 +10,7 @@ import { JUDGE_QUESTIONS, runAgent } from 'pages/demo/superhuman/agent';
 import { TOOL_NAMES } from 'pages/demo/superhuman/mcp';
 
 export const MODEL = DEMO_LLM.model();
-export const VERSION = 'superhuman-v2';
+export const VERSION = 'superhuman-v3';
 export const CACHE_SECONDS = 6 * 3600;
 const TURN_TOKENS = 900;
 
