@@ -31,6 +31,15 @@
  *        data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
  *   The ring box is placed from the recorded DOM box; QA checks it is inside the safe area.
  *
+ * Spotlight (kit 2, launch format), in the scene markup inside .kit-cam, after the footage:
+ *   <div id="hero-spot-form" class="clip kit-spot" data-start="0.3" data-duration="4.2" data-kit-focus="setup"
+ *        data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion>
+ *     <div class="kit-spot-box"></div></div>
+ *   Everything outside the component's box (unioned over the spotlight's own window) is dimmed flat; planned
+ *   and checked like a ring (it must sit inside the safe area). class "bare" = no outline.
+ *   data-kit-window="a,b" (rings too): union the box over these scene seconds instead, e.g. the form as it is
+ *   before a click, while the spotlight stays on until the footage shows the change (~0.1-0.3 s after the DOM).
+ *
  * Annotations (kit 1.1; see lib/annotate.js), in the scene markup OUTSIDE .kit-stage (screen space):
  *   <div id="r2-ann-route" class="clip kit-ann" data-start="11.2" data-duration="3" data-kit-focus="finalRoute"
  *        data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion>
@@ -154,7 +163,12 @@
         if (!s.partial && !f.ok) k.problems.push("focus does not fit the safe area");
         if (f.small) k.warnings.push("zoom " + f.scale + " is below minZoom " + s.minZoom + " (component is large)");
         if (f.edgeIgnored && f.edgeIgnored.length) k.warnings.push("edge " + f.edgeIgnored.join("/") + " ignored: the focus would leave the safe area (lower the zoom or move the edge)");
-        if (f.scale < 1 && !s.partial) k.warnings.push("zoom " + f.scale + " < 1: footage is shown smaller than captured");
+        // kit 2: a capture narrower than 1920 px is already magnified on the stage (clip.stageScale)
+        const first = sceneClips.length ? Kit.clips.get((Kit.clips.mediaAt(sceneClips, Math.min(h0, h1) + 0.001) || sceneClips[0]).clip) : null;
+        k.stageScale = (first && first.stageScale) || 1;
+        k.mag = +(f.scale * k.stageScale).toFixed(3);
+        k.wide = !!s.wide;
+        if (k.mag < 1 && !s.partial) k.warnings.push("zoom " + f.scale + " < 1: footage is shown smaller than captured");
       } else if (!k.problems.length) k.problems.push("no box to frame");
       if (!k.captions && o.cues)
         o.cues.forEach((c) => {
@@ -165,7 +179,9 @@
     });
 
     const rings = (o.rings || []).map((rg) => {
-      const r = resolve(rg.focus, sceneClips, rg.start, rg.end);
+      // rg.window (kit 2, data-kit-window="a,b"): take the box from these scene seconds instead of the whole time
+      // on screen, e.g. the state before a click while the spotlight stays on until the footage shows the change
+      const r = resolve(rg.focus, sceneClips, rg.window ? rg.window[0] : rg.start, rg.window ? rg.window[1] : rg.end);
       const out = { scene: o.scene, id: rg.id, start: rg.start, end: rg.end, focus: describe(rg.focus), problems: r.problems.slice(), warnings: r.warnings.slice() };
       if (!r.box) {
         if (!out.problems.length) out.problems.push("no box for ring");
@@ -298,12 +314,15 @@
   }
 
   function ringsFromDom(root) {
-    return Array.prototype.map.call(root.querySelectorAll(".kit-ring[data-kit-focus]"), (el) => {
+    // kit 2: a spotlight (.kit-spot) is planned exactly like a ring; only its box class and default pad differ
+    return Array.prototype.map.call(root.querySelectorAll(".kit-ring[data-kit-focus], .kit-spot[data-kit-focus]"), (el) => {
       const start = parseFloat(el.getAttribute("data-start")) || 0;
       const dur = parseFloat(el.getAttribute("data-duration")) || 1;
+      const spot = el.classList.contains("kit-spot");
       let focus = el.getAttribute("data-kit-focus");
       if (focus && focus.trim().charAt(0) === "[") focus = JSON.parse(focus);
-      return { el, id: el.id, start, end: start + dur, focus, pad: el.hasAttribute("data-kit-pad") ? parseFloat(el.getAttribute("data-kit-pad")) : 6 };
+      const win = (el.getAttribute("data-kit-window") || "").split(",").map(Number);
+      return { el, id: el.id, start, end: start + dur, focus, spot, window: win.length === 2 && win.every(Number.isFinite) ? win : null, pad: el.hasAttribute("data-kit-pad") ? parseFloat(el.getAttribute("data-kit-pad")) : spot ? 10 : 6 };
     });
   }
 
@@ -354,16 +373,30 @@
     rings.forEach((rg, i) => {
       const pr = p.rings[i];
       if (!pr.box) return;
-      let box = rg.el.querySelector(".kit-ring-box");
+      const boxClass = rg.spot ? "kit-spot-box" : "kit-ring-box";
+      let box = rg.el.querySelector("." + boxClass);
       if (!box) {
         box = document.createElement("div");
-        box.className = "kit-ring-box";
+        box.className = boxClass;
         rg.el.appendChild(box);
       }
       box.style.left = pr.box.x + "px";
       box.style.top = pr.box.y + "px";
       box.style.width = pr.box.w + "px";
       box.style.height = pr.box.h + "px";
+      if (rg.spot) {
+        // a spotlight that starts or ends on a hard cut, the scene edge or another spotlight switches with it
+        // (no bright flash between shots); elsewhere it fades
+        const cuts = p.keyframes.filter((k) => k.dur === 0).map((k) => k.t).concat([0, p.duration]);
+        const near = (t, list) => list.some((x) => Math.abs(x - t) < 0.07);
+        const others = rings.filter((o) => o !== rg && o.spot);
+        const hardIn = near(rg.start, cuts) || near(rg.start, others.map((o) => o.end));
+        const hardOut = near(rg.end, cuts) || near(rg.end, others.map((o) => o.start));
+        if (hardIn) tl.set(rg.el, { opacity: 1 }, rg.start);
+        else tl.fromTo(rg.el, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, rg.start);
+        if (!hardOut) tl.to(rg.el, { opacity: 0, duration: 0.15, ease: "power2.in" }, Math.max(rg.start + 0.3, rg.end - 0.17));
+        return;
+      }
       tl.fromTo(rg.el, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, rg.start);
       tl.fromTo(box, { scale: 1.06 }, { scale: 1, duration: 0.4, ease: "expo.out" }, rg.start);
       tl.to(rg.el, { opacity: 0, duration: 0.15, ease: "power2.in" }, Math.max(rg.start + 0.3, rg.end - 0.17));
