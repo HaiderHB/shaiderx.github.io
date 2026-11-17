@@ -41,7 +41,7 @@ const turnKey = ({ text, history, changes }) =>
     text
   )}`;
 
-const route = demoApi(
+export default demoApi(
   async (req, res) => {
     const turn = readTurn(req);
     if (!turn.text)
@@ -60,23 +60,3 @@ const route = demoApi(
     requireKey: true,
   }
 );
-
-/**
- * Preview deployments only: GET /api/demo/affirm/turn/?k=<key>&text=<message>[&history=<json>]
- * runs the same guarded turn. It exists so live runs can be recorded through a fetch that cannot
- * POST or set headers; production answers GET with 405 like any other demo route.
- */
-export default function turn(req, res) {
-  if (req.method === 'GET' && process.env.VERCEL_ENV === 'preview' && req.query?.k) {
-    let history = [];
-    try {
-      history = JSON.parse(String(req.query.history || '[]'));
-    } catch {
-      history = [];
-    }
-    req.headers['x-demo-key'] = String(req.query.k);
-    req.body = { text: req.query.text, history };
-    req.method = 'POST';
-  }
-  return route(req, res);
-}
