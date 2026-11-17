@@ -1,0 +1,99 @@
+/* --- audit trail: time, actor, what happened, an optional action ------------------------ */
+
+.trail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  --actorRgb: var(--rgbText);
+
+  position: relative;
+  display: grid;
+  grid-template-columns: 78px auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: var(--uiGapS) var(--uiGapL);
+  padding: var(--uiGapL) 0;
+  border-top: 1px solid var(--uiLine);
+  font-size: var(--uiFontSmall);
+  line-height: 1.45;
+  animation: rowIn 360ms var(--uiEase) both;
+
+  &:first-child {
+    border-top: 0;
+  }
+
+  &[data-tone='accent'] {
+    --actorRgb: var(--uiRgbAccent);
+  }
+
+  &[data-tone='ok'] {
+    --actorRgb: var(--uiRgbOk);
+  }
+
+  &[data-tone='warn'] {
+    --actorRgb: var(--uiRgbWarn);
+  }
+
+  &[data-tone='bad'] {
+    --actorRgb: var(--uiRgbBad);
+  }
+}
+
+@keyframes rowIn {
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item {
+    animation: none;
+  }
+}
+
+.time {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiFaint);
+}
+
+.actor {
+  justify-self: start;
+  padding: 1px 8px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontMicro);
+  font-weight: 600;
+  white-space: nowrap;
+  color: rgb(var(--actorRgb));
+  background: rgb(var(--actorRgb) / 0.13);
+}
+
+.text {
+  min-width: 0;
+  color: rgb(var(--rgbText) / 0.86);
+  overflow-wrap: anywhere;
+}
+
+.action {
+  justify-self: end;
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+@media (max-width: 600px) {
+  .item {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .time {
+    grid-column: 1 / -1;
+  }
+}

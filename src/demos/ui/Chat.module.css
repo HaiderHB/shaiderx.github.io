@@ -1,0 +1,101 @@
+/* --- chat thread: two sides, bubbles, avatars ------------------------------------------- */
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spaceM);
+  max-height: var(--uiChatHeight, none);
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  scroll-behavior: smooth;
+}
+
+.empty {
+  padding: var(--spaceL);
+  border: 1px dashed var(--uiLineStrong);
+  border-radius: var(--uiRadiusL);
+  font-size: var(--uiFontSmall);
+  text-align: center;
+  color: var(--uiMuted);
+}
+
+.message {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--uiGapL);
+  max-width: 92%;
+
+  &[data-side='end'] {
+    grid-template-columns: minmax(0, 1fr) 30px;
+    align-self: flex-end;
+  }
+
+  &[data-side='end'] .avatar {
+    grid-column: 2;
+    grid-row: 1;
+    color: rgb(var(--rgbText));
+    background: rgb(var(--rgbText) / 0.12);
+  }
+
+  &[data-side='end'] .body {
+    grid-column: 1;
+    grid-row: 1;
+    align-items: flex-end;
+  }
+
+  &[data-side='end'] .bubble {
+    border-radius: var(--uiRadiusL) var(--uiRadiusXS) var(--uiRadiusL) var(--uiRadiusL);
+    color: rgb(var(--uiRgbOnAccent));
+    background: rgb(var(--uiRgbAccentDeep));
+  }
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-weight: 600;
+  color: rgb(var(--uiRgbAccent));
+  background: rgb(var(--uiRgbAccent) / 0.16);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--uiGapS);
+  min-width: 0;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--uiGapM);
+  font-size: var(--uiFontCaption);
+  color: var(--uiFaint);
+}
+
+.name {
+  font-weight: 600;
+  color: var(--uiMuted);
+}
+
+.bubble {
+  margin: 0;
+  padding: 9px 13px;
+  border-radius: var(--uiRadiusXS) var(--uiRadiusL) var(--uiRadiusL) var(--uiRadiusL);
+  font-size: var(--uiFontNote);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: rgb(var(--rgbText));
+  background: rgb(var(--uiRgbRaised));
+  box-shadow: inset 0 0 0 1px var(--uiLine);
+}

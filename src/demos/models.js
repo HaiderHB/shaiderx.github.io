@@ -145,6 +145,66 @@ export async function* chatStream({ provider, model, system, messages, maxTokens
   }
 }
 
+/**
+ * One LLM turn with tools (OpenAI-style function calling) through fal, OpenAI or Gemini.
+ * tools: [{ type: 'function', function: { name, description, parameters } }].
+ * Returns { content, toolCalls: [{ id, name, args }], finishReason }; args are parsed ({} if
+ * not JSON).
+ * Some models answer with JSON in the text instead of a tool call: callers should fall back.
+ */
+export async function chatTools({
+  provider,
+  model,
+  system,
+  messages,
+  tools,
+  toolChoice = 'auto',
+  maxTokens = 400,
+  temperature,
+}) {
+  provider = pickProvider(provider);
+  if (provider === 'anthropic')
+    throw new Error('chatTools() supports fal, openai and gemini');
+  const fal = provider === 'fal';
+  const gemini = provider === 'gemini';
+  const response = await fetch(
+    `${fal ? FAL_LLM_URL() : gemini ? GEMINI_URL() : OPENAI_URL()}/chat/completions`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: fal
+          ? `Key ${falKey()}`
+          : `Bearer ${requireEnv(gemini ? 'GOOGLE_API_KEY' : 'OPENAI_API_KEY')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        messages: system ? [{ role: 'system', content: system }, ...messages] : messages,
+        tools,
+        tool_choice: toolChoice,
+        ...(provider === 'openai'
+          ? { max_completion_tokens: maxTokens }
+          : { max_tokens: maxTokens }),
+        ...(temperature != null && { temperature }),
+      }),
+    }
+  );
+  await failIfBad(response, provider);
+  const data = await response.json();
+  const message = data.choices?.[0]?.message || {};
+  const toolCalls = (message.tool_calls || []).map(call => {
+    let args = {};
+    try {
+      args = JSON.parse(call.function?.arguments || '{}');
+    } catch {
+      args = {};
+    }
+    return { id: call.id, name: call.function?.name, args };
+  });
+  const finishReason = data.choices?.[0]?.finish_reason;
+  return { content: message.content || '', toolCalls, finishReason };
+}
+
 /** Queues a fal.ai job (image, video, audio, voice models). Returns a jobId to poll. */
 export async function falStartJob(modelId, input) {
   const response = await fetch(`${FAL_QUEUE_URL()}/${modelId}`, {
