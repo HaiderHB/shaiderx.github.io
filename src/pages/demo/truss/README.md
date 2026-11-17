@@ -161,10 +161,19 @@ Never edit the outputs by hand.
 
 ## Testing
 
-- `npm run build` passes; the pipeline and payment logic were exercised in Node (all three samples,
-  pay + replay + new-key block, a forced payment on held and rejected bills, the duplicate after paying).
-- Checked at 1360 px and 390 px (no horizontal scroll) in preview mode and with the key on the Vercel
-  preview: live runs for all three samples, the live timeout-and-retry, the 409 and 403 paths.
+- `npm run build` passes. The pipeline and the payment logic were exercised in Node: all three samples, pay +
+  replay + a new key blocked (409), a forced payment on held and rejected bills (403), the duplicate after paying.
+- On the Vercel preview with the demo key (Playwright at 1360 px and 390 px, no horizontal scroll, no page
+  errors): live runs for Northline (approve 97%), Crestline (hold 100%) and Northline again after paying it
+  (reject 100%, "within PO balance" counts the session's payment); the live timeout and retry (attempt 1 aborted
+  by the browser at 1.5 s, attempt 2 `201 replayed`, one charge); "Pay again with a new key" refused with 409;
+  "Try to pay it anyway" refused with 403. With curl: the same timeout and retry, and a call without a key (401).
+- Preview mode (no key) at 1360 px and 390 px: the on-load example, all three samples, the payment paths.
+
+## Launch film
+
+`video/films/truss` (kit 2, launch format, 70.6 s): SPEC.md (beat table), REVIEW.md (QA and honesty notes).
+Web encode at `public/demo-videos/truss.mp4`.
 
 ## Take-down
 

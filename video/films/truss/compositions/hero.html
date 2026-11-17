@@ -1,5 +1,10 @@
 <template>
-  <!-- HERO 16.2-36.2 s: ONE real task, start to finish, in 3-4 shots. Scene time = film time - 16.2. Each shot = one video element (cut the waits between them), one cut in kit-shots, one spotlight, one caption. In a shot: hold still ~1 s, ONE action (the cursor rests 450 ms, then clicks), the result holds >= 1.5 s. -->
+  <!-- Truss launch film (kit 2, launch format). Clip `flow`, recorded 2026-11-17 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its example (model outputs recorded from live runs on the Vercel preview on 2026-11-17; checks, rules floor and payment endpoint run in the browser). Footage plays at 1x; every hold is real footage.
+       HERO 17.1-38.2 s, one bill in four shots. Scene time = film time - 17.1. The example is replayed four times
+       (the page's "New session" empties its in-browser ledger first), each time with a different card pinned:
+       0-5.2 Read and check is pressed beside the Northline invoice (click at 1.62); the scan sweeps down the page |
+       5.2-10.5 the typed bill: the fields land at 6.55 | 10.5-15.8 the checks: all eight listed, they tick from 11.8, 8/8 at 13.1 |
+       15.8-21.1 the decision: probabilities, rules floor and Approve land at 17.8, the note types. -->
   <style>
     #root {
       position: absolute;
@@ -11,22 +16,25 @@
   <div id="root" data-composition-id="hero" data-width="1920" data-height="1080">
     <div id="hero-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="hero-cam" class="kit-cam">
-        <video id="hero-v1" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="0" data-duration="5" data-media-start="0.5" data-track-index="0" muted playsinline></video>
-        <video id="hero-v2" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="5" data-duration="5" data-media-start="6" data-track-index="0" muted playsinline></video>
-        <video id="hero-v3" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="10" data-duration="5" data-media-start="14" data-track-index="0" muted playsinline></video>
-        <video id="hero-v4" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="15" data-duration="5" data-media-start="20" data-track-index="0" muted playsinline></video>
-        <div id="hero-spot-1" class="clip kit-spot" data-start="0" data-duration="5" data-kit-focus="input" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="hero-spot-2" class="clip kit-spot" data-start="5" data-duration="5" data-kit-focus="output" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="hero-spot-3" class="clip kit-spot" data-start="10" data-duration="5" data-kit-focus="card" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="hero-spot-4" class="clip kit-spot" data-start="15" data-duration="5" data-kit-focus="decision" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <!-- H1: still, then Read and check is pressed; the scan sweeps the invoice -->
+        <video id="hero-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="5.2" data-media-start="25.1" data-track-index="0" muted playsinline></video>
+        <!-- H2: the typed bill pinned; the fields land -->
+        <video id="hero-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="5.2" data-duration="5.3" data-media-start="36.6" data-track-index="0" muted playsinline></video>
+        <!-- H3: the checks pinned; eight checks tick -->
+        <video id="hero-v3" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="10.5" data-duration="5.3" data-media-start="46.3" data-track-index="0" muted playsinline></video>
+        <!-- H4: the decision pinned; it lands, the note types -->
+        <video id="hero-v4" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="15.8" data-duration="5.3" data-media-start="56.35" data-track-index="0" muted playsinline></video>
+        <div id="hero-spot-bill" class="clip kit-spot" data-start="5.2" data-duration="5.3" data-kit-window="6.9,10.4" data-kit-focus="[&quot;billKv&quot;,&quot;lines&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-checks" class="clip kit-spot" data-start="10.5" data-duration="5.3" data-kit-window="12.5,15.7" data-kit-focus="checks" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-decision" class="clip kit-spot" data-start="15.8" data-duration="5.3" data-kit-window="18.5,21" data-kit-focus="decision" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
       </div>
     </div>
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": "input", "maxZoom": 2, "cut": true, "window": [0, 5], "label": "H1 start the task" },
-        { "t": 5, "focus": "output", "maxZoom": 2, "cut": true, "window": [5, 10], "label": "H2 the work happens" },
-        { "t": 10, "focus": "card", "maxZoom": 2, "cut": true, "window": [10, 15], "label": "H3 the result, one detail" },
-        { "t": 15, "focus": "decision", "maxZoom": 2, "cut": true, "window": [15, 20], "label": "H4 the decision" }
+        { "t": 0, "focus": "runBox", "maxZoom": 1.15, "align": "top-left", "cut": true, "window": [0, 5.2], "label": "H1 the Read button and the invoice under it" },
+        { "t": 5.2, "focus": ["billKv", "lines"], "maxZoom": 1.7, "cut": true, "window": [6.9, 10.4], "label": "H2 the typed bill: fields and lines" },
+        { "t": 10.5, "focus": "checks", "maxZoom": 1.6, "pad": 8, "cut": true, "window": [12.5, 15.7], "label": "H3 eight checks in code" },
+        { "t": 15.8, "focus": "decision", "maxZoom": 1.6, "cut": true, "window": [18.5, 21], "label": "H4 the decision" }
       ]
     </script>
   </div>

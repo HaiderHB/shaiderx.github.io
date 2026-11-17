@@ -1,7 +1,6 @@
 <template>
-  <!-- WHAT IT IS 4.2-10.2 s: ONE plain sentence a stranger understands, over blurred, dimmed product footage.
-       See kit/components/statement-scene.html: data-kit-cam="x,y,w,h" on the root frames one region of the footage;
-       style="--kit-scrim: 0.84" on a white page keeps the sentence at 4.5:1. -->
+  <!-- Truss launch film (kit 2, launch format). Clip `flow`, recorded 2026-11-17 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its example (model outputs recorded from live runs on the Vercel preview on 2026-11-17; checks, rules floor and payment endpoint run in the browser). Footage plays at 1x; every hold is real footage.
+       WHAT IT IS 4.6-11.1 s: one sentence over the top of the page while the on-load example plays, blurred and dimmed. -->
   <style>
     #root {
       position: absolute;
@@ -13,12 +12,12 @@
   <div id="root" data-composition-id="what" data-width="1920" data-height="1080">
     <div id="what-stage" class="kit-stage kit-backdrop" data-layout-allow-overflow>
       <div id="what-cam" class="kit-cam">
-        <video id="what-v" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="0" data-duration="6" data-media-start="8" data-track-index="0" muted playsinline></video>
+        <video id="what-v" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="6.5" data-media-start="0.4" data-track-index="0" muted playsinline></video>
       </div>
     </div>
-    <div id="what-scrim" class="clip kit-scrim" data-start="0" data-duration="6" data-track-index="1" data-layout-ignore></div>
-    <div id="what-text" class="clip kit-statement" data-start="0" data-duration="6" data-track-index="2">
-      <div class="kit-statement-text">One plain sentence that says *what it is*.</div>
+    <div id="what-scrim" class="clip kit-scrim" data-start="0" data-duration="6.5" data-track-index="1" data-layout-ignore></div>
+    <div id="what-text" class="clip kit-statement" data-start="0" data-duration="6.5" data-track-index="2">
+      <div class="kit-statement-text">An AI agent that checks subcontractor bills *before paying* them.</div>
       <div class="kit-statement-sub">A prototype built for Truss by Haider Bokhari</div>
     </div>
   </div>
