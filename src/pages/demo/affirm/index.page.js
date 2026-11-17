@@ -1016,60 +1016,62 @@ function DecisionCard({ run }) {
       >
         <CardTitle>Decision</CardTitle>
       </CardHead>
-      <div className={styles.bars}>
-        <MiniLabel as="p" className={styles.question}>
-          handoff · stay with the agent, or a person?
-        </MiniLabel>
-        <ProbabilityBars
-          options={ROUTE_BARS}
-          probabilities={answers.handoff?.probabilities}
-          choice={final.jevRoute}
-        />
-      </div>
-      <div className={styles.bars}>
-        <MiniLabel as="p" className={styles.question}>
-          queue · if a person takes it, which team?
-        </MiniLabel>
-        <ProbabilityBars
-          options={QUEUE_BARS.map(bar => ({
-            ...bar,
-            tone: bar.value === final.queue ? 'warn' : undefined,
-          }))}
-          probabilities={answers.queue?.probabilities}
-          choice={final.jevQueue}
-        />
-      </div>
-      <div className={styles.floor}>
-        <MiniLabel>Rules floor (code)</MiniLabel>
-        {floor.reasons.length ? (
-          <ul>
-            {floor.reasons.map(reason => (
-              <li key={reason}>
-                <StatusIcon status="warn" /> {reason}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No rule requires a person for this turn.</p>
-        )}
-      </div>
-      <div className={styles.final}>
-        <MiniLabel>Final route</MiniLabel>
-        <DecisionBadge tone={final.route === 'agent' ? 'ok' : 'warn'} size="l">
-          {final.route === 'agent'
-            ? 'Stays with the agent'
-            : `Hand to a person · ${QUEUES[final.queue]} queue`}
-        </DecisionBadge>
-        <p className={styles.small}>
-          The stricter of Jev’s pick and the rules.{' '}
-          {final.raisedByRules
-            ? 'Here the rules added a person Jev did not ask for.'
-            : final.jevRoute === 'human' && floor.route === 'agent'
-            ? 'Here Jev asked for a person; no rule required one.'
-            : final.queueByRules
-            ? 'Here the rules set the queue.'
-            : 'Here they agree.'}
-        </p>
+      <div className={styles.decisionBody}>
+        <div className={styles.bars}>
+          <MiniLabel as="p" className={styles.question}>
+            handoff · stay with the agent, or a person?
+          </MiniLabel>
+          <ProbabilityBars
+            options={ROUTE_BARS}
+            probabilities={answers.handoff?.probabilities}
+            choice={final.jevRoute}
+          />
+        </div>
+        <div className={styles.bars}>
+          <MiniLabel as="p" className={styles.question}>
+            queue · if a person takes it, which team?
+          </MiniLabel>
+          <ProbabilityBars
+            options={QUEUE_BARS.map(bar => ({
+              ...bar,
+              tone: bar.value === final.queue ? 'warn' : undefined,
+            }))}
+            probabilities={answers.queue?.probabilities}
+            choice={final.jevQueue}
+          />
+        </div>
+        <div className={styles.floor}>
+          <MiniLabel>Rules floor (code)</MiniLabel>
+          {floor.reasons.length ? (
+            <ul>
+              {floor.reasons.map(reason => (
+                <li key={reason}>
+                  <StatusIcon status="warn" /> {reason}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No rule requires a person for this turn.</p>
+          )}
+        </div>
+        <div className={styles.final}>
+          <MiniLabel>Final route</MiniLabel>
+          <DecisionBadge tone={final.route === 'agent' ? 'ok' : 'warn'} size="l">
+            {final.route === 'agent'
+              ? 'Stays with the agent'
+              : `Hand to a person · ${QUEUES[final.queue]} queue`}
+          </DecisionBadge>
+          <p className={styles.small}>
+            The stricter of Jev’s pick and the rules.{' '}
+            {final.raisedByRules
+              ? 'Here the rules added a person Jev did not ask for.'
+              : final.jevRoute === 'human' && floor.route === 'agent'
+              ? 'Here Jev asked for a person; no rule required one.'
+              : final.queueByRules
+              ? 'Here the rules set the queue.'
+              : 'Here they agree.'}
+          </p>
+        </div>
       </div>
       <JsonDetails
         summary="What Jev saw (state JSON)"

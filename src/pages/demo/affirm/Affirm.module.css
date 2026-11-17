@@ -525,6 +525,10 @@
   min-width: 0;
 }
 
+.decisionBody {
+  display: grid;
+}
+
 .bars {
   display: grid;
   gap: var(--uiGapM);

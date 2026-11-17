@@ -104,8 +104,32 @@ an identical turn replays for free.
 ## Testing
 
 Tools, guardrails, floor and the loop were run in Node with scripted model outputs (all three
-questions, a refused change, a masked number, a removed promise). Live runs on the Vercel preview:
-see `example.js` for the recordings the page replays.
+questions, a refused change, a masked number, a removed promise). The recorded examples were replayed
+through the same code in Node and match the live event streams exactly (tool results, checks, route).
+
+Live runs on the Vercel preview on 2026-11-17 (DeepSeek V3.2 via fal, Jev jev-1.13.0, prompt
+`affirm-v3`); these are the recordings in `example.js`:
+
+- "Can I move my payment date? I get paid on the 20th": `get_loans` → `check_policy(due_date_change,
+  L-4471)` → `propose_due_date_change(L-4471, 21)` (5 of 5 rules pass) → reply. 5 of 5 guardrails pass.
+  Jev: a person 7%, payments queue; no rule fires; stays with the agent. 20.5 s.
+- "I think I was charged twice for my laptop payment": `get_loans` → `get_payment_schedule(L-5108)`
+  (two posted $324.99 charges on Nov 10) → `open_payment_dispute(L-5108, [CH-88122])` → dispute
+  D-37122, review by Nov 24, no refund promised. Jev: a person 100%, Disputes 100%; the floor agrees.
+  Hand-off note written. 26.5 s.
+- "I lost my job last week. What are my options?": `get_loans` and `hardship_options` in one round →
+  reply offers a hardship specialist. Jev: a person 100%, Hardship 100%; the floor agrees. 11.6 s.
+
+Also tested live on the keyed preview with Playwright at 1360 and 390 px: a cached preset ("Live ·
+cached"), Confirm, then a typed follow-up that used the confirmed date ("Your next rowing machine
+payment is $120.00 on Dec 21", 7 s), and "Can you just waive my next laptop payment? And will this
+hurt my credit score?" (no waiver, no credit advice, all guardrails pass; Jev asked for a person at 96%
+with no rule firing, so it went to Hardship with a note). No console errors, no horizontal scroll at
+390 px. Earlier, a live turn that carried the replayed example as history answered without calling
+tools; history now leaves replayed examples out and the prompt asks for fresh tool calls each turn.
+
+Latency is the weak spot: DeepSeek V3.2 through fal mostly calls one tool per round, so a three-tool
+turn takes 12-27 s live. The page streams each step as it lands.
 
 ## Take-down
 
