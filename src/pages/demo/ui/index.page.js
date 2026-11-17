@@ -394,7 +394,12 @@ const TOOL_CALLS = [
   },
 ];
 const CHECKS = [
-  { id: 'a', label: 'Tools only read this customer’s loans', status: 'pass', detail: '3 tool calls, all scoped' },
+  {
+    id: 'a',
+    label: 'Tools only read this customer’s loans',
+    status: 'pass',
+    detail: '3 tool calls, all scoped',
+  },
   {
     id: 'b',
     label: 'No promise the policy doesn’t allow',
@@ -402,7 +407,12 @@ const CHECKS = [
     detail: 'Removed a promise policy doesn’t allow',
     removed: ['I’ll refund the extra charge today.'],
   },
-  { id: 'c', label: 'Disputes and hardship offered a person', status: 'na', detail: 'Not a dispute or hardship' },
+  {
+    id: 'c',
+    label: 'Disputes and hardship offered a person',
+    status: 'na',
+    detail: 'Not a dispute or hardship',
+  },
 ];
 
 const CHAT_MESSAGES = [

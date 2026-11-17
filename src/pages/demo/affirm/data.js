@@ -51,10 +51,38 @@ export const LOANS = [
     dueDayChangesLast12m: 0,
     schedule: monthly('2026-08-12', 12, 120, 4),
     charges: [
-      { id: 'CH-61204', date: '2026-08-12', time: '06:02', amount: 120, for: 'Payment 1 of 12', status: 'posted' },
-      { id: 'CH-66518', date: '2026-09-12', time: '06:01', amount: 120, for: 'Payment 2 of 12', status: 'posted' },
-      { id: 'CH-71833', date: '2026-10-12', time: '06:03', amount: 120, for: 'Payment 3 of 12', status: 'posted' },
-      { id: 'CH-87420', date: '2026-11-12', time: '06:02', amount: 120, for: 'Payment 4 of 12', status: 'posted' },
+      {
+        id: 'CH-61204',
+        date: '2026-08-12',
+        time: '06:02',
+        amount: 120,
+        for: 'Payment 1 of 12',
+        status: 'posted',
+      },
+      {
+        id: 'CH-66518',
+        date: '2026-09-12',
+        time: '06:01',
+        amount: 120,
+        for: 'Payment 2 of 12',
+        status: 'posted',
+      },
+      {
+        id: 'CH-71833',
+        date: '2026-10-12',
+        time: '06:03',
+        amount: 120,
+        for: 'Payment 3 of 12',
+        status: 'posted',
+      },
+      {
+        id: 'CH-87420',
+        date: '2026-11-12',
+        time: '06:02',
+        amount: 120,
+        for: 'Payment 4 of 12',
+        status: 'posted',
+      },
     ],
   },
   {
@@ -80,9 +108,30 @@ export const LOANS = [
       { n: 4, due: '2026-12-08', amount: 324.99, status: 'scheduled' },
     ],
     charges: [
-      { id: 'CH-77310', date: '2026-10-27', time: '14:41', amount: 324.99, for: 'Payment 1 of 4 (at checkout)', status: 'posted' },
-      { id: 'CH-88121', date: '2026-11-10', time: '09:14', amount: 324.99, for: 'Payment 2 of 4', status: 'posted' },
-      { id: 'CH-88122', date: '2026-11-10', time: '09:15', amount: 324.99, for: 'Payment 2 of 4', status: 'posted' },
+      {
+        id: 'CH-77310',
+        date: '2026-10-27',
+        time: '14:41',
+        amount: 324.99,
+        for: 'Payment 1 of 4 (at checkout)',
+        status: 'posted',
+      },
+      {
+        id: 'CH-88121',
+        date: '2026-11-10',
+        time: '09:14',
+        amount: 324.99,
+        for: 'Payment 2 of 4',
+        status: 'posted',
+      },
+      {
+        id: 'CH-88122',
+        date: '2026-11-10',
+        time: '09:15',
+        amount: 324.99,
+        for: 'Payment 2 of 4',
+        status: 'posted',
+      },
     ],
   },
   {
@@ -158,7 +207,20 @@ export const POLICY_TOPICS = Object.keys(POLICY);
 
 // --- formatting ---------------------------------------------------------------------------------------
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTHS = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
 /** '2026-12-21' -> 'Dec 21' (or 'Dec 21, 2026' with year). */
 export function fmtDate(iso, { year = false } = {}) {

@@ -71,9 +71,16 @@ export function makeWorld(changes = []) {
 }
 
 const ownLoan = (world, id) =>
-  world.loans.find(loan => loan.id === String(id || '').trim().toUpperCase());
+  world.loans.find(
+    loan =>
+      loan.id ===
+      String(id || '')
+        .trim()
+        .toUpperCase()
+  );
 
-const nextPayment = loan => loan.schedule.find(item => item.status === 'scheduled') || null;
+const nextPayment = loan =>
+  loan.schedule.find(item => item.status === 'scheduled') || null;
 const lastPayment = loan => loan.schedule[loan.schedule.length - 1] || null;
 const remaining = loan =>
   round2(
@@ -105,7 +112,11 @@ export const TOOL_SPECS = [
       name: 'get_payment_schedule',
       description:
         'The full payment schedule of one loan and every charge made for it (id, date, time, amount, what it paid, posted or pending).',
-      parameters: { type: 'object', properties: { loan_id: LOAN_ID }, required: ['loan_id'] },
+      parameters: {
+        type: 'object',
+        properties: { loan_id: LOAN_ID },
+        required: ['loan_id'],
+      },
     },
   },
   {
@@ -223,7 +234,9 @@ export function dueDateChecks(loan, newDay) {
       id: 'once_a_year',
       label: 'No other change in 12 months',
       pass: loan.dueDayChangesLast12m === 0,
-      detail: `${loan.dueDayChangesLast12m} change${loan.dueDayChangesLast12m === 1 ? '' : 's'} so far`,
+      detail: `${loan.dueDayChangesLast12m} change${
+        loan.dueDayChangesLast12m === 1 ? '' : 's'
+      } so far`,
     },
     {
       id: 'day_range',
@@ -234,13 +247,18 @@ export function dueDateChecks(loan, newDay) {
     {
       id: 'max_shift',
       label: 'Next payment moves 21 days or less',
-      pass: !monthly || !target ? null : shift !== 0 && shift <= 21 && target > addDays(TODAY, 3),
+      pass:
+        !monthly || !target
+          ? null
+          : shift !== 0 && shift <= 21 && target > addDays(TODAY, 3),
       detail:
         !monthly || !target
           ? 'n/a'
           : shift === 0
           ? `already due on the ${ordinal(day)}`
-          : `${fmtDate(next.due)} → ${fmtDate(target)} (${shift > 0 ? '+' : ''}${shift} days)`,
+          : `${fmtDate(next.due)} → ${fmtDate(target)} (${
+              shift > 0 ? '+' : ''
+            }${shift} days)`,
     },
   ];
 }
@@ -269,7 +287,8 @@ function checkPolicy({ topic, loan_id }, world) {
 
 function proposeDueDateChange({ loan_id, new_day }, world) {
   const loan = ownLoan(world, loan_id);
-  if (!loan) return { status: 'refused', error: 'loan_not_found', loan_id: clip(loan_id, 20) };
+  if (!loan)
+    return { status: 'refused', error: 'loan_not_found', loan_id: clip(loan_id, 20) };
   const day = Number(new_day);
   const checks = dueDateChecks(loan, day);
   const shown = checks.map(({ label, pass, detail }) => ({ rule: label, pass, detail }));
@@ -312,9 +331,14 @@ function businessDaysAfter(iso, days) {
 
 function openPaymentDispute({ loan_id, charge_ids, reason }, world) {
   const loan = ownLoan(world, loan_id);
-  if (!loan) return { status: 'refused', error: 'loan_not_found', loan_id: clip(loan_id, 20) };
+  if (!loan)
+    return { status: 'refused', error: 'loan_not_found', loan_id: clip(loan_id, 20) };
   const ids = (Array.isArray(charge_ids) ? charge_ids : [charge_ids])
-    .map(id => String(id || '').trim().toUpperCase())
+    .map(id =>
+      String(id || '')
+        .trim()
+        .toUpperCase()
+    )
     .filter(Boolean)
     .slice(0, 4);
   const charges = ids.map(id => loan.charges.find(charge => charge.id === id));
@@ -341,7 +365,9 @@ function openPaymentDispute({ loan_id, charge_ids, reason }, world) {
   );
   const duplicate = twins.length > 1;
   const inReview = duplicate ? twins.slice(1) : charges;
-  const number = 30000 + (inReview.reduce((sum, c) => sum + Number(c.id.replace(/\D/g, '')), 0) % 9000);
+  const number =
+    30000 +
+    (inReview.reduce((sum, c) => sum + Number(c.id.replace(/\D/g, '')), 0) % 9000);
   return {
     status: 'opened',
     dispute_id: `D-${number}`,
@@ -370,11 +396,20 @@ function hardshipOptions({ reason }, world) {
     .flatMap(loan =>
       loan.schedule
         .filter(item => item.status === 'scheduled' && item.due <= horizon)
-        .map(item => ({ loan_id: loan.id, item: loan.item, due: item.due, amount: item.amount }))
+        .map(item => ({
+          loan_id: loan.id,
+          item: loan.item,
+          due: item.due,
+          amount: item.amount,
+        }))
     )
     .sort((a, b) => a.due.localeCompare(b.due));
   const movable = world.loans
-    .filter(loan => loan.status === 'current' && passed(dueDateChecks(loan, (loan.dueDay % 28) + 1).slice(0, 3)))
+    .filter(
+      loan =>
+        loan.status === 'current' &&
+        passed(dueDateChecks(loan, (loan.dueDay % 28) + 1).slice(0, 3))
+    )
     .map(loan => loan.id);
   return {
     requires_specialist: true,
@@ -382,9 +417,22 @@ function hardshipOptions({ reason }, world) {
     reason_noted: clip(reason, 80),
     upcoming_payments_30_days: upcoming,
     options: [
-      { id: 'pause', label: 'Pause one payment for up to 30 days', who: 'hardship specialist, after review' },
-      { id: 'spread', label: 'Spread the balance over more, smaller payments', who: 'hardship specialist, after review' },
-      { id: 'move_due_date', label: 'Move a monthly due date', who: 'self-serve if eligible', loans: movable },
+      {
+        id: 'pause',
+        label: 'Pause one payment for up to 30 days',
+        who: 'hardship specialist, after review',
+      },
+      {
+        id: 'spread',
+        label: 'Spread the balance over more, smaller payments',
+        who: 'hardship specialist, after review',
+      },
+      {
+        id: 'move_due_date',
+        label: 'Move a monthly due date',
+        who: 'self-serve if eligible',
+        loans: movable,
+      },
     ],
     note: 'The agent can describe these options but cannot approve them or promise an outcome.',
   };
@@ -396,7 +444,11 @@ export function runTool(name, args, world) {
   switch (name) {
     case 'get_loans':
       return {
-        customer: { id: CUSTOMER.id, name: CUSTOMER.name, account: maskNumber(CUSTOMER.accountNumber) },
+        customer: {
+          id: CUSTOMER.id,
+          name: CUSTOMER.name,
+          account: maskNumber(CUSTOMER.accountNumber),
+        },
         loans: world.loans.map(loanSummary),
       };
     case 'get_payment_schedule': {
@@ -438,27 +490,37 @@ export function summarizeCall(call) {
     case 'get_payment_schedule': {
       const paid = (r.schedule || []).filter(item => item.status === 'paid').length;
       const byDay = {};
-      for (const charge of r.charges || []) byDay[charge.date] = (byDay[charge.date] || 0) + 1;
+      for (const charge of r.charges || [])
+        byDay[charge.date] = (byDay[charge.date] || 0) + 1;
       const doubled = Object.entries(byDay).find(([, n]) => n > 1);
-      return `${r.item}: ${paid} of ${(r.schedule || []).length} paid, ${(r.charges || []).length} charges${
-        doubled ? ` (${doubled[1]} on ${fmtDate(doubled[0])})` : ''
-      }`;
+      return `${r.item}: ${paid} of ${(r.schedule || []).length} paid, ${
+        (r.charges || []).length
+      } charges${doubled ? ` (${doubled[1]} on ${fmtDate(doubled[0])})` : ''}`;
     }
     case 'check_policy':
       return r.eligibility
-        ? `${r.title}: ${r.eligibility.loan_id} ${r.eligibility.eligible ? 'eligible' : 'not eligible'}`
+        ? `${r.title}: ${r.eligibility.loan_id} ${
+            r.eligibility.eligible ? 'eligible' : 'not eligible'
+          }`
         : `${r.title}: ${(r.rules || []).length} rules`;
     case 'propose_due_date_change':
       if (r.status === 'awaiting_customer_confirmation')
-        return `${r.item}: ${ordinal(r.from_day)} → ${ordinal(r.to_day)}, ${r.checks.length} of ${r.checks.length} checks pass, awaiting confirmation`;
-      if (r.status === 'not_eligible') return `${r.item}: not eligible (${r.failed.join('; ').toLowerCase()})`;
+        return `${r.item}: ${ordinal(r.from_day)} → ${ordinal(r.to_day)}, ${
+          r.checks.length
+        } of ${r.checks.length} checks pass, awaiting confirmation`;
+      if (r.status === 'not_eligible')
+        return `${r.item}: not eligible (${r.failed.join('; ').toLowerCase()})`;
       return r.status;
     case 'open_payment_dispute':
       return r.status === 'opened'
-        ? `Dispute ${r.dispute_id} opened: ${money(r.amount_in_review)} in review by ${fmtDate(r.review_by)}`
+        ? `Dispute ${r.dispute_id} opened: ${money(
+            r.amount_in_review
+          )} in review by ${fmtDate(r.review_by)}`
         : `Not opened: ${String(r.error || r.status).replace(/_/g, ' ')}`;
     case 'hardship_options':
-      return `${(r.options || []).length} options, ${(r.upcoming_payments_30_days || []).length} payments in the next 30 days, needs a specialist`;
+      return `${(r.options || []).length} options, ${
+        (r.upcoming_payments_30_days || []).length
+      } payments in the next 30 days, needs a specialist`;
     default:
       return '';
   }
@@ -507,13 +569,19 @@ export function cleanReply(text) {
 
 // --- guardrails (code) -----------------------------------------------------------------------------
 
-const NEGATION = /\b(can'?t|cannot|can not|unable|not able|won'?t|don'?t|do not|isn'?t|not something|never|no longer)\b|\bnot\b/i;
-const HEDGE = /\b(if|once|may|might|could|depend|depends|specialist|review|reviewed|decide|decides|eligib)/i;
-const PROMISE = /\b(waive[sd]?|waiving|forgiv(e|en|eness)|guarantee[sd]?|refund(ed|s)?|write[- ]?off|written off|approved?|stop (the )?(charges|collection)|pause your payments?)\b/i;
-const ADVICE = /\b(credit score|credit report|credit rating|credit bureau|credit check|interest rate|refinanc\w*|invest\w*|consolidat\w*|you should (borrow|take out|use your savings|apply for)|financial advice)\b/i;
+const NEGATION =
+  /\b(can'?t|cannot|can not|unable|not able|won'?t|don'?t|do not|isn'?t|not something|never|no longer)\b|\bnot\b/i;
+const HEDGE =
+  /\b(if|once|may|might|could|depend|depends|specialist|review|reviewed|decide|decides|eligib)/i;
+const PROMISE =
+  /\b(waive[sd]?|waiving|forgiv(e|en|eness)|guarantee[sd]?|refund(ed|s)?|write[- ]?off|written off|approved?|stop (the )?(charges|collection)|pause your payments?)\b/i;
+const ADVICE =
+  /\b(credit score|credit report|credit rating|credit bureau|credit check|interest rate|refinanc\w*|invest\w*|consolidat\w*|you should (borrow|take out|use your savings|apply for)|financial advice)\b/i;
 const APR = /\bAPR\b/; // case-sensitive: "Apr 12" is a date
-const COMPLETED_CHANGE = /\b(i'?ve|i have|has been|have been|is now|are now)\s+(moved|changed|updated|set)\b/i;
-const OFFERS_PERSON = /\b(specialist|person|human|team member|someone from|agent will|connect you|hand (this|you) (over|off)|transfer)\b/i;
+const COMPLETED_CHANGE =
+  /\b(i'?ve|i have|has been|have been|is now|are now)\s+(moved|changed|updated|set)\b/i;
+const OFFERS_PERSON =
+  /\b(specialist|person|human|team member|someone from|agent will|connect you|hand (this|you) (over|off)|transfer)\b/i;
 // card or account style numbers (4-digit groups) and long digit runs; ISO dates do not match
 const LONG_NUMBER = /\b(?:\d{4}[ -]){2,3}\d{4}\b|\b\d{8,}\b/g;
 
@@ -537,7 +605,13 @@ export function guardReply(draft, { calls, floor, changes = [] }) {
   let text = draft;
   const checks = [];
   const add = (id, status, detail, removed) =>
-    checks.push({ id, label: CHECK_LABELS[id], status, detail, ...(removed?.length && { removed }) });
+    checks.push({
+      id,
+      label: CHECK_LABELS[id],
+      status,
+      detail,
+      ...(removed?.length && { removed }),
+    });
 
   const refusedIds = calls.filter(call => call.result?.error === 'loan_not_found');
   add(
@@ -545,21 +619,39 @@ export function guardReply(draft, { calls, floor, changes = [] }) {
     'pass',
     refusedIds.length
       ? `${refusedIds.length} lookup refused by code (not her loan)`
-      : `${calls.length} tool call${calls.length === 1 ? '' : 's'}, all scoped to ${CUSTOMER.id}`
+      : calls.length
+      ? `${calls.length} tool call${calls.length === 1 ? '' : 's'}, all scoped to ${
+          CUSTOMER.id
+        }`
+      : 'No tools called this turn'
   );
 
   const proposals = calls.filter(call => call.name === 'propose_due_date_change');
-  const eligible = proposals.find(call => call.result?.status === 'awaiting_customer_confirmation');
+  const eligible = proposals.find(
+    call => call.result?.status === 'awaiting_customer_confirmation'
+  );
   const confirmedBefore = changes.length > 0 && !eligible;
   const claimed = confirmedBefore
     ? []
-    : sentencesOf(text).filter(s => COMPLETED_CHANGE.test(s) && /\b(due|date|payment)/i.test(s));
+    : sentencesOf(text).filter(
+        s => COMPLETED_CHANGE.test(s) && /\b(due|date|payment)/i.test(s)
+      );
   if (claimed.length) {
-    text = sentencesOf(text).filter(s => !claimed.includes(s)).join('').trim();
+    text = sentencesOf(text)
+      .filter(s => !claimed.includes(s))
+      .join('')
+      .trim();
     text += eligible
-      ? ` Tap Confirm below and your due date moves to the ${ordinal(eligible.result.to_day)}.`
+      ? ` Tap Confirm below and your due date moves to the ${ordinal(
+          eligible.result.to_day
+        )}.`
       : ' I can’t change that date here.';
-    add('eligibility', 'fixed', 'Claimed a change that isn’t confirmed', claimed.map(s => s.trim()));
+    add(
+      'eligibility',
+      'fixed',
+      'Claimed a change that isn’t confirmed',
+      claimed.map(s => s.trim())
+    );
   } else if (confirmedBefore && !proposals.length) {
     add('eligibility', 'pass', 'She confirmed the change earlier in this chat');
   } else if (proposals.length) {
@@ -574,20 +666,40 @@ export function guardReply(draft, { calls, floor, changes = [] }) {
     add('eligibility', 'na', 'No date change in this turn');
   }
 
-  const promises = sentencesOf(text).filter(s => PROMISE.test(s) && !NEGATION.test(s) && !HEDGE.test(s));
+  const promises = sentencesOf(text).filter(
+    s => PROMISE.test(s) && !NEGATION.test(s) && !HEDGE.test(s)
+  );
   if (promises.length) {
-    text = sentencesOf(text).filter(s => !promises.includes(s)).join('').trim();
+    text = sentencesOf(text)
+      .filter(s => !promises.includes(s))
+      .join('')
+      .trim();
     text += ' A specialist decides the outcome; I can’t promise one.';
-    add('promises', 'fixed', 'Removed a promise policy doesn’t allow', promises.map(s => s.trim()));
+    add(
+      'promises',
+      'fixed',
+      'Removed a promise policy doesn’t allow',
+      promises.map(s => s.trim())
+    );
   } else {
     add('promises', 'pass', 'No refund, waiver or approval promised');
   }
 
-  const advice = sentencesOf(text).filter(s => (ADVICE.test(s) || APR.test(s)) && !NEGATION.test(s));
+  const advice = sentencesOf(text).filter(
+    s => (ADVICE.test(s) || APR.test(s)) && !NEGATION.test(s)
+  );
   if (advice.length) {
-    text = sentencesOf(text).filter(s => !advice.includes(s)).join('').trim();
+    text = sentencesOf(text)
+      .filter(s => !advice.includes(s))
+      .join('')
+      .trim();
     text += ' I can’t give credit or financial advice.';
-    add('advice', 'fixed', 'Removed credit or financial advice', advice.map(s => s.trim()));
+    add(
+      'advice',
+      'fixed',
+      'Removed credit or financial advice',
+      advice.map(s => s.trim())
+    );
   } else {
     add('advice', 'pass', 'No credit score, APR or money advice');
   }
@@ -600,11 +712,16 @@ export function guardReply(draft, { calls, floor, changes = [] }) {
     add('masking', 'pass', 'Tools return the last 4 only; reply has none longer');
   }
 
-  if (floor?.route === 'human' && (floor.queue === 'disputes' || floor.queue === 'hardship')) {
+  if (
+    floor?.route === 'human' &&
+    (floor.queue === 'disputes' || floor.queue === 'hardship')
+  ) {
     if (OFFERS_PERSON.test(text)) {
       add('handoff', 'pass', 'The reply offers a specialist');
     } else {
-      text += ` I’m connecting you with a ${floor.queue === 'disputes' ? 'disputes' : 'hardship'} specialist who can take it from here.`;
+      text += ` I’m connecting you with a ${
+        floor.queue === 'disputes' ? 'disputes' : 'hardship'
+      } specialist who can take it from here.`;
       add('handoff', 'fixed', 'Added the offer of a specialist');
     }
   } else {
@@ -625,9 +742,12 @@ export function checkCounts(checks = []) {
 
 // --- the rules floor and the final route -------------------------------------------------------------
 
-const DISPUTE_TEXT = /\b(charged twice|double[- ]?charged|charged me twice|two charges|duplicate|didn'?t (make|buy|authori[sz]e)|unauthori[sz]ed|fraud|wrong (charge|amount))\b/i;
-const HARDSHIP_TEXT = /\b(lost my job|laid off|unemployed|out of work|can'?t (afford|pay)|cannot (afford|pay)|hardship|medical|in hospital|lost (my )?income|reduced (hours|income))\b/i;
-const PERSON_TEXT = /\b(talk|speak|chat) (to|with) (a |an )?(human|person|real person|agent|representative|someone)\b|\b(human|real person|representative) please\b/i;
+const DISPUTE_TEXT =
+  /\b(charged twice|double[- ]?charged|charged me twice|two charges|duplicate|didn'?t (make|buy|authori[sz]e)|unauthori[sz]ed|fraud|wrong (charge|amount))\b/i;
+const HARDSHIP_TEXT =
+  /\b(lost my job|laid off|unemployed|out of work|can'?t (afford|pay)|cannot (afford|pay)|hardship|medical|in hospital|lost (my )?income|reduced (hours|income))\b/i;
+const PERSON_TEXT =
+  /\b(talk|speak|chat) (to|with) (a |an )?(human|person|real person|agent|representative|someone)\b|\b(human|real person|representative) please\b/i;
 
 export const QUEUES = {
   payments: 'Payments',
@@ -647,9 +767,14 @@ export function floorFor({ text, calls = [], checks = [] }) {
     const rank = { payments: 1, disputes: 2, hardship: 3 };
     if (next && (!queue || rank[next] > rank[queue])) queue = next;
   };
-  if (calls.some(call => call.name === 'open_payment_dispute' && call.result?.status === 'opened'))
+  if (
+    calls.some(
+      call => call.name === 'open_payment_dispute' && call.result?.status === 'opened'
+    )
+  )
     pick('disputes', 'A dispute was opened: disputes always get a person');
-  else if (DISPUTE_TEXT.test(text)) pick('disputes', 'She reports a wrong charge: disputes always get a person');
+  else if (DISPUTE_TEXT.test(text))
+    pick('disputes', 'She reports a wrong charge: disputes always get a person');
   if (calls.some(call => call.name === 'hardship_options') || HARDSHIP_TEXT.test(text))
     pick('hardship', 'Hardship always goes to a person');
   const proposals = calls.filter(call => call.name === 'propose_due_date_change');
@@ -662,9 +787,11 @@ export function floorFor({ text, calls = [], checks = [] }) {
   // Masking a number or adding the offer of a person is routine; a removed promise, advice or a
   // false claim means the model went off policy, so a person looks at it.
   const offPolicy = checks.filter(
-    check => check.status === 'fixed' && ['eligibility', 'promises', 'advice'].includes(check.id)
+    check =>
+      check.status === 'fixed' && ['eligibility', 'promises', 'advice'].includes(check.id)
   );
-  if (offPolicy.length) pick(null, 'A guardrail removed something off policy from the reply');
+  if (offPolicy.length)
+    pick(null, 'A guardrail removed something off policy from the reply');
   return { route: reasons.length ? 'human' : 'agent', queue, reasons };
 }
 
@@ -711,7 +838,9 @@ export function jevState({ text, reply, calls }) {
   return {
     customer_message: clip(text, 400),
     agent_reply: clip(reply, 700),
-    what_the_agent_did: calls.map(call => `${call.name}: ${summarizeCall(call)}`).slice(0, 10),
+    what_the_agent_did: calls
+      .map(call => `${call.name}: ${summarizeCall(call)}`)
+      .slice(0, 10),
   };
 }
 
@@ -729,7 +858,9 @@ export function summaryFacts({ text, history, reply, calls, checks, final, floor
   return {
     customer: `${CUSTOMER.name} (${CUSTOMER.id})`,
     conversation: [
-      ...history.map(turn => `${turn.role === 'agent' ? 'Agent' : 'Customer'}: ${clip(turn.text, 300)}`),
+      ...history.map(
+        turn => `${turn.role === 'agent' ? 'Agent' : 'Customer'}: ${clip(turn.text, 300)}`
+      ),
       `Customer: ${clip(text, 400)}`,
       `Agent: ${clip(reply, 700)}`,
     ],
@@ -738,9 +869,13 @@ export function summaryFacts({ text, history, reply, calls, checks, final, floor
       args: call.args,
       found: summarizeCall(call),
     })),
-    guardrails_fixed: checks.filter(check => check.status === 'fixed').map(check => check.label),
+    guardrails_fixed: checks
+      .filter(check => check.status === 'fixed')
+      .map(check => check.label),
     routed_to: `${QUEUES[final.queue] || 'Payments'} queue`,
-    why_a_person: floor.reasons.length ? floor.reasons : ['The decision model picked a person'],
+    why_a_person: floor.reasons.length
+      ? floor.reasons
+      : ['The decision model picked a person'],
   };
 }
 
@@ -761,7 +896,9 @@ export function normalizeSummary(raw, facts) {
   }
   const list = (value, n) =>
     (Array.isArray(value) ? value : [])
-      .map(item => clip(typeof item === 'string' ? item : JSON.stringify(item), 140).trim())
+      .map(item =>
+        clip(typeof item === 'string' ? item : JSON.stringify(item), 140).trim()
+      )
       .filter(Boolean)
       .slice(0, n);
   if (data && typeof data.asked === 'string' && list(data.checked, 4).length) {
@@ -775,7 +912,10 @@ export function normalizeSummary(raw, facts) {
     };
   }
   return {
-    asked: clip(facts.conversation[facts.conversation.length - 2]?.replace(/^Customer: /, ''), 220),
+    asked: clip(
+      facts.conversation[facts.conversation.length - 2]?.replace(/^Customer: /, ''),
+      220
+    ),
     checked: facts.agent_actions.map(action => action.found).slice(0, 4),
     left: facts.why_a_person.slice(0, 3),
     next_step: `Pick up the ${facts.routed_to} conversation and confirm the details with the customer.`,
@@ -818,10 +958,13 @@ export async function runTurn({ text, history = [], changes = [] }, ctx) {
   let draft = '';
 
   for (let round = 1; round <= MAX_ROUNDS + 1; round += 1) {
-    const final = round > MAX_ROUNDS || (ctx.deadline && clock() - started > ctx.deadline);
+    const final =
+      round > MAX_ROUNDS || (ctx.deadline && clock() - started > ctx.deadline);
     const t0 = clock();
     const turn = await ctx.model({ system, messages, tools: TOOL_SPECS, round, final });
-    let toolCalls = final ? [] : (turn.toolCalls || []).filter(call => TOOL_NAMES.includes(call.name));
+    let toolCalls = final
+      ? []
+      : (turn.toolCalls || []).filter(call => TOOL_NAMES.includes(call.name));
     let via = turn.via || 'tool call';
     if (!final && !toolCalls.length && !(turn.toolCalls || []).length) {
       const fromText = toolCallFromText(turn.content);
@@ -862,11 +1005,17 @@ export async function runTurn({ text, history = [], changes = [] }, ctx) {
       const entry = { round, ...call, result, ms: round2(clock() - t1) };
       calls.push(entry);
       emit({ t: 'call', ...entry });
-      messages.push({ role: 'tool', tool_call_id: call.id, content: JSON.stringify(result) });
+      messages.push({
+        role: 'tool',
+        tool_call_id: call.id,
+        content: JSON.stringify(result),
+      });
     }
   }
 
-  draft = cleanReply(draft) || 'Sorry, I couldn’t finish that. A specialist can help you from here.';
+  draft =
+    cleanReply(draft) ||
+    'Sorry, I couldn’t finish that. A specialist can help you from here.';
   const floorBefore = floorFor({ text, calls });
   const guarded = guardReply(draft, { calls, floor: floorBefore, changes });
   emit({ t: 'reply', draft, text: guarded.text, checks: guarded.checks });
@@ -875,10 +1024,24 @@ export async function runTurn({ text, history = [], changes = [] }, ctx) {
   const t2 = clock();
   const answers = await ctx.decide(jevState({ text, reply: guarded.text, calls }));
   const final = finalRoute(answers, floor);
-  emit({ t: 'decide', answers, floor, final, ms: ctx.msFor?.('decide') ?? Math.round(clock() - t2) });
+  emit({
+    t: 'decide',
+    answers,
+    floor,
+    final,
+    ms: ctx.msFor?.('decide') ?? Math.round(clock() - t2),
+  });
 
   if (final.route === 'human') {
-    const facts = summaryFacts({ text, history, reply: guarded.text, calls, checks: guarded.checks, final, floor });
+    const facts = summaryFacts({
+      text,
+      history,
+      reply: guarded.text,
+      calls,
+      checks: guarded.checks,
+      final,
+      floor,
+    });
     const t3 = clock();
     let raw = null;
     try {
@@ -926,11 +1089,19 @@ export function applyEvent(run, event) {
     case 'call':
       return { ...run, steps: [...run.steps, { kind: 'call', ...event }] };
     case 'reply':
-      return { ...run, reply: { draft: event.draft, text: event.text, checks: event.checks } };
+      return {
+        ...run,
+        reply: { draft: event.draft, text: event.text, checks: event.checks },
+      };
     case 'decide':
       return {
         ...run,
-        decision: { answers: event.answers, floor: event.floor, final: event.final, ms: event.ms },
+        decision: {
+          answers: event.answers,
+          floor: event.floor,
+          final: event.final,
+          ms: event.ms,
+        },
       };
     case 'summary':
       return { ...run, summary: { ...event.summary, ms: event.ms } };
@@ -949,20 +1120,29 @@ export const callsOf = run => run.steps.filter(step => step.kind === 'call');
 /** The headline outcome of a run, for the hero card and the chat. */
 export function outcomeOf(run) {
   const calls = callsOf(run);
-  const proposal = calls.find(call => call.result?.status === 'awaiting_customer_confirmation');
-  const dispute = calls.find(call => call.name === 'open_payment_dispute' && call.result?.status === 'opened');
+  const proposal = calls.find(
+    call => call.result?.status === 'awaiting_customer_confirmation'
+  );
+  const dispute = calls.find(
+    call => call.name === 'open_payment_dispute' && call.result?.status === 'opened'
+  );
   const hardship = calls.find(call => call.name === 'hardship_options');
   if (proposal)
     return {
       kind: 'proposal',
-      text: `Due day ${ordinal(proposal.result.from_day)} → ${ordinal(proposal.result.to_day)}, ready to confirm`,
+      text: `Due day ${ordinal(proposal.result.from_day)} → ${ordinal(
+        proposal.result.to_day
+      )}, ready to confirm`,
       proposal: proposal.result,
     };
   if (dispute)
     return {
       kind: 'dispute',
-      text: `Dispute ${dispute.result.dispute_id} opened: ${money(dispute.result.amount_in_review)} in review`,
+      text: `Dispute ${dispute.result.dispute_id} opened: ${money(
+        dispute.result.amount_in_review
+      )} in review`,
     };
-  if (hardship) return { kind: 'hardship', text: 'Hardship options listed for a specialist' };
+  if (hardship)
+    return { kind: 'hardship', text: 'Hardship options listed for a specialist' };
   return { kind: 'answer', text: 'Answered from her loan data' };
 }

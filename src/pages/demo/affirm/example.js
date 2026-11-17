@@ -1,6 +1,6 @@
 // Recorded live runs the page replays in preview mode (no key) and on load, one per suggested question.
 // Recorded on the Vercel preview on 2026-11-17 with DeepSeek V3.2 (via fal) and Jev (jev-1.13.0), prompt
-// version affirm-v2. Only the model outputs are kept: each round's tool calls (or the reply), Jev's
+// version affirm-v3. Only the model outputs are kept: each round's tool calls (or the reply), Jev's
 // answers and the hand-off note. Tool results, guardrail checks, the rules floor and the route are
 // recomputed in the browser by agent.js, the same code the API runs. ms are the live timings.
 export const EXAMPLE = {
@@ -13,20 +13,20 @@ export const EXAMPLE = {
         {
           toolCalls: [
             {
-              id: 'call_a5a3d9dc51634da398983e9f',
+              id: 'call_d47347f822044676836fe083',
               name: 'get_loans',
               args: {},
             },
           ],
           content:
-            "I'll check your loans and see if moving your payment date to the 20th is possible.",
-          ms: 1649,
+            "I'll check your loans and see if you can move your payment date to the 20th.",
+          ms: 2204,
           via: 'tool call',
         },
         {
           toolCalls: [
             {
-              id: 'call_5c68b4a9396d4f4b823c4ebd',
+              id: '01a1eb52d177e2f6ca767aa791a986ad',
               name: 'check_policy',
               args: {
                 topic: 'due_date_change',
@@ -35,29 +35,14 @@ export const EXAMPLE = {
             },
           ],
           content:
-            "Now I'll check the policy for due date changes on your current loans.",
-          ms: 4872,
+            'I can see you have two current loans. Let me check the policy for due date changes and then see if you can move your rowing machine loan (L-4471) to the 20th.\n\n',
+          ms: 6199,
           via: 'tool call',
         },
         {
           toolCalls: [
             {
-              id: 'call_bb5ae34e7a8841a7940fdf6c',
-              name: 'check_policy',
-              args: {
-                topic: 'due_date_change',
-                loan_id: 'L-5108',
-              },
-            },
-          ],
-          content: '',
-          ms: 2989,
-          via: 'tool call',
-        },
-        {
-          toolCalls: [
-            {
-              id: 'call_35f73c209f1a4f2a9c1ed471',
+              id: '01a1eb54cb6126276b1ae235bf373f80',
               name: 'propose_due_date_change',
               args: {
                 loan_id: 'L-4471',
@@ -66,25 +51,25 @@ export const EXAMPLE = {
             },
           ],
           content:
-            "I can propose moving your rowing machine loan (L-4471) to the 20th. Since you get paid on the 20th, I'll suggest moving it to the 21st or 22nd as recommended by policy.",
-          ms: 3660,
+            "Great! You're eligible to change your due date. Since you get paid on the 20th, I'll suggest moving it to the 21st or 22nd as recommended by policy. Let me propose moving it to the 21st.\n\n",
+          ms: 7045,
           via: 'tool call',
         },
         {
           toolCalls: [],
           content:
-            "I can move your rowing machine payment to the 21st, one day after your payday. Your laptop plan is fixed and can't be changed. The next payment would move from Dec 12 to Dec 21, still $120.00. This is ready to confirm in the chat.",
-          ms: 3668,
+            'You can move your rowing machine payment from the 12th to the 21st, one day after your payday. Your next $120 payment would move from Dec 12 to Dec 21. The change is ready to confirm with the button in chat.',
+          ms: 4991,
         },
       ],
       answers: {
         handoff: {
           type: 'choice',
           choice: 'agent',
-          confidence: 0.78,
+          confidence: 0.86,
           probabilities: {
-            agent: 0.89,
-            human: 0.11,
+            agent: 0.93,
+            human: 0.07,
           },
         },
         queue: {
@@ -100,8 +85,8 @@ export const EXAMPLE = {
       },
       summary: null,
       ms: {
-        decide: 78,
-        total: 16923,
+        decide: 95,
+        total: 20540,
       },
     },
     twice: {
@@ -110,20 +95,20 @@ export const EXAMPLE = {
         {
           toolCalls: [
             {
-              id: '01a1eb4e0d6a495398f1ef727bbc2b3c',
+              id: 'call_aad31b97d6e242ee81a77fe5',
               name: 'get_loans',
               args: {},
             },
           ],
           content:
-            "I'll check your loans and payment schedule to see if there are any duplicate charges.\n\n",
-          ms: 3700,
+            "I'll help you check your laptop loan payments for any duplicate charges. Let me first look at your loans and then examine the payment schedule.",
+          ms: 5700,
           via: 'tool call',
         },
         {
           toolCalls: [
             {
-              id: 'call_2a6aad34e4be45dea64e105c',
+              id: 'call_e0aa63836ddc4073a9398cad',
               name: 'get_payment_schedule',
               args: {
                 loan_id: 'L-5108',
@@ -131,47 +116,32 @@ export const EXAMPLE = {
             },
           ],
           content:
-            'Now let me check the payment schedule for your laptop loan (L-5108) to see all the charges.\n\n',
-          ms: 3937,
+            'Now let me check the payment schedule for your laptop loan (L-5108) to see all charges made.',
+          ms: 3324,
           via: 'tool call',
         },
         {
           toolCalls: [
             {
-              id: 'call_0d507c4841284b4faf8990a2',
-              name: 'check_policy',
+              id: 'call_c69a6a10c6a04c269a94d6b6',
+              name: 'open_payment_dispute',
               args: {
-                topic: 'duplicate_charge',
                 loan_id: 'L-5108',
+                charge_ids: ['CH-88122'],
+                reason: 'Duplicate charge for laptop payment on Nov 10',
               },
             },
           ],
           content:
-            'I can see there are indeed two charges for Payment 2 of 4 on November 10th - CH-88121 and CH-88122, both for $324.99. Let me check the policy for duplicate charges and then open a dispute for you.\n\n',
-          ms: 5580,
-          via: 'tool call',
-        },
-        {
-          toolCalls: [
-            {
-              id: 'call_c5554514ffdf4e34a7d93bd8',
-              name: 'open_payment_dispute',
-              args: {
-                loan_id: 'L-5108',
-                charge_ids: ['CH-88121', 'CH-88122'],
-                reason: 'Duplicate charge for Payment 2 of 4 on November 10th',
-              },
-            },
-          ],
-          content: "Now I'll open a dispute for the duplicate charges.\n\n",
-          ms: 2895,
+            'I can see there are indeed two posted charges on November 10, 2026, for the same amount ($324.99) for "Payment 2 of 4" - CH-88121 and CH-88122. This appears to be a duplicate charge. Let me open a payment dispute for you.',
+          ms: 6531,
           via: 'tool call',
         },
         {
           toolCalls: [],
           content:
-            "I found two charges for your laptop payment on November 10th. I've opened dispute D-37122 for the duplicate $324.99 charge. A disputes specialist will review it by November 24th and decide about a refund. Would you like me to connect you with the specialist directly?",
-          ms: 2887,
+            "I found a duplicate charge for your laptop payment on Nov 10. I've opened dispute D-37122 for $324.99, which a specialist will review by Nov 24. They'll decide about a refund, and I can't promise one.",
+          ms: 3530,
         },
       ],
       answers: {
@@ -196,24 +166,20 @@ export const EXAMPLE = {
         },
       },
       summary: {
-        asked: 'The customer thinks they were charged twice for their laptop payment.',
+        asked: 'The customer thinks she was charged twice for her laptop payment.',
         checked: [
           'Found 3 loans, 2 active (rowing machine, laptop).',
-          'Laptop loan L-5108: 2 of 4 payments made, 3 charges total.',
-          'Opened dispute D-37122 for $324.99 duplicate charge.',
-          'Dispute review scheduled for completion by November 24th.',
+          'Laptop loan L-5108: 2 of 4 payments made, 3 charges with 2 on Nov 10.',
+          'Opened dispute D-37122 for $324.99, review by Nov 24.',
         ],
-        left: [
-          'Connect customer to a disputes specialist.',
-          'Specialist must review D-37122 by November 24th.',
-        ],
-        next_step: 'Connect the customer to a disputes specialist to discuss D-37122.',
+        left: ['Dispute D-37122 needs specialist review.', 'Refund decision pending.'],
+        next_step: 'Review the details of dispute D-37122 for the duplicate charge.',
         tone: 'calm',
       },
       ms: {
-        decide: 121,
-        summary: 5222,
-        total: 24345,
+        decide: 112,
+        summary: 7330,
+        total: 26530,
       },
     },
     hardship: {
@@ -222,7 +188,12 @@ export const EXAMPLE = {
         {
           toolCalls: [
             {
-              id: 'call_553c48311d7644afb92a0322',
+              id: 'call_28bffeebc4714ce6b8498e43',
+              name: 'get_loans',
+              args: {},
+            },
+            {
+              id: 'call_522542dfa4574032a9009424',
               name: 'hardship_options',
               args: {
                 reason: 'lost my job last week',
@@ -230,15 +201,15 @@ export const EXAMPLE = {
             },
           ],
           content:
-            "I'm sorry to hear about your job loss. Let me check what hardship options are available for you.",
-          ms: 8495,
+            "I'm sorry to hear about your job loss. Let me check your current loans and hardship options for you.",
+          ms: 3036,
           via: 'tool call',
         },
         {
           toolCalls: [],
           content:
-            'I can connect you with a hardship specialist who can review your situation. They may offer options like pausing a payment for up to 30 days or spreading your balance over smaller payments. You have upcoming payments on November 24 and December 8 for your laptop, and December 12 for your rowing machine. Would you like me to connect you with a specialist?',
-          ms: 5607,
+            'I see you have two current loans with upcoming payments. For job loss, you have hardship options including pausing a payment for up to 30 days or spreading the balance over more payments. These require a specialist review. You also have a self-serve option to move the due date for your rowing machine loan if eligible. Would you like me to connect you with a hardship specialist who can review your situation and discuss these options?',
+          ms: 3927,
         },
       ],
       answers: {
@@ -265,21 +236,21 @@ export const EXAMPLE = {
       summary: {
         asked: 'The customer wants to know their options after losing their job.',
         checked: [
-          'Found hardship options: pause payment or spread balance.',
-          'Identified upcoming payments on November 24, December 8, and December 12.',
-          'Needs a specialist for further assistance.',
+          'Found 2 active loans: rowing machine and laptop.',
+          'Identified hardship options requiring specialist review.',
+          'Noted 3 payments due in the next 30 days.',
         ],
         left: [
-          'Connect customer with hardship specialist.',
-          'Discuss specific hardship options.',
+          'Specialist must review hardship request.',
+          'Customer needs to discuss specific options.',
         ],
-        next_step: 'Connect the customer with a hardship specialist.',
+        next_step: "Review the customer's loans and discuss hardship options.",
         tone: 'calm',
       },
       ms: {
-        decide: 66,
-        summary: 4814,
-        total: 18986,
+        decide: 80,
+        summary: 4559,
+        total: 11607,
       },
     },
   },

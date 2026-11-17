@@ -43,13 +43,20 @@ export async function model({ system, messages, tools, final }) {
 
 /** Jev: should a person take over, and which queue. */
 export function decide(state) {
-  return cached(`affirm:jev:${hash(VERSION, JSON.stringify(state))}`, CACHE_SECONDS, async () => {
-    const { answers } = await askJev(state, {
-      handoff: jevQuestion.choice(HANDOFF_QUESTION.instructions, HANDOFF_QUESTION.criteria),
-      queue: jevQuestion.choice(QUEUE_QUESTION.instructions, QUEUE_QUESTION.criteria),
-    });
-    return answers;
-  });
+  return cached(
+    `affirm:jev:${hash(VERSION, JSON.stringify(state))}`,
+    CACHE_SECONDS,
+    async () => {
+      const { answers } = await askJev(state, {
+        handoff: jevQuestion.choice(
+          HANDOFF_QUESTION.instructions,
+          HANDOFF_QUESTION.criteria
+        ),
+        queue: jevQuestion.choice(QUEUE_QUESTION.instructions, QUEUE_QUESTION.criteria),
+      });
+      return answers;
+    }
+  );
 }
 
 /** The hand-off note for the human agent, as JSON text. */
@@ -77,14 +84,25 @@ export function sanitizeHistory(raw) {
     .filter(turn => turn.text);
 }
 
-const MOVABLE = new Set(LOANS.filter(loan => loan.plan === 'monthly').map(loan => loan.id));
+const MOVABLE = new Set(
+  LOANS.filter(loan => loan.plan === 'monthly').map(loan => loan.id)
+);
 
 /** Due-day changes the customer confirmed on the page: known monthly loans, days 1-28, at most 2. */
 export function sanitizeChanges(raw) {
   return (Array.isArray(raw) ? raw : [])
     .slice(0, 2)
-    .map(change => ({ loanId: String(change?.loanId || ''), toDay: Number(change?.toDay) }))
-    .filter(change => MOVABLE.has(change.loanId) && Number.isInteger(change.toDay) && change.toDay >= 1 && change.toDay <= 28);
+    .map(change => ({
+      loanId: String(change?.loanId || ''),
+      toDay: Number(change?.toDay),
+    }))
+    .filter(
+      change =>
+        MOVABLE.has(change.loanId) &&
+        Number.isInteger(change.toDay) &&
+        change.toDay >= 1 &&
+        change.toDay <= 28
+    );
 }
 
 // --- streaming with cached replay ------------------------------------------------------------------

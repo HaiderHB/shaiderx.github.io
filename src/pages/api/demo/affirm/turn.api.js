@@ -33,12 +33,19 @@ function readTurn(req) {
 }
 
 const turnKey = ({ text, history, changes }) =>
-  `affirm:turn:${hash(VERSION, MODEL, JSON.stringify(history), JSON.stringify(changes), text)}`;
+  `affirm:turn:${hash(
+    VERSION,
+    MODEL,
+    JSON.stringify(history),
+    JSON.stringify(changes),
+    text
+  )}`;
 
 const route = demoApi(
   async (req, res) => {
     const turn = readTurn(req);
-    if (!turn.text) return res.status(400).json({ error: 'Type a message first.', code: 'input' });
+    if (!turn.text)
+      return res.status(400).json({ error: 'Type a message first.', code: 'input' });
     return streamRun(res, turnKey(turn), emit =>
       runTurn(turn, { emit, model, decide, summarise, deadline: LOOP_DEADLINE_MS })
     );

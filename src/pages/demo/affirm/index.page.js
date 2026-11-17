@@ -65,8 +65,8 @@ const NAV = [
   { href: '#how', label: 'How it works' },
 ];
 const ROUTE_BARS = [
-  { value: 'agent', label: 'Agent resolves', tone: 'ok' },
-  { value: 'human', label: 'Hand to a person', tone: 'warn' },
+  { value: 'agent', label: 'The agent', tone: 'ok' },
+  { value: 'human', label: 'A person', tone: 'warn' },
 ];
 const QUEUE_BARS = [
   { value: 'payments', label: 'Payments' },
@@ -74,10 +74,26 @@ const QUEUE_BARS = [
   { value: 'hardship', label: 'Hardship' },
 ];
 const FLOW = [
-  { label: 'Look it up', what: 'DeepSeek calls tools over her loans, up to 4 rounds, then answers', cost: '2-5 LLM calls' },
-  { label: 'Hold the policy', what: 'Eligibility, masking, no promises or advice: code', cost: 'free' },
-  { label: 'Decide', what: 'Jev: hand off? which queue? Rules can only add a person', cost: '1 Jev call' },
-  { label: 'Hand off', what: 'A note for the human agent: asked, checked, left, next', cost: '1 LLM call' },
+  {
+    label: 'Look it up',
+    what: 'DeepSeek calls tools over her loans, up to 4 rounds, then answers',
+    cost: '2-5 LLM calls',
+  },
+  {
+    label: 'Hold the policy',
+    what: 'Eligibility, masking, no promises or advice: code',
+    cost: 'free',
+  },
+  {
+    label: 'Decide',
+    what: 'Jev: hand off? which queue? Rules can only add a person',
+    cost: '1 Jev call',
+  },
+  {
+    label: 'Hand off',
+    what: 'A note for the human agent: asked, checked, left, next',
+    cost: '1 LLM call',
+  },
 ];
 const NOTES = [
   {
@@ -100,7 +116,8 @@ const NOTES = [
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const prefersReducedMotion = () =>
-  typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 let uid = 0;
 const nextId = prefix => `${prefix}${(uid += 1)}`;
 
@@ -201,9 +218,13 @@ export default function AffirmDemo() {
   }, []);
 
   const updateRun = (id, event) =>
-    setRuns(current => (current[id] ? { ...current, [id]: applyEvent(current[id], event) } : current));
+    setRuns(current =>
+      current[id] ? { ...current, [id]: applyEvent(current[id], event) } : current
+    );
   const setTurnText = (id, text, extra = {}) =>
-    setTurns(current => current.map(turn => (turn.id === id ? { ...turn, text, ...extra } : turn)));
+    setTurns(current =>
+      current.map(turn => (turn.id === id ? { ...turn, text, ...extra } : turn))
+    );
 
   function makeHandler(runId, agentTurnId, pace, isCancelled) {
     return async event => {
@@ -237,17 +258,25 @@ export default function AffirmDemo() {
   }
 
   async function send(raw, { forceExample = false } = {}) {
-    const text = String(raw || '').trim().slice(0, MAX_INPUT);
+    const text = String(raw || '')
+      .trim()
+      .slice(0, MAX_INPUT);
     if (!text || busy) return;
     const preset = PRESETS.find(item => item.text === text);
     const live = !forceExample && Boolean(getDemoKey());
     if (!live && !(preset && EXAMPLE.runs[preset.id])) {
-      setNotice(`${PREVIEW_NOTE} In preview, the three suggested questions replay recorded live runs.`);
+      setNotice(
+        `${PREVIEW_NOTE} In preview, the three suggested questions replay recorded live runs.`
+      );
       return;
     }
 
     playerRef.current?.cancel();
-    setNotice(live || forceExample ? '' : `${PREVIEW_NOTE} Replaying the recorded live run of this question.`);
+    setNotice(
+      live || forceExample
+        ? ''
+        : `${PREVIEW_NOTE} Replaying the recorded live run of this question.`
+    );
     setError('');
     setBusy(true);
     setInput('');
@@ -262,7 +291,10 @@ export default function AffirmDemo() {
       .slice(-6)
       .map(turn => ({ role: turn.role, text: turn.text }));
     setTurns(current => [...current, customerTurn, agentTurn]);
-    setRuns(current => ({ ...current, [runId]: { ...emptyRun(kind), status: 'running', text } }));
+    setRuns(current => ({
+      ...current,
+      [runId]: { ...emptyRun(kind), status: 'running', text },
+    }));
     setSelected(runId);
 
     const fast = prefersReducedMotion();
@@ -273,7 +305,11 @@ export default function AffirmDemo() {
 
     try {
       if (live) {
-        await streamFromApi(TURN_PATH, { text, history, changes }, lineReader(event => player.push(event)));
+        await streamFromApi(
+          TURN_PATH,
+          { text, history, changes },
+          lineReader(event => player.push(event))
+        );
       } else {
         const recorded = EXAMPLE.runs[preset.id];
         player.push({ t: 'meta', model: EXAMPLE.model, cached: false });
@@ -283,7 +319,11 @@ export default function AffirmDemo() {
           {
             emit: event => player.push(event),
             model: async () => {
-              const next = recorded.rounds[round] || { content: '', toolCalls: [], ms: 0 };
+              const next = recorded.rounds[round] || {
+                content: '',
+                toolCalls: [],
+                ms: 0,
+              };
               round += 1;
               if (!fast) await sleep(Math.min(1000, 420 + next.ms * 0.05));
               return next;
@@ -305,7 +345,10 @@ export default function AffirmDemo() {
       player.cancel();
       const message = err.message || 'The agent could not be reached.';
       setError(message);
-      setRuns(current => ({ ...current, [runId]: applyEvent(current[runId], { t: 'error', message }) }));
+      setRuns(current => ({
+        ...current,
+        [runId]: applyEvent(current[runId], { t: 'error', message }),
+      }));
       setTurnText(agentTurn.id, '', { failed: message });
     } finally {
       if (playerRef.current === player) setBusy(false);
@@ -413,7 +456,8 @@ export default function AffirmDemo() {
                   <Tag soft>fictional lender</Tag>
                 </CardHead>
                 <p className={styles.cardLede}>
-                  Signed in as {CUSTOMER.name}, {CUSTOMER.city}. Today is {fmtDate(TODAY, { year: true })}.
+                  Signed in as {CUSTOMER.name}, {CUSTOMER.city}. Today is{' '}
+                  {fmtDate(TODAY, { year: true })}.
                 </p>
                 <ChatThread
                   className={styles.thread}
@@ -421,9 +465,18 @@ export default function AffirmDemo() {
                   label="Chat with the servicing agent"
                   empty="Ask about a payment, a charge or your options."
                 />
-                <div className={styles.presets} role="group" aria-label="Suggested questions">
+                <div
+                  className={styles.presets}
+                  role="group"
+                  aria-label="Suggested questions"
+                >
                   {PRESETS.map(preset => (
-                    <Chip key={preset.id} type="button" disabled={busy} onClick={() => send(preset.text)}>
+                    <Chip
+                      key={preset.id}
+                      type="button"
+                      disabled={busy}
+                      onClick={() => send(preset.text)}
+                    >
                       {preset.text}
                     </Chip>
                   ))}
@@ -444,7 +497,11 @@ export default function AffirmDemo() {
                     rows={2}
                     value={input}
                     maxLength={MAX_INPUT}
-                    placeholder={hasKey ? 'Write as Maya…' : 'Live typing needs the private link; pick a question above'}
+                    placeholder={
+                      hasKey
+                        ? 'Write as Maya…'
+                        : 'Live typing needs the private link; pick a question above'
+                    }
                     onChange={event => setInput(event.target.value)}
                     onKeyDown={event => {
                       if (event.key === 'Enter' && !event.shiftKey) {
@@ -453,7 +510,12 @@ export default function AffirmDemo() {
                       }
                     }}
                   />
-                  <Button type="submit" pill disabled={busy || !input.trim()} aria-label="Send">
+                  <Button
+                    type="submit"
+                    pill
+                    disabled={busy || !input.trim()}
+                    aria-label="Send"
+                  >
                     {busy ? <Spinner /> : <FiSend aria-hidden />}
                   </Button>
                 </form>
@@ -495,7 +557,12 @@ export default function AffirmDemo() {
         </section>
 
         <section id="how" className={styles.section} aria-labelledby="how-heading">
-          <SectionHead variant="eyebrow" kicker="How it works" titleId="how-heading" title="One turn, four steps" />
+          <SectionHead
+            variant="eyebrow"
+            kicker="How it works"
+            titleId="how-heading"
+            title="One turn, four steps"
+          />
           <PipelineStrip steps={FLOW} label="How one turn works" />
           <NoteGrid className={styles.notes} items={NOTES} />
         </section>
@@ -531,7 +598,13 @@ function Glance({ run }) {
   const steps = [
     ...calls.map(call => ({ id: call.id, label: call.name, tone: callTone(call) })),
     ...(run?.reply
-      ? [{ id: 'guard', label: `policy ${counts.pass}/${counts.applied}`, tone: counts.fixed ? 'warn' : 'ok' }]
+      ? [
+          {
+            id: 'guard',
+            label: `policy ${counts.pass}/${counts.applied}`,
+            tone: counts.fixed ? 'warn' : 'ok',
+          },
+        ]
       : []),
     ...(decision ? [{ id: 'decide', label: 'decide', tone: 'ok' }] : []),
   ];
@@ -540,7 +613,9 @@ function Glance({ run }) {
     <Card tone="accent" className={styles.glance} aria-live="polite">
       <div className={styles.glanceTop}>
         <span className={styles.glanceKind}>{kindLabel(run)}</span>
-        <span className={styles.glanceMeta}>{run?.ms != null ? formatMs(run.ms) : working ? 'running' : ''}</span>
+        <span className={styles.glanceMeta}>
+          {run?.ms != null ? formatMs(run.ms) : working ? 'running' : ''}
+        </span>
       </div>
       <p className={styles.glanceAsk}>“{run?.text || PRESETS[0].text}”</p>
       <ol className={styles.glanceSteps} aria-label="Tool calls">
@@ -557,7 +632,10 @@ function Glance({ run }) {
       </ol>
       <div className={styles.glanceStatus}>
         <strong>
-          <Dot tone={!decision ? 'idle' : route === 'agent' ? 'ok' : 'warn'} motion={working ? 'pulse' : undefined} />
+          <Dot
+            tone={!decision ? 'idle' : route === 'agent' ? 'ok' : 'warn'}
+            motion={working ? 'pulse' : undefined}
+          />
           {status}
         </strong>
         <span>{decision && outcome ? outcome.text : ' '}</span>
@@ -565,7 +643,10 @@ function Glance({ run }) {
       <div className={styles.handoff}>
         <span className={styles.handoffLabel}>Needs a person</span>
         <span className={styles.handoffTrack} aria-hidden>
-          <span className={styles.handoffFill} style={{ width: `${(human ?? 0) * 100}%` }} />
+          <span
+            className={styles.handoffFill}
+            style={{ width: `${(human ?? 0) * 100}%` }}
+          />
           <span className={styles.handoffMark} />
         </span>
         <span className={styles.handoffValue}>{human != null ? pct(human) : '–'}</span>
@@ -581,7 +662,13 @@ function Glance({ run }) {
         </div>
         <div>
           <dt>Route</dt>
-          <dd>{decision ? (route === 'agent' ? 'Agent' : QUEUES[decision.final.queue]) : '–'}</dd>
+          <dd>
+            {decision
+              ? route === 'agent'
+                ? 'Agent'
+                : QUEUES[decision.final.queue]
+              : '–'}
+          </dd>
         </div>
       </dl>
     </Card>
@@ -590,7 +677,16 @@ function Glance({ run }) {
 
 // --- chat extras -------------------------------------------------------------------------------------
 
-function TurnExtras({ run, decision, selected, many, onSelect, onConfirm, onDecline, typing }) {
+function TurnExtras({
+  run,
+  decision,
+  selected,
+  many,
+  onSelect,
+  onConfirm,
+  onDecline,
+  typing,
+}) {
   if (!run || typing || !run.reply) return null;
   const outcome = outcomeOf(run);
   const final = run.decision?.final;
@@ -602,20 +698,23 @@ function TurnExtras({ run, decision, selected, many, onSelect, onConfirm, onDecl
           <div className={styles.proposalHead}>
             <MiniLabel>Proposed change · {proposal.item}</MiniLabel>
             <span className={styles.proposalChecks}>
-              <StatusIcon status="pass" /> {proposal.checks.length}/{proposal.checks.length} rules pass
+              <StatusIcon status="pass" /> {proposal.checks.length}/
+              {proposal.checks.length} rules pass
             </span>
           </div>
           <div className={styles.proposalDays}>
             <span>
               <small>Due day</small>
               <span>
-                <s>{ordinal(proposal.from_day)}</s> → <strong>{ordinal(proposal.to_day)}</strong>
+                <s>{ordinal(proposal.from_day)}</s> →{' '}
+                <strong>{ordinal(proposal.to_day)}</strong>
               </span>
             </span>
             <span>
               <small>Next payment</small>
               <span>
-                <s>{fmtDate(proposal.next_payment.from)}</s> → <strong>{fmtDate(proposal.next_payment.to)}</strong>
+                <s>{fmtDate(proposal.next_payment.from)}</s> →{' '}
+                <strong>{fmtDate(proposal.next_payment.to)}</strong>
               </span>
             </span>
             <span>
@@ -718,7 +817,9 @@ function RunCard({ run, busy, onReplay }) {
         <CardHead>
           <CardTitle>Agent run</CardTitle>
         </CardHead>
-        <EmptyState size="s">Every tool call, check and decision of a turn shows up here.</EmptyState>
+        <EmptyState size="s">
+          Every tool call, check and decision of a turn shows up here.
+        </EmptyState>
       </Card>
     );
   }
@@ -753,10 +854,11 @@ function RunCard({ run, busy, onReplay }) {
       </CardHead>
       {run.kind === 'example' && (
         <p className={styles.exampleNote}>
-          Example run. DeepSeek’s tool calls and reply, Jev’s answer and the hand-off note were recorded
-          from a live run on {fmtDate(EXAMPLE.recordedOn, { year: true })}. Every tool result, policy
-          check and the rules floor is computed in your browser by the same code the API runs. Replayed
-          faster; the times shown are the live ones.
+          Example run. DeepSeek’s tool calls and reply, Jev’s answer and the hand-off note
+          were recorded from a live run on {fmtDate(EXAMPLE.recordedOn, { year: true })}.
+          Every tool result, policy check and the rules floor is computed in your browser
+          by the same code the API runs. Replayed faster; the times shown are the live
+          ones.
         </p>
       )}
       <p className={styles.runAsk}>
@@ -772,7 +874,11 @@ function RunCard({ run, busy, onReplay }) {
               index={index}
               status="done"
               title={answer ? 'Model · writes the reply' : `Model · round ${step.round}`}
-              detail={answer ? 'no more tools needed' : `calls ${step.calls.map(call => call.name).join(', ')}`}
+              detail={
+                answer
+                  ? 'no more tools needed'
+                  : `calls ${step.calls.map(call => call.name).join(', ')}`
+              }
               ms={step.ms}
             >
               {step.note && <p className={styles.modelNote}>“{step.note}”</p>}
@@ -793,7 +899,9 @@ function RunCard({ run, busy, onReplay }) {
                 </ToolCallList>
               )}
               {answer && run.reply && run.reply.draft !== run.reply.text && (
-                <p className={styles.stepNote}>The guardrails changed this draft before it was shown.</p>
+                <p className={styles.stepNote}>
+                  The guardrails changed this draft before it was shown.
+                </p>
               )}
             </TimelineStep>
           );
@@ -802,7 +910,11 @@ function RunCard({ run, busy, onReplay }) {
           <TimelineStep
             index={rounds.length}
             status="running"
-            title={rounds.length ? 'Model · reading the results' : 'Model · reading the question'}
+            title={
+              rounds.length
+                ? 'Model · reading the results'
+                : 'Model · reading the question'
+            }
             detail="DeepSeek via fal"
           />
         )}
@@ -811,9 +923,15 @@ function RunCard({ run, busy, onReplay }) {
             index={rounds.length}
             status="done"
             title="Policy guardrails"
-            detail={`code · ${counts.pass} of ${counts.applied} pass${counts.fixed ? `, ${counts.fixed} fixed` : ''}`}
+            detail={`code · ${counts.pass} of ${counts.applied} pass${
+              counts.fixed ? `, ${counts.fixed} fixed` : ''
+            }`}
           >
-            <CheckList className={styles.checks} items={run.reply.checks} label="Guardrail checks" />
+            <CheckList
+              className={styles.checks}
+              items={run.reply.checks}
+              label="Guardrail checks"
+            />
           </TimelineStep>
         )}
         {run.reply && (
@@ -823,9 +941,15 @@ function RunCard({ run, busy, onReplay }) {
             title="Decide"
             detail={
               decision
-                ? `Jev: a person ${pct(decision.answers.handoff?.probabilities?.human ?? 0)} · rules: ${
+                ? `Jev: a person ${pct(
+                    decision.answers.handoff?.probabilities?.human ?? 0
+                  )} · rules: ${
                     decision.floor.route === 'human' ? 'a person' : 'none'
-                  } → ${decision.final.route === 'agent' ? 'stays with the agent' : `${QUEUES[decision.final.queue]} queue`}`
+                  } → ${
+                    decision.final.route === 'agent'
+                      ? 'stays with the agent'
+                      : `${QUEUES[decision.final.queue]} queue`
+                  }`
                 : 'Jev, two typed questions'
             }
             ms={decision?.ms}
@@ -838,7 +962,9 @@ function RunCard({ run, busy, onReplay }) {
             title="Hand-off note"
             detail={
               run.summary
-                ? `${run.summary.via === 'template' ? 'template' : 'LLM'} · for the human agent`
+                ? `${
+                    run.summary.via === 'template' ? 'template' : 'LLM'
+                  } · for the human agent`
                 : 'DeepSeek writes it'
             }
             ms={run.summary?.ms}
@@ -865,30 +991,50 @@ function DecisionCard({ run }) {
           <CardTitle>Decision</CardTitle>
         </CardHead>
         <EmptyState size="s" loading={run?.status === 'running'}>
-          {run?.status === 'running' ? 'Waiting for the reply…' : 'The odds and the route land here.'}
+          {run?.status === 'running'
+            ? 'Waiting for the reply…'
+            : 'The odds and the route land here.'}
         </EmptyState>
       </Card>
     );
   }
   const { answers, floor, final } = decision;
-  const state = jevState({ text: run.text, reply: run.reply?.text || '', calls: callsOf(run) });
+  const state = jevState({
+    text: run.text,
+    reply: run.reply?.text || '',
+    calls: callsOf(run),
+  });
   return (
     <Card className={styles.decisionCard}>
-      <CardHead aside={<Pill>Jev · 2 typed questions{decision.ms != null ? ` · ${formatMs(decision.ms)}` : ''}</Pill>}>
+      <CardHead
+        aside={
+          <Pill>
+            Jev · 2 typed questions
+            {decision.ms != null ? ` · ${formatMs(decision.ms)}` : ''}
+          </Pill>
+        }
+      >
         <CardTitle>Decision</CardTitle>
       </CardHead>
       <div className={styles.bars}>
         <MiniLabel as="p" className={styles.question}>
           handoff · stay with the agent, or a person?
         </MiniLabel>
-        <ProbabilityBars options={ROUTE_BARS} probabilities={answers.handoff?.probabilities} choice={final.jevRoute} />
+        <ProbabilityBars
+          options={ROUTE_BARS}
+          probabilities={answers.handoff?.probabilities}
+          choice={final.jevRoute}
+        />
       </div>
       <div className={styles.bars}>
         <MiniLabel as="p" className={styles.question}>
           queue · if a person takes it, which team?
         </MiniLabel>
         <ProbabilityBars
-          options={QUEUE_BARS.map(bar => ({ ...bar, tone: bar.value === final.queue ? 'warn' : undefined }))}
+          options={QUEUE_BARS.map(bar => ({
+            ...bar,
+            tone: bar.value === final.queue ? 'warn' : undefined,
+          }))}
           probabilities={answers.queue?.probabilities}
           choice={final.jevQueue}
         />
@@ -910,18 +1056,26 @@ function DecisionCard({ run }) {
       <div className={styles.final}>
         <MiniLabel>Final route</MiniLabel>
         <DecisionBadge tone={final.route === 'agent' ? 'ok' : 'warn'} size="l">
-          {final.route === 'agent' ? 'Stays with the agent' : `Hand to a person · ${QUEUES[final.queue]} queue`}
+          {final.route === 'agent'
+            ? 'Stays with the agent'
+            : `Hand to a person · ${QUEUES[final.queue]} queue`}
         </DecisionBadge>
         <p className={styles.small}>
           The stricter of Jev’s pick and the rules.{' '}
           {final.raisedByRules
             ? 'Here the rules added a person Jev did not ask for.'
+            : final.jevRoute === 'human' && floor.route === 'agent'
+            ? 'Here Jev asked for a person; no rule required one.'
             : final.queueByRules
             ? 'Here the rules set the queue.'
             : 'Here they agree.'}
         </p>
       </div>
-      <JsonDetails summary="What Jev saw (state JSON)" value={state} className={styles.jevState} />
+      <JsonDetails
+        summary="What Jev saw (state JSON)"
+        value={state}
+        className={styles.jevState}
+      />
     </Card>
   );
 }
@@ -941,14 +1095,21 @@ function HandoffCard({ run, busy, onTry }) {
           {writing
             ? 'Writing the hand-off note…'
             : final?.route === 'agent'
-            ? `No hand-off: the agent resolved this one (a person was ${pct(human ?? 0)} likely to be needed).`
+            ? `No hand-off: the agent resolved this one (a person was ${pct(
+                human ?? 0
+              )} likely to be needed).`
             : 'When a turn goes to a person, the note they read first lands here.'}
         </EmptyState>
         {!writing && (
           <div className={styles.tryRow}>
             <span className={styles.small}>See a hand-off:</span>
             {PRESETS.slice(1).map(preset => (
-              <Chip key={preset.id} type="button" disabled={busy} onClick={() => onTry(preset.text)}>
+              <Chip
+                key={preset.id}
+                type="button"
+                disabled={busy}
+                onClick={() => onTry(preset.text)}
+              >
                 {preset.label}
               </Chip>
             ))}
@@ -959,7 +1120,9 @@ function HandoffCard({ run, busy, onTry }) {
   }
   return (
     <Card className={styles.handoffCard}>
-      <CardHead aside={<Tag tone={summary.tone === 'calm' ? 'ok' : 'warn'}>{summary.tone}</Tag>}>
+      <CardHead
+        aside={<Tag tone={summary.tone === 'calm' ? 'ok' : 'warn'}>{summary.tone}</Tag>}
+      >
         <CardTitle>Note for the human agent</CardTitle>
         <DecisionBadge tone="warn">{QUEUES[final.queue]} queue</DecisionBadge>
       </CardHead>
@@ -996,9 +1159,9 @@ function HandoffCard({ run, busy, onTry }) {
       <p className={styles.small}>
         {summary.via === 'template'
           ? 'Template note: the LLM summary was not available for this turn.'
-          : `Written by DeepSeek from the run’s trace${summary.ms != null ? ` in ${formatMs(summary.ms)}` : ''}${
-              run.kind === 'example' ? ' (recorded)' : ''
-            }. Nothing is sent to anyone.`}
+          : `Written by DeepSeek from the run’s trace${
+              summary.ms != null ? ` in ${formatMs(summary.ms)}` : ''
+            }${run.kind === 'example' ? ' (recorded)' : ''}. Nothing is sent to anyone.`}
       </p>
     </Card>
   );
