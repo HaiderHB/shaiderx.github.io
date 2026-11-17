@@ -92,6 +92,69 @@ What films must change to adopt 1.1 (`npm run sync -- <slug>`, then QA)
 - Template (`templates/film/compositions/captions.html`) and `components/caption-band.html`: the sample cues
   are retimed so they pass the 1.1 reading-time rule as written. No film change needed.
 
+## 2.0.0 (2026-11-16) — the launch format (additive)
+
+Why: Haider found the kit 1.1 films confusing: too fast, hard to know where to look, and straight into the UI
+without saying what the product is or what problem it solves. A research pass over ~55 sources on product
+launch demos gives the new standard: 60-75 s, hook, what it is, the problem, ONE task, two features, proof,
+end card; one caption of <= 8 words per shot; one focal point, zoomed and spotlit. It replaces the kit 1.1
+retention rules for new films. Nothing in the kit was renamed or changed in meaning: the three kit 1.1 films
+keep their vendored copy and pass QA exactly as before.
+
+New
+- Opt-in: `data-kit-format="launch"` on the film root; each scene host names its beat with `data-kit-beat`
+  (`hook`, `what`, `problem`, `hero`, `feature`, `proof`, `end`); `data-kit-run` says what the footage is.
+- `lib/launch.js`: `Kit.launch.RULES`, `BEATS`, `readingTime` (max(2.5, 0.5 + 0.6 x words)), `isLaunch`, `mag`,
+  `cover`, `statement`.
+- Launch caption `.kit-cap.kit-cap3` (one line, 68 px, no kicker), hook line `.kit-hook` (72 px, crisp on
+  frame 0), proof cue `.kit-proof` (`.kit-stats` > `.kit-stat`, `.kit-hood`), label row `.kit-cap-tags`, and
+  `.kit-chapters[data-kit-chapters]` (3-4 plain labels over a thin progress bar). `Kit.captions.animate`
+  handles all of them; `Kit.captions.parseChapters`. In a launch film the band switches on with the cut.
+- Statement scene (`components/statement-scene.html`, `Kit.launch.statement`): `.kit-stage.kit-backdrop`,
+  `.kit-scrim`, `.kit-statement-text` / `.kit-statement-sub`, `data-kit-cam`.
+- Spotlight `.kit-spot[data-kit-focus]` (`components/spotlight.html`): planned by `Kit.scene.plan` like a
+  ring, flat dim outside the box, hard on cuts. `data-kit-window="a,b"` (rings too) takes the box from other scene
+  seconds than the time on screen (the state before a click). QA plans spotlights with the rings.
+- End card block `blocks/launch-end.html` (host id `launchend`; `built`, `action`, `url`).
+- 2x capture: `capture.cjs` `deviceScaleFactor` (via `--force-device-scale-factor`; an emulated dsf does not
+  reach the CDP screencast), `cursor: {scale, idleHide}`, `clickPause`; `build-footage.mjs` keeps the pixels and
+  scales boxes, cursor and clicks to the 1920x1080 stage (`stageScale`, `viewport`, `deviceScaleFactor`,
+  `pixels` in the clip data). This closes great-question's suggestion 6.
+- `Kit.scene.plan` keyframes gain `mag` (camera zoom x stage scale), `stageScale`, `wide`; the "zoom < 1"
+  warning now looks at `mag`.
+- Music: `music/bright-pluck-112-long.mp3` (94 s) and `"long"` in `beds.json`; `music-bed.mjs` picks the long
+  version when the film outlasts the bed; QA fails a bed shorter than its film (all films).
+- Tokens: `--kit-cap3-top`, `--kit-cap3-head`, `--kit-cap3-hook`, `--kit-chapters-top`, `--kit-statement`,
+  `--kit-backdrop-blur`, `--kit-scrim`, `--kit-spot-dim`.
+- QA (`scripts/qa.mjs`), launch films only: duration 55-90 s; footage at 0.0 s; beats present, once, in order;
+  <= 2 feature beats; hook <= 5 s; statements with product footage, the problem named by 20 s; end card 4-6 s
+  with its three lines; `.kit-cap3` cues only, word limits, one line, 64-72 px, reading time, <= 7 s; one hook
+  line, one proof cue (1-3 numbers, one under-the-hood line); `.kit-chapters` with 3-4 labels; hero / feature
+  shots at >= 1.5x; no camera move under a caption; run label; held-frame label; no "If I join". Warnings:
+  9-12 words, jargon, caption off the cut, more than one click per caption, short still / hold, no spotlight.
+- Template and `new-film`: a launch-format film with a beat-table SPEC.md and a 2x capture script.
+
+HyperFrames catalog (0.9.58), checked before writing these: `yt-feather-highlight` (dims the frame except a
+feathered ellipse), `mk-progress-stat` / `count-up` (stat with count-up and a progress track), `agent-cursor`,
+`code-highlight`. Not adopted: none of them is placed from the recorded DOM boxes or planned by QA, and the
+feathered / glowing looks break the house style (flat dim, no glow). `count-up` is the one worth a look for
+the proof numbers in a later version.
+
+Changed
+- `Kit.version` 2.0.0. `scripts/qa.mjs` end-card limit is 6 s for launch films (3 s otherwise).
+- The kit 1.1 template (cold open + stepper) is replaced by the launch template; the 1.1 blocks and components
+  stay in the kit for the three films built on them.
+
+What a kit 1.1 film must change to adopt the launch format (see video/README.md, "Daily workflow (launch format)")
+1. `npm run sync -- <slug>`; add `data-kit-format="launch"` and `data-kit-run` to the root.
+2. Write the beat table in SPEC.md; replace the cold-open host and the single footage scene with one host per
+   beat (`data-kit-beat`); statements are `data-kit-role="statement"`.
+3. Re-capture at 2x with small focus boxes tracked; rebuild footage; set `data-media-start` per shot.
+4. Rewrite captions as `.kit-cap3` cues (no kicker, no detail, no `data-kit-step`); replace `.kit-progress` with
+   `.kit-chapters`; add the hook line and the proof cue.
+5. Swap `kit/blocks/end-card.html` for `kit/blocks/launch-end.html` (host id `launchend`).
+6. `node kit/scripts/music-bed.mjs films/<slug>`; check, QA, review stills, render, `qa.mjs --video`.
+
 ## Open suggestions from the v3 films (2026-11-15, not applied)
 
 No kit files changed for AssemblyAI or Great Question v3. Notes kept for a later version:

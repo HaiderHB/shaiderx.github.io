@@ -1,0 +1,53 @@
+<!--
+  kit/components/statement-scene.html — a statement scene (kit 2, launch format): ONE plain sentence, big,
+  over blurred and dimmed product footage. Used for the "what it is" and "problem" beats. Paste it as
+  compositions/what.html (and problem.html); change the ids, the footage and the text.
+
+  Host (index.html):
+    <div id="what" data-composition-id="what" data-composition-src="compositions/what.html"
+      data-kit-role="statement" data-kit-beat="what" data-start="4.2" data-duration="6" ...></div>
+
+  Parts
+    .kit-stage.kit-backdrop   the footage, blurred (--kit-backdrop-blur, 10 px) so it reads as "the product"
+                              without competing with the sentence. data-kit-cam="x,y,w,h" on the root = the
+                              footage region (stage px) that fills the frame, e.g. the document pane for the
+                              "before" state; without it the whole frame is used. Kit.launch.statement pushes
+                              in 4% over the scene (its one camera move).
+    .kit-scrim                flat dim over the footage (--kit-scrim, 0.62; raise it over white pages so the
+                              sentence keeps 4.5:1 contrast)
+    .kit-statement-text       the sentence: <= 12 words, 96 px, *word* = the accent word. On screen
+                              >= max(2.5, 0.5 + 0.6 x words) s (QA fails less).
+    .kit-statement-sub        one small line, e.g. "A prototype built for Acme by Haider Bokhari" (a label:
+                              not counted in the reading time; the end card repeats it)
+  Per-scene overrides go on the root's style: --kit-backdrop-blur: 4px; --kit-scrim: 0.72;
+  Used by: gc-ai (what, problem).
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="what" data-width="1920" data-height="1080">
+    <div id="what-stage" class="kit-stage kit-backdrop" data-layout-allow-overflow>
+      <div id="what-cam" class="kit-cam">
+        <video id="what-v" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="0" data-duration="6" data-media-start="4" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <div id="what-scrim" class="clip kit-scrim" data-start="0" data-duration="6" data-track-index="1" data-layout-ignore></div>
+    <div id="what-text" class="clip kit-statement" data-start="0" data-duration="6" data-track-index="2">
+      <div class="kit-statement-text">One plain sentence that says *what it is*.</div>
+      <div class="kit-statement-sub">A prototype built for Company by Haider Bokhari</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.launch.statement({ id: "what", tl });
+      window.__timelines["what"] = tl;
+    })();
+  </script>
+</template>
