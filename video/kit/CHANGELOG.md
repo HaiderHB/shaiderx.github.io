@@ -113,7 +113,8 @@ New
 - Statement scene (`components/statement-scene.html`, `Kit.launch.statement`): `.kit-stage.kit-backdrop`,
   `.kit-scrim`, `.kit-statement-text` / `.kit-statement-sub`, `data-kit-cam`.
 - Spotlight `.kit-spot[data-kit-focus]` (`components/spotlight.html`): planned by `Kit.scene.plan` like a
-  ring, flat dim outside the box, hard on cuts.
+  ring, flat dim outside the box, hard on cuts. `data-kit-window="a,b"` (rings too) takes the box from other scene
+  seconds than the time on screen (the state before a click). QA plans spotlights with the rings.
 - End card block `blocks/launch-end.html` (host id `launchend`; `built`, `action`, `url`).
 - 2x capture: `capture.cjs` `deviceScaleFactor` (via `--force-device-scale-factor`; an emulated dsf does not
   reach the CDP screencast), `cursor: {scale, idleHide}`, `clickPause`; `build-footage.mjs` keeps the pixels and
@@ -132,6 +133,12 @@ New
   shots at >= 1.5x; no camera move under a caption; run label; held-frame label; no "If I join". Warnings:
   9-12 words, jargon, caption off the cut, more than one click per caption, short still / hold, no spotlight.
 - Template and `new-film`: a launch-format film with a beat-table SPEC.md and a 2x capture script.
+
+HyperFrames catalog (0.9.58), checked before writing these: `yt-feather-highlight` (dims the frame except a
+feathered ellipse), `mk-progress-stat` / `count-up` (stat with count-up and a progress track), `agent-cursor`,
+`code-highlight`. Not adopted: none of them is placed from the recorded DOM boxes or planned by QA, and the
+feathered / glowing looks break the house style (flat dim, no glow). `count-up` is the one worth a look for
+the proof numbers in a later version.
 
 Changed
 - `Kit.version` 2.0.0. `scripts/qa.mjs` end-card limit is 6 s for launch films (3 s otherwise).
