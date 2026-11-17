@@ -1,152 +1,207 @@
-// GoodTime capture script (kit 1.1). Run from video/:
-//   DEMO_URL=http://localhost:3171/demo/goodtime/ node films/goodtime/capture/record.cjs <clip>
-// The demo runs from an isolated copy of the site (next build && next start -p 3171), in preview
-// mode (no key): the page's example run, recorded from live preview runs on 2026-11-16 (DeepSeek
-// V3.2 via fal + Jev). Every tool call, check, hold and calendar change in it is computed in the
-// browser by the same code the API runs. Free: no live calls are made while recording.
-// Clips: top (the hero glance during a replay of the rescue), main (the rescue in the run trace,
-// the decision, then the candidate chat, the drafts and the audit trail).
-// Then: node kit/scripts/build-footage.mjs films/goodtime
+// GoodTime capture script (launch format, kit 2). Run from video/: node films/goodtime/capture/record.cjs
+// Then: npm run footage -- films/goodtime   (builds assets/footage/rescue.mp4 + data/clips/rescue.json)
+//
+// The demo runs from an isolated copy of the worktree (next build && next start -p 3171), with no demo key:
+// the page is in preview mode and replays its recorded example run of the "Out sick" message. The model
+// outputs in it (the LLM's tool calls, the decision model's answer, the drafts) were recorded from live runs
+// on the Vercel preview on 2026-11-16 (12.4 s live); the page replays them in about 5 s and computes every
+// tool call, rule check, hold and calendar change in the browser. No live calls. The film labels it.
+//
+// Kit 2 capture settings: viewport 1360x765 CSS px at deviceScaleFactor 2 (frames 2720x1530), so the UI is
+// 1.41x larger on the 1920 stage and 1.4-2x camera zooms stay sharp; cursor about 1.5x a system arrow, hidden
+// when idle, resting 450 ms before every click.
+//
+// One continuous take, `rescue`, in the order the page allows (overrides lock once the candidate has changed
+// the loop). The page is long and its cards change height while a run plays, so the script "pins" the card
+// a shot is about: it keeps that card's top at a fixed height in the window by scrolling the page whenever
+// the layout above it changes (a reader holding their place). Nothing on the page is altered.
+//   hook     the top of the page while the example replays: "Loop at risk" flips to "Loop rescued"
+//   before   the repair undone (Undo last change), so the loop is at risk: backdrop of the problem statement
+//   run      Run the agent is pressed beside the calendar: the message card, then the calendar repairing
+//   checks   the same example replayed with two steps of the agent run pinned: qualified, then checked
+//   drafts   the same example replayed with the drafted messages pinned
+//   override "Override: apply this instead" is pressed in the decision card
+//   undo     "Undo last change" is pressed in the audit trail
+//   chat     the chat card comes into view: the page plays the candidate's recorded message, the agent
+//            replans, the calendar beside it moves two interviews
+//   wide     the top of the page with the finished loop card
+const fs = require("fs");
 const path = require("path");
 const cap = require("../../../kit/scripts/capture.cjs");
 
 const FILM = path.join(__dirname, "..");
 const BASE = process.env.DEMO_URL || "http://localhost:3171/demo/goodtime/";
-const HEADER = 92; // the page's sticky bar covers y < 68: park components at y = 92
+const VIEW = { viewport: { width: 1360, height: 765 }, deviceScaleFactor: 2, cursor: { scale: 0.75, idleHide: 1200 }, clickPause: 450, quality: 92 };
 
-// component name -> CSS selector or (document) => Element (serialised into the page: keep each self-contained)
+// window.__pin(src, y): keep the element returned by the function source `src` with its top at viewport y.
+// It re-scrolls from mutation and resize observers, which run before the next paint, so the card never jumps.
+const PIN_JS = `
+window.__pin = (src, y) => {
+  if (window.__unpin) window.__unpin();
+  const get = new Function("d", "return (" + src + ")(d)");
+  const fix = () => {
+    const el = get(document);
+    if (!el) return;
+    const top = el.getBoundingClientRect().top;
+    if (Math.abs(top - y) > 0.25) window.scrollTo({ top: window.scrollY + top - y, behavior: "instant" });
+  };
+  const mo = new MutationObserver(fix);
+  mo.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true });
+  const ro = new ResizeObserver(fix);
+  document.querySelectorAll('[class*="Panel_card__"]').forEach((c) => ro.observe(c));
+  window.__unpin = () => { mo.disconnect(); ro.disconnect(); window.__unpin = null; };
+  fix();
+};`;
+
+// tracked functions are serialised into the page, so values are baked into the source
+const card = (title) =>
+  new Function("d", `return [...d.querySelectorAll('[class*="Panel_card__"]')].find((c) => /^${title}/.test(((c.querySelector('[class*="Panel_cardTitle__"]') || {}).textContent || "").trim()))`);
+const step = (name) => new Function("d", `return [...d.querySelectorAll('[class*="Timeline_step__"]')].find((li) => li.textContent.includes(${JSON.stringify(name)}))`);
+const src = (fn) => (typeof fn === "string" ? `(d) => d.querySelector(${JSON.stringify(fn)})` : fn.toString());
+
+// component name -> CSS selector or (document) => Element. Track every component a shot or a spotlight uses.
 const TRACK = {
   bar: '[class*="DemoLayout_bar__"]',
   hero: '[class*="DemoLayout_hero__"]',
   glance: '[class*="GoodTime_glance__"]',
+  glanceStatus: '[class*="GoodTime_glanceStatus__"]',
   ribbon: '[class*="GoodTime_ribbon__"]',
+  glanceStats: '[class*="GoodTime_glanceStats__"]',
   calendar: '[class*="GoodTime_calendar__"]',
   strip: '[class*="Schedule_strip__"]',
-  stripGrid: '[class*="Schedule_grid__"]',
   loopList: '[class*="GoodTime_loopList__"]',
-  invariants: '[class*="GoodTime_invariants__"]',
   messageCard: '[class*="GoodTime_messageCard__"]',
   messageInput: "#dropout-message",
-  runCard: (d) =>
-    [...d.querySelectorAll('[class*="Panel_card__"]')].find((c) =>
-      /^Agent run/.test(((c.querySelector('[class*="Panel_cardTitle__"]') || {}).textContent || "").trim())
-    ),
-  runHead: (d) => {
-    const c = [...d.querySelectorAll('[class*="Panel_card__"]')].find((x) =>
-      /^Agent run/.test(((x.querySelector('[class*="Panel_cardTitle__"]') || {}).textContent || "").trim())
-    );
-    return c && c.querySelector('[class*="Panel_cardHead__"]');
-  },
-  timeline: '[class*="GoodTime_main__"] > [class*="Panel_card__"] [class*="Timeline_timeline__"]',
-  callCheck: (d) => [...d.querySelectorAll('[class*="GoodTime_call__"]')].find((li) => li.textContent.includes("checkAvailability")),
-  callScore: (d) => [...d.querySelectorAll('[class*="GoodTime_call__"]')].find((li) => li.textContent.includes("scoreOptions")),
-  callHold: (d) => [...d.querySelectorAll('[class*="GoodTime_call__"]')].find((li) => li.textContent.includes("holdSlot")),
-  callIntake: (d) => [...d.querySelectorAll('[class*="GoodTime_call__"]')].find((li) => li.textContent.includes("report_dropout")),
-  decision: (d) =>
-    [...d.querySelectorAll('[class*="Panel_card__"]')].find((c) =>
-      /^Decision/.test(((c.querySelector('[class*="Panel_cardTitle__"]') || {}).textContent || "").trim())
-    ),
+  runCard: card("Agent run"),
+  stepRead: step("report_dropout"),
+  stepLoop: step("getLoop"),
+  stepFind: step("findQualifiedInterviewers"),
+  stepCheck: step("checkAvailability"),
+  stepScore: step("scoreOptions"),
+  decision: card("Decision"),
   bars: '[class*="ProbabilityBar_bars__"]',
   final: '[class*="GoodTime_final__"]',
   options: '[class*="GoodTime_options__"]',
+  draftsCard: card("Drafted messages"),
+  drafts: '[class*="GoodTime_drafts__"]',
+  draft1: '[class*="GoodTime_drafts__"] > li:nth-child(1)',
+  draft2: '[class*="GoodTime_drafts__"] > li:nth-child(2)',
   chat: '[class*="GoodTime_chatCard__"]',
   thread: '[class*="Chat_thread__"]',
-  agentReply: (d) => {
-    const items = [...d.querySelectorAll('[class*="Chat_message__"][data-side="start"]')];
-    return items[items.length - 1];
-  },
-  changes: '[class*="GoodTime_changes__"]',
-  drafts: (d) =>
-    [...d.querySelectorAll('[class*="Panel_card__"]')].find((c) =>
-      /^Drafted messages/.test(((c.querySelector('[class*="Panel_cardTitle__"]') || {}).textContent || "").trim())
-    ),
   audit: '[class*="GoodTime_auditCard__"]',
-  dayWed: (d) => d.querySelectorAll('[class*="Schedule_day__"]')[1],
-  dayThu: (d) => d.querySelectorAll('[class*="Schedule_day__"]')[2],
-  blockDesign: (d) => [...d.querySelectorAll('[class*="Schedule_block__"]')].find((b) => /^Design/.test(b.textContent) && !/moved/.test(b.textContent)),
+  auditHead: '[class*="GoodTime_auditCard__"] [class*="Panel_cardHead__"]',
+  auditList: '[class*="AuditTrail_trail__"]',
 };
 
-async function open(name) {
-  const clip = await cap.startClip({ film: FILM, name, url: BASE, track: TRACK });
-  const { page } = clip;
-  // the page autoplays its example run on load; let it finish so the page is still
-  await page.waitForFunction(() => /Loop rescued/.test(document.body.innerText), null, { timeout: 40000 });
-  await page.waitForTimeout(800);
-  return clip;
+const PARK = [1344, 720]; // the page's right margin: nothing to hover
+const pin = (page, target, y) => page.evaluate(([s, y]) => window.__pin(s, y), [src(target), y]);
+const unpin = (page) => page.evaluate(() => window.__unpin && window.__unpin());
+const press = (page, re) => page.evaluate((r) => [...document.querySelectorAll("button")].find((b) => new RegExp(r).test(b.textContent)).click(), re);
+const seen = (page, re) => page.waitForFunction((r) => new RegExp(r).test(document.body.innerText), re, { timeout: 30000, polling: 30 });
+
+async function park(clip) {
+  await clip.page.mouse.move(PARK[0], PARK[1]);
+  clip.setCursor(PARK[0], PARK[1]);
 }
 
-const docTop = (page, fn) =>
-  page.evaluate((src) => {
-    const el = new Function("d", "return (" + src + ")(d)")(document);
-    return el.getBoundingClientRect().top + window.scrollY;
-  }, typeof fn === "string" ? `(d) => d.querySelector(${JSON.stringify(fn)})` : fn.toString());
-const park = (page, y) => page.evaluate((v) => window.scrollTo(0, Math.max(0, v)), y);
-const replayExample = (page) =>
-  page.evaluate(() => [...document.querySelectorAll("button")].find((b) => /Replay/.test(b.textContent)).click());
+// one replay of the example: marks when the loop is at risk, rescued, and when the drafts are written
+async function watchRun(clip, name) {
+  const { page } = clip;
+  await seen(page, "Loop at risk");
+  clip.mark(name + "-risk");
+  await seen(page, "Loop rescued");
+  clip.mark(name + "-rescued");
+  await seen(page, "drafts written");
+  clip.mark(name + "-done");
+}
 
-async function startAt(clip, y, cursor) {
-  await park(clip.page, y);
-  await clip.page.mouse.move(cursor[0], cursor[1]);
-  clip.setCursor(cursor[0], cursor[1]);
-  await clip.page.waitForTimeout(600);
+async function rescue() {
+  const clip = await cap.startClip(Object.assign({ film: FILM, name: "rescue", url: BASE, track: TRACK, init: PIN_JS }, VIEW));
+  const { page } = clip;
+  // the page plays its example on load; let it finish (pre-roll)
+  await seen(page, "drafts written");
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await park(clip);
+  await page.waitForTimeout(1800);
   await clip.begin();
-}
 
-// the hero at the top: the glance card goes from "Loop at risk" to "Loop rescued" during a replay
-async function top() {
-  const clip = await open("top");
-  const { page } = clip;
-  await startAt(clip, 0, [1990, 1120]);
-  await clip.wait(600);
-  await replayExample(page);
-  clip.mark("replay");
-  await clip.waitText("Loop at risk", { label: "atRisk", timeout: 20000 });
-  await page.waitForFunction(() => /Loop rescued/.test(document.body.innerText), null, { timeout: 20000 });
-  clip.mark("rescued");
-  await clip.wait(3500);
-  await clip.finish();
-}
-
-// the rescue: Replay in the run card, the trace and the calendar, the decision; then the candidate's
-// message arrives in the chat (the page plays the recorded turn when the chat scrolls into view),
-// the drafted messages and the audit trail
-async function main() {
-  const clip = await open("main");
-  const { page } = clip;
-  const sectionTop = await docTop(page, TRACK.calendar);
-  await startAt(clip, sectionTop - HEADER, [1300, 700]);
-  await clip.wait(1600);
-  await clip.click(page.getByRole("button", { name: "Replay" }), { label: "replay", move: 900 });
-  await clip.waitText("Loop at risk", { label: "atRisk", timeout: 20000 });
+  // hook: the top of the page while the example replays
   await clip.wait(900);
-  await clip.scrollTo((await docTop(page, TRACK.runCard)) - HEADER, 800);
-  clip.mark("trace");
-  await page.waitForFunction(() => /drafts written/.test(document.body.innerText), null, { timeout: 30000 });
-  clip.mark("drafted");
-  await clip.wait(3600);
-  await clip.scrollTo((await docTop(page, TRACK.decision)) - HEADER, 900);
-  clip.mark("decision");
-  await clip.wait(6800);
-  await clip.scrollTo((await docTop(page, TRACK.chat)) - HEADER, 1000);
-  clip.mark("chat");
-  await page.waitForFunction(() => document.querySelectorAll('[class*="GoodTime_changes__"]').length > 0, null, { timeout: 30000 });
-  clip.mark("replied");
+  clip.mark("hook-replay");
+  await press(page, "Replay");
+  await watchRun(clip, "hook");
+  await clip.wait(4400);
+
+  // before: the repair undone, so the calendar shows the dropped interview (the problem statement's backdrop)
+  await press(page, "Undo last change");
+  await pin(page, TRACK.messageCard, 92);
+  clip.mark("before");
   await clip.wait(7600);
-  await clip.scrollTo((await docTop(page, TRACK.drafts)) - HEADER, 900);
-  clip.mark("drafts");
+
+  // run: still, then ONE action: press Run the agent. The calendar beside it goes red, then repairs.
+  clip.mark("run-still");
+  await clip.wait(1200);
+  await clip.click(page.getByRole("button", { name: "Run the agent" }), { label: "run", move: 850 });
+  await watchRun(clip, "run");
+  await clip.wait(4600);
+  await park(clip);
+
+  // checks: the same example again with two steps of the agent run pinned
+  await pin(page, TRACK.stepFind, 150);
+  await clip.wait(1900);
+  clip.mark("checks-replay");
+  await press(page, "Replay");
+  await watchRun(clip, "checks");
+  await clip.wait(3600);
+
+  // drafts: the same example again with the drafted messages pinned (their card's top just under the page's
+  // bar, so the chat card above stays out of view and does not start its recorded turn yet)
+  await pin(page, TRACK.draftsCard, 14);
+  await clip.wait(700);
+  clip.mark("drafts-replay");
+  await press(page, "Replay");
+  await watchRun(clip, "drafts");
+  await clip.wait(4400);
+
+  // override: still, then ONE action: apply another valid repair
+  await pin(page, TRACK.decision, 92);
+  clip.mark("override-still");
+  await clip.wait(1700);
+  await clip.click(page.getByRole("button", { name: "Override: apply this instead" }).first(), { label: "override", move: 850 });
+  await clip.wait(3800);
+  await park(clip);
+
+  // undo: still, then ONE action: undo it in the audit trail
+  await pin(page, TRACK.audit, 92);
+  clip.mark("undo-still");
+  await clip.wait(1900);
+  await clip.click(page.getByRole("button", { name: "Undo last change" }), { label: "undo", move: 850 });
+  await clip.wait(3800);
+  await park(clip);
+  await clip.wait(1500);
+
+  // chat: the chat card comes into view and the page plays the candidate's recorded message
+  await pin(page, TRACK.chat, 92);
+  clip.mark("chat");
+  await page.waitForFunction(() => document.querySelectorAll('[class*="GoodTime_changes__"] li').length > 0, null, { timeout: 30000, polling: 30 });
+  clip.mark("chat-moved");
   await clip.wait(6200);
-  await clip.scrollTo((await docTop(page, TRACK.audit)) - HEADER, 900);
-  clip.mark("audit");
-  await clip.wait(6200);
+
+  // wide: the top of the page, the finished loop card
+  await unpin(page);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  clip.mark("wide");
+  await clip.wait(8200);
   await clip.finish();
 }
 
-const clips = { top, main };
+const takes = { rescue };
 (async () => {
-  const which = process.argv[2] || "main";
-  if (!clips[which]) throw new Error("unknown clip " + which);
-  await clips[which]();
+  const which = process.argv[2] || "rescue";
+  if (!takes[which]) throw new Error("unknown take " + which + " (" + Object.keys(takes).join(", ") + ")");
+  fs.mkdirSync(path.join(FILM, "raw"), { recursive: true });
+  await takes[which]();
 })().catch((e) => {
-  console.error(e && e.stack ? e.stack : e);
+  console.error(e);
   process.exit(1);
 });

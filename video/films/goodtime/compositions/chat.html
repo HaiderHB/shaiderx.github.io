@@ -1,7 +1,7 @@
 <template>
-  <!-- GoodTime · the candidate chat, the drafts and the audit trail (clip main, example run in preview mode).
-       The candidate's recorded message plays when the chat scrolls into view (media ~20.2 s); the reply and the
-       calendar change land at 22.6 s. Jump cuts skip the page scrolls; no speed changes. -->
+  <!-- GoodTime launch film (kit 2, launch format). Clip `rescue`, recorded 2026-11-17 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its recorded example run of the "Out sick" message (model outputs recorded from live runs on the Vercel preview, 12.4 s live; replayed by the page in about 5 s; tools, checks and holds computed in the browser). Footage plays at 1x; every hold is real footage.
+       FEATURE 3 47.3-58.2 s: the candidate asks for a change. Scene time = film time - 47.3.
+       0-5.6 the chat: the candidate's message is in (the page plays its recorded chat turn when the chat comes into view), the agent's one-line reply and the two moves land at about 2.2 | 5.6-10.9 the calendar beside the chat, from 1.3 s before the moves land (same footage). -->
   <style>
     #root {
       position: absolute;
@@ -11,28 +11,23 @@
     }
   </style>
   <div id="root" data-composition-id="chat" data-width="1920" data-height="1080">
-    <div id="ch-stage" class="kit-stage" data-layout-allow-overflow>
-      <div id="ch-cam" class="kit-cam">
-        <!-- the chat beside the sticky calendar: request, reply, coding and manager move to Thursday -->
-        <video id="ch-v1" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main"
-          data-start="0" data-duration="9.2" data-media-start="20.8" data-track-index="0" muted playsinline></video>
-        <!-- jump cut over the scroll to the drafted messages -->
-        <video id="ch-v2" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main"
-          data-start="9.2" data-duration="6" data-media-start="31.2" data-track-index="0" muted playsinline></video>
-        <!-- jump cut over the scroll to the audit trail -->
-        <video id="ch-v3" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main"
-          data-start="15.2" data-duration="6.1" data-media-start="38.3" data-track-index="0" muted playsinline></video>
+    <div id="chat-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="chat-cam" class="kit-cam">
+        <!-- F3a: the candidate's message, then the agent's reply and the two moves -->
+        <video id="chat-v1" class="clip kit-footage" src="assets/footage/rescue.mp4" data-kit-clip="rescue" data-start="0" data-duration="5.6" data-media-start="68.48" data-track-index="0" muted playsinline></video>
+        <!-- F3b: the calendar: coding and the hiring manager round move to Thursday -->
+        <video id="chat-v2" class="clip kit-footage" src="assets/footage/rescue.mp4" data-kit-clip="rescue" data-start="5.6" data-duration="5.3" data-media-start="69.34" data-track-index="0" muted playsinline></video>
+        <!-- the lit box is the thread as it is: the question and the agent working, then with the reply and the two moves (in the DOM at scene 1.97, on screen from 2.30) -->
+        <div id="chat-spot-thread" class="clip kit-spot" data-start="0" data-duration="2.28" data-kit-window="0,1.9" data-kit-focus="thread" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="chat-spot-thread2" class="clip kit-spot" data-start="2.28" data-duration="3.32" data-kit-window="3.2,5.6" data-kit-focus="thread" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="chat-spot-cal" class="clip kit-spot" data-start="5.6" data-duration="5.3" data-kit-focus="strip" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
       </div>
     </div>
 
-    <div id="ch-ann-thu" class="clip kit-ann" data-start="2.6" data-duration="2.6" data-kit-focus="dayThu" data-kit-pad="4"
-      data-track-index="3" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ann-label">Manager moved to stay last</div></div>
-
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": ["thread", "strip", "changes"], "maxZoom": 1.5, "window": [1.9, 9.2], "label": "the chat and the calendar" },
-        { "t": 9.2, "focus": ["strip", "drafts"], "cut": true, "maxZoom": 1.5, "label": "drafted messages beside the calendar" },
-        { "t": 15.2, "focus": "audit", "cut": true, "maxZoom": 1.45, "label": "audit trail (the calendar has scrolled up with the end of the page)" }
+        { "t": 0, "focus": "thread", "maxZoom": 1.95, "cut": true, "window": [3.2, 5.6], "label": "F3a the chat thread" },
+        { "t": 5.6, "focus": "strip", "maxZoom": 1.5, "cut": true, "window": [5.6, 10.9], "label": "F3b the calendar: two interviews move to Thursday" }
       ]
     </script>
   </div>

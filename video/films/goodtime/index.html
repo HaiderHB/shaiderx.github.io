@@ -1,16 +1,20 @@
 <!doctype html>
 <!--
-  GoodTime launch film (kit 1.1: text-first, music bed, no voice, no next-steps card). 44.65 s.
-  Recorded 2026-11-16 with kit/scripts/capture.cjs from an isolated next build of the demo, preview mode:
-  the page's example run (model outputs recorded from live preview runs; tools, checks, holds and the
-  calendar computed in the browser). Labelled "Example run" in the first cue.
-    coldopen   0.00-2.40   kit block: the loop glance flips from "Loop at risk" to "Loop rescued" (clip hook)
-    rescue     2.40-20.35  the dropout message, the calendar, the run trace, the decision (clip main)
-    chat      20.35-41.65  the candidate's request and the replan, drafted messages, audit trail (clip main)
-    endcard   41.65-44.65  kit block: Haider Bokhari · haiderb.com
-    captions   2.40-41.65  v2 cues + 6-step progress stepper
-    music      0.00-44.65  bright-pluck-112, written by: node ../../kit/scripts/music-bed.mjs .
-  QA: node ../../kit/scripts/qa.mjs . --frames
+  GoodTime launch film (goodtime), kit 2, launch format: hook, what it is, the problem, ONE task, two features,
+  proof, end card. Text-first, one music bed, no voice. The beat table is in SPEC.md.
+    hook       0.0-4.2     the loop card: "Loop at risk" flips to "Loop rescued", zoomed; the hook line
+    what       4.2-10.7    statement over the top of the page, blurred
+    problem    10.7-16.7   statement over the calendar with the dropped interview
+    hero       16.7-37.3   run the agent, the checks, the calendar repaired, the drafted messages
+    control    37.3-47.3   feature 2: override the agent, undo any change (every action logged)
+    chat       47.3-58.2   feature 3: the candidate asks for Thursday, the agent replans
+    proof      58.2-64.7   the top of the page, wide, with three numbers from the run
+    launchend  64.7-69.7   Built for GoodTime by Haider Bokhari / Try it live / haiderb.com
+    captions   0-64.7      hook line, one caption per shot, proof numbers, chapters + progress bar
+    music      one instrumental bed under the whole film: node ../../kit/scripts/music-bed.mjs . --bed bright-pluck-112-long
+  QA: node ../../kit/scripts/qa.mjs .   (or: npm run qa -- films/goodtime)
+  data-kit-format="launch" turns on the launch rules; data-kit-beat on each host names its beat;
+  data-kit-run="example": the footage is the page's recorded example run (labelled on screen).
 -->
 <html lang="en">
   <head>
@@ -35,6 +39,10 @@
         overflow: hidden;
         background: #0a0a0f;
       }
+      /* captions at 66 px (launch range 64-72), the pilot film's size, so the longest line (the checks) stays on one line */
+      :root {
+        --kit-cap3-head: 66px;
+      }
       #root {
         position: relative;
         width: 1920px;
@@ -46,27 +54,38 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-kit-accent="cobalt" data-start="0" data-duration="44.65" data-width="1920" data-height="1080">
-      <div id="coldopen" data-composition-id="coldopen" data-composition-src="kit/blocks/cold-open.html" data-kit-role="cold-open"
-        data-variable-values='{"kicker": "Prototype for GoodTime · Haider Bokhari", "headline": "Interviewer out. Loop *rescued*.", "focus": "glance", "zoom": 1.35, "push": 0.05}'
-        data-start="0" data-duration="2.4" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
+    <div id="root" data-composition-id="main" data-kit-format="launch" data-kit-accent="cobalt" data-kit-run="example" data-kit-jargon="Jev,DeepSeek" data-start="0" data-duration="69.7" data-width="1920" data-height="1080">
+      <div id="hook" data-composition-id="hook" data-composition-src="compositions/hook.html" data-kit-role="footage" data-kit-beat="hook"
+        data-start="0" data-duration="4.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
 
-      <div id="rescue" data-composition-id="rescue" data-composition-src="compositions/rescue.html" data-kit-role="footage"
-        data-start="2.4" data-duration="17.95" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
+      <div id="what" data-composition-id="what" data-composition-src="compositions/what.html" data-kit-role="statement" data-kit-beat="what"
+        data-start="4.2" data-duration="6.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
 
-      <div id="chat" data-composition-id="chat" data-composition-src="compositions/chat.html" data-kit-role="footage"
-        data-start="20.35" data-duration="21.3" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
+      <div id="problem" data-composition-id="problem" data-composition-src="compositions/problem.html" data-kit-role="statement" data-kit-beat="problem"
+        data-start="10.7" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
 
-      <div id="endcard" data-composition-id="endcard" data-composition-src="kit/blocks/end-card.html" data-kit-role="end-card"
-        data-variable-values='{"question": "", "name": "Haider Bokhari", "url": "haiderb.com"}'
-        data-start="41.65" data-duration="3" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+      <div id="hero" data-composition-id="hero" data-composition-src="compositions/hero.html" data-kit-role="footage" data-kit-beat="hero"
+        data-start="16.7" data-duration="20.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+
+      <div id="control" data-composition-id="control" data-composition-src="compositions/control.html" data-kit-role="footage" data-kit-beat="feature"
+        data-start="37.3" data-duration="10" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
+
+      <div id="chat" data-composition-id="chat" data-composition-src="compositions/chat.html" data-kit-role="footage" data-kit-beat="feature"
+        data-start="47.3" data-duration="10.9" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
+
+      <div id="proof" data-composition-id="proof" data-composition-src="compositions/proof.html" data-kit-role="footage" data-kit-beat="proof"
+        data-start="58.2" data-duration="6.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 7"></div>
+
+      <div id="launchend" data-composition-id="launchend" data-composition-src="kit/blocks/launch-end.html" data-kit-role="end-card" data-kit-beat="end"
+        data-variable-values='{"built": "Built for *GoodTime* by Haider Bokhari", "action": "Try it live: the link is in my message", "url": "haiderb.com"}'
+        data-start="64.7" data-duration="5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 8"></div>
 
       <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-kit-role="captions"
-        data-start="2.4" data-duration="39.25" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
+        data-start="0" data-duration="64.7" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
 
-      <!-- the instrumental bed: written by node ../../kit/scripts/music-bed.mjs . (re-run when the length changes) -->
+      <!-- the instrumental bed under the whole film: written by node ../../kit/scripts/music-bed.mjs . -->
       <!-- kit:music:start -->
-      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112.mp3" data-kit-music="bright-pluck-112" data-start="0" data-duration="44.65" data-media-start="14.55" data-volume="0.569" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
+      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112-long.mp3" data-kit-music="bright-pluck-112-long" data-start="0" data-duration="69.7" data-media-start="23.8" data-volume="0.575" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
       <!-- kit:music:end -->
     </div>
     <script>

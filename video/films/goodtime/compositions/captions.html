@@ -1,6 +1,7 @@
 <template>
-  <!-- GoodTime captions (kit 1.1 text-first band). Captions-local time = film time - 2.4.
-       One cue at a time; each on screen >= 0.6 s + 0.35 s per word of head + detail + chips. -->
+  <!-- GoodTime launch film · every line of text except the two statement scenes and the end card.
+       Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
+       >= max(2.5, 0.5 + 0.6 x words) s; each cue starts on the cut of its shot. Labels sit under the headline. -->
   <style>
     #root {
       position: absolute;
@@ -9,46 +10,56 @@
     }
   </style>
   <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
-    <div id="cap-band" class="clip" data-start="0" data-duration="39.25" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
-    <div id="cap-progress" class="clip kit-progress" data-start="0" data-duration="39.25" data-track-index="2"
-      data-kit-steps="Dropout,Check,Decide,Chat,Drafts,Audit" data-layout-ignore></div>
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.2" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="16.7" data-duration="48" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="64.7" data-track-index="2"
+      data-kit-chapters="The problem:0|The rescue:16.7|You decide:37.3|Candidate chat:47.3" data-layout-ignore></div>
 
-    <!-- rescue scene (captions-local = scene-local) -->
-    <div id="cap-drop" class="clip kit-cap kit-cap2" data-start="0" data-duration="6.4" data-kit-step="1" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 1 · Dropout</span><span class="kit-chip">Example run</span></div>
-      <div class="kit-cap-head">An interviewer calls in *sick*</div>
-      <div class="kit-cap-detail">DeepSeek reads it as a tool call.</div>
-    </div>
-    <div id="cap-check" class="clip kit-cap kit-cap2" data-start="6.4" data-duration="4.8" data-kit-step="2" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 2 · Check</span></div>
-      <div class="kit-cap-head">Tools check every *replacement* against the rules</div>
-      <div class="kit-cap-detail">Calendars, hours, load caps, notice.</div>
-    </div>
-    <div id="cap-decide" class="clip kit-cap kit-cap2" data-start="11.2" data-duration="6.75" data-kit-step="3" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 3 · Decide</span></div>
-      <div class="kit-cap-head">Jev picks the repair with *probabilities*</div>
-      <div class="kit-cap-detail">Wei swaps in at the same time; rules can only escalate.</div>
+    <!-- HOOK -->
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.2" data-track-index="1">
+      <div class="kit-cap-head">Interview loop rescued in *12 seconds*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run, replayed faster</span></div>
     </div>
 
-    <!-- chat scene (captions-local = 17.95 + scene-local) -->
-    <div id="cap-ask" class="clip kit-cap kit-cap2" data-start="17.95" data-duration="5.85" data-kit-step="4" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 4 · Chat</span></div>
-      <div class="kit-cap-head">The candidate asks for Thursday *afternoon*</div>
-      <div class="kit-cap-detail">Same state: it replans on top of the swap.</div>
+    <!-- HERO: one task, four shots -->
+    <div id="cap-run" class="clip kit-cap kit-cap3" data-start="16.7" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">An interviewer calls in sick. Run the *agent*.</div>
     </div>
-    <div id="cap-last" class="clip kit-cap kit-cap2" data-start="23.8" data-duration="3.35" data-kit-step="4" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 4 · Chat</span></div>
-      <div class="kit-cap-head">Manager round follows so it stays *last*</div>
+    <div id="cap-checks" class="clip kit-cap kit-cap3" data-start="22" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">It checks *every backup*: calendars, time zones, load</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run, replayed faster</span></div>
     </div>
-    <div id="cap-drafts" class="clip kit-cap kit-cap2" data-start="27.15" data-duration="6" data-kit-step="5" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 5 · Drafts</span></div>
-      <div class="kit-cap-head">Everyone's message drafted on their *channel*</div>
-      <div class="kit-cap-detail">Nothing is sent: holds stay tentative until accepted.</div>
+    <div id="cap-fix" class="clip kit-cap kit-cap3" data-start="27.3" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">It picks the smallest fix: *swap the interviewer*</div>
     </div>
-    <div id="cap-audit" class="clip kit-cap kit-cap2" data-start="33.15" data-duration="6.1" data-kit-step="6" data-track-index="1">
-      <div class="kit-cap-kicker"><span>Step 6 · Audit</span></div>
-      <div class="kit-cap-head">Every action lands in the *audit trail*</div>
-      <div class="kit-cap-detail">Override the repair or undo any change.</div>
+    <div id="cap-drafts" class="clip kit-cap kit-cap3" data-start="32.6" data-duration="4.7" data-track-index="1">
+      <div class="kit-cap-head">It drafts a message for *everyone affected*</div>
+    </div>
+
+    <!-- FEATURE 2: the person stays in charge -->
+    <div id="cap-override" class="clip kit-cap kit-cap3" data-start="37.3" data-duration="5" data-track-index="1">
+      <div class="kit-cap-head">Disagree? *Override* the agent in one click</div>
+    </div>
+    <div id="cap-undo" class="clip kit-cap kit-cap3" data-start="42.3" data-duration="5" data-track-index="1">
+      <div class="kit-cap-head">*Undo* any change. Every action is logged.</div>
+    </div>
+
+    <!-- FEATURE 3: the candidate asks for a change -->
+    <div id="cap-chat" class="clip kit-cap kit-cap3" data-start="47.3" data-duration="5.6" data-track-index="1">
+      <div class="kit-cap-head">A candidate asks for Thursday. The agent *replans*.</div>
+    </div>
+    <div id="cap-last" class="clip kit-cap kit-cap3" data-start="52.9" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">The manager round moves too, to stay *last*</div>
+    </div>
+
+    <!-- PROOF: real numbers from this run, one line for technical viewers -->
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="58.2" data-duration="6.5" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">12 s</span><span class="kit-stat-l">repair time</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">7</span><span class="kit-stat-l">tool calls</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">35/35</span><span class="kit-stat-l">rule checks</span></span>
+      </div>
+      <div class="kit-hood">An LLM reads and writes · code checks every rule · a decision model picks the repair</div>
     </div>
   </div>
   <script>
