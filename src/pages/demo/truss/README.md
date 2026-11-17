@@ -104,9 +104,13 @@ The same module runs in the browser in preview mode on an in-memory store with t
   `/pay/` with a real `AbortController` timeout and a real retry. The pills say "cached read" when
   the image was read before. Uploading your own invoice works here (an unknown vendor is held).
 
-`example.js` was recorded from live runs on the deployed preview with the demo key: the three samples
-in one session, then Northline again after paying it (the duplicate state). The recorder posted to
-`/process/` and kept only the model outputs and timings; never edit them by hand.
+`example.js` was recorded on Nov 17 from live runs on the deployed preview with the demo key: Northline
+(and its payment: a 1.5 s client timeout against a 2.5 s server hold, then a retry with the same key:
+201 charged, 201 replayed, one charge), Keystone, Crestline, then Northline again after paying it (the
+duplicate state). The recorder posted to `/process/` and `/pay/` with curl and kept only the model
+outputs and timings. One substitution: the "paid" note named the recording session's payment id and
+date, so they are stored as `{paymentId}` / `{paidOn}` and filled from your session's payment on replay.
+Never edit the outputs by hand.
 
 ## Env vars
 

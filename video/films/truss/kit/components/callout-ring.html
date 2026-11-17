@@ -1,0 +1,15 @@
+<!--
+  kit/components/callout-ring.html — SNIPPET: cyan ring on a recorded component, rest of frame dimmed.
+  Put it inside the scene's .kit-cam (footage px, moves with the camera). Kit.scene.footage places the
+  ring from the recorded DOM box of data-kit-focus (union over the ring's window) and animates it
+  (0.25 s fade in, scale 1.06 -> 1, 0.15 s fade out). QA fails a ring outside the safe area.
+
+  Variables
+    data-kit-focus   component name, "name@clip", or JSON array of names (union)
+    data-kit-pad     footage px between component and ring (default 6)
+    class "no-dim"   ring only, no dim
+    data-start / data-duration   scene seconds; >= 1.2 s so it can be read
+-->
+<div id="SCENE-ring-NAME" class="clip kit-ring" data-start="0" data-duration="1.6"
+  data-kit-focus="component" data-kit-pad="6" data-track-index="1"
+  data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>

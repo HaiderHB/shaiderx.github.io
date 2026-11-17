@@ -41,6 +41,7 @@ import {
   money,
   masked,
   runBill,
+  shortDate,
 } from './pipeline';
 import styles from './Truss.module.css';
 
@@ -407,7 +408,14 @@ export default function TrussDemo() {
           if (!fast) await sleep(300);
           return example.decisions[variant].decision;
         },
-        writeNote: () => typeOut(example.decisions[variant].note, fast ? 0 : 34),
+        writeNote: facts => {
+          // the "paid" note names this session's payment (stored as placeholders in example.js)
+          const own = previewLedger.charges.find(charge => charge.invoiceNumber === facts.invoice);
+          const note = example.decisions[variant].note
+            .replace('{paymentId}', own?.paymentId || 'the earlier payment')
+            .replace('{paidOn}', own ? shortDate(own.paidOn) : 'an earlier date');
+          return typeOut(note, fast ? 0 : 34);
+        },
         beforeDone: async done => {
           if (done.bill) {
             await saveBill(
