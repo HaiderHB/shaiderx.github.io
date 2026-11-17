@@ -488,7 +488,6 @@ export default function TrussDemo() {
         setNotice(`${PREVIEW_NOTE} Pick a sample invoice to replay its recorded run.`);
         return;
       }
-      setNotice(`${PREVIEW_NOTE} This replays the recorded run for this invoice.`);
       await playExample(sampleId);
       return;
     }
@@ -634,6 +633,22 @@ export default function TrussDemo() {
     }
     takeReply(n, reply);
     return reply;
+  }
+
+  /** An empty ledger: a fresh in-browser store in preview, a new server session when live. */
+  function newSession() {
+    if (busy || payBusy) return;
+    preview.current = { store: memoryStore(), session: newSessionId() };
+    session.current = newSessionId();
+    try {
+      sessionStorage.setItem('trussSession', session.current);
+    } catch {
+      /* the session still lives in memory */
+    }
+    timedOut.current = new Set();
+    putLedger({ charges: [], requests: [] });
+    resetRun(hasKey ? 'live' : 'example');
+    addAudit([audit('Browser', 'muted', 'New session: empty ledger, nothing paid yet')]);
   }
 
   function finishPay(message = '') {
@@ -802,7 +817,7 @@ export default function TrussDemo() {
                     ? `Live run: ${formatMs(totalMs)}`
                     : hasKey
                     ? 'Live: about 3 cents a run'
-                    : 'Preview: recorded example'}
+                    : 'Preview: replays the recorded example'}
                 </span>
               </div>
               {notice && (
@@ -858,7 +873,13 @@ export default function TrussDemo() {
               hasKey={hasKey}
               kind={run.kind}
             />
-            <LedgerCard ledger={ledger} timedOut={timedOut.current} kind={run.kind} />
+            <LedgerCard
+              ledger={ledger}
+              timedOut={timedOut.current}
+              kind={run.kind}
+              onNewSession={newSession}
+              busy={busy || payBusy}
+            />
           </div>
         </section>
 

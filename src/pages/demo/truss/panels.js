@@ -67,7 +67,7 @@ export function Glance({ run, pay, ledger, sample, upload }) {
     status = 'Run stopped';
     tone = 'bad';
     sub = 'Nothing was paid';
-  } else if (final === 'approve' && pay.phase === 'timedout') {
+  } else if (final === 'approve' && (pay.phase === 'timedout' || pay.phase === 'retrying')) {
     status = 'No reply. Retrying…';
     sub = 'Same idempotency key, so no second charge';
   } else if (final === 'approve' && paid) {
@@ -592,12 +592,27 @@ export function PayCard({ run, payTo, pay, onPay, onTimeoutRetry, onRetrySame, o
   );
 }
 
-export function LedgerCard({ ledger, timedOut, kind }) {
+export function LedgerCard({ ledger, timedOut, kind, onNewSession, busy }) {
   const deduped = ledger.requests.filter(request => request.outcome === 'replayed').length;
   const refused = ledger.requests.filter(request => ['refused', 'blocked', 'in_progress'].includes(request.outcome)).length;
   return (
     <Card className={styles.ledgerCard}>
-      <CardHead aside={<Pill>{kind === 'example' ? 'in your browser' : 'server ledger'}</Pill>}>
+      <CardHead
+        aside={
+          <span className={styles.ledgerHead}>
+            <Pill>{kind === 'example' ? 'in your browser' : 'server ledger'}</Pill>
+            <Button
+              variant="ghost"
+              size="s"
+              onClick={onNewSession}
+              disabled={busy}
+              title="Start a new session: an empty ledger, nothing paid yet"
+            >
+              New session
+            </Button>
+          </span>
+        }
+      >
         <CardTitle>Ledger</CardTitle>
       </CardHead>
       <StatGrid columns={3} className={styles.ledgerStats}>

@@ -307,7 +307,7 @@
 
 .gridRead {
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
   gap: var(--spaceL);
   align-items: start;
   margin-top: var(--spaceL);
@@ -641,6 +641,12 @@
     font-size: var(--uiFontSmall);
     color: rgb(var(--rgbText) / 0.85);
   }
+}
+
+.ledgerHead {
+  display: flex;
+  align-items: center;
+  gap: var(--uiGapL);
 }
 
 .ledgerStats {
