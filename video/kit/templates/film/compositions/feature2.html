@@ -1,0 +1,34 @@
+<template>
+  <!-- FEATURE2 36.2-45.2 s: one idea, tied to the same problem (feature 3 = the coolest, last). Scene time = film time - 36.2. One or two shots; one caption per shot. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="feature2" data-width="1920" data-height="1080">
+    <div id="feature2-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="feature2-cam" class="kit-cam">
+        <video id="feature2-v1" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="0" data-duration="4.5" data-media-start="30" data-track-index="0" muted playsinline></video>
+        <video id="feature2-v2" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="4.5" data-duration="4.5" data-media-start="36" data-track-index="0" muted playsinline></video>
+        <div id="feature2-spot-1" class="clip kit-spot" data-start="0" data-duration="4.5" data-kit-focus="card" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="feature2-spot-2" class="clip kit-spot" data-start="4.5" data-duration="4.5" data-kit-focus="decision" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": "card", "maxZoom": 2, "cut": true, "window": [0, 4.5], "label": "shot 1" },
+        { "t": 4.5, "focus": "decision", "maxZoom": 2, "cut": true, "window": [4.5, 9], "label": "shot 2" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "feature2", tl });
+      window.__timelines["feature2"] = tl;
+    })();
+  </script>
+</template>

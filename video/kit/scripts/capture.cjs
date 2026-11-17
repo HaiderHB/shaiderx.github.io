@@ -1,5 +1,5 @@
 /*
- * kit/scripts/capture.cjs — record a demo take: Playwright + CDP screencast (1920x1080, dsf 1),
+ * kit/scripts/capture.cjs — record a demo take: Playwright + CDP screencast (1920x1080 at dsf 1; kit 2: 2x),
  * a visible cursor drawn into the page, DOM boxes of named components sampled every animation
  * frame, and event marks (clicks, scrolls, cursor path, your own labels). Everything is timed
  * from clip.begin(), which becomes t = 0 of the footage built by build-footage.mjs.
@@ -33,6 +33,16 @@
  *
  * Options: viewport {width, height} (default 1920x1080), quality (JPEG, 94), headless (true),
  *          cursor (true: draw the arrow), launch (extra chromium.launch options), init (page init script)
+ * Kit 2 (launch format, all optional; defaults keep kit 1.1 captures unchanged):
+ *   deviceScaleFactor  2 = record at 2x device pixels, so 1.5-2x camera zooms stay sharp. The viewport stays
+ *                      in CSS px; frames are viewport x dsf (e.g. viewport 1360x765, dsf 2 -> 2720x1530).
+ *                      Uses Chromium's --force-device-scale-factor (the CDP screencast ignores an emulated
+ *                      dsf). Expect ~12-15 changed frames/s at 2x on a 2-core box; record when it is idle.
+ *                      Keep the viewport 16:9; build-footage scales boxes and events to the 1920x1080 stage,
+ *                      so a 1360 px wide viewport also makes the UI 1.41x larger in the film.
+ *   cursor             {scale: 0.75, idleHide: 1200}: arrow size (1 = 30x38 CSS px, about 2x a system
+ *                      arrow; 0.75 = about 1.5x) and ms without movement after which it fades out
+ *   clickPause         ms the cursor rests on a target before every click (default 200; launch films 450)
  * Live runs cost money: prefer the demo's example / same-day cached runs, and label them in the film.
  */
 const fs = require("fs");
@@ -50,24 +60,33 @@ function loadPlaywright() {
   throw new Error("playwright not found: set PLAYWRIGHT_PATH or npm i -D playwright");
 }
 
-const CURSOR_JS = `
+function cursorSource(o) {
+  o = o || {};
+  const scale = o.scale || 1;
+  const idle = o.idleHide || 0;
+  return `
 (() => {
+  const SCALE = ${scale}, IDLE = ${idle};
   const install = () => {
     if (document.getElementById('__kit_cursor')) return;
     const c = document.createElement('div');
     c.id = '__kit_cursor';
-    c.innerHTML = '<svg width="30" height="38" viewBox="0 0 30 38" xmlns="http://www.w3.org/2000/svg"><path d="M2 2 L2 31 L9.5 24.5 L14.5 35.5 L19.5 33.3 L14.6 22.4 L24.5 22.4 Z" fill="#ffffff" stroke="#0b0d10" stroke-width="2.2" stroke-linejoin="round"/></svg>';
+    c.innerHTML = '<svg width="' + 30 * SCALE + '" height="' + 38 * SCALE + '" viewBox="0 0 30 38" xmlns="http://www.w3.org/2000/svg"><path d="M2 2 L2 31 L9.5 24.5 L14.5 35.5 L19.5 33.3 L14.6 22.4 L24.5 22.4 Z" fill="#ffffff" stroke="#0b0d10" stroke-width="2.2" stroke-linejoin="round"/></svg>';
     Object.assign(c.style, { position: 'fixed', left: '0px', top: '0px', zIndex: 2147483647, pointerEvents: 'none',
-      transform: 'translate(-200px,-200px)', transition: 'none', filter: 'drop-shadow(0 2px 3px rgba(0,0,0,.45))' });
+      transform: 'translate(-200px,-200px)', transition: IDLE ? 'opacity .22s linear' : 'none', opacity: IDLE ? '0' : '1',
+      filter: 'drop-shadow(0 2px 3px rgba(0,0,0,.45))' });
     document.documentElement.appendChild(c);
-    let x = -200, y = -200, s = 1;
-    const paint = () => { c.style.transform = 'translate(' + (x - 2) + 'px,' + (y - 2) + 'px) scale(' + s + ')'; c.style.transformOrigin = '2px 2px'; };
-    window.addEventListener('mousemove', e => { x = e.clientX; y = e.clientY; paint(); }, true);
-    window.addEventListener('mousedown', () => { s = 0.86; paint(); }, true);
-    window.addEventListener('mouseup', () => { s = 1; paint(); }, true);
+    let x = -200, y = -200, s = 1, timer = null;
+    const paint = () => { c.style.transform = 'translate(' + (x - 2 * SCALE) + 'px,' + (y - 2 * SCALE) + 'px) scale(' + s + ')'; c.style.transformOrigin = 2 * SCALE + 'px ' + 2 * SCALE + 'px'; };
+    const wake = () => { if (!IDLE) return; c.style.opacity = '1'; clearTimeout(timer); timer = setTimeout(() => { c.style.opacity = '0'; }, IDLE); };
+    window.addEventListener('mousemove', e => { x = e.clientX; y = e.clientY; paint(); wake(); }, true);
+    window.addEventListener('mousedown', () => { s = 0.86; paint(); wake(); }, true);
+    window.addEventListener('mouseup', () => { s = 1; paint(); wake(); }, true);
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install); else install();
 })();`;
+}
+const CURSOR_JS = cursorSource();
 
 // in-page sampler: records a component's rect whenever it changes (every animation frame)
 function samplerSource(defs) {
@@ -121,9 +140,14 @@ async function startClip(opts) {
   fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(path.join(outDir, "frames"), { recursive: true });
 
-  const browser = await chromium.launch(Object.assign({ headless: opts.headless !== false }, opts.launch || {}));
-  const ctx = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1 });
-  if (opts.cursor !== false) await ctx.addInitScript(CURSOR_JS);
+  // kit 2: a real 2x surface. The CDP screencast returns frames at the window's size in device-independent px and
+  // ignores an emulated deviceScaleFactor, so the scale is forced on the browser and the context takes the window size.
+  const dsf = opts.deviceScaleFactor && opts.deviceScaleFactor !== 1 ? opts.deviceScaleFactor : 1;
+  const launch = Object.assign({ headless: opts.headless !== false }, opts.launch || {});
+  if (dsf !== 1) launch.args = (launch.args || []).concat([`--force-device-scale-factor=${dsf}`, `--window-size=${width},${height}`]);
+  const browser = await chromium.launch(launch);
+  const ctx = await browser.newContext(dsf !== 1 ? { viewport: null } : { viewport: { width, height }, deviceScaleFactor: 1 });
+  if (opts.cursor !== false) await ctx.addInitScript(opts.cursor && typeof opts.cursor === "object" ? cursorSource(opts.cursor) : CURSOR_JS);
   if (opts.init) await ctx.addInitScript(opts.init);
   const page = await ctx.newPage();
   const cdp = await ctx.newCDPSession(page);
@@ -141,7 +165,11 @@ async function startClip(opts) {
     frames.push({ file, ts: metadata.timestamp });
   });
   if (opts.url) await page.goto(opts.url, { waitUntil: "networkidle" });
-  await cdp.send("Page.startScreencast", { format: "jpeg", quality: opts.quality || 94, maxWidth: width, maxHeight: height, everyNthFrame: 1 });
+  if (dsf !== 1) {
+    const inner = await page.evaluate(() => [window.innerWidth, window.innerHeight]);
+    if (inner[0] !== width || inner[1] !== height) throw new Error(`viewport is ${inner.join("x")}, wanted ${width}x${height} (deviceScaleFactor ${dsf})`);
+  }
+  await cdp.send("Page.startScreencast", { format: "jpeg", quality: opts.quality || 94, maxWidth: Math.round(width * dsf), maxHeight: Math.round(height * dsf), everyNthFrame: 1 });
 
   const defs = {};
   for (const [name, v] of Object.entries(opts.track || {})) {
@@ -199,7 +227,7 @@ async function startClip(opts) {
         await new Promise((r) => setTimeout(r, 14));
       }
     },
-    async click(target, { move = 800, pause = 200, label } = {}) {
+    async click(target, { move = 800, pause = opts.clickPause != null ? opts.clickPause : 200, label } = {}) {
       const loc = typeof target === "string" ? page.locator(target).first() : target;
       const b = await loc.boundingBox();
       if (!b) throw new Error("click target not visible: " + (label || target));
@@ -264,7 +292,7 @@ async function startClip(opts) {
       await ctx.close();
       await browser.close();
       const boxes = samples.map((s) => Object.assign({}, s, { t: +(s.ts / 1000 - t0).toFixed(3), ts: undefined }));
-      fs.writeFileSync(path.join(outDir, "frames.json"), JSON.stringify({ t0, endWall, viewport: { width, height }, frames, marks }, null, 1));
+      fs.writeFileSync(path.join(outDir, "frames.json"), JSON.stringify({ t0, endWall, viewport: { width, height }, deviceScaleFactor: dsf, frames, marks }, null, 1));
       fs.writeFileSync(path.join(outDir, "boxes.json"), JSON.stringify({ viewport: { width, height }, samples: boxes }, null, 1));
       fs.writeFileSync(path.join(outDir, "events.json"), JSON.stringify(events, null, 1));
       console.log(`[${opts.name}] ${frames.length} frames, ${boxes.length} box samples, ${events.length} events -> ${outDir}`);
@@ -274,4 +302,4 @@ async function startClip(opts) {
   return clip;
 }
 
-module.exports = { startClip, CURSOR_JS };
+module.exports = { startClip, CURSOR_JS, cursorSource };
