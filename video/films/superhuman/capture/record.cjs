@@ -14,8 +14,8 @@
 //   replay    the workspace (inbox | tool calls | approval gate): "Replay" replays the same recorded run so
 //             the reads, labels, the held send and the judge's scores land with all three cards in view
 //   approve   "Approve and send" on the held reply
-//   blocked   the "Archive newsletters" task with read + draft access: Run, then the workspace: every
-//             archive and label call is blocked by the server
+//   blocked   the "Archive newsletters" task: the grant is narrowed from full to read + draft, Run, then
+//             the workspace: every archive and label call is blocked by the server
 //   evals     the eval section: the summary tiles, then task 6 (the bank-details scam) is opened
 //   wide      the eval section, wide, for the proof
 const fs = require("fs");
@@ -122,7 +122,7 @@ async function main() {
   // replay: the workspace in view (inbox | tool calls | approval gate), then the same recorded run again
   await runDone(page);
   clip.mark("run-done");
-  await scrollEl(clip, '[class*="Superhuman_workspace__"]', 88, 700);
+  await scrollEl(clip, '[class*="Superhuman_workspace__"]', 100, 700);
   await clip.wait(1600);
   clip.mark("replay-still");
   await clip.click(page.getByRole("button", { name: "Replay", exact: true }), { label: "replay", move: 700 });
@@ -149,17 +149,30 @@ async function main() {
   // blocked: the archive task with read + draft access. Pick it and run it from the task card, then the workspace
   await scrollEl(clip, '[class*="Superhuman_taskCard__"]', 96, 700);
   await clip.wait(900);
+  // set up (cut from the film): the archive task, then full access again, so the shot can narrow it
   clip.mark("blocked-pick");
   await clip.click(page.getByRole("button", { name: "Archive newsletters", exact: true }), { label: "pick-archive", move: 800 });
-  await clip.wait(1600);
+  await clip.wait(500);
+  await clip.click(page.getByRole("button", { name: "Full, send asks me", exact: true }).first(), { label: "grant-full", move: 700 });
+  await park(clip);
+  await clip.wait(1500);
+  // grant: still, then ONE action: narrow the grant to read + draft (the act tools lock)
+  clip.mark("grant-still");
+  await clip.wait(1300);
+  await clip.click(page.getByRole("button", { name: "Read + draft", exact: true }).first(), { label: "grant-draft", move: 800 });
+  await clip.wait(2800);
   await clip.click(page.getByRole("button", { name: "Run the agent", exact: true }), { label: "run-archive", move: 700 });
   await runStarted(page);
   clip.mark("blocked-started");
   await clip.wait(300);
-  await scrollEl(clip, '[class*="Superhuman_workspace__"]', 88, 600);
+  await scrollEl(clip, '[class*="Superhuman_workspace__"]', 100, 600);
   clip.mark("blocked-workspace");
   await park(clip);
-  await seen(page, "blocked");
+  await page.waitForFunction(
+    () => [...document.querySelectorAll('[class*="Mcp_callStatus__"]')].some((el) => el.textContent.trim() === "blocked"),
+    null,
+    { timeout: 30000, polling: 30 }
+  );
   clip.mark("first-block");
   await runDone(page);
   clip.mark("blocked-done");

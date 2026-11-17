@@ -1,5 +1,5 @@
 <template>
-  <!-- PROOF 54.2-61.2 s: the finished result in a wider shot (the only wide view besides the hook). The numbers and the under-the-hood line are the .kit-proof cue in captions.html. -->
+  <!-- Superhuman launch film (kit 2). Clip `main` (see hero.html). PROOF 57.8-64.3 s: the eval section, wide: the summary tiles, what the suite caught and the eight tasks. The numbers in the proof cue are the recorded eval run's own. -->
   <style>
     #root {
       position: absolute;
@@ -11,12 +11,11 @@
   <div id="root" data-composition-id="proof" data-width="1920" data-height="1080">
     <div id="proof-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="proof-cam" class="kit-cam">
-        <video id="proof-v" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="0" data-duration="7" data-media-start="50" data-track-index="0" muted playsinline></video>
-
+        <video id="proof-v" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="0" data-duration="6.5" data-media-start="78.3" data-track-index="0" muted playsinline></video>
       </div>
     </div>
     <script type="application/json" class="kit-shots">
-      [{ "t": 0, "focus": "window", "cut": true, "window": [0, 7], "label": "the finished result, wide" }]
+      [{ "t": 0, "focus": "evalStats", "maxZoom": 1, "cut": true, "window": [0, 6.5], "wide": true, "reason": "the proof beat shows the whole eval section", "label": "the eval section, wide" }]
     </script>
   </div>
   <script>

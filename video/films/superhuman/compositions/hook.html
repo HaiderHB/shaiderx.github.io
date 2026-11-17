@@ -1,5 +1,6 @@
 <template>
-  <!-- HOOK 0-4.2 s: the demo's best moment already happening (the result landing), zoomed so it reads on a phone. Start the footage where a result is already on screen, so frame 0 is a good thumbnail. The hook line is the .kit-hook cue in captions.html. -->
+  <!-- Superhuman launch film (kit 2, launch format). Clip `main`, recorded 2026-11-17 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its recorded live runs (model turns and judge answers recorded on the Vercel preview on 2026-11-17; every tool call, gate decision, inbox change and eval check computed in the browser). Footage plays at 1x; every hold is real footage.
+       HOOK 0-4.2 s: the approval gate holds the agent's reply to the outage; the judge's scores and the Approve / Reject buttons land about 1.7 s in, then a hold. -->
   <style>
     #root {
       position: absolute;
@@ -11,12 +12,12 @@
   <div id="root" data-composition-id="hook" data-width="1920" data-height="1080">
     <div id="hook-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="hook-cam" class="kit-cam">
-        <video id="hook-v" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="0" data-duration="4.2" data-media-start="10" data-track-index="0" muted playsinline></video>
-        <div id="hook-spot" class="clip kit-spot" data-start="0" data-duration="4.2" data-kit-focus="result" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <video id="hook-v" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="0" data-duration="4.2" data-media-start="28.1" data-track-index="0" muted playsinline></video>
+        <div id="hook-spot" class="clip kit-spot" data-start="0" data-duration="4.2" data-kit-focus="approval" data-kit-pad="12" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
       </div>
     </div>
     <script type="application/json" class="kit-shots">
-      [{ "t": 0, "focus": "result", "maxZoom": 2, "cut": true, "window": [0, 4.2], "label": "the result landing" }]
+      [{ "t": 0, "focus": "approval", "maxZoom": 1.5, "cut": true, "window": [0, 4.2], "label": "the held send in the approval gate" }]
     </script>
   </div>
   <script>

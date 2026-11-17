@@ -1,5 +1,7 @@
 <template>
-  <!-- FEATURE2 36.2-45.2 s: one idea, tied to the same problem (feature 3 = the coolest, last). Scene time = film time - 36.2. One or two shots; one caption per shot. -->
+  <!-- Superhuman launch film (kit 2). Clip `main` (see hero.html for how it was recorded). The "Archive newsletters" task: its recorded live run with read + draft access (69 s live).
+       FEATURE 2 37.8-47.8 s: permissions. Scene time = film time - 37.8.
+       0-5 the grant is narrowed from "Full, send asks me" to "Read + draft": the act tools lock | 5-10 the agent tries to archive and label; the server blocks every call. -->
   <style>
     #root {
       position: absolute;
@@ -11,16 +13,18 @@
   <div id="root" data-composition-id="feature2" data-width="1920" data-height="1080">
     <div id="feature2-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="feature2-cam" class="kit-cam">
-        <video id="feature2-v1" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="0" data-duration="4.5" data-media-start="30" data-track-index="0" muted playsinline></video>
-        <video id="feature2-v2" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="4.5" data-duration="4.5" data-media-start="36" data-track-index="0" muted playsinline></video>
-        <div id="feature2-spot-1" class="clip kit-spot" data-start="0" data-duration="4.5" data-kit-focus="card" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="feature2-spot-2" class="clip kit-spot" data-start="4.5" data-duration="4.5" data-kit-focus="decision" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <!-- F2a: still, then "Read + draft" is pressed; the act scope locks and its tools are struck through -->
+        <video id="feature2-v1" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="0" data-duration="5" data-media-start="46.3" data-track-index="0" muted playsinline></video>
+        <!-- F2b: archive and apply_label calls land as "blocked", each with the server's reason -->
+        <video id="feature2-v2" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="5" data-duration="5" data-media-start="55.7" data-track-index="0" muted playsinline></video>
+        <div id="feature2-spot-1" class="clip kit-spot" data-start="0" data-duration="5" data-kit-focus="taskGrant" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="feature2-spot-2" class="clip kit-spot" data-start="5" data-duration="5" data-kit-focus="callLog" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
       </div>
     </div>
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": "card", "maxZoom": 2, "cut": true, "window": [0, 4.5], "label": "shot 1" },
-        { "t": 4.5, "focus": "decision", "maxZoom": 2, "cut": true, "window": [4.5, 9], "label": "shot 2" }
+        { "t": 0, "focus": "taskGrant", "maxZoom": 2, "cut": true, "window": [0, 5], "label": "F2a narrow the grant to read + draft" },
+        { "t": 5, "focus": "callLog", "maxZoom": 2, "cut": true, "window": [5, 10], "label": "F2b the server blocks archive and label" }
       ]
     </script>
   </div>

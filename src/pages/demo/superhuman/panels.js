@@ -154,14 +154,17 @@ export function RunGlance({ run, replay }) {
           </li>
         )}
       </ol>
-      {counts.waiting > 0 && run.status === 'done' && (
-        <Button size="s" className={styles.glanceCta} onClick={() => scrollToId('gate')}>
-          <FiShield aria-hidden />{' '}
-          {counts.waiting === 1
-            ? 'Review the send'
-            : `Review the ${counts.waiting} sends`}
-        </Button>
-      )}
+      {/* the row keeps its height when the button is hidden, so the page below never jumps */}
+      <div className={styles.glanceCtaRow}>
+        {counts.waiting > 0 && run.status === 'done' && (
+          <Button size="s" onClick={() => scrollToId('gate')}>
+            <FiShield aria-hidden />{' '}
+            {counts.waiting === 1
+              ? 'Review the send'
+              : `Review the ${counts.waiting} sends`}
+          </Button>
+        )}
+      </div>
       {replay && <p className={styles.glanceFoot}>{replay}</p>}
     </Card>
   );
