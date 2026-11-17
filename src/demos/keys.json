@@ -100,5 +100,13 @@
       "created": "2026-11-16",
       "expires": "2026-11-30"
     }
+  ],
+  "affirm": [
+    {
+      "hash": "10613352f49983e43f312dbca9c99d9a5695bd57552ae010734803fbf22b07df",
+      "label": "Affirm Contact Channels hiring manager (follow-up), 2026-11-17",
+      "created": "2026-11-17",
+      "expires": "2027-01-01"
+    }
   ]
 }

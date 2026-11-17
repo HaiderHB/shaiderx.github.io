@@ -1,0 +1,663 @@
+/*
+ * Affirm demo layout. Cards, pills, bars, timeline, tool calls, checks and chat come from demos/ui;
+ * colours, surfaces and radii are the --ui* tokens (accent iris, set by DemoLayout).
+ * One saturated card on the page: the turn glance beside the title.
+ */
+.page {
+  font-size: var(--fontSizeBodyS);
+  line-height: 1.5;
+}
+
+.small {
+  margin: var(--uiGapL) 0 0;
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}
+
+.notice {
+  margin-top: var(--uiGapXL);
+}
+
+.section {
+  margin-top: var(--space3XL);
+  scroll-margin-top: 96px;
+}
+
+.section:first-of-type {
+  margin-top: var(--spaceL);
+}
+
+.cardLede {
+  margin: calc(var(--uiGapS) * -1) 0 var(--spaceM);
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+.ms {
+  padding: 1px 8px;
+  border-radius: var(--uiRadiusPill);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiMuted);
+  background: rgb(var(--rgbText) / 0.06);
+}
+
+/* --- turn glance (hero) ------------------------------------------------------------------ */
+
+.glance {
+  display: grid;
+  gap: var(--uiGap2XL);
+}
+
+.glanceTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spaceM);
+}
+
+.glanceKind {
+  padding: 3px 11px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText));
+  background: rgb(var(--rgbText) / 0.18);
+}
+
+.glanceMeta {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiMuted);
+}
+
+.glanceAsk {
+  margin: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--uiFontNote);
+  color: rgb(var(--rgbText) / 0.86);
+}
+
+/* the turn's tool calls as chips that land one by one */
+.glanceSteps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapS);
+  min-height: 30px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  & li {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--uiGapS);
+    padding: 4px 10px;
+    border-radius: var(--uiRadiusPill);
+    font-family: var(--uiMono);
+    font-size: var(--uiFontCaption);
+    color: rgb(20 18 48);
+    background: rgb(255 255 255 / 0.94);
+    animation: chipIn 420ms var(--uiEase) both;
+  }
+
+  & li::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgb(var(--uiRgbOk));
+  }
+
+  & li[data-tone='warn']::before {
+    background: rgb(var(--uiRgbWarn));
+  }
+
+  & li[data-tone='bad']::before {
+    background: rgb(var(--uiRgbBad));
+  }
+
+  & li[data-pending] {
+    color: rgb(var(--rgbText));
+    background: rgb(255 255 255 / 0.14);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.22);
+
+    &::before {
+      display: none;
+    }
+  }
+}
+
+@keyframes chipIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+.glanceStatus {
+  display: grid;
+  gap: var(--uiGapXS);
+
+  & strong {
+    display: flex;
+    align-items: center;
+    gap: var(--uiGapXL);
+    font-size: clamp(1.75rem, 1.2rem + 1.5vw, 2.5rem);
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: var(--uiTrackDisplay);
+    color: rgb(var(--rgbText));
+  }
+
+  & strong > span {
+    flex: none;
+    width: 12px;
+    height: 12px;
+    box-shadow: 0 0 0 4px rgb(255 255 255 / 0.22);
+  }
+
+  & > span {
+    font-size: var(--uiFontNote);
+    color: rgb(var(--rgbText) / 0.86);
+  }
+}
+
+/* the hand-off probability: white fill on a translucent track, a mark at 50% */
+.handoff {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--uiGapXL);
+  padding: var(--uiGapL) var(--uiGapXL);
+  border-radius: var(--uiRadiusM);
+  background: rgb(0 0 0 / 0.16);
+}
+
+.handoffLabel {
+  font-size: var(--uiFontSmall);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText));
+}
+
+.handoffTrack {
+  position: relative;
+  height: 10px;
+  border-radius: var(--uiRadiusPill);
+  background: repeating-linear-gradient(
+    -45deg,
+    rgb(255 255 255 / 0.14) 0 3px,
+    rgb(255 255 255 / 0.05) 3px 6px
+  );
+}
+
+.handoffFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  min-width: 4px;
+  border-radius: inherit;
+  background: rgb(255 255 255);
+  transition: width 700ms var(--uiEase);
+}
+
+.handoffMark {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 50%;
+  width: 2px;
+  border-radius: 1px;
+  background: rgb(255 255 255 / 0.5);
+}
+
+.handoffValue {
+  min-width: 3.2em;
+  text-align: right;
+  font-family: var(--uiMono);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--rgbText));
+}
+
+.glanceStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+  padding-top: var(--spaceM);
+  border-top: 1px solid var(--uiLine);
+
+  & div {
+    min-width: 0;
+  }
+
+  & div + div {
+    padding-left: var(--spaceM);
+    border-left: 1px solid var(--uiLine);
+  }
+
+  & dt {
+    font-size: var(--uiFontCaption);
+    color: var(--uiMuted);
+  }
+
+  & dd {
+    margin: 2px 0 0;
+    font-size: clamp(1.0625rem, 0.9rem + 0.5vw, 1.375rem);
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: var(--uiTrackTight);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: rgb(var(--rgbText));
+  }
+}
+
+/* --- conversation + run ------------------------------------------------------------------ */
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: var(--spaceL);
+  align-items: start;
+}
+
+.left {
+  display: grid;
+  gap: var(--spaceL);
+  min-width: 0;
+}
+
+.chatCard {
+  min-width: 0;
+}
+
+.thread {
+  --uiChatHeight: 560px;
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapS);
+  margin-top: var(--spaceM);
+}
+
+.inputRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--uiGapL);
+  margin-top: var(--uiGapXL);
+}
+
+.input {
+  min-height: 52px;
+  resize: vertical;
+}
+
+/* under an agent bubble: the proposed change and the route */
+.extras {
+  display: grid;
+  gap: var(--uiGapM);
+  margin-top: var(--uiGapM);
+}
+
+.proposal {
+  display: grid;
+  gap: var(--uiGapL);
+  padding: var(--uiGapXL);
+  border-radius: var(--uiRadiusL);
+  background: rgb(var(--uiRgbSurface));
+  box-shadow: inset 0 0 0 1px rgb(var(--uiRgbAccent) / 0.45), var(--uiShadowRaised);
+
+  &[data-state='confirmed'] {
+    box-shadow: inset 0 0 0 1px rgb(var(--uiRgbOk) / 0.55);
+  }
+
+  &[data-state='declined'] {
+    opacity: 0.6;
+  }
+}
+
+.proposalHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--uiGapS) var(--uiGapL);
+}
+
+.proposalChecks {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapS);
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}
+
+.proposalDays {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  justify-content: start;
+  gap: var(--uiGapS) var(--spaceL);
+
+  & > span {
+    display: grid;
+    gap: 1px;
+    font-family: var(--uiMono);
+    font-size: var(--uiFontNote);
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--rgbText));
+  }
+
+  & small {
+    font-family: var(--fontStack);
+    font-size: var(--uiFontCaption);
+    color: var(--uiMuted);
+  }
+
+  & s {
+    color: var(--uiFaint);
+  }
+
+  & strong {
+    font-weight: 600;
+  }
+}
+
+.proposalActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapM);
+}
+
+.proposalDone {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapS);
+  margin: 0;
+  font-size: var(--uiFontSmall);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--uiRgbOk));
+}
+
+.routeLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--uiGapM);
+}
+
+/* loans */
+.loansCard {
+  min-width: 0;
+}
+
+.loans {
+  display: grid;
+  gap: var(--uiGapS);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.loan {
+  display: grid;
+  gap: 2px;
+  padding: var(--uiGapL) var(--uiGapXL);
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbInset));
+  box-shadow: inset 0 0 0 1px var(--uiLine);
+  transition: box-shadow var(--durationM) ease;
+
+  &[data-closed] {
+    opacity: 0.55;
+  }
+
+  &[data-changed] {
+    box-shadow: inset 0 0 0 1px rgb(var(--uiRgbOk) / 0.6);
+  }
+}
+
+.loanHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--uiGapL);
+
+  & strong {
+    font-weight: 600;
+    color: rgb(var(--rgbText));
+  }
+}
+
+.loanId {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  color: var(--uiFaint);
+}
+
+.loanPlan {
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}
+
+.loanNext {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  font-size: var(--uiFontSmall);
+  color: rgb(var(--rgbText) / 0.86);
+}
+
+/* run */
+.runCard {
+  min-width: 0;
+}
+
+.runAside {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapM);
+}
+
+.exampleNote {
+  margin: calc(var(--uiGapS) * -1) 0 var(--spaceM);
+  font-size: var(--uiFontCaption);
+  line-height: 1.5;
+  color: var(--uiMuted);
+}
+
+.runAsk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--uiGapM);
+  margin: 0 0 var(--spaceM);
+  padding: var(--uiGapL) var(--uiGapXL);
+  border-radius: var(--uiRadiusM);
+  font-size: var(--uiFontSmall);
+  color: rgb(var(--rgbText));
+  background: rgb(var(--uiRgbInset));
+}
+
+.stepNote {
+  margin: var(--uiGapS) 0 0;
+  font-size: var(--uiFontCaption);
+  color: rgb(var(--uiRgbWarn));
+}
+
+.checks {
+  margin-top: var(--uiGapS);
+}
+
+/* --- hand-off ------------------------------------------------------------------------------ */
+
+.routeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--spaceL);
+  align-items: start;
+  margin-top: var(--spaceL);
+}
+
+.decisionCard,
+.handoffCard {
+  min-width: 0;
+}
+
+.bars {
+  display: grid;
+  gap: var(--uiGapM);
+  margin-bottom: var(--spaceM);
+}
+
+.question {
+  margin: 0;
+  font-family: var(--uiMono);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.floor {
+  display: grid;
+  gap: var(--uiGapS);
+  padding: var(--uiGapXL);
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbInset));
+
+  & ul {
+    display: grid;
+    gap: var(--uiGapS);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  & li {
+    display: flex;
+    align-items: center;
+    gap: var(--uiGapM);
+    font-size: var(--uiFontSmall);
+  }
+
+  & p {
+    margin: 0;
+    font-size: var(--uiFontSmall);
+    color: var(--uiMuted);
+  }
+}
+
+.final {
+  display: grid;
+  justify-items: start;
+  gap: var(--uiGapS);
+  margin-top: var(--spaceM);
+}
+
+.jevState {
+  margin-top: var(--spaceM);
+}
+
+.tryRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--uiGapS);
+  margin-top: var(--spaceM);
+
+  & .small {
+    margin: 0 var(--uiGapXS) 0 0;
+  }
+}
+
+.note {
+  display: grid;
+  gap: var(--spaceM);
+
+  & p {
+    margin: var(--uiGapXS) 0 0;
+    color: rgb(var(--rgbText));
+  }
+}
+
+.noteList {
+  display: grid;
+  gap: var(--uiGapS);
+  margin: var(--uiGapS) 0 0;
+  padding: 0;
+  list-style: none;
+
+  & li {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: var(--uiGapM);
+    align-items: start;
+    font-size: var(--uiFontSmall);
+    line-height: 1.45;
+  }
+}
+
+.nextStep {
+  padding: var(--uiGapXL);
+  border-radius: var(--uiRadiusM);
+  background: var(--uiTint);
+  box-shadow: inset 0 0 0 1px rgb(var(--uiRgbAccent) / 0.3);
+}
+
+.notes {
+  margin-top: var(--spaceL);
+}
+
+/* --- small screens ------------------------------------------------------------------------ */
+
+@media (max-width: 1080px) {
+  .grid,
+  .routeGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .thread {
+    --uiChatHeight: 640px;
+  }
+
+  .proposalDays {
+    grid-template-columns: repeat(2, auto);
+  }
+
+  .glanceStats dd {
+    font-size: 1rem;
+  }
+
+  .handoff {
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    & .handoffTrack {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glanceSteps li {
+    animation: none;
+  }
+
+  .handoffFill {
+    transition: none;
+  }
+}

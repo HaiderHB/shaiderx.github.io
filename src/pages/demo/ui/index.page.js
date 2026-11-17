@@ -70,6 +70,7 @@ import {
   seconds,
 } from 'demos/ui';
 import { AuditTrail, ChatThread, ScheduleStrip } from 'demos/ui';
+import { CheckList, ToolCall, ToolCallList } from 'demos/ui';
 import Head from 'next/head';
 import { useState } from 'react';
 import {
@@ -373,6 +374,37 @@ const STRIP_LEGEND = [
   { state: 'removed', label: 'Moved away' },
   { state: 'dropped', label: 'Dropped out' },
 ];
+// ToolCall, CheckList (from the Affirm demo)
+const TOOL_CALLS = [
+  {
+    name: 'get_loans',
+    args: {},
+    result: { loans: [{ loan_id: 'L-4471', item: 'Rowing machine', due_day: 12 }] },
+    summary: '3 loans: 2 active (rowing machine, laptop)',
+    tone: 'ok',
+    ms: 0.4,
+  },
+  {
+    name: 'propose_due_date_change',
+    args: { loan_id: 'L-5108', new_day: 21 },
+    result: { status: 'not_eligible', failed: ['Monthly plan'] },
+    summary: 'Laptop: not eligible (monthly plan)',
+    tone: 'warn',
+    ms: 0.2,
+  },
+];
+const CHECKS = [
+  { id: 'a', label: 'Tools only read this customer’s loans', status: 'pass', detail: '3 tool calls, all scoped' },
+  {
+    id: 'b',
+    label: 'No promise the policy doesn’t allow',
+    status: 'fixed',
+    detail: 'Removed a promise policy doesn’t allow',
+    removed: ['I’ll refund the extra charge today.'],
+  },
+  { id: 'c', label: 'Disputes and hardship offered a person', status: 'na', detail: 'Not a dispute or hardship' },
+];
+
 const CHAT_MESSAGES = [
   {
     id: 1,
@@ -1263,7 +1295,7 @@ export default function UiGallery() {
         <Group
           id="schedule"
           title="Scheduling and conversation"
-          lede="A calendar strip that shows what changed, a two-sided chat, and the audit trail of what an agent and people did."
+          lede="A calendar strip that shows what changed, a two-sided chat, an agent’s tool calls and rule checks, and the audit trail of what an agent and people did."
         >
           <Specimen name="ScheduleStrip" note="windows, held, changed, removed, dropped">
             <ScheduleStrip
@@ -1279,6 +1311,16 @@ export default function UiGallery() {
           </Specimen>
           <Specimen name="ChatThread" note="sides, meta, pending">
             <ChatThread messages={CHAT_MESSAGES} label="Sample conversation" />
+          </Specimen>
+          <Specimen name="ToolCall" note="ok and warn tones, opens to args and result">
+            <ToolCallList label="Sample tool calls">
+              {TOOL_CALLS.map(call => (
+                <ToolCall key={call.name} {...call} />
+              ))}
+            </ToolCallList>
+          </Specimen>
+          <Specimen name="CheckList" note="pass, fixed with removed text, n/a">
+            <CheckList items={CHECKS} label="Sample checks" />
           </Specimen>
           <Specimen name="AuditTrail" note="actor tones, an action on the right" wide>
             <AuditTrail

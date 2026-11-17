@@ -53,10 +53,12 @@ export { ProbabilityBar, ProbabilityBars } from './ProbabilityBar';
 export { StatGrid, StatTile } from './Stat';
 export { Caret, EmptyState, Notice, SkeletonGrid, Spinner, TypingDots } from './States';
 export { StatusIcon } from './StatusIcon';
+export { ToolCall, ToolCallList } from './ToolCall';
 export { PipelineStrip, Timeline, TimelineStep } from './Timeline';
 export { TrackedText } from './TrackedText';
 export { AuditTrail } from './AuditTrail';
 export { ChatThread } from './Chat';
+export { CheckList } from './CheckList';
 export { ScheduleStrip } from './Schedule';
 
 /** Class that defines the --ui* tokens; DemoLayout applies it to every demo. */

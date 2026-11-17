@@ -19,7 +19,7 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 
 ## Catalog
 
-Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher. "via" means used
+Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm. "via" means used
 inside another kit component.
 
 | Component | What it is | Props | Used by |
@@ -77,6 +77,8 @@ inside another kit component.
 | `ScheduleStrip` | A few days of a calendar as columns, blocks placed by time; shows what is held, just changed, moved away or dropped, over shaded availability | `days` `[{ id, label, sub }]`, `from`, `to` (hours), `blocks` `[{ id, day, start, end (minutes), title, sub, meta, tone, state, hint }]` (`state`: `changed`, `held`, `removed`, `dropped`), `windows`, `tz`, `legend` `[{ state, label }]`; `--uiStripHour` | GT |
 | `ChatThread` | Two-sided conversation with avatars, meta line, typing dots and a streaming caret; children under a bubble (change chips, a trace) | `messages` `[{ id, side (`start`, `end`), name, avatar, meta, text, pending, streaming, children }]`, `empty`, `follow`; `--uiChatHeight` | GT |
 | `AuditTrail` | Time-stamped record of what an agent and people did, actor pill by tone, optional action per row | `items` `[{ id, at, actor, tone, text, action }]`, `empty`, `label` | GT |
+| `ToolCall`, `ToolCallList` | One tool call an agent made: status dot, name, inline args and a one-line result summary; opens to the arguments and the JSON result side by side (stacked under 640px) | `name`, `args`, `result`, `summary`, `tone` (`ok`, `warn`, `bad`), `ms`, `open`, `argsLabel`, `resultLabel`, `as`; list: `label` | AF (GT has the same row inline) |
+| `CheckList` | Rule checks a run went through (guardrails, policy, eligibility): icon, rule, detail, status word; `fixed` = code repaired it, with the removed text struck through | `items` `[{ id, label, status, detail, removed }]` (`status`: `pass`, `fixed`, `fail`, `na`), `statusLabels`, `label` | AF |
 
 ## Tokens
 

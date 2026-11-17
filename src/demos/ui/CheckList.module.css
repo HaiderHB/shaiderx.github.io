@@ -1,0 +1,79 @@
+/* --- check list: one rule per row, icon, detail, status word --------------------------- */
+
+.list {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--uiGapL);
+  padding: var(--uiGapM) 0;
+  border-top: 1px solid var(--uiLine);
+  font-size: var(--uiFontSmall);
+  line-height: 1.4;
+
+  &:first-child {
+    border-top: 0;
+  }
+
+  &[data-status='na'] {
+    opacity: 0.55;
+  }
+}
+
+.text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText));
+}
+
+.detail {
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}
+
+.removed {
+  margin-top: var(--uiGapXS);
+  padding: var(--uiGapXS) var(--uiGapM);
+  border-radius: var(--uiRadiusS);
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+  background: rgb(var(--uiRgbBad) / 0.1);
+  text-decoration-color: rgb(var(--uiRgbBad) / 0.7);
+}
+
+.status {
+  padding: 1px 8px;
+  border-radius: var(--uiRadiusPill);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiMuted);
+  background: rgb(var(--rgbText) / 0.06);
+
+  @nest .item[data-status='pass'] & {
+    color: rgb(var(--uiRgbOk));
+    background: rgb(var(--uiRgbOk) / 0.12);
+  }
+
+  @nest .item[data-status='fixed'] & {
+    color: rgb(var(--uiRgbWarn));
+    background: rgb(var(--uiRgbWarn) / 0.14);
+  }
+
+  @nest .item[data-status='fail'] & {
+    color: rgb(var(--uiRgbBad));
+    background: rgb(var(--uiRgbBad) / 0.14);
+  }
+}
