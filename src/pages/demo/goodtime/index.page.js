@@ -354,8 +354,9 @@ export default function GoodTimeDemo() {
     event?.preventDefault();
     if (!hasKey) {
       if (EXAMPLE.rescues[sampleId] && message === sampleById(sampleId).message) {
-        setNotice(`${PREVIEW_NOTE} Replaying the recorded example of this message.`);
+        // playExample clears the notice, so set it after
         playExample(sampleId);
+        setNotice(`${PREVIEW_NOTE} Replaying the recorded example of this message.`);
       } else {
         setNotice(`${PREVIEW_NOTE} The samples above replay recorded live runs.`);
       }
