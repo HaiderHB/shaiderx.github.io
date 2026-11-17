@@ -1,15 +1,20 @@
 <!doctype html>
 <!--
-  Reacher launch film (kit 1.1: text-first, music bed, no voice, no next-steps card).
-    coldopen   0.0-2.4    the run-at-a-glance card as the example ranking replays: funnel 40 -> 8, top match
-    match      2.4-21.15  step 1: product -> Find creators -> filter, Jev fit + acceptance, top 8 with whys
-    invite     21.15-29.75 step 2: the invite streams for the top match; the rate check under it
-    reply      29.75-44.25 step 3: the creator asks 20% + 2 samples; Jev picks counter-offer; code caps 18%
-    endcard    44.25-46.75 Haider Bokhari · haiderb.com
-    captions   one host over the footage scenes: v2 cues + progress stepper (8 steps)
-    music      bright-pluck-112 under the whole film (node ../../kit/scripts/music-bed.mjs .)
-  All footage: the real page in preview mode, replaying example runs recorded live on 2026-11-16.
+  Reacher launch film (reacher), kit 2, launch format: hook, what it is, the problem, ONE task, two features,
+  proof, end card. Text-first, one music bed, no voice. The beat table is in SPEC.md.
+    hook       0.0-4.2     the run-at-a-glance card while the top match lands, zoomed; the hook line
+    what       4.2-10.2    statement over a ranking run, blurred
+    problem    10.2-15.6   statement over the candidates before any score
+    hero       15.6-36.2   press Find creators, 40 filtered to 12, scored, a shortlist of 8 with reasons
+    invite     36.2-43.0   feature 2: a personal invite drafted for the top match
+    reply      43.0-58.3   feature 3: the creator asks for more; a counter-offer inside the brand's maximum
+    proof      58.3-65.1   the top of the page, wide, with three numbers from the run
+    launchend  65.1-70.1   Built for Reacher by Haider Bokhari / Try it live / haiderb.com
+    captions   0-65.1      hook line, one caption per shot, proof numbers, chapters + progress bar
+    music      one instrumental bed under the whole film: node ../../kit/scripts/music-bed.mjs . --bed bright-pluck-112-long
   QA: node ../../kit/scripts/qa.mjs .   (or: npm run qa -- films/reacher)
+  data-kit-format="launch" turns on the launch rules; data-kit-beat on each host names its beat;
+  data-kit-run="example": the footage is the page's recorded live run (labelled on screen).
 -->
 <html lang="en">
   <head>
@@ -34,6 +39,10 @@
         overflow: hidden;
         background: #0a0a0f;
       }
+      /* captions at 66 px (launch range 64-72) so the longest lines (the invite, the counter-offer) stay on one line */
+      :root {
+        --kit-cap3-head: 66px;
+      }
       #root {
         position: relative;
         width: 1920px;
@@ -44,31 +53,39 @@
       }
     </style>
   </head>
-  <body>
-    <div id="root" data-composition-id="main" data-kit-accent="coral" data-start="0" data-duration="46.75" data-width="1920" data-height="1080">
-      <div id="coldopen" data-composition-id="coldopen" data-composition-src="kit/blocks/cold-open.html" data-kit-role="cold-open"
-        data-variable-values='{"kicker": "Prototype for Reacher · Haider Bokhari", "headline": "Creators who’ll say *yes*", "focus": "glance,heroTitle", "zoom": 1.45, "push": 0.04, "align": "bottom"}'
-        data-start="0" data-duration="2.4" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
+    <body>
+    <div id="root" data-composition-id="main" data-kit-format="launch" data-kit-accent="coral" data-kit-run="example" data-kit-jargon="Jev" data-start="0" data-duration="70.1" data-width="1920" data-height="1080">
+      <div id="hook" data-composition-id="hook" data-composition-src="compositions/hook.html" data-kit-role="footage" data-kit-beat="hook"
+        data-start="0" data-duration="4.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
 
-      <div id="match" data-composition-id="match" data-composition-src="compositions/match.html" data-kit-role="footage"
-        data-start="2.4" data-duration="18.75" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
+      <div id="what" data-composition-id="what" data-composition-src="compositions/what.html" data-kit-role="statement" data-kit-beat="what"
+        data-start="4.2" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
 
-      <div id="invite" data-composition-id="invite" data-composition-src="compositions/invite.html" data-kit-role="footage"
-        data-start="21.15" data-duration="8.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
+      <div id="problem" data-composition-id="problem" data-composition-src="compositions/problem.html" data-kit-role="statement" data-kit-beat="problem"
+        data-start="10.2" data-duration="5.4" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
 
-      <div id="reply" data-composition-id="reply" data-composition-src="compositions/reply.html" data-kit-role="footage"
-        data-start="29.75" data-duration="14.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+      <div id="hero" data-composition-id="hero" data-composition-src="compositions/hero.html" data-kit-role="footage" data-kit-beat="hero"
+        data-start="15.6" data-duration="20.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
 
-      <div id="endcard" data-composition-id="endcard" data-composition-src="kit/blocks/end-card.html" data-kit-role="end-card"
-        data-variable-values='{"question": "", "name": "Haider Bokhari", "url": "haiderb.com"}'
-        data-start="44.25" data-duration="2.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
+      <div id="invite" data-composition-id="invite" data-composition-src="compositions/invite.html" data-kit-role="footage" data-kit-beat="feature"
+        data-start="36.2" data-duration="6.8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
+
+      <div id="reply" data-composition-id="reply" data-composition-src="compositions/reply.html" data-kit-role="footage" data-kit-beat="feature"
+        data-start="43" data-duration="15.3" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
+
+      <div id="proof" data-composition-id="proof" data-composition-src="compositions/proof.html" data-kit-role="footage" data-kit-beat="proof"
+        data-start="58.3" data-duration="6.8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 7"></div>
+
+      <div id="launchend" data-composition-id="launchend" data-composition-src="kit/blocks/launch-end.html" data-kit-role="end-card" data-kit-beat="end"
+        data-variable-values='{"built": "Built for *Reacher* by Haider Bokhari", "action": "Try it live: the link is in my message", "url": "haiderb.com"}'
+        data-start="65.1" data-duration="5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 8"></div>
 
       <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-kit-role="captions"
-        data-start="2.4" data-duration="41.85" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
+        data-start="0" data-duration="65.1" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
 
       <!-- the instrumental bed under the whole film: written by node ../../kit/scripts/music-bed.mjs . -->
       <!-- kit:music:start -->
-      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112.mp3" data-kit-music="bright-pluck-112" data-start="0" data-duration="46.75" data-media-start="12.45" data-volume="0.569" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
+      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112-long.mp3" data-kit-music="bright-pluck-112-long" data-start="0" data-duration="70.1" data-media-start="23.4" data-volume="0.575" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
       <!-- kit:music:end -->
     </div>
     <script>

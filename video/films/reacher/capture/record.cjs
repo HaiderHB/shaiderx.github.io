@@ -1,88 +1,111 @@
-// Reacher capture script (kit 1.1). Run from video/, with the demo served from an isolated copy
-// (next build && next start -p 3160, never inside the shared worktree):
-//   node films/reacher/capture/record.cjs <clip>
-// The page runs in preview mode (no key): every model output on screen is the example run that was
-// recorded live on the Vercel preview on 2026-11-16 (Jev + deepseek/deepseek-v3.2) and replayed by the
-// page; the filter, ranking, ask parsing and guardrail re-run in the browser. No live calls, no cost.
-// Clips: top (page top: the run-at-a-glance card while the example ranking replays), main (step 1
-// Find creators -> shortlist, Invite -> streamed invite, step 3 reply -> Jev + guardrail + reply).
-// Then: npm run footage -- films/reacher
+// Reacher capture script (launch format, kit 2). Run from video/: node films/reacher/capture/record.cjs <take>
+// Then: npm run footage -- films/reacher   (builds assets/footage/*.mp4 + data/clips/*.json)
+//
+// The demo runs from an isolated copy of the worktree (next build && next start -p 3171), with no demo key:
+// the page is in preview mode and every model output on screen is the example run for the serum, recorded live
+// on the Vercel preview on 2026-11-16 and replayed by the page (it labels it "Example run"). The filter, the
+// ranking, the parsing of the ask and the commission guardrail re-run in the browser. No live calls.
+//
+// Kit 2 capture settings: viewport 1360x765 CSS px at deviceScaleFactor 2 (frames 2720x1530), so the UI is
+// 1.41x larger on the 1920 stage and 1.4-2x camera zooms stay sharp; cursor about 1.5x a system arrow, hidden
+// when idle, resting 450 ms before every click.
+//
+// Takes
+//   before  the candidates before any score. Find creators is pressed with the page's timers held (HOLD_INIT),
+//           so the replay stops right after its filter step: 12 candidates with names, follower counts and
+//           empty score bars. The list is scrolled slowly. Backdrop of the "problem" statement.
+//   top     the top of the page (title + the run-at-a-glance card) while a replayed run lands: the hook.
+//   main    one continuous take. Find creators is pressed on camera once (hero 1); the page replays the same
+//           recorded run on every press, so it is pressed three more times off camera (no cursor) to film the
+//           run from its first frame for hero 2 (the filter step) and hero 3 (the scores); the third replay is
+//           not used in the film. Then: the top creator is selected -> Draft invite -> the creator's reply is
+//           picked -> Decide (off camera; the button sits a screen below the thread) -> the thread and the
+//           guardrail table -> the top of the page, wide. Every hold is real footage (no freeze frames).
+const fs = require("fs");
 const path = require("path");
 const cap = require("../../../kit/scripts/capture.cjs");
 
 const FILM = path.join(__dirname, "..");
-const BASE = process.env.DEMO_URL || "http://localhost:3160/demo/reacher/";
-const HEADER = 92; // the sticky bar covers y < 68: park components at y = 92
+const BASE = process.env.DEMO_URL || "http://localhost:3171/demo/reacher/";
+const VIEW = { viewport: { width: 1360, height: 765 }, deviceScaleFactor: 2, cursor: { scale: 0.75, idleHide: 1200 }, clickPause: 450, quality: 92 };
+const HEADER = 84; // the sticky bar covers y < 68: park cards at y = 84
 
-const card = (title) => (d) =>
-  [...d.querySelectorAll('[class*="Panel_card__"]')].find((c) =>
-    ((c.querySelector('[class*="Panel_cardTitle__"]') || {}).textContent || "").trim().startsWith(title)
-  );
+// Holds every page timer that fires while window.__kitHold is true (the replay's pacing uses setTimeout), so
+// the page can be filmed in a state it normally passes through in half a second. `before` take only.
+const HOLD_INIT = `(() => {
+  const st = window.setTimeout.bind(window);
+  const held = [];
+  window.__kitHold = false;
+  window.setTimeout = (fn, ms, ...a) => st(() => { if (window.__kitHold) held.push(() => fn(...a)); else fn(...a); }, ms);
+  window.__kitRelease = () => { window.__kitHold = false; held.splice(0).forEach((f) => f()); };
+})()`;
+
+const SEL = {
+  findButton: '[class*="Reacher_picker__"] [class*="Reacher_runRow__"] button',
+  listCard: '[class*="Reacher_listCard__"]',
+  rowMain: '[class*="Reacher_rowMain__"]',
+  why: '[class*="Reacher_why__"]',
+  inviteCard: '[class*="Reacher_inviteCard__"]',
+  draftButton: '[class*="Reacher_inviteCard__"] [class*="Reacher_runRow__"] button',
+  checks: '[class*="Reacher_checks__"]',
+  threadCard: '[class*="Reacher_threadCard__"]',
+  composer: '[class*="Reacher_composer__"]',
+  preset: '[class*="Reacher_presets__"] button',
+  decideButton: '[class*="Reacher_composer__"] button[type="submit"]',
+};
 
 // component name -> CSS selector or (document) => Element (serialised into the page: keep each self-contained)
+const row = (n, inner) =>
+  new Function("d", `const r = d.querySelectorAll('[class*="Reacher_row__"]')[${n - 1}]; return r && ${inner ? `r.querySelector(${JSON.stringify(inner)})` : "r"}`);
+const step = (n) => new Function("d", `return d.querySelectorAll('[class*="Timeline_timeline__"] > [class*="Timeline_step__"]')[${n - 1}]`);
 const TRACK = {
   bar: '[class*="DemoLayout_bar__"]',
+  heroText: '[class*="DemoLayout_heroText__"]',
   glance: '[class*="Reacher_glance__"]',
-  glanceTop: '[class*="Reacher_glanceTopMatch__"]',
-  funnel: '[class*="Reacher_glanceFunnel__"]',
-  heroTitle: '[class*="DemoLayout_heroText__"]',
-  flow: '[class*="Timeline_flow__"]',
-  matchHead: (d) => d.querySelector("#match header"),
   picker: '[class*="Reacher_picker__"]',
-  products: '[class*="Reacher_products__"]',
   product1: (d) => d.querySelectorAll('[class*="Reacher_product__"]')[0],
-  findButton: '[class*="Reacher_picker__"] [class*="Reacher_runRow__"] button',
   runRow: '[class*="Reacher_picker__"] [class*="Reacher_runRow__"]',
+  findButton: SEL.findButton,
   pickerNotice: '[class*="Reacher_picker__"] [class*="Reacher_notice__"]',
   runCard: '[class*="Reacher_runCard__"]',
-  runHead: (d) => {
-    const c = d.querySelector('[class*="Reacher_runCard__"]');
-    return c && c.querySelector('[class*="Panel_cardHead__"]');
-  },
   timeline: '[class*="Timeline_timeline__"]',
-  stepFilter: (d) => d.querySelectorAll('[class*="Timeline_timeline__"] > [class*="Timeline_step__"]')[0],
-  stepFit: (d) => d.querySelectorAll('[class*="Timeline_timeline__"] > [class*="Timeline_step__"]')[1],
-  stepAccept: (d) => d.querySelectorAll('[class*="Timeline_timeline__"] > [class*="Timeline_step__"]')[2],
-  stepPick: (d) => d.querySelectorAll('[class*="Timeline_timeline__"] > [class*="Timeline_step__"]')[3],
-  listCard: '[class*="Reacher_listCard__"]',
+  stepFilter: step(1),
+  stepFit: step(2),
+  stepAccept: step(3),
+  stepPick: step(4),
+  listCard: SEL.listCard,
   listHead: (d) => {
     const c = d.querySelector('[class*="Reacher_listCard__"]');
     return c && c.querySelector('[class*="Panel_cardHead__"]');
   },
   rows: '[class*="Reacher_rows__"]',
-  row1: (d) => d.querySelectorAll('[class*="Reacher_row__"]')[0],
-  row2: (d) => d.querySelectorAll('[class*="Reacher_row__"]')[1],
-  row3: (d) => d.querySelectorAll('[class*="Reacher_row__"]')[2],
-  row4: (d) => d.querySelectorAll('[class*="Reacher_row__"]')[3],
-  row5: (d) => d.querySelectorAll('[class*="Reacher_row__"]')[4],
-  row6: (d) => d.querySelectorAll('[class*="Reacher_row__"]')[5],
-  row7: (d) => d.querySelectorAll('[class*="Reacher_row__"]')[6],
-  row8: (d) => d.querySelectorAll('[class*="Reacher_row__"]')[7],
-  scores1: (d) => {
-    const r = d.querySelectorAll('[class*="Reacher_row__"]')[0];
-    return r && r.querySelector('[class*="Reacher_scores__"]');
-  },
-  why1: (d) => {
-    const r = d.querySelectorAll('[class*="Reacher_row__"]')[0];
-    return r && r.querySelector('[class*="Reacher_why__"]');
-  },
-  inviteHead: (d) => d.querySelector("#invite header"),
+  row1: row(1),
+  row2: row(2),
+  row3: row(3),
+  row4: row(4),
+  main1: row(1, '[class*="Reacher_rowMain__"]'),
+  scores1: row(1, '[class*="Reacher_scores__"]'),
+  why1: row(1, '[class*="Reacher_why__"]'),
   creatorCard: '[class*="Reacher_creatorCard__"]',
   styleNote: '[class*="Reacher_styleNote__"]',
-  inviteCard: '[class*="Reacher_inviteCard__"]',
-  inviteTerms: '[class*="Reacher_inviteCard__"] [class*="Reacher_terms__"]',
-  inviteBody: (d) => d.querySelector('[class*="Reacher_inviteStream__"]') || d.querySelector("#invite-text"),
-  checks: '[class*="Reacher_checks__"]',
-  draftButton: '[class*="Reacher_inviteCard__"] [class*="Reacher_runRow__"] button',
-  replyHead: (d) => d.querySelector("#reply header"),
-  threadCard: '[class*="Reacher_threadCard__"]',
+  inviteCard: SEL.inviteCard,
+  inviteBody: (d) => {
+    const c = d.querySelector('[class*="Reacher_inviteCard__"]');
+    return c && (c.querySelector('[class*="Reacher_inviteStream__"]') || c.querySelector("#invite-text") || c.querySelector('[class*="States_empty__"]'));
+  },
+  checks: SEL.checks,
+  inviteRun: '[class*="Reacher_inviteCard__"] [class*="Reacher_runRow__"]',
+  draftButton: SEL.draftButton,
+  threadCard: SEL.threadCard,
   thread: '[class*="Reacher_thread__"]',
   bubbleInvite: (d) => d.querySelectorAll('[class*="Reacher_bubble__"]')[0],
   bubbleCreator: (d) => [...d.querySelectorAll('[class*="Reacher_bubble__"]')].find((b) => b.dataset.from === "creator"),
   bubbleDraft: (d) => [...d.querySelectorAll('[class*="Reacher_bubble__"]')].find((b) => b.hasAttribute("data-draft")),
-  composer: '[class*="Reacher_composer__"]',
+  composer: SEL.composer,
   presets: '[class*="Reacher_presets__"]',
-  decideButton: '[class*="Reacher_composer__"] button[type="submit"]',
+  preset1: (d) => d.querySelector('[class*="Reacher_presets__"] button'),
+  replyInput: "#creator-reply",
+  decideButton: SEL.decideButton,
   decisionCard: '[class*="Reacher_decisionCard__"]',
   actionBars: '[class*="Reacher_actionBars__"]',
   final: '[class*="Reacher_final__"]',
@@ -92,86 +115,166 @@ const TRACK = {
   replyTimes: '[class*="Reacher_replyTimes__"]',
 };
 
-async function open(name) {
-  const clip = await cap.startClip({ film: FILM, name, url: BASE, track: TRACK });
+async function open(name, extra) {
+  const clip = await cap.startClip(Object.assign({ film: FILM, name, url: BASE, track: TRACK }, VIEW, extra || {}));
   const { page } = clip;
-  // the page autoplays its example run on load and then fills steps 2 and 3: let it settle
-  await page.waitForFunction(() => /Replay/.test(document.body.innerText), null, { timeout: 40000 });
-  await page.waitForTimeout(800);
+  // the page plays its example on load and then fills steps 2 and 3: let it finish (pre-roll)
+  await page.waitForFunction(() => document.body.innerText.includes("Output check"), null, { timeout: 40000 });
+  await page.waitForTimeout(600);
   return clip;
 }
 
-const docTop = (page, sel) => page.locator(sel).first().evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
 const park = (page, y) => page.evaluate((v) => window.scrollTo(0, Math.max(0, v)), y);
+const jsClick = (page, sel, n = 0) => page.evaluate(([s, n]) => document.querySelectorAll(s)[n].click(), [sel, n]);
+const ranked = (page) =>
+  page.waitForFunction((s) => document.querySelectorAll(s).length === 8, SEL.why, { timeout: 30000 });
+const scoring = (page) => page.waitForFunction((s) => document.querySelectorAll(s).length === 0, SEL.why, { timeout: 5000 });
 
-async function startAt(clip, y, cursor) {
-  await park(clip.page, y);
-  await clip.page.mouse.move(cursor[0], cursor[1]);
-  clip.setCursor(cursor[0], cursor[1]);
-  await clip.page.waitForTimeout(500);
-  await clip.begin();
+// Presses Find creators without the cursor (the button is off screen): the page replays the recorded run again.
+async function rerun(clip, label, hold) {
+  await jsClick(clip.page, SEL.findButton);
+  clip.mark(label);
+  await scoring(clip.page);
+  await ranked(clip.page);
+  clip.mark(label + "-ranked");
+  await clip.wait(hold);
 }
 
-// Page top: the example ranking replays (the page's own Replay button, below the fold, starts it) and
-// the run-at-a-glance card fills: funnel 40 -> 12 -> 10 -> 8, top match, Jev calls.
-async function top() {
-  const clip = await open("top");
+// before: the candidates right after the filter step (timers held), scrolled slowly
+async function before() {
+  const clip = await open("before", { init: HOLD_INIT });
   const { page } = clip;
-  await startAt(clip, 0, [1990, 1120]);
-  await clip.wait(300);
+  await page.mouse.move(1346, 420);
+  clip.setCursor(1346, 420);
+  await page.waitForTimeout(1800); // the parked cursor fades before the timers are held
   await page.evaluate(() => {
-    const b = [...document.querySelectorAll("button")].find((x) => x.textContent.trim() === "Replay");
-    b.click();
+    window.__kitHold = true;
   });
-  clip.mark("replay");
-  await page.waitForFunction(() => !document.body.innerText.includes("likely to accept"), null, { timeout: 5000, polling: 20 });
-  await clip.waitText("likely to accept", { label: "top", timeout: 30000 });
-  await clip.wait(3500);
+  await jsClick(page, SEL.findButton);
+  await page.waitForFunction(() => /Candidates/.test(document.body.innerText));
+  const y = (await clip.docY(SEL.listCard)) - HEADER + 60;
+  await park(page, y);
+  await page.waitForTimeout(500);
+  await clip.begin();
+  clip.mark("scroll");
+  await page.evaluate(
+    ([from, to, ms]) =>
+      new Promise((res) => {
+        const s = performance.now();
+        const stepFn = (now) => {
+          const p = Math.min(1, (now - s) / ms);
+          window.scrollTo(0, from + (to - from) * p);
+          if (p < 1) requestAnimationFrame(stepFn);
+          else res();
+        };
+        requestAnimationFrame(stepFn);
+      }),
+    [y, y + 250, 8000]
+  );
+  await clip.wait(300);
   await clip.finish();
 }
 
 async function main() {
   const clip = await open("main");
   const { page } = clip;
-  // step 1: the section head and the product picker
-  await startAt(clip, (await docTop(page, '#match header')) - HEADER, [1240, 700]);
-  await clip.wait(1800);
-  // this view already holds the picker, the run timeline and the top of the list: run in place
-  await clip.click(page.locator(TRACK.findButton).first(), { label: "find", move: 800 });
-  await page.waitForFunction(() => document.body.innerText.includes("Candidates"), null, { timeout: 5000, polling: 20 });
-  await clip.moveTo(1730, 560, 700); // park the cursor in the right gutter, off the cards
-  await clip.waitText("Top 8 creators", { label: "picked", timeout: 30000 });
-  await clip.wait(11500); // the shortlist holds while two captions read
-  // step 2: Invite on the top match, then redraft (the recorded invite streams again)
-  await clip.click(page.locator('[class*="Reacher_row__"] [class*="Reacher_inviteLink__"]').first(), { label: "invite", move: 800 });
-  await clip.wait(1300);
-  await clip.scrollTo((await docTop(page, '#invite header')) - HEADER, 500);
-  clip.mark("inviteView");
-  await clip.wait(900);
-  await clip.click(page.locator(TRACK.draftButton).first(), { label: "draft", move: 900 });
-  await clip.moveTo(1730, 640, 700);
-  await page.waitForSelector('[class*="Reacher_checks__"]', { timeout: 30000 });
+  await park(page, (await clip.docY('[class*="Reacher_product__"]')) - 110);
+  await page.mouse.move(1346, 560);
+  clip.setCursor(1346, 560);
+  await page.waitForTimeout(1800); // the parked cursor fades
+  await clip.begin();
+
+  // H1: still, then ONE action: press Find creators (the page's preview notice appears; the run starts below)
+  await clip.wait(1500);
+  await clip.click(page.locator(SEL.findButton).first(), { label: "find", move: 900 });
+  await scoring(page);
+  await ranked(page);
+  clip.mark("find-ranked");
+  await clip.wait(2600);
+
+  // the agent run and the list: one scroll position for hero 2, hero 3, the hook and hero 4
+  clip.mark("to-list");
+  await clip.moveTo(1346, 520, 500);
+  await clip.scrollTo((await clip.docY(SEL.listCard)) - HEADER, 600);
+  clip.mark("at-list");
+  await clip.wait(2000);
+
+  // H2 (the filter step), H3 (the scores): the same recorded run, replayed (run4 is spare)
+  await rerun(clip, "run2", 4200);
+  await rerun(clip, "run3", 4200);
+  await rerun(clip, "run4", 5200);
+
+  // H4: the top row is selected (another row is selected first, off camera, so the click shows)
+  await jsClick(page, SEL.rowMain, 4);
+  clip.mark("h4-still");
+  await clip.wait(1500);
+  await clip.click(page.locator('[class*="Reacher_row__"] [class*="Avatar"]').first(), { label: "select-1", move: 900 });
+  await clip.wait(3600);
+
+  // F2: the invite for the top match (selecting her cleared the example's invite, so the card is empty)
+  clip.mark("to-invite");
+  await clip.moveTo(1346, 430, 500);
+  await clip.scrollTo((await clip.docY(SEL.inviteCard)) - HEADER, 700);
+  clip.mark("at-invite");
+  await clip.wait(2000);
+  await clip.click(page.locator(SEL.draftButton).first(), { label: "draft", move: 900 });
+  await clip.moveTo(1322, 700, 550); // off the card while the text streams in
+  await page.waitForSelector(SEL.checks, { timeout: 30000 });
   clip.mark("drafted");
-  await clip.wait(5200);
-  // step 3: the creator's reply (preset 1), Decide
-  await clip.scrollTo((await docTop(page, '#reply header')) + 150 - HEADER, 1000);
-  clip.mark("replyView");
-  await clip.wait(1200);
-  await clip.click(page.locator('[class*="Reacher_presets__"] button').first(), { label: "preset", move: 800 });
-  await clip.wait(700);
-  await clip.click(page.locator(TRACK.decideButton).first(), { label: "decide", move: 800 });
-  await clip.moveTo(1730, 640, 700);
-  await page.waitForFunction(() => !document.body.innerText.includes("Output check"), null, { timeout: 5000, polling: 20 }).catch(() => {});
+  await clip.wait(4200);
+
+  // F3a: the creator's reply. The box is emptied off camera, then the first sample reply is picked.
+  await page.fill("#creator-reply", "");
+  await page.evaluate(() => document.activeElement && document.activeElement.blur());
+  clip.mark("to-composer");
+  await clip.moveTo(1346, 430, 400);
+  await clip.scrollTo((await clip.docY(SEL.composer)) - 110, 700);
+  clip.mark("at-composer");
+  await clip.wait(2000);
+  await clip.click(page.locator(SEL.preset).first(), { label: "preset", move: 900 });
+  await clip.wait(3800);
+
+  // F3b / F3c: the thread and the guardrail. Decide is pressed off camera (it sits a screen below the thread).
+  clip.mark("to-thread");
+  await clip.moveTo(1346, 430, 400);
+  await clip.scrollTo((await clip.docY(SEL.threadCard)) - HEADER, 700);
+  clip.mark("at-thread");
+  await clip.wait(2000);
+  await jsClick(page, SEL.decideButton);
+  clip.mark("decide");
   await clip.waitText("Output check", { label: "replied", timeout: 30000 });
-  await clip.wait(7500);
+  await clip.wait(11000);
+
+  // proof: the top of the page, wide
+  clip.mark("to-top");
+  await clip.scrollTo(0, 800);
+  clip.mark("wide");
+  await clip.wait(9000);
   await clip.finish();
 }
 
-const clips = { top, main };
+// top: the top of the page while the run lands on the run-at-a-glance card (funnel 40, 12, 10, 8; the top match;
+// the live run's total time). Find creators is pressed off camera (no cursor): the page replays the recorded run.
+// The hook is cut from the moment the result lands.
+async function top() {
+  const clip = await open("top");
+  const { page } = clip;
+  await park(page, 0);
+  await page.mouse.move(1346, 700);
+  clip.setCursor(1346, 700);
+  await page.waitForTimeout(1800); // the parked cursor fades
+  await clip.begin();
+  await clip.wait(1200);
+  await rerun(clip, "run", 6000);
+  await clip.finish();
+}
+
+const takes = { before, main, top };
 (async () => {
   const which = process.argv[2] || "main";
-  if (!clips[which]) throw new Error("unknown clip " + which);
-  await clips[which]();
+  if (!takes[which]) throw new Error("unknown take " + which + " (" + Object.keys(takes).join(", ") + ")");
+  fs.mkdirSync(path.join(FILM, "raw"), { recursive: true });
+  await takes[which]();
 })().catch((e) => {
   console.error(e);
   process.exit(1);

@@ -14,7 +14,7 @@
  */
 (function (g) {
   const Kit = (g.Kit = g.Kit || {});
-  Kit.version = "1.1.1";
+  Kit.version = "2.0.0";
   Kit.FRAME = { w: 1920, h: 1080, fps: 30 };
 
   Kit.time = {
@@ -565,6 +565,21 @@
  *
  * v1 cue (kit 1.0, still supported): .kit-cap > .kit-cap-label / .kit-cap-main / .kit-cap-note
  *
+ * Launch cue (kit 2, films with data-kit-format="launch"; see kit/components/launch-captions.html)
+ *   <div id="cap-review" class="clip kit-cap kit-cap3" data-start="16.4" data-duration="4.7">
+ *     <div class="kit-cap-head">Your playbook sets the rules. Press *Review*.</div>      (ONE line, <= 8 words)
+ *     <div class="kit-cap-tags"><span class="kit-chip">Example run</span></div>            (optional labels)
+ *   </div>
+ *   No kicker, no stepper. The headline lands with the cut (blur-in over 0.22 s from the cue start).
+ *   .kit-cap3.kit-hook = the hook line (72 px, <= 7 words). .kit-cap3.kit-proof holds the proof beat instead
+ *   of a headline: .kit-stats > .kit-stat (.kit-stat-n + .kit-stat-l) x 1-3 and one .kit-hood line.
+ *   Reading time (QA, fail): on screen >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s.
+ * Chapters (kit 2): 3-4 plain labels over a thin progress bar, on for the whole film up to the end card
+ *   <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="64.6"
+ *        data-kit-chapters="Why:0|The review:16.4|No guessing:38.4|Word export:48.4" data-layout-ignore></div>
+ *   name:start (captions-local seconds). Each chapter's bar fills linearly over its span; the label of the
+ *   current chapter is ink, earlier ones dimmer, later ones faint.
+ *
  * Kit.captions.animate(tl, rootOrId) -> cues [{id, start, end, step, speeds: [{rate, start, end, text}]}]
  *   tags (.kit-speed / .kit-chip / .kit-tag): shown for the cue, or for [data-tag-start, data-tag-end)
  *   band (.kit-band inside a timed wrapper): fades in at its start, out before its end
@@ -641,21 +656,84 @@
     });
   }
 
+  // kit 2: "Why:0|The review:16.4|…" -> [{name, start}]
+  function parseChapters(str) {
+    return String(str || "")
+      .split("|")
+      .map((part) => {
+        const i = part.lastIndexOf(":");
+        return i < 0 ? { name: part.trim(), start: NaN } : { name: part.slice(0, i).trim(), start: parseFloat(part.slice(i + 1)) };
+      })
+      .filter((c) => c.name);
+  }
+
+  function buildChapters(tl, el) {
+    const w = el.classList.contains("clip") ? el : el.closest(".clip");
+    const s = w ? parseFloat(w.getAttribute("data-start")) || 0 : 0;
+    const d = w ? parseFloat(w.getAttribute("data-duration")) || 0 : 0;
+    const list = parseChapters(el.getAttribute("data-kit-chapters"));
+    if (!list.length || !d) return list;
+    const GAP = 8;
+    const total = (parseFloat(el.getAttribute("data-kit-width")) || 1680) - GAP * (list.length - 1);
+    if (el.getAttribute("data-kit-built") !== "1") {
+      el.innerHTML = "";
+      list.forEach((c, i) => {
+        const end = i + 1 < list.length ? list[i + 1].start : s + d;
+        const node = document.createElement("span");
+        node.className = "kit-chapter";
+        node.setAttribute("data-state", "next");
+        node.style.width = Math.max(4, (total * (end - c.start)) / d).toFixed(1) + "px";
+        const lab = document.createElement("span");
+        lab.className = "kit-chapter-label";
+        lab.textContent = c.name;
+        const track = document.createElement("span");
+        track.className = "kit-chapter-track";
+        const fill = document.createElement("span");
+        fill.className = "kit-chapter-fill";
+        track.appendChild(fill);
+        node.appendChild(lab);
+        node.appendChild(track);
+        el.appendChild(node);
+      });
+      el.setAttribute("data-kit-built", "1");
+    }
+    const nodes = el.querySelectorAll(".kit-chapter");
+    list.forEach((c, i) => {
+      const end = i + 1 < list.length ? list[i + 1].start : s + d;
+      const node = nodes[i];
+      const fill = node.querySelector(".kit-chapter-fill");
+      tl.set(node, { attr: { "data-state": c.start <= s + 0.01 ? "now" : "next" } }, s);
+      if (c.start > s + 0.01) tl.set(node, { attr: { "data-state": "now" } }, c.start);
+      if (i + 1 < list.length) tl.set(node, { attr: { "data-state": "done" } }, end);
+      tl.fromTo(fill, { scaleX: 0 }, { scaleX: 1, duration: Math.max(0.05, end - c.start), ease: "none" }, c.start);
+    });
+    if (s <= 0.02) tl.set(el, { opacity: 1 }, s); // on from the first frame
+    else tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, s + 0.02);
+    return list;
+  }
+
   function animate(tl, r) {
     const root = rootOf(r);
     const cues = [];
     if (!root) return cues;
+    // kit 2: launch films cut hard, so the band is there on the first frame of its window (no fade)
+    const launch = !!(Kit.launch && Kit.launch.isLaunch());
     Array.prototype.forEach.call(root.querySelectorAll(".kit-band"), (band) => {
       const w = band.closest(".clip");
       const s = w ? parseFloat(w.getAttribute("data-start")) || 0 : 0;
       const d = w ? parseFloat(w.getAttribute("data-duration")) || 0 : 0;
+      if (launch) {
+        tl.set(band, { opacity: 1 }, s);
+        return;
+      }
       tl.fromTo(band, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, s + 0.05);
       if (d) tl.to(band, { opacity: 0, duration: 0.25, ease: "power2.in" }, s + d - 0.27);
     });
     Array.prototype.forEach.call(root.querySelectorAll(".kit-cap.clip"), (cap) => {
       const start = parseFloat(cap.getAttribute("data-start")) || 0;
       const end = start + (parseFloat(cap.getAttribute("data-duration")) || 0);
-      const v2 = cap.classList.contains("kit-cap2");
+      const v3 = cap.classList.contains("kit-cap3"); // kit 2 launch cue: headline only (or the proof stats)
+      const v2 = v3 || cap.classList.contains("kit-cap2");
       const lab = cap.querySelector(v2 ? ".kit-cap-kicker" : ".kit-cap-label");
       const main = cap.querySelector(v2 ? ".kit-cap-head" : ".kit-cap-main");
       const note = cap.querySelector(v2 ? ".kit-cap-detail" : ".kit-cap-note");
@@ -664,10 +742,24 @@
         accent(note);
       }
       if (lab) tl.fromTo(lab, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "expo.out" }, start);
-      if (main) tl.fromTo(main, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, start + 0.06);
+      // the hook line is crisp on frame 0 (the thumbnail); every other headline blurs in as its cut lands
+      const hook = v3 && cap.classList.contains("kit-hook") && start <= 0.02;
+      if (main && hook) tl.set(main, { opacity: 1, filter: "blur(0px)" }, start);
+      else if (main) tl.fromTo(main, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, start + (v3 ? 0 : 0.06));
       if (note) {
         if (v2) tl.fromTo(note, { opacity: 0, filter: "blur(6px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.22, ease: "expo.out" }, start + 0.15);
         else tl.fromTo(note, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, start + 0.4);
+      }
+      if (v3) {
+        // proof: the numbers land one by one, then the under-the-hood line; tags row fades in with the headline
+        Array.prototype.forEach.call(cap.querySelectorAll(".kit-stat"), (st, i) => {
+          tl.fromTo(st, { opacity: 0, filter: "blur(8px)" }, { opacity: 1, filter: "blur(0px)", duration: 0.24, ease: "expo.out" }, start + 0.08 + i * 0.22);
+        });
+        const hood = cap.querySelector(".kit-hood");
+        if (hood) tl.fromTo(hood, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, start + 0.9);
+        const tags = cap.querySelector(".kit-cap-tags");
+        if (tags && hook) tl.set(tags, { opacity: 1 }, start);
+        else if (tags) tl.fromTo(tags, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, start + 0.12);
       }
       const speeds = [];
       Array.prototype.forEach.call(cap.querySelectorAll(".kit-speed, .kit-chip, .kit-tag"), (tag) => {
@@ -695,10 +787,12 @@
       tl.fromTo(el, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, s + 0.05);
       if (d) tl.to(el, { opacity: 0, duration: 0.25, ease: "power2.in" }, s + d - 0.27);
     });
+    // kit 2: chapter labels over a thin progress bar
+    Array.prototype.forEach.call(root.querySelectorAll(".kit-chapters"), (el) => buildChapters(tl, el));
     return cues;
   }
 
-  Kit.captions = { animate, accent };
+  Kit.captions = { animate, accent, parseChapters };
   if (typeof module === "object" && module.exports) module.exports = Kit;
 })(typeof window !== "undefined" ? window : globalThis);
 
@@ -735,6 +829,15 @@
  *        data-kit-focus="decisionBars" data-kit-pad="6" data-track-index="2"
  *        data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-ring-box"></div></div>
  *   The ring box is placed from the recorded DOM box; QA checks it is inside the safe area.
+ *
+ * Spotlight (kit 2, launch format), in the scene markup inside .kit-cam, after the footage:
+ *   <div id="hero-spot-form" class="clip kit-spot" data-start="0.3" data-duration="4.2" data-kit-focus="setup"
+ *        data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion>
+ *     <div class="kit-spot-box"></div></div>
+ *   Everything outside the component's box (unioned over the spotlight's own window) is dimmed flat; planned
+ *   and checked like a ring (it must sit inside the safe area). class "bare" = no outline.
+ *   data-kit-window="a,b" (rings too): union the box over these scene seconds instead, e.g. the form as it is
+ *   before a click, while the spotlight stays on until the footage shows the change (~0.1-0.3 s after the DOM).
  *
  * Annotations (kit 1.1; see lib/annotate.js), in the scene markup OUTSIDE .kit-stage (screen space):
  *   <div id="r2-ann-route" class="clip kit-ann" data-start="11.2" data-duration="3" data-kit-focus="finalRoute"
@@ -859,7 +962,12 @@
         if (!s.partial && !f.ok) k.problems.push("focus does not fit the safe area");
         if (f.small) k.warnings.push("zoom " + f.scale + " is below minZoom " + s.minZoom + " (component is large)");
         if (f.edgeIgnored && f.edgeIgnored.length) k.warnings.push("edge " + f.edgeIgnored.join("/") + " ignored: the focus would leave the safe area (lower the zoom or move the edge)");
-        if (f.scale < 1 && !s.partial) k.warnings.push("zoom " + f.scale + " < 1: footage is shown smaller than captured");
+        // kit 2: a capture narrower than 1920 px is already magnified on the stage (clip.stageScale)
+        const first = sceneClips.length ? Kit.clips.get((Kit.clips.mediaAt(sceneClips, Math.min(h0, h1) + 0.001) || sceneClips[0]).clip) : null;
+        k.stageScale = (first && first.stageScale) || 1;
+        k.mag = +(f.scale * k.stageScale).toFixed(3);
+        k.wide = !!s.wide;
+        if (k.mag < 1 && !s.partial) k.warnings.push("zoom " + f.scale + " < 1: footage is shown smaller than captured");
       } else if (!k.problems.length) k.problems.push("no box to frame");
       if (!k.captions && o.cues)
         o.cues.forEach((c) => {
@@ -870,7 +978,9 @@
     });
 
     const rings = (o.rings || []).map((rg) => {
-      const r = resolve(rg.focus, sceneClips, rg.start, rg.end);
+      // rg.window (kit 2, data-kit-window="a,b"): take the box from these scene seconds instead of the whole time
+      // on screen, e.g. the state before a click while the spotlight stays on until the footage shows the change
+      const r = resolve(rg.focus, sceneClips, rg.window ? rg.window[0] : rg.start, rg.window ? rg.window[1] : rg.end);
       const out = { scene: o.scene, id: rg.id, start: rg.start, end: rg.end, focus: describe(rg.focus), problems: r.problems.slice(), warnings: r.warnings.slice() };
       if (!r.box) {
         if (!out.problems.length) out.problems.push("no box for ring");
@@ -1003,12 +1113,15 @@
   }
 
   function ringsFromDom(root) {
-    return Array.prototype.map.call(root.querySelectorAll(".kit-ring[data-kit-focus]"), (el) => {
+    // kit 2: a spotlight (.kit-spot) is planned exactly like a ring; only its box class and default pad differ
+    return Array.prototype.map.call(root.querySelectorAll(".kit-ring[data-kit-focus], .kit-spot[data-kit-focus]"), (el) => {
       const start = parseFloat(el.getAttribute("data-start")) || 0;
       const dur = parseFloat(el.getAttribute("data-duration")) || 1;
+      const spot = el.classList.contains("kit-spot");
       let focus = el.getAttribute("data-kit-focus");
       if (focus && focus.trim().charAt(0) === "[") focus = JSON.parse(focus);
-      return { el, id: el.id, start, end: start + dur, focus, pad: el.hasAttribute("data-kit-pad") ? parseFloat(el.getAttribute("data-kit-pad")) : 6 };
+      const win = (el.getAttribute("data-kit-window") || "").split(",").map(Number);
+      return { el, id: el.id, start, end: start + dur, focus, spot, window: win.length === 2 && win.every(Number.isFinite) ? win : null, pad: el.hasAttribute("data-kit-pad") ? parseFloat(el.getAttribute("data-kit-pad")) : spot ? 10 : 6 };
     });
   }
 
@@ -1059,16 +1172,30 @@
     rings.forEach((rg, i) => {
       const pr = p.rings[i];
       if (!pr.box) return;
-      let box = rg.el.querySelector(".kit-ring-box");
+      const boxClass = rg.spot ? "kit-spot-box" : "kit-ring-box";
+      let box = rg.el.querySelector("." + boxClass);
       if (!box) {
         box = document.createElement("div");
-        box.className = "kit-ring-box";
+        box.className = boxClass;
         rg.el.appendChild(box);
       }
       box.style.left = pr.box.x + "px";
       box.style.top = pr.box.y + "px";
       box.style.width = pr.box.w + "px";
       box.style.height = pr.box.h + "px";
+      if (rg.spot) {
+        // a spotlight that starts or ends on a hard cut, the scene edge or another spotlight switches with it
+        // (no bright flash between shots); elsewhere it fades
+        const cuts = p.keyframes.filter((k) => k.dur === 0).map((k) => k.t).concat([0, p.duration]);
+        const near = (t, list) => list.some((x) => Math.abs(x - t) < 0.07);
+        const others = rings.filter((o) => o !== rg && o.spot);
+        const hardIn = near(rg.start, cuts) || near(rg.start, others.map((o) => o.end));
+        const hardOut = near(rg.end, cuts) || near(rg.end, others.map((o) => o.start));
+        if (hardIn) tl.set(rg.el, { opacity: 1 }, rg.start);
+        else tl.fromTo(rg.el, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power2.out" }, rg.start);
+        if (!hardOut) tl.to(rg.el, { opacity: 0, duration: 0.15, ease: "power2.in" }, Math.max(rg.start + 0.3, rg.end - 0.17));
+        return;
+      }
       tl.fromTo(rg.el, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: "power2.out" }, rg.start);
       tl.fromTo(box, { scale: 1.06 }, { scale: 1, duration: 0.4, ease: "expo.out" }, rg.start);
       tl.to(rg.el, { opacity: 0, duration: 0.15, ease: "power2.in" }, Math.max(rg.start + 0.3, rg.end - 0.17));
@@ -1405,5 +1532,107 @@
   }
 
   Kit.music = { TARGET, plan, volume, check };
+  if (typeof module === "object" && module.exports) module.exports = Kit;
+})(typeof window !== "undefined" ? window : globalThis);
+
+/* ---- kit/lib/launch.js ---- */
+/*
+ * kit/lib/launch.js — the launch format (kit 2): the rules as data, shared by the page and QA, and the
+ * statement scene (one big sentence over blurred, dimmed product footage).
+ *
+ * A film opts in with data-kit-format="launch" on its root; every scene host in index.html then names its
+ * beat: data-kit-beat="hook | what | problem | hero | feature | proof | end".
+ *
+ * Kit.launch.RULES                 lengths, word limits and sizes QA gates (see video/README.md, "Launch format")
+ * Kit.launch.BEATS                 the beat order: hook, what, problem, hero, feature, proof, end
+ * Kit.launch.readingTime(words)    max(2.5, 0.5 + 0.6 x words) seconds: how long a caption stays on screen
+ * Kit.launch.isLaunch(rootEl?)     true when the film root carries data-kit-format="launch"
+ * Kit.launch.mag(scale, clip)      effective magnification of the page: camera zoom x the clip's stageScale
+ *                                  (a 1360 px wide capture is already 1.41x on the 1920 stage)
+ * Kit.launch.cover(region, zoom)   camera transform that fills the frame with a footage region {x, y, w, h}
+ * Kit.launch.statement({id, tl, push = 0.04})
+ *     Animates a statement scene built from components/statement-scene.html: the backdrop camera covers the
+ *     frame with the region in data-kit-cam="x,y,w,h" on the composition root (default: the whole footage,
+ *     zoom 1.06) and pushes in slowly (the scene's ONE camera move); the sentence arrives word by word
+ *     (blur 8 px -> 0), *word* = the accent word; the small line fades in after it.
+ */
+(function (g) {
+  const Kit = (g.Kit = g.Kit || {});
+
+  const RULES = {
+    duration: { min: 55, max: 90, targetMin: 60, targetMax: 75 },
+    scenes: { min: 7, max: 9 },
+    // one-line caption: 8 words (12 at the very most), 64-72 px, on screen 2.5-7 s and >= 0.5 + 0.6 s per word
+    cue: { words: 8, maxWords: 12, base: 0.5, perWord: 0.6, minSec: 2.5, maxSec: 7, head: 68, minHead: 64, maxHead: 72, tracking: -0.022, width: 1920 - 2 * 120, chipWords: 5 },
+    hook: { words: 7, maxSec: 5, head: 72 },
+    statement: { words: 12, maxWords: 16, maxSec: 8 },
+    // a stranger knows what it is and what problem it solves by here (seconds)
+    whatBy: 12,
+    problemBy: 20,
+    hero: 1,
+    features: 2,
+    proof: { minStats: 1, maxStats: 3, hoodWords: 16, minSec: 5, maxSec: 10 },
+    end: { minSec: 4, maxSec: 6 },
+    // hero and feature shots show the page at >= 1.5x (camera zoom x stage scale); wide views live in hook / proof
+    minMag: 1.5,
+    chapters: { min: 3, max: 4 },
+    // the scene rule: still, ONE action, the result holds
+    still: 1.0,
+    hold: 1.5,
+    jargon: ["llm", "json", "api", "schema", "prompt", "token", "tokens", "embedding", "embeddings", "regex", "anchor", "anchored", "anchoring", "sse", "mcp", "rag", "webhook", "endpoint", "payload", "docx", "ooxml"],
+  };
+  const BEATS = ["hook", "what", "problem", "hero", "feature", "proof", "end"];
+
+  function readingTime(words) {
+    return +Math.max(RULES.cue.minSec, RULES.cue.base + RULES.cue.perWord * words).toFixed(2);
+  }
+
+  function isLaunch(root) {
+    const el = root || (typeof document !== "undefined" ? document.querySelector('[data-composition-id="main"]') : null);
+    return !!el && el.getAttribute("data-kit-format") === "launch";
+  }
+
+  function mag(scale, clip) {
+    const c = typeof clip === "string" ? Kit.clips.get(clip) : clip;
+    return +(scale * ((c && c.stageScale) || 1)).toFixed(3);
+  }
+
+  function cover(region, zoom) {
+    const r = region || { x: 0, y: 0, w: 1920, h: 1080 };
+    const s = Math.max(1920 / r.w, 1080 / r.h) * (zoom || 1);
+    return { scale: +s.toFixed(4), x: +(960 - s * (r.x + r.w / 2)).toFixed(2), y: +(540 - s * (r.y + r.h / 2)).toFixed(2) };
+  }
+
+  function statement(o) {
+    const tl = o.tl;
+    const host = document.querySelector('[data-composition-id="' + o.id + '"]');
+    if (!host) {
+      Kit.warn("statement " + o.id + ": root not found");
+      return null;
+    }
+    const inner = host.querySelector("[data-kit-cam]") || host;
+    const duration = parseFloat(host.getAttribute("data-duration")) || 6;
+    const cam = host.querySelector(".kit-cam");
+    const nums = String(inner.getAttribute("data-kit-cam") || "").split(",").map(Number);
+    const region = nums.length === 4 && nums.every(Number.isFinite) ? { x: nums[0], y: nums[1], w: nums[2], h: nums[3] } : null;
+    const push = o.push != null ? o.push : 0.04;
+    if (cam) {
+      const a = cover(region, region ? 1 : 1.06);
+      const b = cover(region, (region ? 1 : 1.06) * (1 + push));
+      tl.set(cam, Object.assign({ transformOrigin: "0 0" }, a), 0);
+      tl.to(cam, Object.assign({ duration: Math.max(0.2, duration - 0.02), ease: "none" }, b), 0.001);
+    }
+    const text = host.querySelector(".kit-statement-text");
+    const sub = host.querySelector(".kit-statement-sub");
+    let landed = 0.1;
+    if (text) {
+      if (Kit.captions) Kit.captions.accent(text);
+      landed = Kit.reveal.words(tl, text, 0.08, { stagger: 0.045, dur: 0.18 });
+    }
+    if (sub) Kit.reveal.blurIn(tl, sub, Math.min(landed + 0.1, 0.9), { dur: 0.3, blur: 6 });
+    return { duration, region };
+  }
+
+  Kit.launch = { RULES, BEATS, readingTime, isLaunch, mag, cover, statement };
   if (typeof module === "object" && module.exports) module.exports = Kit;
 })(typeof window !== "undefined" ? window : globalThis);

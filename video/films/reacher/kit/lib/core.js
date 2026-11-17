@@ -12,7 +12,7 @@
  */
 (function (g) {
   const Kit = (g.Kit = g.Kit || {});
-  Kit.version = "1.1.1";
+  Kit.version = "2.0.0";
   Kit.FRAME = { w: 1920, h: 1080, fps: 30 };
 
   Kit.time = {

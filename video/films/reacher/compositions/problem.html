@@ -1,0 +1,30 @@
+<template>
+  <!-- Reacher launch film · PROBLEM 10.2-15.6 s: one sentence over the candidates before any score (clip before: the page right after its filter step, held there by the capture script: names, follower counts, empty score bars; the list is scrolled slowly). The frame is the list column only (data-kit-cam). -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+      --kit-backdrop-blur: 5px;
+    }
+  </style>
+  <div id="root" data-composition-id="problem" data-width="1920" data-height="1080" data-kit-cam="834,96,1001,563">
+    <div id="problem-stage" class="kit-stage kit-backdrop" data-layout-allow-overflow>
+      <div id="problem-cam" class="kit-cam">
+        <video id="problem-v" class="clip kit-footage" src="assets/footage/before.mp4" data-kit-clip="before" data-start="0" data-duration="5.4" data-media-start="0.6" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <div id="problem-scrim" class="clip kit-scrim" data-start="0" data-duration="5.4" data-track-index="1" data-layout-ignore></div>
+    <div id="problem-text" class="clip kit-statement" data-start="0" data-duration="5.4" data-track-index="2">
+      <div class="kit-statement-text">Most outreach goes to creators who *never reply*.</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.launch.statement({ id: "problem", tl });
+      window.__timelines["problem"] = tl;
+    })();
+  </script>
+</template>
