@@ -426,3 +426,232 @@
   text-align: center;
   white-space: nowrap;
 }
+
+/* ================= kit 2: launch format (data-kit-format="launch" on the film root) =================
+ * Launch caption   .kit-cap.kit-cap3 > .kit-cap-head (ONE line, 64-72 px, no kicker) + optional .kit-cap-tags
+ *                  (.kit-chip / .kit-speed labels); .kit-cap3.kit-hook = the hook line (72 px)
+ * Chapters         .kit-chapters[data-kit-chapters="Why:0|Review:16.4|…"]: 3-4 plain labels over a thin
+ *                  progress bar, built and driven by Kit.captions.animate
+ * Proof            .kit-cap.kit-cap3.kit-proof > .kit-stats > .kit-stat (.kit-stat-n + .kit-stat-l) + .kit-hood
+ * Statement        .kit-stage.kit-backdrop (blurred, dimmed footage) + .kit-scrim + .kit-statement >
+ *                  .kit-statement-text / .kit-statement-sub   (Kit.launch.statement)
+ * Spotlight        .kit-spot[data-kit-focus] > .kit-spot-box inside .kit-cam: flat dim outside the focus box
+ * End card         blocks/launch-end.html (.kit-end-*)
+ */
+.kit-cap.kit-cap3 {
+  left: var(--kit-gutter2);
+  width: calc(1920px - 2 * var(--kit-gutter2));
+  top: var(--kit-cap3-top);
+  bottom: auto;
+}
+.kit-cap3 .kit-cap-head {
+  font-size: var(--kit-cap3-head);
+  line-height: 1.1;
+  letter-spacing: -0.022em;
+}
+.kit-cap3.kit-hook .kit-cap-head {
+  font-size: var(--kit-cap3-hook);
+}
+.kit-cap-tags {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 40px;
+  margin-top: 12px;
+}
+
+/* chapters: plain labels over a thin progress bar, at the foot of the band, on for the whole film */
+.kit-chapters {
+  position: absolute;
+  left: var(--kit-gutter2);
+  top: var(--kit-chapters-top);
+  width: calc(1920px - 2 * var(--kit-gutter2));
+  height: 52px;
+  display: flex;
+  gap: 8px;
+  font-family: var(--kit-font);
+  opacity: 0;
+}
+.kit-chapter {
+  position: relative;
+  flex: 0 0 auto;
+  height: 52px;
+  overflow: hidden;
+}
+.kit-chapter-label {
+  display: block;
+  height: 36px;
+  line-height: 36px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: rgb(var(--kit-ink-rgb) / 0.4);
+}
+.kit-chapter[data-state="done"] .kit-chapter-label {
+  color: rgb(var(--kit-ink-rgb) / 0.62);
+}
+.kit-chapter[data-state="now"] .kit-chapter-label {
+  color: var(--kit-ink);
+}
+.kit-chapter-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 2px;
+  height: 6px;
+  border-radius: 3px;
+  background: rgb(var(--kit-ink-rgb) / 0.18);
+  overflow: hidden;
+}
+.kit-chapter-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--kit-accent);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+/* proof: 1-3 real numbers from the run and ONE small under-the-hood line */
+.kit-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 72px;
+  height: 80px;
+  margin-top: -6px;
+}
+.kit-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  white-space: nowrap;
+}
+.kit-stat-n {
+  font-size: 78px;
+  font-weight: 700;
+  line-height: 80px;
+  letter-spacing: -0.03em;
+  color: var(--kit-accent);
+}
+.kit-stat-l {
+  font-size: 42px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--kit-ink);
+}
+.kit-hood {
+  margin-top: 6px;
+  height: 38px;
+  line-height: 38px;
+  font-size: 28px;
+  font-weight: 400;
+  color: rgb(var(--kit-ink-rgb) / 0.74);
+  white-space: nowrap;
+}
+.kit-hood b {
+  font-weight: 700;
+  color: var(--kit-ink);
+}
+
+/* statement: one big sentence over blurred, dimmed product footage */
+.kit-stage.kit-backdrop > .kit-cam {
+  filter: blur(var(--kit-backdrop-blur));
+}
+.kit-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(var(--kit-ground-rgb) / var(--kit-scrim));
+}
+.kit-statement {
+  position: absolute;
+  left: var(--kit-gutter);
+  top: 0;
+  width: calc(1920px - 2 * var(--kit-gutter));
+  height: 980px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: var(--kit-font);
+  color: var(--kit-ink);
+}
+.kit-statement-text {
+  max-width: 1560px;
+  font-size: var(--kit-statement);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+.kit-statement-text .hi {
+  color: var(--kit-accent);
+}
+.kit-statement-sub {
+  margin-top: 40px;
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1.3;
+  color: rgb(var(--kit-ink-rgb) / 0.8);
+  white-space: nowrap;
+}
+
+/* spotlight: everything outside the focus box is dimmed flat (no blur, no glow); lives in .kit-cam */
+.kit-spot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1920px;
+  height: 1080px;
+  opacity: 0;
+  pointer-events: none;
+}
+.kit-spot-box {
+  position: absolute;
+  border: 2px solid rgb(var(--kit-accent-rgb) / 0.9);
+  border-radius: 14px;
+  box-shadow: 0 0 0 4000px var(--kit-spot-dim);
+}
+.kit-spot.bare .kit-spot-box {
+  border-color: transparent;
+}
+
+/* launch end card: who built it, ONE action, the url */
+.kit-end {
+  position: absolute;
+  left: var(--kit-gutter);
+  top: 0;
+  width: calc(1920px - 2 * var(--kit-gutter));
+  height: 1080px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: var(--kit-font);
+  color: var(--kit-ink);
+}
+.kit-end-built {
+  font-size: 88px;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+.kit-end-built .hi {
+  color: var(--kit-accent);
+}
+.kit-end-rule {
+  width: 120px;
+  height: 4px;
+  margin: 44px 0 40px 4px;
+  background: var(--kit-accent);
+  transform-origin: 0 50%;
+}
+.kit-end-action {
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+.kit-end-url {
+  margin-top: 18px;
+  font-size: 52px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--kit-accent);
+}

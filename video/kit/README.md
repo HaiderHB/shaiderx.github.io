@@ -1,7 +1,9 @@
 # Video kit
 
-Shared parts for Haider's demo launch films (HyperFrames 0.9.43, 1920x1080, 30 fps). Kit **1.1.0**:
-text-first films (no voice), one instrumental music bed, v2 caption band with a progress stepper,
+Shared parts for Haider's demo launch films (HyperFrames 0.9.x, 1920x1080, 30 fps). Kit **2.0.0** adds the
+**launch format** (60-75 s: hook, what it is, the problem, one task, two features, proof, end card; see
+"Launch format" below and `video/README.md`). Everything from kit 1.1 is still here and unchanged for the films
+built on it: text-first films (no voice), one instrumental music bed, v2 caption band with a progress stepper,
 annotations, no next-steps card, palette matched to the demo UI revamp. Edit here, then
 `npm run sync -- <slug>` to vendor the kit (and the film's music bed) into that film. Never edit a film's
 `kit/` copy. Add items; never rename or change an API (log any change in `CHANGELOG.md`).
@@ -12,6 +14,45 @@ cue at a time (kicker = step, one-line headline ≤ ~10 words at 58 px, optional
 `data-kit-step` driving the stepper; at most one annotation (≤ 6 words) beside it; every cue and
 annotation on screen ≥ 0.6 s + 0.35 s per word; no next-steps card; end card ≤ 3 s with name and
 haiderb.com; accent = the demo page's accent. `scripts/qa.mjs` gates all of it.
+
+## Launch format (kit 2) in one page
+
+A film opts in with `data-kit-format="launch"` on its root; `scripts/qa.mjs` then gates the launch rules
+(`lib/launch.js` `Kit.launch.RULES`) instead of the kit 1.1 duration / scene / caption rules.
+
+```html
+<div id="root" data-composition-id="main" data-kit-format="launch" data-kit-accent="cobalt" data-kit-run="example"
+  data-start="0" data-duration="68.6" ...>
+  <div id="hook"    data-composition-src="compositions/hook.html"    data-kit-role="footage"   data-kit-beat="hook" ...></div>
+  <div id="what"    data-composition-src="compositions/what.html"    data-kit-role="statement" data-kit-beat="what" ...></div>
+  <div id="problem" data-composition-src="compositions/problem.html" data-kit-role="statement" data-kit-beat="problem" ...></div>
+  <div id="hero"    data-composition-src="compositions/hero.html"    data-kit-role="footage"   data-kit-beat="hero" ...></div>
+  <div id="pinned"  data-composition-src="compositions/pinned.html"  data-kit-role="footage"   data-kit-beat="feature" ...></div>
+  <div id="export"  data-composition-src="compositions/export.html"  data-kit-role="footage"   data-kit-beat="feature" ...></div>
+  <div id="proof"   data-composition-src="compositions/proof.html"   data-kit-role="footage"   data-kit-beat="proof" ...></div>
+  <div id="launchend" data-composition-src="kit/blocks/launch-end.html" data-kit-role="end-card" data-kit-beat="end"
+    data-variable-values='{"built": "Built for *Acme* by Haider Bokhari", "action": "Try it live: the link is in my message", "url": "haiderb.com"}' ...></div>
+  <div id="captions" data-composition-src="compositions/captions.html" data-kit-role="captions" data-start="0" ...></div>
+  <!-- kit:music:start --> … <!-- kit:music:end -->
+</div>
+```
+
+The pieces, and where each beat gets its parts:
+
+| Beat | Scene | Text | Kit parts |
+| --- | --- | --- | --- |
+| hook | footage scene, one tight shot, footage from frame 0 | `.kit-cap3.kit-hook` cue (72 px, <= 7 words, crisp on frame 0) | `components/footage-scene.html`, `.kit-spot` |
+| what, problem | statement scene: `.kit-stage.kit-backdrop` + `.kit-scrim` + `.kit-statement` | `.kit-statement-text` (96 px, <= 12 words), `.kit-statement-sub` | `components/statement-scene.html`, `Kit.launch.statement` |
+| hero, feature | footage scene: one `<video>` + one cut + one `.kit-spot` + one cue per shot | `.kit-cap3` cues (68 px, <= 8 words, one line) | `components/spotlight.html`, `components/launch-captions.html` |
+| proof | footage scene, wide | `.kit-cap3.kit-proof`: `.kit-stats` (1-3 `.kit-stat`) + `.kit-hood` | `components/launch-captions.html` |
+| end | block | variables `built`, `action`, `url` | `blocks/launch-end.html` |
+| (all) | | `.kit-chapters[data-kit-chapters="Name:start|…"]`: 3-4 labels over a thin progress bar | `Kit.captions.animate` |
+
+Tight zooms: the camera still shows the whole focus box (`Kit.camera.fit`), so the way to get a 2x close-up is
+to focus a small box: track ONE clause, card or button in `capture/record.cjs` (`{sel, clip: true}` inside
+scroll panes) and name it in the shot (`"focus": "cardC4", "maxZoom": 2, "cut": true`). 2x capture
+(`deviceScaleFactor: 2`, viewport 1360x765) keeps those zooms sharp; `build-footage` scales boxes and clicks to
+the 1920 stage and writes `stageScale` into the clip data; QA's "page shown at Nx" = camera zoom x stage scale.
 
 ## How a film uses the kit
 
@@ -53,9 +94,10 @@ footage `<video data-kit-clip="s2">` inside `.kit-stage > .kit-cam`, camera keyf
 capture time, so the focused component is always whole and above the caption band. QA reads the same
 JSON with the same `kit/lib` code, so what QA checks is what renders.
 
-Host ids must equal the block's composition id: `coldopen`, `title`, `endcard` (`nextsteps` is not for
-demo films). `data-kit-role` on each host tells QA what a scene is (`cold-open`, `footage`, `captions`,
-`title`, `problem`, `card`, `end-card`; `next-steps` fails QA in a demo film).
+Host ids must equal the block's composition id: `coldopen`, `title`, `endcard`, `launchend` (`nextsteps` is not
+for demo films). `data-kit-role` on each host tells QA what a scene is (`cold-open`, `footage`, `captions`,
+`title`, `problem`, `card`, `end-card`, and kit 2's `statement`; `next-steps` fails QA in a demo film). Launch
+films add `data-kit-beat` (`hook`, `what`, `problem`, `hero`, `feature`, `proof`, `end`).
 
 Captions (v2) and annotations, in short:
 
@@ -81,6 +123,15 @@ they are re-cut on 1.1.
 | --- | --- | --- | --- |
 | `tokens.css` | House style as CSS variables, matched to the demo UI revamp: ground #0a0a0f, ink #f2f1f9, ONE accent per film via `data-kit-accent` (iris #8e78ff, cobalt #6896ff, coral #ff8060, cyan #00e5ff), Inter, caption band top (840 px), v2 caption and annotation sizes | `--kit-*`, `data-kit-accent` | distru, assemblyai, great-question |
 | `kit.css` | Styles for every component and block (`.kit-stage`, `.kit-cam`, `.kit-ring`, `.kit-band`/`.kit-band2`, `.kit-cap`/`.kit-cap2` (kicker, head, detail), `.kit-progress`, `.kit-ann`, `.kit-speed`, `.kit-chip`, `.kit-headline`, `.kit-card*`, `.kit-row`, `.kit-cursor`) | class names | distru, assemblyai, great-question |
+| **Kit 2: launch format** | | | |
+| `lib/launch.js` | `Kit.launch.RULES` (every number QA gates), `BEATS`, `readingTime(words)` = max(2.5, 0.5 + 0.6 x words), `isLaunch`, `mag(scale, clip)`, `cover(region, zoom)`, `statement({id, tl})` (backdrop camera + sentence reveal) | `data-kit-format="launch"`, `data-kit-beat`, `data-kit-cam` | gc-ai |
+| `blocks/launch-end.html` | End card, about 5 s (QA 4-6 s): who built it, ONE action, the url. Host id `launchend` | `built` (`*word*` = accent), `action`, `url` | gc-ai |
+| `components/statement-scene.html` | Statement scene: ONE sentence (96 px, <= 12 words) + a small line over blurred (`--kit-backdrop-blur`), dimmed (`--kit-scrim`) product footage; `data-kit-cam="x,y,w,h"` frames one footage region | `.kit-statement-text`, `.kit-statement-sub`, `data-kit-cam`, style overrides | gc-ai (what, problem) |
+| `components/launch-captions.html` | Skeleton of a launch `captions.html`: `.kit-cap3` cues (one line, 64-72 px, no kicker), `.kit-hook`, `.kit-proof` (`.kit-stats` + `.kit-hood`), `.kit-cap-tags` for labels, `.kit-chapters` (3-4 labels over a thin progress bar), band windows | cue timing, `data-kit-chapters="Name:start\|…"` | gc-ai |
+| `components/spotlight.html` | `.kit-spot[data-kit-focus]` inside `.kit-cam`: flat dim outside ONE recorded component, 2 px accent outline (`bare` = none); switches hard on cuts, fades elsewhere; planned and checked like a ring | `data-kit-focus`, `data-kit-pad`, `bare` | gc-ai |
+| `scripts/capture.cjs` (kit 2 options) | `deviceScaleFactor: 2` (real 2x frames through `--force-device-scale-factor`), `cursor: {scale, idleHide}`, `clickPause` | see header | gc-ai |
+| `scripts/build-footage.mjs` (kit 2) | 2x / narrow-viewport captures keep their pixels; boxes, cursor and clicks are scaled to the 1920x1080 stage; clip data gains `stageScale`, `viewport`, `deviceScaleFactor`, `pixels` | automatic | gc-ai |
+| `music/bright-pluck-112-long.mp3` | The default bed extended to 94 s for 60-90 s films; `music-bed.mjs` picks it when the film outlasts the 60 s bed | `--bed` | gc-ai |
 | **Blocks** (full scenes, own timeline) | | | |
 | `blocks/cold-open.html` | First 1.5-2.5 s: real footage (`assets/footage/hook.mp4`, clip `hook`) moving from frame 0, framed on one component with a slow push-in, kicker + headline on the v2 band. Reading time applies: ≤ 4 headline words at 2.2 s | `kicker`, `headline` (`*word*` = accent), `focus` (component name(s) or `x,y,w,h`), `zoom`, `push`, `align`, `reveal` (`instant` / `words`) | distru, assemblyai, great-question |
 | `blocks/title.html` | Optional ≤1.8 s chapter/title card (QA fails text cards > 2 s) | `kicker`, `title`, `credit` | — |
@@ -101,7 +152,7 @@ they are re-cut on 1.1.
 | **music/** | | | |
 | `music/*.mp3`, `music/beds.json`, `music/README.md` | **Kit 1.1.** Three 60 s ElevenLabs instrumental beds (default `bright-pluck-112`); `beds.json` = length, natural end, loudness, true peak per bed. Never edited per film: `sync` vendors the chosen bed into `films/<slug>/assets/music/` | `--bed` | distru (bright-pluck-112) |
 | **lib/** (in `kit.js`, also loadable in Node) | | | |
-| `lib/core.js` | `Kit.version` (1.1.0), `Kit.FRAME`, `Kit.time.frame/seq/speed/label`, `Kit.warn` | — | all |
+| `lib/core.js` | `Kit.version` (2.0.0), `Kit.FRAME`, `Kit.time.frame/seq/speed/label`, `Kit.warn` | — | all |
 | `lib/text.js` | **Kit 1.1.** `Kit.text.words/readingTime` (0.6 s + 0.35 s per word), `width/lines` (Inter glyph advances, so QA in Node measures what renders), `annSize`, `CAP2` / `ANN` geometry | — | captions, annotations, qa |
 | `lib/camera.js` | **Framing guarantee**: `Kit.camera.fit(box, opts)` returns the push-in that shows the whole box inside the safe area (frame − 24 px margin − caption band), lowering the zoom instead of cropping; `safeArea`, `project`, `inside`, `union`, `grow`. Kit 1.1.1: `edge` puts a footage x / y (a column gutter) on the frame edge so a close-up does not slice the neighbour | `maxZoom`, `zoom`, `minZoom`, `pad`, `margin`, `align`, `captions`, `fill`, `edge`, `partial`+`reason`, `center` | all (`edge`: distru) |
 | `lib/clips.js` | Clip data (DOM boxes, marks, events) lookups and scene-time → media-time mapping | `data-kit-clip`, `data-kit-media-time` | all |
@@ -121,11 +172,11 @@ they are re-cut on 1.1.
 | `scripts/fake-mic.cjs` | Simulated participant for voice demos with `capture.cjs` (drives the page's real mic path; the film itself carries no voice since kit 1.1) | `CHROME_ARGS`, `init({watch})`, `attach`, `load`, `speak`, `collect` | — |
 | `scripts/frame-lag.py` | Measures how late the screencast shows a DOM change | `<raw/clip> [--watch name=component]` | — |
 | `scripts/place-audio.mjs` | Places the demo's own recorded sound on the film timeline (voice films, kit 1.0); kit 1.1 demo films carry no voice, so QA fails what it writes unless flagged | `capture/voice.json` | — |
-| `scripts/new-film.mjs` | Scaffold `films/<slug>/` on the kit 1.1 template and sync the kit | `<slug> --company` | — |
+| `scripts/new-film.mjs` | Scaffold `films/<slug>/` on the launch-format template (kit 2) and sync the kit | `<slug> --company` | — |
 | `scripts/sync.mjs` | Vendor the kit into a film (`kit/`, `kit/kit.js`, `kit/VERSION`), vendor its music bed (`assets/music/`), relink node_modules, rewrite `data/clips.js` | `<slug>` / `--all` | distru, assemblyai, great-question |
-| `scripts/qa.mjs` | The gate: duration < 60 s, first product frame ≤ 2 s, scene lengths, no next-steps, framing of every keyframe, ring and annotation, speed labels, captions (one at a time, reading time, v2 sizes and one-line fits, stepper), exactly one music bed and no voice, style; `--frames` / `--video` builds the contact sheet (every 3 s + seams ±0.2 s) and a framing sheet (shots + annotations); `--video` also measures loudness (-22..-18 LUFS, ≤ -1 dBTP), fades, streams, size | `--frames`, `--video`, `--at`, `--every`, `--out`, `--json` | distru, assemblyai, great-question |
+| `scripts/qa.mjs` | The gate. Launch films (`data-kit-format="launch"`): 55-90 s, beats present and in order, <= 2 feature beats after the hero, `.kit-cap3` cues (words, one line, 64-72 px, reading time, <= 7 s), hook line, proof numbers, chapters, page shown at >= 1.5x in hero / feature shots, no camera move under a caption, run label, held-frame label, bed as long as the film. Kit 1.1 films: duration < 60 s, first product frame ≤ 2 s, scene lengths, no next-steps, framing of every keyframe, ring and annotation, speed labels, captions (one at a time, reading time, v2 sizes and one-line fits, stepper), exactly one music bed and no voice, style; `--frames` / `--video` builds the contact sheet (every 3 s + seams ±0.2 s) and a framing sheet (shots + annotations); `--video` also measures loudness (-22..-18 LUFS, ≤ -1 dBTP), fades, streams, size | `--frames`, `--video`, `--at`, `--every`, `--out`, `--json` | distru, assemblyai, great-question |
 | `scripts/contact_sheet.py` | Labelled contact sheet with focus/safe/label rectangles (used by qa) | spec JSON | qa |
-| `templates/film/` | What `new-film` copies (kit 1.1): index.html (cold open → footage → end card + captions + music bed markers, `data-kit-accent`), compositions (v2 captions with stepper; demo scene with an annotation), SPEC.md, capture script, cuts.json | `{{SLUG}}`, `{{COMPANY}}` | new-film |
+| `templates/film/` | What `new-film` copies (kit 2, launch format): index.html (eight beat hosts + captions + music bed, `data-kit-format="launch"`), compositions (hook, what, problem, hero, feature2, feature3, proof, captions), SPEC.md with the beat table, 2x capture script, cuts.json | `{{SLUG}}`, `{{COMPANY}}` | new-film |
 
 ## Adding an item
 
@@ -140,6 +191,19 @@ they are re-cut on 1.1.
 4. Add a row above, a line in `CHANGELOG.md`, then `npm run sync:all` and `npm run qa -- films/<slug>`
    for each film.
 
+## Writing for launch films (kit 2)
+
+- Write the beat table before any capture: beat, seconds, picture, caption, focus box. A caption that needs
+  more than 8 words is two shots.
+- Say what it means for the viewer, not what was clicked: "Your playbook sets the rules. Press Review." beats
+  "Step 1 · Playbook". Never name an internal component; the proof beat's under-the-hood line is where "an LLM
+  drafts, code verifies, a decision model routes" goes.
+- Check every claim against the page: the film says what a recorded run did. Numbers in the proof beat come
+  from that run. If an action would make the next claim false (accepting every change before exporting
+  "tracked changes"), reorder the shots.
+- Budget: 8 words = 5.3 s, 7 = 4.7 s, 6 = 4.1 s, 5 = 3.5 s; a 9-word statement = 5.9 s.
+- The hook's first frame is the thumbnail: start the footage where a result is already on screen.
+
 ## Writing for text-only films (kit 1.1)
 
 - One idea per cue. The kicker names the step ("Step 3 · Check"); the headline says what happens in ≤ ~10
@@ -150,6 +214,22 @@ they are re-cut on 1.1.
   headline. Leave the focus room for it (a lower `maxZoom`), or QA finds no placement.
 - Honesty chips ("Cached replay", "Example run") count as words to read; keep them to 2-3 words and put
   the explanation in the detail line.
+
+## Launch-format tips (from gc-ai)
+
+- A 1360x765 viewport at 2x gives 2720x1530 frames at 12-30 changed frames/s on the 2-core box; the UI is
+  1.41x on the stage before any zoom. Check the page's breakpoints at that width first.
+- One long take is easier to cut than many: scroll the panes yourself between shots, `clip.mark()` every
+  step, and read the media times from `data/clips/<take>.json`. A page that auto-follows new results while it
+  streams will scroll under your shot: take over the scrolling (one wheel tick) if the page allows it.
+- The DOM changes ~0.05-0.2 s before the screencast shows it. Put a spotlight boundary on the DOM time of the
+  change (the box sample in the clip data), not after it, or the union of the two states lights too much.
+- Spotlights switch hard on cuts; a camera MOVE between two spotlights shows the page undimmed for its
+  length, so cut instead of moving when both shots are lit.
+- The idle-hide cursor stays visible for 1.2 s after its last move: start a shot's footage later than that
+  after the pre-roll, or park the cursor earlier.
+- A white page needs `--kit-scrim: 0.84` under a statement for the accent word to keep 4.5:1.
+- `hyperframes render` cancels when its stdin closes: background it as `tail -f /dev/null | npx hyperframes render …`.
 
 ## Framing tips (from the first three films)
 

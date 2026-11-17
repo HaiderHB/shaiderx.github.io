@@ -30,6 +30,27 @@
  *                   <audio>, <video data-has-audio> or un-muted video with sound FAILS unless it carries
  *                   data-kit-audio-reason="..." (WARN); next-steps block in a demo film (FAIL)
  *   style           glow / glass / decorative gradients (WARN); data-kit-accent on the root (WARN)
+ * Launch format (kit 2): a film whose root carries data-kit-format="launch" is gated by these rules instead
+ * of the kit 1.1 duration, scene-length and caption rules above (framing, rings, speed labels, annotations,
+ * music and style still apply):
+ *   duration        55-90 s (FAIL), target 60-75 s (WARN outside); product footage on screen at 0.0 s (FAIL)
+ *   beats           every scene host names its beat (data-kit-beat): hook, what, problem, hero, feature (<= 2),
+ *                   proof, end; each required beat once, in that order (FAIL); 7-9 scenes (WARN); hook <= 5 s
+ *                   from 0 s on footage; what and problem are statement scenes, the problem named by 20 s
+ *                   (FAIL); end card 4-6 s with its three lines; no title, cold-open or next-steps host (FAIL)
+ *   captions        .kit-cap3 cues only: ONE line, no kicker, no detail line (FAIL); <= 8 words (WARN 9-12, FAIL
+ *                   above; hook <= 7, FAIL); 64-72 px; on screen >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s
+ *                   (FAIL); one proof cue with 1-3 numbers and at most one under-the-hood line (FAIL);
+ *                   statement sentences <= 12 words (WARN, FAIL above 16) with the same reading time (FAIL)
+ *   progress        a .kit-chapters element with 3-4 chapters (FAIL); a stepper with more than 4 steps (FAIL)
+ *   attention       hero / feature shots show the page at >= 1.5x (camera zoom x the clip's stage scale; FAIL
+ *                   unless the shot is "wide": true with a reason); a spotlight, ring or annotation per hero /
+ *                   feature scene (WARN); the camera does not move under a caption (FAIL); captions land on a
+ *                   cut or move, at most one click per caption, >= 1 s still before it and >= 1.5 s after (WARN)
+ *   honesty         data-kit-run on the root ("live" | "example" | "cached" | "mixed"; WARN if missing); example
+ *                   and cached runs need a chip saying so (FAIL); a still held > 1.5 s in a footage scene needs
+ *                   a "held frame" chip (FAIL); "If I join" content (FAIL); jargon in captions (WARN)
+ *   music           the bed must be at least as long as the film (FAIL)
  * With --frames (HyperFrames snapshot) or --video (frames from a render): a contact sheet at every
  * --every seconds (default 3), every scene seam (-0.2 / +0.2 s) and --at times, plus a framing sheet
  * (one frame per keyframe hold and per annotation: focus rect cyan, safe area dashed, ring and label).
@@ -116,6 +137,13 @@ const indexHtml = stripComments(fs.readFileSync(path.join(film, "index.html"), "
 const itags = tags(indexHtml);
 const rootTag = itags.find((t) => t.attrs["data-composition-id"] === "main") || itags.find((t) => t.attrs.id === "root");
 const duration = num(rootTag && rootTag.attrs["data-duration"], NaN);
+// kit 2: launch-format films opt in on the root and are gated by the launch rules (kit/lib/launch.js)
+const LAUNCH = !!rootTag && rootTag.attrs["data-kit-format"] === "launch";
+const L = Kit.launch ? Kit.launch.RULES : null;
+if (LAUNCH && !L) {
+  console.error('data-kit-format="launch" but the film\'s kit has no lib/launch.js: run npm run sync -- <slug> (kit 2)');
+  process.exit(1);
+}
 const hosts = itags
   .filter((t) => t.attrs["data-composition-src"])
   .map((t) => {
@@ -139,7 +167,7 @@ const hosts = itags
     } catch (e) {
       FAIL("index", `#${t.attrs.id}: data-variable-values is not valid JSON`);
     }
-    return { id: t.attrs.id, cid: t.attrs["data-composition-id"], src, file, raw, html, role, start: num(t.attrs["data-start"]), duration: num(t.attrs["data-duration"]), vars, missing: !raw };
+    return { id: t.attrs.id, cid: t.attrs["data-composition-id"], src, file, raw, html, role, beat: t.attrs["data-kit-beat"] || null, start: num(t.attrs["data-start"]), duration: num(t.attrs["data-duration"]), vars, missing: !raw };
   });
 hosts.forEach((h) => {
   if (h.missing) FAIL("index", `#${h.id}: ${h.src} not found`);
@@ -156,7 +184,12 @@ else PASS("style", `accent: ${accentAttr}`);
 
 // ---------- duration ----------
 if (!Number.isFinite(duration)) FAIL("duration", "root data-duration missing");
-else if (duration >= 60) FAIL("duration", `${duration.toFixed(2)} s: films must be under 60 s`);
+else if (LAUNCH) {
+  const D = L.duration;
+  if (duration < D.min || duration > D.max) FAIL("duration", `${duration.toFixed(2)} s: launch films run ${D.min}-${D.max} s (target ${D.targetMin}-${D.targetMax} s)`);
+  else if (duration < D.targetMin || duration > D.targetMax) WARN("duration", `${duration.toFixed(2)} s (launch target ${D.targetMin}-${D.targetMax} s, never over ${D.max} s)`);
+  else PASS("duration", `${duration.toFixed(2)} s (launch format: target ${D.targetMin}-${D.targetMax} s, never over ${D.max} s)`);
+} else if (duration >= 60) FAIL("duration", `${duration.toFixed(2)} s: films must be under 60 s`);
 else if (duration < 45 || duration > 55) WARN("duration", `${duration.toFixed(2)} s (target 45-55 s, cap < 60 s)`);
 else PASS("duration", `${duration.toFixed(2)} s (target 45-55 s, cap < 60 s)`);
 
@@ -180,7 +213,7 @@ hosts.forEach((h) => {
     if (isMedia && (a["data-kit-clip"] || /assets\/(footage|stills)\//.test(a.src || ""))) {
       const s = h.start + num(a["data-start"]);
       const d = num(a["data-duration"], t.name === "img" ? 3 : h.duration);
-      product.push({ host: h.id, id: a.id, start: s, end: Math.min(h.start + h.duration, s + d) });
+      product.push({ host: h.id, id: a.id, start: s, end: Math.min(h.start + h.duration, s + d), still: t.name === "img" });
       const rate = num(a["data-playback-rate"], 1);
       if (Math.abs(rate - 1) > 1e-3 && t.name === "video") speedClips.push({ host: h.id, id: a.id, rate, start: s, end: Math.min(h.start + h.duration, s + d) });
     }
@@ -202,8 +235,10 @@ hosts.forEach((h) => {
       const d = num(c.attrs["data-duration"]);
       const next = capTags.find((x) => x.index > c.index);
       const body = h.html.slice(c.end, next ? next.index : h.html.length);
-      const v2 = hasClass(c, "kit-cap2");
-      const head = pick(body, v2 ? "kit-cap-head" : "kit-cap-main");
+      const v3 = hasClass(c, "kit-cap3"); // kit 2 launch cue
+      const proof = v3 && hasClass(c, "kit-proof");
+      const v2 = v3 || hasClass(c, "kit-cap2");
+      const head = proof ? "" : pick(body, v2 ? "kit-cap-head" : "kit-cap-main");
       const detail = pick(body, v2 ? "kit-cap-detail" : "kit-cap-note");
       const kicker = pick(body, v2 ? "kit-cap-kicker" : "kit-cap-label");
       const chips = [...body.matchAll(/<span[^>]*class="[^"]*\bkit-chip\b[^"]*"[^>]*>([\s\S]*?)<\/span>/g)].map((m) => Kit.text.plain(m[1]));
@@ -221,6 +256,12 @@ hosts.forEach((h) => {
         chips,
         step: c.attrs["data-kit-step"] != null ? parseInt(c.attrs["data-kit-step"], 10) : null,
         voice: hasClass(c, "kit-voice"),
+        v3,
+        hook: v3 && hasClass(c, "kit-hook"),
+        proof,
+        stats: proof ? [...body.matchAll(/class="[^"]*\bkit-stat-n\b[^"]*"[^>]*>([\s\S]*?)<\/span>\s*<span[^>]*class="[^"]*\bkit-stat-l\b[^"]*"[^>]*>([\s\S]*?)<\/span>/g)].map((m) => Kit.text.plain(m[1] + " " + m[2])) : [],
+        hoods: proof ? [...body.matchAll(/class="[^"]*\bkit-hood\b[^"]*"[^>]*>([\s\S]*?)<\/div>/g)].map((m) => Kit.text.plain(m[1])) : [],
+        host: h.id,
       });
     });
 });
@@ -233,6 +274,7 @@ itags.forEach((t) => {
 // ---------- first product frame ----------
 const firstProduct = product.length ? Math.min(...product.map((p) => p.start)) : Infinity;
 if (!product.length) FAIL("retention", "no product footage found (video/img with data-kit-clip or assets/footage src)");
+else if (LAUNCH && firstProduct > 0.05) FAIL("retention", `first product frame at ${firstProduct.toFixed(2)} s: a launch film opens on the hook, footage from frame 0`);
 else if (firstProduct > 2.0) FAIL("retention", `first product frame at ${firstProduct.toFixed(2)} s (must be <= 2.0 s)`);
 else PASS("retention", `first product frame at ${firstProduct.toFixed(2)} s (<= 2.0 s)`);
 
@@ -253,7 +295,9 @@ hosts.forEach((h) => {
     else if (d > 4.5) WARN("scenes", tag + ": next steps longer than 4.5 s");
     else PASS("scenes", tag);
   } else if (h.role === "end-card") {
-    if (d > 3.0 + 1e-6) FAIL("scenes", tag + ": end card must be <= 3 s");
+    const max = LAUNCH ? L.end.maxSec : 3.0;
+    if (d > max + 1e-6) FAIL("scenes", tag + `: end card must be <= ${max} s`);
+    else if (LAUNCH && d < L.end.minSec - 1e-6) WARN("scenes", tag + `: launch end card runs about 5 s (${L.end.minSec}-${L.end.maxSec} s)`);
     else PASS("scenes", tag);
   } else PASS("scenes", tag);
   if (Number.isFinite(duration) && h.start + d > duration + 1e-3) WARN("scenes", `#${h.id} ends at ${(h.start + d).toFixed(2)} s, after the root (${duration} s): it is cut`);
@@ -309,13 +353,16 @@ hosts.forEach((h) => {
       FAIL("framing", `#${h.id}: kit-shots is not valid JSON: ${e.message}`);
       return;
     }
+    // rings and (kit 2) spotlights are planned the same way: the box must sit inside the safe area
     const rings = tags(h.html)
-      .filter((t) => hasClass(t, "kit-ring") && t.attrs["data-kit-focus"])
+      .filter((t) => (hasClass(t, "kit-ring") || hasClass(t, "kit-spot")) && t.attrs["data-kit-focus"])
       .map((t) => {
-        let focus = t.attrs["data-kit-focus"];
+        let focus = t.attrs["data-kit-focus"].replace(/&quot;/g, '"');
         if (focus.trim().startsWith("[")) focus = JSON.parse(focus);
         const s = num(t.attrs["data-start"]);
-        return { id: t.attrs.id, start: s, end: s + num(t.attrs["data-duration"], 1), focus, pad: t.attrs["data-kit-pad"] != null ? num(t.attrs["data-kit-pad"]) : 6 };
+        const spot = hasClass(t, "kit-spot");
+        const win = (t.attrs["data-kit-window"] || "").split(",").map(Number);
+        return { id: t.attrs.id, start: s, end: s + num(t.attrs["data-duration"], 1), focus, spot, window: win.length === 2 && win.every(Number.isFinite) ? win : null, pad: t.attrs["data-kit-pad"] != null ? num(t.attrs["data-kit-pad"]) : spot ? 10 : 6 };
       });
     const localCues = cues.map((c) => ({ id: c.id, start: c.start - h.start, end: c.end - h.start }));
     const annotations = tags(h.html)
@@ -396,7 +443,7 @@ if (ov) headSize = parseFloat(ov[1]);
 let detailSize = C2.detail;
 const ovd = filmCss.match(/--kit-cap2-detail:\s*([\d.]+)px/);
 if (ovd) detailSize = parseFloat(ovd[1]);
-if (cues.some((c) => c.v2)) {
+if (!LAUNCH && cues.some((c) => c.v2)) {
   if (headSize < C2.minHead) FAIL("captions", `headline size ${headSize} px < ${C2.minHead} px (must read on a phone)`);
   else PASS("captions", `headline ${headSize} px, detail ${detailSize} px (kit 1.1 band)`);
 }
@@ -405,6 +452,7 @@ for (let i = 1; i < byStart.length; i++)
   if (byStart[i].start < byStart[i - 1].end - 0.01) FAIL("captions", `#${byStart[i - 1].id} and #${byStart[i].id} overlap (${byStart[i].start.toFixed(2)} < ${byStart[i - 1].end.toFixed(2)} s): one caption at a time`);
 const progressTags = hosts.filter((h) => h.role === "captions").flatMap((h) => tags(h.html).filter((t) => hasClass(t, "kit-progress")));
 const steps = progressTags.length ? (progressTags[0].attrs["data-kit-steps"] || "").split(/[,|]/).map((x) => x.trim()).filter(Boolean) : [];
+if (!LAUNCH) {
 let readFails = 0;
 cues.forEach((c) => {
   const words = Kit.text.words(c.head) + Kit.text.words(c.detail) + c.chips.reduce((n, x) => n + Kit.text.words(x), 0);
@@ -444,6 +492,9 @@ if (cues.length) {
   if (!readFails) PASS("captions", `${cues.length} cues (${v2n} v2), ${byStart[0].start.toFixed(2)}-${byStart[byStart.length - 1].end.toFixed(2)} s, every one on screen >= its reading time`);
   if (progressTags.length) PASS("captions", `progress stepper: ${steps.length} steps (${steps.join(" · ")})`);
 }
+} // !LAUNCH
+// ---------- launch format (kit 2): beats, captions, progress, attention, honesty ----------
+if (LAUNCH) launchChecks();
 // the cold open's headline is read in its slot too
 hosts
   .filter((h) => h.role === "cold-open")
@@ -454,6 +505,195 @@ hosts
     if (h.duration < need - 1e-6) FAIL("captions", `cold open "${Kit.text.plain(v.headline)}": ${words} words need ${need.toFixed(2)} s, slot is ${h.duration.toFixed(2)} s (shorten the headline or lengthen the slot to <= 2.5 s)`);
     else PASS("captions", `cold open "${Kit.text.plain(v.headline)}": ${words} words, ${need.toFixed(2)} s <= ${h.duration.toFixed(2)} s`);
   });
+
+function launchChecks() {
+  const R = L.cue;
+  const beatHosts = pics.slice();
+  const planOf = (id) => plans.find((p) => p.host.id === id);
+  const extraJargon = ((rootTag.attrs["data-kit-jargon"] || "").split(/[,|]/).map((x) => x.trim().toLowerCase())).filter(Boolean);
+  const jargonRe = new RegExp("(^|[^\\p{L}\\p{N}])(" + L.jargon.concat(extraJargon).map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|") + ")(?![\\p{L}\\p{N}])", "iu");
+  const jargon = (where, text) => {
+    const m = String(text || "").match(jargonRe);
+    if (m) WARN("captions", `${where}: "${m[2]}" is an internal or technical term; say it in plain words (implementation terms go in the proof beat's under-the-hood line)`);
+  };
+  const joined = [];
+
+  // ---- beats
+  const count = {};
+  beatHosts.forEach((h) => {
+    if (!h.beat || !Kit.launch.BEATS.includes(h.beat)) FAIL("beats", `#${h.id}: no data-kit-beat (one of ${Kit.launch.BEATS.join(", ")})`);
+    else count[h.beat] = (count[h.beat] || 0) + 1;
+    if (["cold-open", "title", "problem", "card", "next-steps"].includes(h.role)) FAIL("beats", `#${h.id} (${h.role}): launch films have no title card, cold-open block or next-steps card; use the hook, statement and proof beats`);
+  });
+  ["hook", "what", "problem", "hero", "proof", "end"].forEach((b) => {
+    if (!count[b]) FAIL("beats", `no "${b}" beat (required: hook, what, problem, hero, proof, end)`);
+    else if (count[b] > 1) FAIL("beats", `${count[b]} "${b}" beats: exactly one`);
+  });
+  if ((count.feature || 0) > L.features) FAIL("beats", `${count.feature} feature beats after the hero: three features at most (hero + ${L.features})`);
+  const order = beatHosts.filter((h) => h.beat).map((h) => Kit.launch.BEATS.indexOf(h.beat));
+  if (order.some((v, i) => i && v < order[i - 1])) FAIL("beats", `beats out of order (${beatHosts.map((h) => h.beat || "?").join(" > ")}): hook, what, problem, hero, feature, proof, end`);
+  else if (beatHosts.length) PASS("beats", beatHosts.map((h) => `${h.beat || "?"} ${h.start.toFixed(1)}-${(h.start + h.duration).toFixed(1)}`).join(" · "));
+  if (beatHosts.length < L.scenes.min || beatHosts.length > L.scenes.max) WARN("beats", `${beatHosts.length} scenes (launch format: ${L.scenes.min}-${L.scenes.max})`);
+  beatHosts.forEach((h) => {
+    const tag = `#${h.id} (${h.beat}) ${h.start.toFixed(2)}-${(h.start + h.duration).toFixed(2)} s`;
+    const end = h.start + h.duration;
+    if (["hook", "hero", "feature", "proof"].includes(h.beat) && h.role !== "footage") FAIL("beats", `${tag}: must be a footage scene (real page footage), not "${h.role}"`);
+    if (h.beat === "hook") {
+      if (h.start > 0.01) FAIL("beats", `${tag}: the hook starts at 0`);
+      if (h.duration > L.hook.maxSec + 1e-6) FAIL("beats", `${tag}: the hook runs 0-4 s (at most ${L.hook.maxSec} s)`);
+    }
+    if (h.beat === "what" || h.beat === "problem") {
+      if (h.role !== "statement") FAIL("beats", `${tag}: must be a statement scene (data-kit-role="statement", components/statement-scene.html)`);
+      const text = Kit.text.plain(pick(h.html, "kit-statement-text") || "");
+      const w = Kit.text.words(text);
+      const need = Kit.launch.readingTime(w);
+      joined.push(text, Kit.text.plain(pick(h.html, "kit-statement-sub") || ""));
+      if (!text) FAIL("captions", `${tag}: no .kit-statement-text`);
+      else if (w > L.statement.maxWords) FAIL("captions", `${tag}: the sentence is ${w} words (<= ${L.statement.words})`);
+      else if (w > L.statement.words) WARN("captions", `${tag}: the sentence is ${w} words (<= ${L.statement.words})`);
+      if (text && h.duration < need - 1e-6) FAIL("captions", `${tag}: on screen ${h.duration.toFixed(2)} s < reading time ${need.toFixed(2)} s (0.5 + 0.6 x ${w} words) "${text}"`);
+      else if (text) PASS("captions", `${tag}: "${text}" · ${w} words, needs ${need.toFixed(2)} s`);
+      if (h.duration > L.statement.maxSec + 1e-6) WARN("captions", `${tag}: a statement longer than ${L.statement.maxSec} s`);
+      if (!product.some((p) => p.host === h.id)) FAIL("beats", `${tag}: a statement sits over product footage (video or img with data-kit-clip), not a bare card`);
+      if (!/\bkit-backdrop\b/.test(h.html) || !/\bkit-scrim\b/.test(h.html)) WARN("beats", `${tag}: no .kit-backdrop / .kit-scrim (the footage should be blurred and dimmed under the sentence)`);
+      jargon(tag, text);
+      const by = h.beat === "what" ? L.whatBy : L.problemBy;
+      if (end > by + 1e-6) (h.beat === "problem" ? FAIL : WARN)("beats", `${tag}: ends at ${end.toFixed(1)} s; a stranger should know ${h.beat === "what" ? "what it is" : "the problem"} by ${by} s`);
+    }
+    if (h.beat === "proof" && (h.duration < L.proof.minSec || h.duration > L.proof.maxSec)) WARN("beats", `${tag}: the proof beat runs about 6 s (${L.proof.minSec}-${L.proof.maxSec} s)`);
+    if (h.beat === "end") {
+      if (h.role !== "end-card") FAIL("beats", `${tag}: the end beat is the end card (data-kit-role="end-card", kit/blocks/launch-end.html)`);
+      const v = Object.assign(blockDefaults(h.html), h.vars);
+      joined.push(v.built, v.action, v.url);
+      if (/launch-end\.html$/.test(h.src)) {
+        ["built", "action", "url"].forEach((k) => !String(v[k] || "").trim() && FAIL("beats", `${tag}: end card variable "${k}" is empty (who built it, ONE action, the url)`));
+        if (/\bCompany\b/.test(v.built || "")) FAIL("beats", `${tag}: end card still says "Company"`);
+        PASS("beats", `${tag}: "${Kit.text.plain(v.built)}" / "${Kit.text.plain(v.action)}" / "${Kit.text.plain(v.url)}"`);
+      } else WARN("beats", `${tag}: not kit/blocks/launch-end.html (built for / one action / url)`);
+    }
+  });
+
+  // ---- captions
+  let head3 = R.head;
+  const o3 = filmCss.match(/--kit-cap3-head:\s*([\d.]+)px/);
+  if (o3) head3 = parseFloat(o3[1]);
+  let hook3 = L.hook.head;
+  const oh = filmCss.match(/--kit-cap3-hook:\s*([\d.]+)px/);
+  if (oh) hook3 = parseFloat(oh[1]);
+  if (head3 < R.minHead || head3 > R.maxHead || hook3 < R.minHead || hook3 > R.maxHead) FAIL("captions", `caption headline ${head3} px, hook ${hook3} px: launch captions are ${R.minHead}-${R.maxHead} px`);
+  else PASS("captions", `caption headline ${head3} px, hook ${hook3} px (launch: ${R.minHead}-${R.maxHead} px, one line)`);
+  let bad = 0;
+  const fail = (m) => {
+    bad++;
+    FAIL("captions", m);
+  };
+  cues.forEach((c) => {
+    const tag = `#${c.id} ${c.start.toFixed(2)}-${c.end.toFixed(2)} s`;
+    joined.push(c.head, c.detail, ...c.stats, ...c.hoods);
+    if (!c.v3) return fail(`${tag}: launch films use .kit-cap3 cues (one headline, no kicker, no stepper)`);
+    if (c.kicker) fail(`${tag}: kicker "${c.kicker}": launch captions have no kicker`);
+    if (c.detail) fail(`${tag}: detail line "${c.detail}": one idea, one line`);
+    c.chips.forEach((x) => Kit.text.words(x) > R.chipWords && WARN("captions", `${tag}: label "${x}" is ${Kit.text.words(x)} words (<= ${R.chipWords})`));
+    if (c.proof) {
+      if (c.stats.length < L.proof.minStats || c.stats.length > L.proof.maxStats) fail(`${tag}: the proof cue shows ${c.stats.length} numbers (${L.proof.minStats}-${L.proof.maxStats} .kit-stat with .kit-stat-n + .kit-stat-l)`);
+      if (c.hoods.length > 1) fail(`${tag}: ${c.hoods.length} under-the-hood lines: ONE`);
+      c.hoods.forEach((x) => Kit.text.words(x) > L.proof.hoodWords && WARN("captions", `${tag}: under-the-hood line is ${Kit.text.words(x)} words (<= ${L.proof.hoodWords})`));
+      const w = c.stats.reduce((n, x) => n + Kit.text.words(x), 0);
+      const need = Kit.launch.readingTime(w);
+      if (c.duration < need - 1e-6) fail(`${tag}: on screen ${c.duration.toFixed(2)} s < reading time ${need.toFixed(2)} s for ${c.stats.join(" · ")}`);
+      else PASS("captions", `${tag}: proof ${c.stats.join(" · ")}${c.hoods.length ? ` / "${c.hoods[0]}"` : ""}`);
+      return;
+    }
+    const w = Kit.text.words(c.head);
+    if (!c.head) return fail(`${tag}: cue without a .kit-cap-head`);
+    if (c.hook && w > L.hook.words) fail(`${tag}: the hook line is ${w} words (<= ${L.hook.words}) "${c.head}"`);
+    else if (w > R.maxWords) fail(`${tag}: ${w} words (<= ${R.words}; ${R.maxWords} at the very most) "${c.head}"`);
+    else if (w > R.words) WARN("captions", `${tag}: ${w} words (aim for <= ${R.words}) "${c.head}"`);
+    const px = Kit.text.width(c.head, c.hook ? hook3 : head3, 700, R.tracking);
+    if (px > R.width) fail(`${tag}: ${Math.round(px)} px wide at ${c.hook ? hook3 : head3} px, more than ${R.width} px: one line only ("${c.head}")`);
+    const need = Kit.launch.readingTime(w);
+    if (c.duration < need - 1e-6) fail(`${tag}: on screen ${c.duration.toFixed(2)} s < reading time ${need.toFixed(2)} s (max(${R.minSec}, ${R.base} + ${R.perWord} x ${w} words)) "${c.head}"`);
+    if (c.duration > R.maxSec + 1e-6) fail(`${tag}: on screen ${c.duration.toFixed(2)} s: never over ${R.maxSec} s (cut the shot or split the idea)`);
+    jargon(tag, c.head);
+  });
+  const hooks = cues.filter((c) => c.hook);
+  if (hooks.length !== 1 || hooks[0].start > 0.1) fail(`the hook needs exactly one .kit-cap3.kit-hook line from 0 s (found ${hooks.length}${hooks.length ? ` at ${hooks[0].start.toFixed(2)} s` : ""})`);
+  if (cues.filter((c) => c.proof).length !== 1) fail(`the proof beat needs exactly one .kit-cap3.kit-proof cue (1-3 numbers + one under-the-hood line)`);
+  if (cues.length && !bad) PASS("captions", `${cues.length} launch cues, each one line, on screen >= its reading time and <= ${R.maxSec} s`);
+
+  // ---- progress
+  const chapterTags = hosts.filter((h) => h.role === "captions").flatMap((h) => tags(h.html).filter((t) => hasClass(t, "kit-chapters")).map((t) => ({ t, h })));
+  if (!chapterTags.length) FAIL("progress", "no progress element: add .kit-chapters (3-4 plain labels over a thin bar) to the captions host");
+  chapterTags.forEach(({ t, h }) => {
+    const list = Kit.captions.parseChapters(t.attrs["data-kit-chapters"]);
+    const C = L.chapters;
+    const s0 = h.start + num(t.attrs["data-start"]);
+    if (list.length < C.min || list.length > C.max) FAIL("progress", `${list.length} chapters (${list.map((c) => c.name).join(", ")}): ${C.min}-${C.max} plain labels`);
+    else if (list.some((c, i) => !Number.isFinite(c.start) || (i && c.start <= list[i - 1].start))) FAIL("progress", `chapter starts must be ascending seconds ("Name:start|Name:start"): ${t.attrs["data-kit-chapters"]}`);
+    else PASS("progress", `chapters ${list.map((c) => `${c.name} ${(h.start + c.start).toFixed(1)} s`).join(" · ")}, bar ${s0.toFixed(1)}-${(s0 + num(t.attrs["data-duration"])).toFixed(1)} s`);
+    list.forEach((c) => Kit.text.words(c.name) > 3 && WARN("progress", `chapter "${c.name}": keep labels to 1-3 plain words`));
+    if (s0 > 0.5) WARN("progress", `the progress bar starts at ${s0.toFixed(1)} s (show it from the first frame)`);
+  });
+  if (progressTags.length) (steps.length > 4 ? FAIL : WARN)("progress", `.kit-progress stepper with ${steps.length} steps: launch films use .kit-chapters (no stepper)`);
+
+  // ---- attention: zoom, spotlight, one move and one action per caption
+  const clicksOf = (h) => {
+    const out = [];
+    sceneClipsOf(h).forEach((sc) => {
+      if (sc.still != null) return;
+      const c = Kit.clips.get(sc.clip);
+      ((c && c.events) || []).filter((e) => e.type === "click").forEach((e) => {
+        const t = sc.start + (e.t - sc.mediaStart) / sc.rate;
+        if (t >= sc.start - 1e-6 && t < sc.end - 1e-6) out.push(h.start + t);
+      });
+    });
+    return out;
+  };
+  beatHosts.filter((h) => h.role === "footage").forEach((h) => {
+    const p = planOf(h.id);
+    if (!p) return;
+    const tight = h.beat === "hero" || h.beat === "feature";
+    const mags = p.keyframes.filter((k) => k.fit).map((k) => k.mag);
+    p.keyframes.forEach((k) => {
+      if (!k.fit || k.mag >= L.minMag - 1e-3) return;
+      const at = `${h.id} shot ${k.i} @${(h.start + k.t).toFixed(2)}s focus=${k.focus}: the page is shown at ${k.mag}x`;
+      if (tight && !(k.wide && k.reason)) FAIL("attention", `${at}; hero and feature shots zoom the active area >= ${L.minMag}x (focus one clause or card, or mark the shot "wide": true with a reason)`);
+      else if (tight) WARN("attention", `${at} :: WIDE by intent: ${k.reason}`);
+      else if (h.beat === "hook") WARN("attention", `${at}; the hook should read on a phone (>= ${L.minMag}x)`);
+    });
+    if (mags.length) PASS("attention", `#${h.id} (${h.beat}): page shown at ${Math.min(...mags)}-${Math.max(...mags)}x over ${mags.length} shot${mags.length > 1 ? "s" : ""}`);
+    if (tight && !tags(h.html).some((t) => hasClass(t, "kit-spot") || hasClass(t, "kit-ring") || hasClass(t, "kit-ann"))) WARN("attention", `#${h.id} (${h.beat}): no spotlight, ring or annotation: give the scene one focal point (.kit-spot)`);
+    const clicks = clicksOf(h);
+    cues.filter((c) => !c.proof && c.start >= h.start - 0.05 && c.start < h.start + h.duration - 0.05).forEach((c) => {
+      const tag = `#${c.id} ${c.start.toFixed(2)}-${c.end.toFixed(2)} s`;
+      const moves = p.keyframes.map((k) => h.start + k.t);
+      if (!(Math.abs(h.start - c.start) < 0.16 || moves.some((t) => Math.abs(t - c.start) < 0.16))) WARN("attention", `${tag}: the caption does not land on a cut or camera move of #${h.id} (the caption lands with the cut)`);
+      moves.filter((t) => t > c.start + 0.16 && t < c.end - 0.05).forEach((t) => FAIL("attention", `${tag}: the camera moves at ${t.toFixed(2)} s under this caption (one camera move per caption, at its start)`));
+      const mine = clicks.filter((t) => t >= c.start && t < c.end);
+      if (mine.length > 1) WARN("attention", `${tag}: ${mine.length} clicks under one caption (ONE action per scene)`);
+      mine.forEach((t) => {
+        if (t - c.start < L.still - 0.05) WARN("attention", `${tag}: click ${(t - c.start).toFixed(2)} s after the caption lands (hold still >= ${L.still} s first)`);
+        if (c.end - t < L.hold - 0.05) WARN("attention", `${tag}: the result holds ${(c.end - t).toFixed(2)} s after the click (>= ${L.hold} s)`);
+      });
+    });
+  });
+
+  // ---- honesty
+  const run = rootTag.attrs["data-kit-run"];
+  const chipCues = cues.filter((c) => c.chips.length);
+  const chipText = chipCues.flatMap((c) => c.chips).join(" | ");
+  if (!run) WARN("honesty", 'root has no data-kit-run ("live" | "example" | "cached" | "mixed"): say what kind of run the footage shows');
+  else if (run !== "live" && !/example|recorded|replay|cached/i.test(chipText)) FAIL("honesty", `data-kit-run="${run}" but no label on screen says so (a .kit-chip such as "Example run" or "Recorded live run")`);
+  else PASS("honesty", `run: ${run}${run !== "live" ? " (labelled on screen)" : ""}`);
+  product.filter((x) => x.still && x.end - x.start > 1.5).forEach((x) => {
+    const h = hosts.find((y) => y.id === x.host);
+    if (!h || h.role !== "footage") return;
+    const ok = chipCues.some((c) => c.start < x.end && c.end > x.start && c.chips.some((t) => /held|still|paused|frozen|freeze/i.test(t)));
+    if (!ok) FAIL("honesty", `${x.host}#${x.id}: a still held ${(x.end - x.start).toFixed(2)} s with no "Held frame" label on screen (record a real hold, or add a .kit-chip to the caption)`);
+  });
+  const bannedRe = /if i join|first (30|60|90) days/i;
+  joined.filter(Boolean).forEach((t) => bannedRe.test(t) && FAIL("honesty", `"${Kit.text.plain(t)}": no "If I join" content in a demo film`));
+}
 
 // ---------- style ----------
 const styleFiles = [path.join(film, "index.html")].concat(fs.existsSync(path.join(film, "compositions")) ? fs.readdirSync(path.join(film, "compositions")).filter((f) => f.endsWith(".html")).map((f) => path.join(film, "compositions", f)) : []);
@@ -484,6 +724,19 @@ beds.forEach((b) => {
   r.warnings.forEach((w) => WARN("music", `#${b.id}: ${w}`));
   const file = path.join(film, b.attrs.src || "");
   if (!b.attrs.src || !fs.existsSync(file)) FAIL("music", `#${b.id}: ${b.attrs.src} is missing in the film (npm run sync -- <slug> vendors it from kit/music/)`);
+});
+// kit 2: films can outlast a 60 s bed; the bed must cover the film
+let bedList = {};
+try {
+  bedList = JSON.parse(fs.readFileSync(path.join(HERE, "..", "music", "beds.json"), "utf8")).beds || {};
+} catch (e) {
+  /* no manifest */
+}
+beds.forEach((b) => {
+  const info = bedList[b.attrs["data-kit-music"]];
+  if (!info) return;
+  const to = num(b.attrs["data-media-start"]) + num(b.attrs["data-duration"]);
+  if (to > info.duration + 0.05) FAIL("music", `#${b.id}: plays ${b.attrs["data-kit-music"]} to ${to.toFixed(1)} s but the bed is ${info.duration} s long: pick a bed at least as long as the film (kit/music/beds.json, e.g. --bed ${Object.keys(bedList).filter((k) => bedList[k].duration >= duration)[0] || "a longer one"})`);
 });
 const hasAudioStream = (src) => {
   const f = path.join(film, src || "");
@@ -670,7 +923,7 @@ const warns = results.filter((r) => r.level === "WARN");
 if (JSON_OUT) {
   console.log(JSON.stringify({ film, duration, firstProduct, ok: !fails.length, fails: fails.length, warns: warns.length, loudness: loud, results, sheet, framingSheet }, null, 1));
 } else {
-  console.log(`QA ${path.relative(process.cwd(), film) || film}  (kit lib: ${path.relative(film, libDir)})`);
+  console.log(`QA ${path.relative(process.cwd(), film) || film}  (kit lib: ${path.relative(film, libDir)}${LAUNCH ? ", launch format" : ""})`);
   let area = null;
   for (const r of results) {
     if (r.area !== area) {

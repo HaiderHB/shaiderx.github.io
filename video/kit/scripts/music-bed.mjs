@@ -14,6 +14,8 @@
  * 3. Writes one <audio id="music" class="clip kit-music"> between <!-- kit:music:start --> and
  *    <!-- kit:music:end --> in index.html (inside the root, after the scene hosts), and vendors the bed
  *    into films/<slug>/assets/music/ (sync does the same on every sync).
+ * Kit 2: when the film is longer than the bed (launch format, 60-90 s) and the bed has a "long" version in
+ *    beds.json (bright-pluck-112 -> bright-pluck-112-long, 94 s), that one is used.
  * Re-run it whenever the film's length changes (QA fails a bed that does not end on the last frame).
  * Used by: the film template, distru.
  */
@@ -42,12 +44,6 @@ require(path.join(KIT, "lib", "music.js"));
 const Kit = globalThis.Kit;
 
 const manifest = JSON.parse(fs.readFileSync(path.join(KIT, "music", "beds.json"), "utf8"));
-const name = val("--bed", manifest.default);
-const bed = manifest.beds[name];
-if (!bed) {
-  console.error(`unknown bed "${name}" (kit/music/beds.json: ${Object.keys(manifest.beds).join(", ")})`);
-  process.exit(1);
-}
 const indexFile = path.join(film, "index.html");
 let html = fs.readFileSync(indexFile, "utf8");
 const rootTag = html.replace(/<!--[\s\S]*?-->/g, "").match(/<div[^>]*data-composition-id="main"[^>]*>/);
@@ -56,6 +52,17 @@ if (!Number.isFinite(filmDur)) {
   console.error("index.html: no root data-duration");
   process.exit(1);
 }
+let name = val("--bed", manifest.default);
+if (!manifest.beds[name]) {
+  console.error(`unknown bed "${name}" (kit/music/beds.json: ${Object.keys(manifest.beds).join(", ")})`);
+  process.exit(1);
+}
+// kit 2: a launch-format film (60-90 s) outlasts the 60 s beds; take the bed's long version when it has one
+if (manifest.beds[name].duration < filmDur && manifest.beds[name].long && manifest.beds[manifest.beds[name].long]) {
+  console.log(`film is ${filmDur} s, ${name} is ${manifest.beds[name].duration} s: using ${manifest.beds[name].long}`);
+  name = manifest.beds[name].long;
+}
+const bed = manifest.beds[name];
 const target = parseFloat(val("--lufs", String(Kit.music.TARGET.lufs)));
 const p = Kit.music.plan({
   film: filmDur,

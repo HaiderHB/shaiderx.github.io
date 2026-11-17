@@ -20,6 +20,8 @@
  *            the focused component below this line while captions are on),
  *            --kit-gutter (v1 cards and captions), --kit-gutter2 (v2 caption band)
  *   caption  --kit-cap-* (v1 cue), --kit-cap2-* (v2 cue: kicker / head / detail), --kit-ann-* (annotation)
+ *   launch   --kit-cap3-* (kit 2 one-line caption and hook), --kit-chapters-top, --kit-statement,
+ *            --kit-backdrop-blur, --kit-scrim, --kit-spot-dim
  * Rules (see video/README.md): no glow, no glass, no decorative gradients, no target-company logo.
  * Keep lib/camera.js SAFE.bandTop in sync with --kit-band-top, and lib/text.js CAP2 with --kit-cap2-*.
  */
@@ -61,6 +63,17 @@
 
   /* annotation label (.kit-ann-label), kit 1.1 */
   --kit-ann-size: 32px;
+
+  /* kit 2, launch format: one-line caption (64-72 px), hook line, statement, chapters, spotlight, backdrop.
+     Keep lib/launch.js RULES in sync with --kit-cap3-*. */
+  --kit-cap3-top: 866px;
+  --kit-cap3-head: 68px;
+  --kit-cap3-hook: 72px;
+  --kit-chapters-top: 1004px;
+  --kit-statement: 96px;
+  --kit-backdrop-blur: 10px;
+  --kit-scrim: 0.62;
+  --kit-spot-dim: rgb(6 6 10 / 0.66);
 
   --kit-display: 104px;
   --kit-head: 72px;
