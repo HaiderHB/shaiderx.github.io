@@ -69,7 +69,7 @@ import {
   riskTone,
   seconds,
 } from 'demos/ui';
-import { AuditTrail, ChatThread, ScheduleStrip } from 'demos/ui';
+import { AuditTrail, ChatThread, DocumentScan, RequestLog, ScheduleStrip } from 'demos/ui';
 import Head from 'next/head';
 import { useState } from 'react';
 import {
@@ -111,6 +111,7 @@ const NAV = [
   ['states', 'States'],
   ['mcp', 'MCP'],
   ['schedule', 'Scheduling'],
+  ['payments', 'Payments'],
 ].map(([id, label]) => ({ href: `#${id}`, label }));
 
 // Layers, back to front
@@ -303,6 +304,60 @@ const TOOLS = [
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
 ];
+
+// DocumentScan, RequestLog (from the Truss demo)
+const REQUEST_ITEMS = [
+  {
+    id: 'r1',
+    at: Date.UTC(2026, 10, 17, 15, 42, 3, 120),
+    path: '/pay',
+    status: 201,
+    outcome: 'charged',
+    note: 'Charge created. The browser had already given up waiting.',
+    meta: ['key idem_7f3cQ2…', 'attempt 1', 'pmt_9Q2xT4'],
+  },
+  {
+    id: 'r2',
+    at: Date.UTC(2026, 10, 17, 15, 42, 4, 410),
+    path: '/pay',
+    status: 201,
+    outcome: 'replayed',
+    note: 'Same key: stored response returned, no new charge',
+    meta: ['key idem_7f3cQ2…', 'attempt 2', 'pmt_9Q2xT4'],
+    highlight: true,
+  },
+  {
+    id: 'r3',
+    at: Date.UTC(2026, 10, 17, 15, 42, 9, 2),
+    path: '/pay',
+    status: 409,
+    outcome: 'blocked',
+    note: 'Invoice already paid under another key',
+    meta: ['key idem_k81LpZ…', 'attempt 1'],
+  },
+  { id: 'r4', at: Date.UTC(2026, 10, 17, 15, 42, 11, 530), path: '/pay', status: 'pending', outcome: 'sent' },
+];
+
+function DocumentScanSample() {
+  const [scanning, setScanning] = useState(true);
+  return (
+    <div className={styles.stack}>
+      <DocumentScan
+        src="/demo-assets/truss/northline-inv-ne-1187.png"
+        alt="Sample invoice"
+        width={1275}
+        height={1650}
+        scanning={scanning}
+        done={!scanning}
+        href="/demo-assets/truss/northline-inv-ne-1187.png"
+        caption={scanning ? 'Reading the image…' : 'Read: open it full size'}
+      />
+      <Button variant="secondary" size="s" onClick={() => setScanning(value => !value)}>
+        {scanning ? 'Mark as read' : 'Scan again'}
+      </Button>
+    </div>
+  );
+}
 
 // ScheduleStrip, ChatThread, AuditTrail (from the GoodTime demo)
 const STRIP_DAYS = [
@@ -1294,6 +1349,19 @@ export default function UiGallery() {
                 },
               ]}
             />
+          </Specimen>
+        </Group>
+
+        <Group
+          id="payments"
+          title="Documents and payments"
+          lede="A document image being read into data, and the requests a payment endpoint received: charged, replayed by an idempotency key, blocked."
+        >
+          <Specimen name="DocumentScan" note="scanning, done, opens full size">
+            <DocumentScanSample />
+          </Specimen>
+          <Specimen name="RequestLog" note="2xx, 4xx, pending, a highlighted row" wide>
+            <RequestLog items={REQUEST_ITEMS} label="Sample payment requests" />
           </Specimen>
         </Group>
       </div>

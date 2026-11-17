@@ -19,7 +19,7 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 
 ## Catalog
 
-Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher. "via" means used
+Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **T** Truss. "via" means used
 inside another kit component.
 
 | Component | What it is | Props | Used by |
@@ -45,7 +45,7 @@ inside another kit component.
 | `NoteGrid` | "Design choices" / "How it works" notes | `items` `[{ title, text }]`, `variant` (`accent`, `boxed`) | D (accent), G (boxed) |
 | `PipelineStrip` | How a run works: numbered step cards with cost | `steps` `[{ label, what, cost }]`, `label` | D |
 | `Timeline`, `TimelineStep` | Run stages with marker (number, spinner, tick), timing and details | `index`, `status` (`pending`, `running`, `done`, `error`), `title`, `detail`, `ms` (formatted), children | D |
-| `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars on a hatched track, chosen option bold, threshold marks | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `accent`), `strong`, `marks`; `options` `[{ value, label, tone }]`, `probabilities`, `choice` | D, R |
+| `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars on a hatched track, chosen option bold, threshold marks | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `accent`), `strong`, `marks`; `options` `[{ value, label, tone }]`, `probabilities`, `choice` | D, R, T |
 | `Funnel` | Narrowing counts, one bar per step (40 → 12 → 10 → 8); pending steps hatched, the last reached step in the accent | `steps` `[{ label, value, note }]` (`value: null` = not reached), `max`, `size` (`m`, `s`), `tone` (`accent`, `ink` on an accent card), `label` | R |
 | `Gauge` | Half-dial of ticks with a big value in the middle | `value` (0..1), `ticks`, `tone`, `caption`, `label`, children | D |
 | `Ring` | Circular progress around a short label | `value` (0..1), `tone`, `size`, `stroke`, `label`, children | D, G |
@@ -53,7 +53,7 @@ inside another kit component.
 | `SplitBar` | One bar in proportional parts, with a legend | `parts` `[{ label, value, tone, display }]`, `legend`, `label` | A |
 | `MiniBars` | Small column chart: active column filled, the rest hatched | `data` `[{ label, value, display }]`, `active`, `max`, `height`, `label` | D |
 | `Sparkline` | Line over a short series with an end dot and optional threshold | `values`, `min`, `max`, `tone`, `height`, `threshold`, `label` | G |
-| `EvalTable` | Expected vs actual per check, with pass/fail icons | `rows` `[{ id, label, expected, actual, pass }]`, `columns` | D |
+| `EvalTable` | Expected vs actual per check, with pass/fail icons; on phones each row stacks (label, then expected and actual side by side) | `rows` `[{ id, label, expected, actual, pass }]`, `columns` | D, T |
 | `SegmentedControl` | One-of-n toggle | `options` `[{ value, label, disabled }]`, `value`, `onChange`, `label`, `variant` (`pill`, `box`), `disabled` | G |
 | `OptionList`, `IndexBadge` | Stacked, numbered sample picker; the square number | `options` `[{ value, label, hint }]`, `value`, `onChange`, `label` | D |
 | `ChoiceChips` | Row of toggle chips (samples, filters) | `options` `[{ value, label }]`, `value`, `onChange`, `label` | A |
@@ -76,7 +76,9 @@ inside another kit component.
 | `srOnly`, `tokens` | Screen-reader-only class; the token class (DemoLayout applies it) | class names | D, A, G |
 | `ScheduleStrip` | A few days of a calendar as columns, blocks placed by time; shows what is held, just changed, moved away or dropped, over shaded availability | `days` `[{ id, label, sub }]`, `from`, `to` (hours), `blocks` `[{ id, day, start, end (minutes), title, sub, meta, tone, state, hint }]` (`state`: `changed`, `held`, `removed`, `dropped`), `windows`, `tz`, `legend` `[{ state, label }]`; `--uiStripHour` | GT |
 | `ChatThread` | Two-sided conversation with avatars, meta line, typing dots and a streaming caret; children under a bubble (change chips, a trace) | `messages` `[{ id, side (`start`, `end`), name, avatar, meta, text, pending, streaming, children }]`, `empty`, `follow`; `--uiChatHeight` | GT |
-| `AuditTrail` | Time-stamped record of what an agent and people did, actor pill by tone, optional action per row | `items` `[{ id, at, actor, tone, text, action }]`, `empty`, `label` | GT |
+| `AuditTrail` | Time-stamped record of what an agent and people did, actor pill by tone, optional action per row | `items` `[{ id, at, actor, tone, text, action }]`, `empty`, `label` | GT, T |
+| `DocumentScan` | A document image (invoice, receipt, form) on a paper card; a line sweeps down it while it is read, an accent edge once read; opens full size | `src`, `alt`, `width`, `height` (aspect), `scanning`, `done`, `href`, `caption`, `label`, children (overlays) | T |
+| `RequestLog` | Requests an API received, newest last: 24 h time with ms, method and path, a status pill (2xx ok, 4xx warn, 5xx / timeout bad, `pending` spinner), outcome, note, mono meta (idempotency key, attempt) | `items` `[{ id, at, method, path, status, outcome, note, meta, tone, highlight }]`, `empty`, `label` | T |
 
 ## Tokens
 

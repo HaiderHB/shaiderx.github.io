@@ -15,6 +15,8 @@ const KIE_URL = () => process.env.KIE_BASE_URL || 'https://api.kie.ai';
 const FISH_URL = () => process.env.FISH_BASE_URL || 'https://api.fish.audio';
 
 const FAL_LLM_URL = () => process.env.FAL_LLM_URL || 'https://fal.run/openrouter/router/openai/v1';
+const GEMINI_NATIVE_URL = () =>
+  process.env.GEMINI_NATIVE_URL || 'https://generativelanguage.googleapis.com/v1beta';
 
 const falKey = () => process.env.FAL_KEY || requireEnv('FAL_API_KEY');
 
@@ -22,6 +24,12 @@ const falKey = () => process.env.FAL_KEY || requireEnv('FAL_API_KEY');
 export const DEMO_LLM = {
   provider: 'fal',
   model: () => process.env.DEMO_LLM_MODEL || 'deepseek/deepseek-v3.2',
+};
+
+/** Default vision model for reading documents (invoices, receipts, forms): Gemini, native API. */
+export const DEMO_VISION = {
+  provider: 'gemini',
+  model: () => process.env.DEMO_VISION_MODEL || 'gemini-3.5-flash-lite',
 };
 
 function pickProvider(provider) {
@@ -203,6 +211,74 @@ export async function chatTools({
   });
   const finishReason = data.choices?.[0]?.finish_reason;
   return { content: message.content || '', toolCalls, finishReason };
+}
+
+/**
+ * Reads one image (or a PDF page) with Gemini and returns schema-shaped JSON.
+ * image: { mimeType: 'image/png' | 'image/jpeg' | 'image/webp' | 'application/pdf', data: base64 }.
+ * schema: a JSON schema of plain types (object, array, string, number, boolean, enum); the
+ * response is constrained to it (structured output), but validate it anyway: shape, not truth.
+ * Returns { data, model, usage: { inputTokens, outputTokens } }. The key stays server-side.
+ */
+export async function geminiVision({
+  model = DEMO_VISION.model(),
+  prompt,
+  image,
+  schema,
+  maxTokens = 2000,
+  temperature = 0,
+}) {
+  if (!image?.data || !image?.mimeType) throw new Error('geminiVision() needs { mimeType, data }');
+  const request = schemaField =>
+    fetch(`${GEMINI_NATIVE_URL()}/models/${encodeURIComponent(model)}:generateContent`, {
+      method: 'POST',
+      headers: { 'x-goog-api-key': requireEnv('GOOGLE_API_KEY'), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: 'user',
+            parts: [{ inline_data: { mime_type: image.mimeType, data: image.data } }, { text: prompt }],
+          },
+        ],
+        generationConfig: {
+          temperature,
+          maxOutputTokens: maxTokens,
+          ...(schema && { responseMimeType: 'application/json', [schemaField]: schema }),
+        },
+      }),
+    });
+
+  let response = await request('responseJsonSchema');
+  // Older API versions only know the OpenAPI-style field; the plain-type schema fits both
+  if (response.status === 400 && schema) {
+    const body = await response.text().catch(() => '');
+    if (/responseJsonSchema/i.test(body)) response = await request('responseSchema');
+    else throw new Error(`gemini 400: ${body.slice(0, 300)}`);
+  }
+  await failIfBad(response, 'gemini');
+  const result = await response.json();
+  const candidate = result.candidates?.[0];
+  const text = (candidate?.content?.parts || [])
+    .filter(part => typeof part.text === 'string' && !part.thought)
+    .map(part => part.text)
+    .join('');
+  if (!text) throw new Error(`gemini returned no text (${candidate?.finishReason || 'no candidate'})`);
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    const match = text.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('gemini returned text that is not JSON');
+    data = JSON.parse(match[0]);
+  }
+  return {
+    data,
+    model: result.modelVersion || model,
+    usage: {
+      inputTokens: result.usageMetadata?.promptTokenCount ?? 0,
+      outputTokens: result.usageMetadata?.candidatesTokenCount ?? 0,
+    },
+  };
 }
 
 /** Queues a fal.ai job (image, video, audio, voice models). Returns a jobId to poll. */

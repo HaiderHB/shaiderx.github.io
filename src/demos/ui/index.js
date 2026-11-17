@@ -58,6 +58,8 @@ export { TrackedText } from './TrackedText';
 export { AuditTrail } from './AuditTrail';
 export { ChatThread } from './Chat';
 export { ScheduleStrip } from './Schedule';
+export { DocumentScan } from './DocumentScan';
+export { RequestLog } from './RequestLog';
 
 /** Class that defines the --ui* tokens; DemoLayout applies it to every demo. */
 export const tokens = tokenStyles.tokens;

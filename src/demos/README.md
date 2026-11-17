@@ -14,13 +14,18 @@ Pick the technology that solves *their* problem best, then make it feel current.
 | Voice | Voice interviews and agents, call triage, voice notes to actions, narration | Fish Audio ASR via `fishTranscribe()` and TTS via `fishSpeak()`. Turn-based loop (record in the browser, one route for ASR → LLM → TTS): see `api/demo/great-question/turn.api.js` |
 | Video models | Product videos, ad variants, personalised clips | kie.ai (`kieStartJob()` / `kieJobStatus()`, one API for Veo, Kling and others) or fal.ai (`falStartJob()` / `falJobStatus()`); client `pollJob()`. Pre-render 1–2 examples and show them first |
 | Image generation | Mockups, product shots, creatives, style transfer | kie.ai or fal.ai jobs, same pattern as video |
+| Document vision | Invoices, receipts, forms → typed JSON | `geminiVision({ prompt, image, schema })` in `demos/models` (Gemini native API, structured output, key server-side; default `DEMO_VISION`). Validate the JSON in code anyway: see `pages/demo/truss/pipeline.js` |
 
 Keys available (Vercel env, mirrored in the gitignored `.env.local`): `OPENAI_API_KEY`,
 `GOOGLE_API_KEY`, `JEV_API_KEY`, `FAL_API_KEY`, `FISH_AUDIO_API_KEY`, `KIE_API_KEY`,
 `HIGGSFIELD_API_KEY`. Fuller clients for these providers live in the Ad-Base repo
 (`lib/jev.ts`, `lib/generate/*`) if a demo needs more than the helpers here.
 
-Other fair game: embeddings/search, OCR/vision, evals dashboards, realtime collaboration.
+Other fair game: embeddings/search, evals dashboards, realtime collaboration.
+
+Store helpers (`demos/store`) beyond counters and `cached()`: `setJSONIfAbsent` (claim something once,
+Redis `SET NX`: idempotency keys, one payment per invoice), `pushJSON` / `listJSON` (append-only logs).
+
 One wow moment in the first 10 seconds, works on mobile, sample data only.
 
 Look up current model ids and API shapes in the provider docs when you build; nothing here
