@@ -12,12 +12,14 @@ export const config = { api: { bodyParser: { sizeLimit: '1kb' } }, maxDuration: 
 const TASK_COST = COST.llm * 2 + COST.decision;
 
 const readTask = req => evalById(clampText(req.body?.taskId, 8));
-const evalKey = task => `superhuman:eval:${hash(VERSION, MODEL, task.id, task.grant, task.task)}`;
+const evalKey = task =>
+  `superhuman:eval:${hash(VERSION, MODEL, task.id, task.grant, task.task)}`;
 
 export default demoApi(
   async (req, res) => {
     const task = readTask(req);
-    if (!task) return res.status(400).json({ error: 'Unknown eval task.', code: 'input' });
+    if (!task)
+      return res.status(400).json({ error: 'Unknown eval task.', code: 'input' });
     return streamAgent(res, evalKey(task), {
       task: task.task,
       grant: task.grant,

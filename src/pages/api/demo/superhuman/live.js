@@ -37,7 +37,11 @@ function callsFromText(content) {
     const parsed = JSON.parse(text);
     return (Array.isArray(parsed) ? parsed : [parsed])
       .filter(item => TOOL_NAMES.includes(item?.name))
-      .map((item, index) => ({ id: `text_${index}`, name: item.name, args: item.arguments || item.args || {} }));
+      .map((item, index) => ({
+        id: `text_${index}`,
+        name: item.name,
+        args: item.arguments || item.args || {},
+      }));
   } catch {
     return [];
   }
@@ -113,7 +117,10 @@ export async function streamAgent(res, key, input) {
     await setJSON(`cache:${key}`, events, CACHE_SECONDS).catch(() => {});
   } catch (error) {
     console.error('[superhuman]', error);
-    send({ t: 'error', message: 'The agent hit an error partway through. Try again in a moment.' });
+    send({
+      t: 'error',
+      message: 'The agent hit an error partway through. Try again in a moment.',
+    });
   }
   return stream.end();
 }

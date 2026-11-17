@@ -167,7 +167,8 @@ function compactArgs(args, clip) {
   if (!entries.length) return '{}';
   return entries
     .map(([key, value]) => {
-      let text = typeof value === 'string' ? JSON.stringify(value) : JSON.stringify(value);
+      let text =
+        typeof value === 'string' ? JSON.stringify(value) : JSON.stringify(value);
       if (text && text.length > clip) text = `${text.slice(0, clip - 1)}…"`;
       return `${key}: ${text}`;
     })
@@ -204,9 +205,11 @@ export function McpCallLog({
     if (!follow || !node) return;
     node.scrollTop = node.scrollHeight;
   }, [count, pending, follow]);
-  const statusOf = status => ({ ...CALL_STATUS, ...statuses }[status] || CALL_STATUS.allowed);
+  const statusOf = status =>
+    ({ ...CALL_STATUS, ...statuses }[status] || CALL_STATUS.allowed);
 
-  if (!count && !pending) return <p className={classes(styles.logEmpty, className)}>{empty}</p>;
+  if (!count && !pending)
+    return <p className={classes(styles.logEmpty, className)}>{empty}</p>;
   return (
     <div ref={box} className={classes(styles.log, className)}>
       <ol className={styles.logList} aria-label={label}>
@@ -223,7 +226,10 @@ export function McpCallLog({
                 <span className={styles.callIndex}>{call.id}</span>
                 <code className={styles.callName}>{call.name}</code>
                 {call.scope && (
-                  <span className={styles.scope} data-tone={scopeTones[call.scope] || 'neutral'}>
+                  <span
+                    className={styles.scope}
+                    data-tone={scopeTones[call.scope] || 'neutral'}
+                  >
                     {call.scope}
                   </span>
                 )}

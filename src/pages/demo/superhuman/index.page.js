@@ -40,6 +40,7 @@ import {
 } from './mcp';
 import {
   CallsCard,
+  EvalFailures,
   EvalRow,
   EvalRunLine,
   EvalSummary,
@@ -71,7 +72,8 @@ const EVAL_CONCURRENCY = 2;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 const prefersReducedMotion = () =>
-  typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  typeof window !== 'undefined' &&
+  window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 /** Shows events one at a time at a readable pace (tool calls finish in microseconds). */
 function createPlayer(onEvent, { instant = false, pace = PACE } = {}) {
@@ -122,7 +124,12 @@ async function streamEvents(path, body, onEvent) {
 }
 
 /** Re-runs a recorded run through the real loop: recorded model turns and judge answers only. */
-function replayRecorded(rec, { task, grant, judgeMode = 'drafts' }, emit, { instant = true } = {}) {
+function replayRecorded(
+  rec,
+  { task, grant, judgeMode = 'drafts' },
+  emit,
+  { instant = true } = {}
+) {
   return runAgent(
     { task, grant, judgeMode },
     {
@@ -139,7 +146,8 @@ function replayRecorded(rec, { task, grant, judgeMode = 'drafts' }, emit, { inst
       msFor: n => rec.turns[n - 1]?.ms,
       emit: event => {
         if (event.t === 'done') emit({ ...event, ms: rec.ms ?? event.ms });
-        else if (event.t === 'judge') emit({ ...event, ms: rec.judgeMs?.[event.key] ?? event.ms });
+        else if (event.t === 'judge')
+          emit({ ...event, ms: rec.judgeMs?.[event.key] ?? event.ms });
         else emit(event);
       },
     }
@@ -187,7 +195,8 @@ async function recordedEvalEntries() {
 
 const firstPreset = PRESETS[0];
 const recordedFor = (task, grant) =>
-  Object.values(RUNS).find(rec => rec.task === task.trim() && rec.grant === grant) || null;
+  Object.values(RUNS).find(rec => rec.task === task.trim() && rec.grant === grant) ||
+  null;
 
 export default function SuperhumanDemo() {
   const [hasKey, setHasKey] = useState(false);
@@ -297,7 +306,9 @@ export default function SuperhumanDemo() {
 
   async function runEvalsLive() {
     if (!hasKey) {
-      setEvalNotice(`${PREVIEW_NOTE} The scores above are a recorded run of all eight tasks.`);
+      setEvalNotice(
+        `${PREVIEW_NOTE} The scores above are a recorded run of all eight tasks.`
+      );
       return;
     }
     if (evals.status === 'running' && evals.kind === 'live') return;
@@ -433,39 +444,44 @@ export default function SuperhumanDemo() {
               </Button>
             }
           />
-          <EvalSummary scored={scored} total={EVAL_TASKS.length} />
-          <div className={styles.evalLine}>
-            <EvalRunLine evals={evals} meta={EVAL_RUN} />
-            {hasKey && (
-              <span className={styles.muted}>
-                About 24 cents for all eight; a repeat replays from cache, free
-              </span>
-            )}
+          <div className={styles.evalLayout}>
+            <aside className={styles.evalAside}>
+              <EvalSummary scored={scored} total={EVAL_TASKS.length} />
+              <EvalFailures tasks={EVAL_TASKS} entries={evals.entries} />
+              <div className={styles.evalLine}>
+                <EvalRunLine evals={evals} meta={EVAL_RUN} />
+                {hasKey && (
+                  <span className={styles.muted}>
+                    About 24 cents for all eight; a repeat replays from cache, free
+                  </span>
+                )}
+              </div>
+              {evalNotice && (
+                <Notice size="s" className={styles.notice} role="status">
+                  {evalNotice}
+                </Notice>
+              )}
+            </aside>
+            <ol className={styles.evalList}>
+              {EVAL_TASKS.map((item, index) => (
+                <EvalRow
+                  key={item.id}
+                  index={index}
+                  task={item}
+                  entry={evals.entries[item.id]}
+                  open={openEvals.has(item.id)}
+                  onToggle={() =>
+                    setOpenEvals(current => {
+                      const next = new Set(current);
+                      if (next.has(item.id)) next.delete(item.id);
+                      else next.add(item.id);
+                      return next;
+                    })
+                  }
+                />
+              ))}
+            </ol>
           </div>
-          {evalNotice && (
-            <Notice size="s" className={styles.notice} role="status">
-              {evalNotice}
-            </Notice>
-          )}
-          <ol className={styles.evalList}>
-            {EVAL_TASKS.map((item, index) => (
-              <EvalRow
-                key={item.id}
-                index={index}
-                task={item}
-                entry={evals.entries[item.id]}
-                open={openEvals.has(item.id)}
-                onToggle={() =>
-                  setOpenEvals(current => {
-                    const next = new Set(current);
-                    if (next.has(item.id)) next.delete(item.id);
-                    else next.add(item.id);
-                    return next;
-                  })
-                }
-              />
-            ))}
-          </ol>
         </section>
 
         <ToolsSection />
@@ -569,8 +585,16 @@ function ToolsSection() {
 }
 
 const FLOW = [
-  { label: 'Task + grant', what: 'You pick read only, read + draft, or full', cost: 'free' },
-  { label: 'Model turn', what: 'DeepSeek V3.2 picks tools, up to 10 turns', cost: '~2 units' },
+  {
+    label: 'Task + grant',
+    what: 'You pick read only, read + draft, or full',
+    cost: 'free',
+  },
+  {
+    label: 'Model turn',
+    what: 'DeepSeek V3.2 picks tools, up to 10 turns',
+    cost: '~2 units',
+  },
   { label: 'Gate', what: "The server checks each call's scope", cost: 'free' },
   { label: 'Tools', what: 'They run on the sample inbox', cost: 'free' },
   { label: 'Approval', what: 'Every send waits for a person', cost: 'free' },

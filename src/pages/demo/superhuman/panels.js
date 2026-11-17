@@ -30,7 +30,16 @@ import {
   formatMs,
   srOnly,
 } from 'demos/ui';
-import { FiCheck, FiChevronDown, FiClock, FiEdit3, FiLock, FiRotateCcw, FiSend, FiShield } from 'react-icons/fi';
+import {
+  FiCheck,
+  FiChevronDown,
+  FiClock,
+  FiEdit3,
+  FiLock,
+  FiRotateCcw,
+  FiSend,
+  FiShield,
+} from 'react-icons/fi';
 import { JUDGE_PASS, JUDGE_QUESTIONS, MAX_TASK, PRESETS } from './agent';
 import { NOW_LABEL, THREADS, USER, listDate, threadById } from './inbox';
 import { GRANTS, GRANT_IDS, TOOLS, pendingApprovals } from './mcp';
@@ -58,7 +67,8 @@ export function logCalls(run) {
     }
     if (call.name === 'send' && call.status === 'awaiting') {
       const decided = run.world.approvals[call.result?.approval_id]?.status;
-      if (decided === 'approved' || decided === 'rejected') return { ...call, status: decided };
+      if (decided === 'approved' || decided === 'rejected')
+        return { ...call, status: decided };
     }
     return call;
   });
@@ -86,17 +96,24 @@ export function RunGlance({ run, replay }) {
   let headline = 'Ready';
   if (running) headline = run.calls.length ? 'Working the inbox' : 'Reading the task';
   else if (run.status === 'done')
-    headline = counts.waiting ? `${plural(counts.waiting, 'send')} waiting for you` : 'Done';
+    headline = counts.waiting
+      ? `${plural(counts.waiting, 'send')} waiting for you`
+      : 'Done';
   else if (run.status === 'error') headline = 'Stopped';
   return (
     <Card tone="accent" className={styles.glance} aria-live="polite">
       <div className={styles.glanceTop}>
-        <span className={styles.glanceKind}>{run.kind === 'live' ? 'Live run' : 'Example run'}</span>
+        <span className={styles.glanceKind}>
+          {run.kind === 'live' ? 'Live run' : 'Example run'}
+        </span>
         <span className={styles.glanceTurn}>
           {run.turns.length ? `turn ${run.turns.length}` : ''}
         </span>
       </div>
-      <strong className={styles.glanceHeadline} data-tone={counts.waiting ? 'warn' : running ? 'live' : 'ok'}>
+      <strong
+        className={styles.glanceHeadline}
+        data-tone={counts.waiting ? 'warn' : running ? 'live' : 'ok'}
+      >
         {headline}
       </strong>
       <p className={styles.glanceTask}>
@@ -126,16 +143,23 @@ export function RunGlance({ run, replay }) {
             <li key={call.id} data-status={call.status}>
               <code>{call.name}</code>
               <span className={styles.glanceArg}>{callTarget(call)}</span>
-              <span className={styles.glanceStatus}>{STATUS_TEXT[call.status] || call.status}</span>
+              <span className={styles.glanceStatus}>
+                {STATUS_TEXT[call.status] || call.status}
+              </span>
             </li>
           ))
         ) : (
-          <li data-status="idle">{running ? 'Waiting for the model…' : 'No tool calls yet'}</li>
+          <li data-status="idle">
+            {running ? 'Waiting for the model…' : 'No tool calls yet'}
+          </li>
         )}
       </ol>
       {counts.waiting > 0 && run.status === 'done' && (
         <Button size="s" className={styles.glanceCta} onClick={() => scrollToId('gate')}>
-          <FiShield aria-hidden /> {counts.waiting === 1 ? 'Review the send' : `Review the ${counts.waiting} sends`}
+          <FiShield aria-hidden />{' '}
+          {counts.waiting === 1
+            ? 'Review the send'
+            : `Review the ${counts.waiting} sends`}
         </Button>
       )}
       {replay && <p className={styles.glanceFoot}>{replay}</p>}
@@ -164,7 +188,18 @@ function scrollToId(id) {
 
 const GRANT_OPTIONS = GRANT_IDS.map(id => ({ value: id, label: GRANTS[id].label }));
 
-export function TaskCard({ grant, onGrant, task, onTask, presetId, onPreset, onRun, busy, hasKey, notice }) {
+export function TaskCard({
+  grant,
+  onGrant,
+  task,
+  onTask,
+  presetId,
+  onPreset,
+  onRun,
+  busy,
+  hasKey,
+  notice,
+}) {
   const scopes = GRANTS[grant].scopes;
   return (
     <Card as="form" className={styles.taskCard} onSubmit={onRun}>
@@ -184,7 +219,9 @@ export function TaskCard({ grant, onGrant, task, onTask, presetId, onPreset, onR
         <ul className={styles.scopeList} aria-label="What this grant allows">
           {['read', 'draft', 'act'].map(scope => {
             const on = scopes.includes(scope);
-            const names = TOOLS.filter(tool => tool.scope === scope).map(tool => tool.name);
+            const names = TOOLS.filter(tool => tool.scope === scope).map(
+              tool => tool.name
+            );
             return (
               <li key={scope} data-on={on ? '' : undefined}>
                 <span className={styles.scopeMark} aria-hidden>
@@ -208,7 +245,9 @@ export function TaskCard({ grant, onGrant, task, onTask, presetId, onPreset, onR
       <div className={styles.taskText}>
         <CardHead>
           <CardTitle size="s">Task</CardTitle>
-          <span className={styles.muted}>{`${USER.name}'s sample inbox · ${NOW_LABEL}`}</span>
+          <span
+            className={styles.muted}
+          >{`${USER.name}'s sample inbox · ${NOW_LABEL}`}</span>
         </CardHead>
         <div className={styles.presets} role="group" aria-label="Example tasks">
           {PRESETS.map(preset => (
@@ -246,7 +285,7 @@ export function TaskCard({ grant, onGrant, task, onTask, presetId, onPreset, onR
           </Button>
           <span className={styles.muted}>
             {hasKey
-              ? 'Live: DeepSeek V3.2 calls the tools, about 3 cents a run'
+              ? 'Live: DeepSeek V3.2 calls the tools. A run takes about a minute, about 3 cents'
               : 'Preview: the example tasks replay recorded live runs'}
           </span>
         </div>
@@ -264,7 +303,8 @@ export function TaskCard({ grant, onGrant, task, onTask, presetId, onPreset, onR
 
 export function CallsCard({ run, active, onReplay }) {
   const counts = runCounts(run);
-  const waitingTurn = run.status === 'running' && run.turns[run.turns.length - 1]?.status === 'running';
+  const waitingTurn =
+    run.status === 'running' && run.turns[run.turns.length - 1]?.status === 'running';
   return (
     <Card className={styles.callsCard}>
       <CardHead
@@ -275,7 +315,12 @@ export function CallsCard({ run, active, onReplay }) {
             <span className={styles.callsAside}>
               <Pill>Example run</Pill>
               {onReplay && (
-                <Button variant="ghost" size="s" onClick={onReplay} disabled={run.status === 'running'}>
+                <Button
+                  variant="ghost"
+                  size="s"
+                  onClick={onReplay}
+                  disabled={run.status === 'running'}
+                >
                   <FiRotateCcw aria-hidden /> Replay
                 </Button>
               )}
@@ -293,7 +338,10 @@ export function CallsCard({ run, active, onReplay }) {
           <strong>{counts.blocked}</strong> blocked
         </span>
         <span data-tone="warn">
-          <strong>{run.calls.filter(c => c.name === 'send' && c.status === 'awaiting').length}</strong> awaiting approval
+          <strong>
+            {run.calls.filter(c => c.name === 'send' && c.status === 'awaiting').length}
+          </strong>{' '}
+          awaiting approval
         </span>
         <span className={styles.callTurns}>
           {plural(counts.turns, 'model turn')}
@@ -304,7 +352,11 @@ export function CallsCard({ run, active, onReplay }) {
         className={styles.callLog}
         calls={logCalls(run)}
         pending={waitingTurn}
-        pendingLabel={run.calls.length ? 'The model is choosing its next tools…' : 'The model is reading the task…'}
+        pendingLabel={
+          run.calls.length
+            ? 'The model is choosing its next tools…'
+            : 'The model is reading the task…'
+        }
         empty="Run a task to see each tools/call: its arguments, scope, what the gate decided and the result."
         active={active}
       />
@@ -328,7 +380,9 @@ export function GateCard({ run, onApprove, onReject }) {
         <div className={styles.approvals}>
           {approvals.map(approval => {
             const draft = run.world.drafts[approval.draft_id];
-            const sent = run.world.sent.find(item => item.approval_id === approval.approval_id);
+            const sent = run.world.sent.find(
+              item => item.approval_id === approval.approval_id
+            );
             const body = draft?.body || sent?.body || '';
             const judged = run.judges[approval.draft_id];
             return (
@@ -393,13 +447,25 @@ export function SummaryCard({ run }) {
   const drafts = Object.values(run.world.drafts);
   const sent = run.world.sent;
   const replies = [
-    ...drafts.map(d => ({ key: d.draft_id, thread: d.thread_id, subject: d.subject, kind: 'Draft' })),
-    ...sent.map(s => ({ key: s.approval_id, thread: s.thread_id, subject: s.subject, kind: 'Sent' })),
+    ...drafts.map(d => ({
+      key: d.draft_id,
+      thread: d.thread_id,
+      subject: d.subject,
+      kind: 'Draft',
+    })),
+    ...sent.map(s => ({
+      key: s.approval_id,
+      thread: s.thread_id,
+      subject: s.subject,
+      kind: 'Sent',
+    })),
   ];
   const running = run.status === 'running';
   return (
     <Card className={styles.summaryCard} aria-live="polite">
-      <CardHead aside={run.model ? <Pill>{run.model.replace(/^deepseek\//, '')}</Pill> : null}>
+      <CardHead
+        aside={run.model ? <Pill>{run.model.replace(/^deepseek\//, '')}</Pill> : null}
+      >
         <CardTitle>The agent&rsquo;s report</CardTitle>
       </CardHead>
       {run.final ? (
@@ -425,9 +491,14 @@ export function SummaryCard({ run }) {
                   <span className={styles.replySubject}>{reply.subject}</span>
                 </span>
                 {run.judges[reply.key] ? (
-                  <JudgeBadges answers={run.judges[reply.key]} ms={run.judgeMs[reply.key]} />
+                  <JudgeBadges
+                    answers={run.judges[reply.key]}
+                    ms={run.judgeMs[reply.key]}
+                  />
                 ) : (
-                  <span className={styles.muted}>{running || run.status === 'done' ? 'Judging…' : ''}</span>
+                  <span className={styles.muted}>
+                    {running || run.status === 'done' ? 'Judging…' : ''}
+                  </span>
                 )}
               </li>
             ))}
@@ -445,35 +516,66 @@ function threadChips(id, world, calls) {
   const chips = state.labels.map(label => ({
     key: `l-${label}`,
     text: label,
-    tone: label === 'Urgent' || label === 'Suspicious' ? 'bad' : label === 'Needs reply' ? 'warn' : 'soft',
+    tone:
+      label === 'Urgent' || label === 'Suspicious'
+        ? 'bad'
+        : label === 'Needs reply'
+        ? 'warn'
+        : 'soft',
   }));
-  const approval = Object.values(world.approvals).find(a => a.thread_id === id && a.status === 'pending');
-  if (approval) chips.push({ key: 'wait', text: 'Send waiting', tone: 'warn', icon: <FiSend /> });
-  else if (state.draftId) chips.push({ key: 'draft', text: 'Draft', tone: 'accent', icon: <FiEdit3 /> });
-  if (state.sent.length) chips.push({ key: 'sent', text: 'Sent', tone: 'ok', icon: <FiCheck /> });
+  const approval = Object.values(world.approvals).find(
+    a => a.thread_id === id && a.status === 'pending'
+  );
+  if (approval)
+    chips.push({ key: 'wait', text: 'Send waiting', tone: 'warn', icon: <FiSend /> });
+  else if (state.draftId)
+    chips.push({ key: 'draft', text: 'Draft', tone: 'accent', icon: <FiEdit3 /> });
+  if (state.sent.length)
+    chips.push({ key: 'sent', text: 'Sent', tone: 'ok', icon: <FiCheck /> });
   if (state.snoozedUntil) {
     const day = new Date(`${state.snoozedUntil}:00-08:00`).toLocaleDateString('en-US', {
       weekday: 'short',
       timeZone: 'America/Los_Angeles',
     });
-    chips.push({ key: 'snooze', text: `Snoozed to ${day}`, tone: 'soft', icon: <FiClock /> });
+    chips.push({
+      key: 'snooze',
+      text: `Snoozed to ${day}`,
+      tone: 'soft',
+      icon: <FiClock />,
+    });
   }
   if (state.archived) chips.push({ key: 'arch', text: 'Archived', tone: 'soft' });
-  const blocked = [...new Set(calls.filter(c => c.status === 'blocked' && c.args?.thread_id === id).map(c => c.name))];
-  blocked.forEach(name => chips.push({ key: `b-${name}`, text: `${name} blocked`, tone: 'bad', icon: <FiLock /> }));
+  const blocked = [
+    ...new Set(
+      calls
+        .filter(c => c.status === 'blocked' && c.args?.thread_id === id)
+        .map(c => c.name)
+    ),
+  ];
+  blocked.forEach(name =>
+    chips.push({
+      key: `b-${name}`,
+      text: `${name} blocked`,
+      tone: 'bad',
+      icon: <FiLock />,
+    })
+  );
   return chips;
 }
 
 export function InboxCard({ run, activeThread, openThread, onOpen }) {
   const world = run.world;
-  const inbox = THREADS.filter(t => !world.threads[t.id].archived && !world.threads[t.id].snoozedUntil).length;
+  const inbox = THREADS.filter(
+    t => !world.threads[t.id].archived && !world.threads[t.id].snoozedUntil
+  ).length;
   return (
     <Card className={styles.inboxCard}>
       <CardHead aside={<span className={styles.muted}>{inbox} in inbox</span>}>
         <CardTitle>Sample inbox</CardTitle>
       </CardHead>
       <p className={styles.inboxLede}>
-        {USER.name}, {USER.role}, {USER.company}. 20 made-up threads; nothing leaves this page.
+        {USER.name}, {USER.role}, {USER.company}. 20 made-up threads; nothing leaves this
+        page.
       </p>
       <ul className={styles.threads}>
         {THREADS.map(thread => {
@@ -497,7 +599,9 @@ export function InboxCard({ run, activeThread, openThread, onOpen }) {
                 <span className={styles.threadTop}>
                   <span className={styles.threadFrom}>{thread.from.name}</span>
                   <span className={styles.threadId}>{thread.id}</span>
-                  <span className={styles.threadDate}>{listDate(thread.messages[thread.messages.length - 1].date)}</span>
+                  <span className={styles.threadDate}>
+                    {listDate(thread.messages[thread.messages.length - 1].date)}
+                  </span>
                 </span>
                 <span className={styles.threadSubject}>{thread.subject}</span>
                 {chips.length > 0 && (
@@ -562,21 +666,78 @@ export function EvalSummary({ scored, total }) {
   const unapproved = done.reduce((sum, s) => sum + s.unapproved, 0);
   const held = done.reduce((sum, s) => sum + s.held, 0);
   const grounded = done.flatMap(s => s.grounded);
-  const avg = grounded.length ? grounded.reduce((a, b) => a + b, 0) / grounded.length : null;
+  const avg = grounded.length
+    ? grounded.reduce((a, b) => a + b, 0) / grounded.length
+    : null;
   return (
-    <StatGrid columns={4} className={styles.evalStats}>
-      <StatTile tone="accent" label="Tasks passed" value={done.length ? passed : '–'} unit={`/ ${total}`} note={done.length ? `${checks} of ${checksTotal} checks` : 'not run yet'}>
-        <Meter value={done.length ? passed / total : 0} segments={total} size="s" label="Tasks passed" />
+    <StatGrid columns={2} className={styles.evalStats}>
+      <StatTile
+        tone="accent"
+        label="Tasks passed"
+        value={done.length ? passed : '–'}
+        unit={`/ ${total}`}
+        note={done.length ? `${checks} of ${checksTotal} checks` : 'not run yet'}
+      >
+        <Meter
+          value={done.length ? passed / total : 0}
+          segments={total}
+          size="s"
+          label="Tasks passed"
+        />
       </StatTile>
-      <StatTile label="Out-of-scope calls that ran" value={done.length ? outOfScope : '–'} note={`${plural(refused, 'call')} refused by the gate`} />
-      <StatTile label="Sent without approval" value={done.length ? unapproved : '–'} note={`${plural(held, 'send')} held for approval`} />
+      <StatTile
+        label="Out-of-scope calls that ran"
+        value={done.length ? outOfScope : '–'}
+        note={`${plural(refused, 'call')} refused by the gate`}
+      />
+      <StatTile
+        label="Sent without approval"
+        value={done.length ? unapproved : '–'}
+        note={`${plural(held, 'send')} held for approval`}
+      />
       <StatTile
         label="Judge: replies grounded in the thread"
         value={avg == null ? '–' : Math.round(avg * 100)}
         unit={avg == null ? null : '% avg'}
-        note={grounded.length ? `lowest ${pctText(Math.min(...grounded))}, pass at ${pctText(JUDGE_PASS)}` : 'no replies judged yet'}
+        note={
+          grounded.length
+            ? `lowest ${pctText(Math.min(...grounded))}, pass at ${pctText(JUDGE_PASS)}`
+            : 'no replies judged yet'
+        }
       />
     </StatGrid>
+  );
+}
+
+/** What the run caught: every failed check, by task. */
+export function EvalFailures({ tasks, entries }) {
+  const failed = tasks
+    .map((task, index) => ({
+      task,
+      index,
+      rows: entries[task.id]?.score?.rows.filter(row => row.pass === false) || [],
+    }))
+    .filter(item => item.rows.length);
+  if (!failed.length) return null;
+  return (
+    <div className={styles.evalCaught}>
+      <MiniLabel>What it caught</MiniLabel>
+      <ul>
+        {failed.map(({ task, index, rows }) => (
+          <li key={task.id}>
+            <StatusIcon variant="solid" status="fail" />
+            <span>
+              <strong>
+                {index + 1}. {task.title}:
+              </strong>{' '}
+              {rows
+                .map(row => `${row.label.replace(/^Judge: /, 'judge, ')} (${row.actual})`)
+                .join('; ')}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
@@ -587,7 +748,12 @@ export function EvalRow({ index, task, entry, open, onToggle }) {
   const judged = entry?.run?.judges || {};
   return (
     <li className={styles.evalItem} data-pass={score ? String(score.pass) : undefined}>
-      <button type="button" className={styles.evalHead} aria-expanded={open} onClick={onToggle}>
+      <button
+        type="button"
+        className={styles.evalHead}
+        aria-expanded={open}
+        onClick={onToggle}
+      >
         <IndexBadge>{index + 1}</IndexBadge>
         <span className={styles.evalTitle}>
           <strong>{task.title}</strong>
@@ -620,7 +786,11 @@ export function EvalRow({ index, task, entry, open, onToggle }) {
                 <div className={styles.evalJudges}>
                   {Object.entries(judged).map(([key, answers]) => (
                     <div key={key} className={styles.evalJudge}>
-                      <MiniLabel>{key === 'final' ? "Judge on the agent's report" : `Judge on draft ${key}`}</MiniLabel>
+                      <MiniLabel>
+                        {key === 'final'
+                          ? "Judge on the agent's report"
+                          : `Judge on draft ${key}`}
+                      </MiniLabel>
                       <JudgeBadges answers={answers} ms={entry.run.judgeMs[key]} />
                     </div>
                   ))}
@@ -628,10 +798,17 @@ export function EvalRow({ index, task, entry, open, onToggle }) {
               )}
               <details className={styles.evalTrace}>
                 <summary>
-                  Trace: {plural(entry.run.calls.length, 'tool call')}, {plural(entry.run.turns.length, 'turn')}, and the report
+                  Trace: {plural(entry.run.calls.length, 'tool call')},{' '}
+                  {plural(entry.run.turns.length, 'turn')}, and the report
                 </summary>
-                <McpCallLog className={styles.evalLog} calls={logCalls(entry.run)} follow={false} />
-                {entry.run.final && <MarkdownLite className={styles.final} text={entry.run.final} />}
+                <McpCallLog
+                  className={styles.evalLog}
+                  calls={logCalls(entry.run)}
+                  follow={false}
+                />
+                {entry.run.final && (
+                  <MarkdownLite className={styles.final} text={entry.run.final} />
+                )}
               </details>
             </>
           ) : (
@@ -650,14 +827,15 @@ export function EvalRunLine({ evals, meta }) {
     const running = evals.status === 'running';
     return (
       <RunStatus state={running ? 'live' : 'ended'}>
-        {running ? 'Live eval run in progress' : 'Live eval run'} · DeepSeek V3.2 agent, Jev judge
+        {running ? 'Live eval run in progress' : 'Live eval run'} · DeepSeek V3.2 agent,
+        Jev judge
       </RunStatus>
     );
   }
   return (
     <RunStatus state="example">
-      Recorded eval run{meta?.recorded ? ` · ${meta.recorded}` : ''} · live calls on the deployed preview, replayed here
+      Recorded eval run{meta?.recorded ? ` · ${meta.recorded}` : ''} · live calls on the
+      deployed preview, replayed here
     </RunStatus>
   );
 }
-

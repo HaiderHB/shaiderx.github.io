@@ -24,9 +24,15 @@ const runKey = ({ task, grant }) => `superhuman:run:${hash(VERSION, MODEL, grant
 export default demoApi(
   async (req, res) => {
     const run = readRun(req);
-    if (!run.task) return res.status(400).json({ error: 'Type a task first.', code: 'input' });
-    if (!run.grant) return res.status(400).json({ error: 'Pick a permission level.', code: 'input' });
-    return streamAgent(res, runKey(run), { task: run.task, grant: run.grant, judgeMode: 'drafts' });
+    if (!run.task)
+      return res.status(400).json({ error: 'Type a task first.', code: 'input' });
+    if (!run.grant)
+      return res.status(400).json({ error: 'Pick a permission level.', code: 'input' });
+    return streamAgent(res, runKey(run), {
+      task: run.task,
+      grant: run.grant,
+      judgeMode: 'drafts',
+    });
   },
   {
     cost: async req => {

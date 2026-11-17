@@ -341,7 +341,8 @@
 }
 
 .callsCard {
-  --uiCallLogHeight: 640px;
+  /* the whole log fits the window on a laptop screen */
+  --uiCallLogHeight: clamp(380px, calc(100vh - 290px), 640px);
 }
 
 .callTotals {
@@ -619,8 +620,54 @@
   flex: none;
 }
 
-.evalStats {
+.evalLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+  gap: var(--spaceL);
+  align-items: start;
   margin-top: var(--spaceM);
+}
+
+.evalAside {
+  position: sticky;
+  top: 96px;
+  order: 2;
+  min-width: 0;
+}
+
+.evalStats {
+  margin: 0;
+}
+
+.evalCaught {
+  margin-top: var(--spaceM);
+  padding: var(--uiGapXL) var(--uiGap2XL);
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusXL);
+  background: rgb(var(--uiRgbSurface));
+
+  & ul {
+    display: grid;
+    gap: var(--uiGapM);
+    margin: var(--uiGapM) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  & li {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: var(--uiGapM);
+    align-items: start;
+    font-size: var(--uiFontSmall);
+    line-height: 1.45;
+    color: var(--uiMuted);
+  }
+
+  & strong {
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText) / 0.88);
+  }
 }
 
 .evalLine {
@@ -634,7 +681,7 @@
 .evalList {
   display: grid;
   gap: var(--uiGapM);
-  margin: var(--spaceM) 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -809,6 +856,17 @@
     & .thread + .thread {
       margin-top: 0;
     }
+  }
+}
+
+@media (max-width: 1040px) {
+  .evalLayout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .evalAside {
+    position: static;
+    order: 0;
   }
 }
 

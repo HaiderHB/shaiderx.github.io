@@ -16,7 +16,12 @@ export const SCOPES = {
 
 export const GRANTS = {
   read: { id: 'read', label: 'Read only', short: 'Read only', scopes: ['read'] },
-  draft: { id: 'draft', label: 'Read + draft', short: 'Read + draft', scopes: ['read', 'draft'] },
+  draft: {
+    id: 'draft',
+    label: 'Read + draft',
+    short: 'Read + draft',
+    scopes: ['read', 'draft'],
+  },
   full: {
     id: 'full',
     label: 'Full, send asks me',
@@ -43,7 +48,11 @@ export const TOOLS = [
     inputSchema: {
       type: 'object',
       properties: {
-        label: { type: 'string', enum: ['Inbox', ...LABELS], description: 'Defaults to Inbox.' },
+        label: {
+          type: 'string',
+          enum: ['Inbox', ...LABELS],
+          description: 'Defaults to Inbox.',
+        },
         unread_only: { type: 'boolean' },
         limit: { type: 'integer', minimum: 1, maximum: 25 },
       },
@@ -88,7 +97,10 @@ export const TOOLS = [
       type: 'object',
       properties: {
         thread_id: threadId,
-        body: { type: 'string', description: 'Plain text, signed as Alex. Max 1,200 characters.' },
+        body: {
+          type: 'string',
+          description: 'Plain text, signed as Alex. Max 1,200 characters.',
+        },
       },
       required: ['thread_id', 'body'],
     },
@@ -140,7 +152,9 @@ export const TOOLS = [
       'Send a draft made with draft_reply. Every send waits for the user to approve it in their client.',
     inputSchema: {
       type: 'object',
-      properties: { draft_id: { type: 'string', description: 'From draft_reply, e.g. "d1".' } },
+      properties: {
+        draft_id: { type: 'string', description: 'From draft_reply, e.g. "d1".' },
+      },
       required: ['draft_id'],
     },
     annotations: { readOnlyHint: false, destructiveHint: true, openWorldHint: true },
@@ -155,7 +169,9 @@ export const MODEL_TOOLS = TOOLS.map(tool => ({
   type: 'function',
   function: {
     name: tool.name,
-    description: `${tool.description} (scope: ${tool.scope}${tool.approval ? ', needs approval' : ''})`,
+    description: `${tool.description} (scope: ${tool.scope}${
+      tool.approval ? ', needs approval' : ''
+    })`,
     parameters: tool.inputSchema,
   },
 }));
@@ -168,12 +184,13 @@ export function gate(name, grantId) {
   if (!grant.scopes.includes(tool.scope)) {
     return {
       status: 'blocked',
-      reason: `Permission denied: ${name} needs the "${tool.scope}" scope; this session has ${grant.scopes
-        .map(scope => `"${scope}"`)
-        .join(', ')}.`,
+      reason: `Permission denied: ${name} needs the "${
+        tool.scope
+      }" scope; this session has ${grant.scopes.map(scope => `"${scope}"`).join(', ')}.`,
     };
   }
-  if (tool.approval) return { status: 'awaiting', reason: 'Waits for the user to approve.' };
+  if (tool.approval)
+    return { status: 'awaiting', reason: 'Waits for the user to approve.' };
   return { status: 'allowed' };
 }
 
@@ -182,7 +199,13 @@ export function gate(name, grantId) {
 export function initialWorld() {
   const threads = {};
   for (const id of THREAD_IDS) {
-    threads[id] = { labels: [], archived: false, snoozedUntil: null, draftId: null, sent: [] };
+    threads[id] = {
+      labels: [],
+      archived: false,
+      snoozedUntil: null,
+      draftId: null,
+      sent: [],
+    };
   }
   return { threads, drafts: {}, approvals: {}, sent: [], nextDraft: 1, nextApproval: 1 };
 }
@@ -198,7 +221,9 @@ class ToolError extends Error {}
 function needThread(world, id) {
   const key = clean(id, 8);
   if (!threadById(key) || !world.threads[key]) {
-    throw new ToolError(`No thread "${key}". Use list_threads or search to find thread ids.`);
+    throw new ToolError(
+      `No thread "${key}". Use list_threads or search to find thread ids.`
+    );
   }
   return key;
 }
@@ -229,11 +254,16 @@ function summary(world, thread) {
 
 const bySender = (thread, name) => {
   const who = `${thread.from.name} ${thread.from.email}`.toLowerCase();
-  return thread.messages.some(m => m.from.toLowerCase().includes(name)) || who.includes(name);
+  return (
+    thread.messages.some(m => m.from.toLowerCase().includes(name)) || who.includes(name)
+  );
 };
 
 function matchWindow(thread, words) {
-  const body = thread.messages.map(m => m.body).join(' \n ').replace(/\s+/g, ' ');
+  const body = thread.messages
+    .map(m => m.body)
+    .join(' \n ')
+    .replace(/\s+/g, ' ');
   const lower = body.toLowerCase();
   const at = words.map(w => lower.indexOf(w)).find(i => i >= 0);
   if (at == null || at < 0) return snippetOf(lastMessage(thread).body);
@@ -267,7 +297,9 @@ const HANDLERS = {
   list_threads(world, args) {
     const label = clean(args.label, 20) || 'Inbox';
     if (label !== 'Inbox' && !LABELS.includes(label)) {
-      throw new ToolError(`Unknown label "${label}". Labels: Inbox, ${LABELS.join(', ')}.`);
+      throw new ToolError(
+        `Unknown label "${label}". Labels: Inbox, ${LABELS.join(', ')}.`
+      );
     }
     const limit = Math.min(25, Math.max(1, Number(args.limit) || 20));
     const all = Object.keys(world.threads)
@@ -296,7 +328,12 @@ const HANDLERS = {
         id,
         subject: thread.subject,
         labels: state.labels,
-        messages: thread.messages.map(m => ({ from: m.from, to: m.to, date: m.date, body: m.body })),
+        messages: thread.messages.map(m => ({
+          from: m.from,
+          to: m.to,
+          date: m.date,
+          body: m.body,
+        })),
         ...(state.draftId && { draft: world.drafts[state.draftId] }),
         ...(state.sent.length && { sent_replies: state.sent }),
       },
@@ -308,7 +345,10 @@ const HANDLERS = {
     if (!query) throw new ToolError('Give a query.');
     const limit = Math.min(10, Math.max(1, Number(args.limit) || 8));
     const tokens = query.split(/\s+/).filter(Boolean);
-    const from = tokens.filter(t => t.startsWith('from:')).map(t => t.slice(5)).filter(Boolean);
+    const from = tokens
+      .filter(t => t.startsWith('from:'))
+      .map(t => t.slice(5))
+      .filter(Boolean);
     const words = tokens.filter(t => !t.startsWith('from:'));
     const hits = Object.keys(world.threads)
       .map(id => threadById(id))
@@ -347,7 +387,9 @@ const HANDLERS = {
       .slice()
       .reverse()
       .find(m => !m.from.includes(USER.email))?.from;
-    const subject = thread.subject.startsWith('Re:') ? thread.subject : `Re: ${thread.subject}`;
+    const subject = thread.subject.startsWith('Re:')
+      ? thread.subject
+      : `Re: ${thread.subject}`;
     const draft = { draft_id: draftId, thread_id: id, to, subject, body };
     let next = withThread(world, id, { draftId });
     next = {
@@ -365,7 +407,9 @@ const HANDLERS = {
       throw new ToolError(`Unknown label "${label}". Labels: ${LABELS.join(', ')}.`);
     }
     const labels = world.threads[id].labels;
-    const next = labels.includes(label) ? world : withThread(world, id, { labels: [...labels, label] });
+    const next = labels.includes(label)
+      ? world
+      : withThread(world, id, { labels: [...labels, label] });
     return { world: next, result: { thread_id: id, labels: next.threads[id].labels } };
   },
 
@@ -385,7 +429,8 @@ const HANDLERS = {
   send(world, args) {
     const draftId = clean(args.draft_id, 8);
     const draft = world.drafts[draftId];
-    if (!draft) throw new ToolError(`No draft "${draftId}". Make one with draft_reply first.`);
+    if (!draft)
+      throw new ToolError(`No draft "${draftId}". Make one with draft_reply first.`);
     const already = Object.values(world.approvals).find(
       item => item.draft_id === draftId && item.status === 'pending'
     );
