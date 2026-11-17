@@ -152,8 +152,14 @@ the judge: the judge needs the request and every thread the agent saw (a reply t
 the ETA from Lena's note); the model reads one thread per turn unless told its turn budget;
 and it guessed answers to decisions until told to draft a holding reply.
 
-Checked at 1360 px and 390 px (no horizontal scroll) in preview mode and with the key on the
-preview: a live run streams calls, holds the send and scores the reply.
+Checked with Playwright on the deployed preview at 1360 px and 390 px: preview mode (no key)
+replays the triage run and scores the recorded eval run; with the key, a fresh task ("Find
+Grace's email and draft a reply saying Tuesday morning works.", read + draft) ran live in 26 s:
+search, read, draft allowed; apply_label and send blocked by the gate; judge 84% grounded. No
+console errors, no horizontal scroll at either width.
+
+Launch film: `video/films/superhuman` (beat table in its `SPEC.md`), web copy at
+`public/demo-videos/superhuman.mp4`, captured from this page in preview mode.
 
 ## Take-down
 
