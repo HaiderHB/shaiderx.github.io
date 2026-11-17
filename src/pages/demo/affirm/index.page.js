@@ -74,7 +74,7 @@ const QUEUE_BARS = [
   { value: 'hardship', label: 'Hardship' },
 ];
 const FLOW = [
-  { label: 'Look it up', what: 'DeepSeek calls tools over her loans, up to 4 rounds', cost: '2-4 LLM calls' },
+  { label: 'Look it up', what: 'DeepSeek calls tools over her loans, up to 4 rounds, then answers', cost: '2-5 LLM calls' },
   { label: 'Hold the policy', what: 'Eligibility, masking, no promises or advice: code', cost: 'free' },
   { label: 'Decide', what: 'Jev: hand off? which queue? Rules can only add a person', cost: '1 Jev call' },
   { label: 'Hand off', what: 'A note for the human agent: asked, checked, left, next', cost: '1 LLM call' },
@@ -774,6 +774,7 @@ function RunCard({ run, busy, onReplay }) {
               detail={answer ? 'no more tools needed' : `calls ${step.calls.map(call => call.name).join(', ')}`}
               ms={step.ms}
             >
+              {step.note && <p className={styles.modelNote}>“{step.note}”</p>}
               {own.length > 0 && (
                 <ToolCallList label={`Tool calls in round ${step.round}`}>
                   {own.map(call => (

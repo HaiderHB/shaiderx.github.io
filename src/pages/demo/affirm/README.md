@@ -30,7 +30,7 @@ Toronto). No Affirm logo, no claim to be Affirm's product, policy or data.
 
 | Step | What | Cost |
 | --- | --- | --- |
-| Tool loop | DeepSeek V3.2 (via fal, OpenAI-style function calling) picks tools over the sample data, up to 4 rounds of up to 4 calls, then answers in 2-4 sentences | 2-4 × `COST.llm` |
+| Tool loop | DeepSeek V3.2 (via fal, OpenAI-style function calling) picks tools over the sample data, up to 4 rounds of up to 4 calls, then answers in 2-4 sentences | 2-5 × `COST.llm` |
 | Tools | `get_loans`, `get_payment_schedule`, `check_policy`, `propose_due_date_change`, `open_payment_dispute`, `hardship_options`: plain functions, scoped to the signed-in customer, masked output | free |
 | Guardrails | Code checks the reply: scope, date change only after the eligibility check (and never claimed as done before she confirms), no promises (refund, waiver, approval), no credit / APR / financial advice, no number longer than the last 4, a person offered for disputes and hardship. It fixes what it can (removes the sentence, adds the policy line) and shows what it removed | free |
 | Decide | One `askJev` call with two typed choice questions, `handoff` and `queue` | `COST.decision` |
@@ -44,8 +44,9 @@ second posted charge for the same payment, amount and day; review within 5 busin
 promise.
 
 Route: `POST /api/demo/affirm/turn/` streams NDJSON events (`meta`, `start`, `llm`, `call`, `reply`,
-`decide`, `summary`, `done`). `demoApi` charges 5 units a turn (`COST.llm × 4 + COST.decision`;
-typical turns use 3 LLM calls and 1 Jev call, hand-offs one more LLM call), clamps the message to 300
+`decide`, `summary`, `done`). `demoApi` charges 5 units a turn (`COST.llm × 4 + COST.decision`; the
+recorded turns used 2-5 LLM calls and 1 Jev call, hand-offs one more LLM call; DeepSeek tokens cost a
+fraction of a cent, so 5 units is a ceiling, not the bill), clamps the message to 300
 characters and the history to 6 turns of 500, accepts only known monthly loans and days 1-28 as
 confirmed changes, caps tokens (900 per tool round, which leaves room to think before a call; 500 for
 the note), stops the loop after 40 s, and caches every Jev answer and every full turn for 6 hours, so

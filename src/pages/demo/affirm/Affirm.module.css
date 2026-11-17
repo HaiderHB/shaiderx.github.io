@@ -492,6 +492,14 @@
   background: rgb(var(--uiRgbInset));
 }
 
+.modelNote {
+  margin: var(--uiGapXS) 0 0;
+  font-size: var(--uiFontCaption);
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--uiMuted);
+}
+
 .stepNote {
   margin: var(--uiGapS) 0 0;
   font-size: var(--uiFontCaption);
