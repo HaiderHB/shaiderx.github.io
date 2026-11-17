@@ -1,0 +1,75 @@
+<template>
+  <!-- Reacher launch film · every line of text except the two statement scenes and the end card.
+       Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
+       >= max(2.5, 0.5 + 0.6 x words) s; each cue starts on the cut of its shot. Labels sit under the headline. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.2" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="15.6" data-duration="49.5" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="65.1" data-track-index="2"
+      data-kit-chapters="The problem:0|The shortlist:15.6|The invite:36.2|The reply:43" data-layout-ignore></div>
+
+    <!-- HOOK -->
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.2" data-track-index="1">
+      <div class="kit-cap-head">40 creators screened in *11 seconds*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run, recorded live</span></div>
+    </div>
+
+    <!-- HERO: one task, four shots -->
+    <div id="cap-find" class="clip kit-cap kit-cap3" data-start="15.6" data-duration="4.7" data-track-index="1">
+      <div class="kit-cap-head">Pick a product. Press *Find creators*.</div>
+    </div>
+    <div id="cap-filter" class="clip kit-cap kit-cap3" data-start="20.3" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">It filters 40 sample creators down to *12*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run, recorded live</span></div>
+    </div>
+    <div id="cap-score" class="clip kit-cap kit-cap3" data-start="25.6" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">It scores fit and the *chance they'll accept*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run, recorded live</span></div>
+    </div>
+    <div id="cap-shortlist" class="clip kit-cap kit-cap3" data-start="30.9" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">A shortlist of *8*, each with a reason</div>
+    </div>
+
+    <!-- FEATURE 2: the invite -->
+    <div id="cap-invite" class="clip kit-cap kit-cap3" data-start="36.2" data-duration="6.8" data-track-index="1">
+      <div class="kit-cap-head">A *personal invite*, drafted from the creator's content</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run, recorded live</span></div>
+    </div>
+
+    <!-- FEATURE 3: the reply -->
+    <div id="cap-ask" class="clip kit-cap kit-cap3" data-start="43" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">The creator *asks for more*: 20%, 2 samples</div>
+    </div>
+    <div id="cap-counter" class="clip kit-cap kit-cap3" data-start="48.3" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">The agent drafts a *counter-offer*: 18%, one sample</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run, recorded live</span></div>
+    </div>
+    <div id="cap-cap" class="clip kit-cap kit-cap3" data-start="53.6" data-duration="4.7" data-track-index="1">
+      <div class="kit-cap-head">It never goes above the *brand's maximum*</div>
+    </div>
+
+    <!-- PROOF: real numbers from this run, one line for technical viewers -->
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="58.3" data-duration="6.8" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">40</span><span class="kit-stat-l">sample creators</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">8</span><span class="kit-stat-l">shortlisted</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">10.7 s</span><span class="kit-stat-l">live run</span></span>
+      </div>
+      <div class="kit-hood">Under the hood: a decision model scores · an LLM writes · code enforces the commission cap</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

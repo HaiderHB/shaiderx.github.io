@@ -1,0 +1,35 @@
+/* Avatar: initials on a raised circle; the accent tone marks the selected person. */
+.avatar {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: var(--uiFontCaption);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--rgbText) / 0.82);
+  background: rgb(var(--uiRgbRaised));
+  box-shadow: inset 0 0 0 1px var(--uiLine);
+  user-select: none;
+
+  &[data-size='s'] {
+    width: 28px;
+    height: 28px;
+    font-size: var(--uiFontMicro);
+  }
+
+  &[data-size='l'] {
+    width: 52px;
+    height: 52px;
+    font-size: var(--fontSizeBodyS);
+  }
+
+  &[data-tone='accent'] {
+    color: rgb(var(--uiRgbOnAccent));
+    background: rgb(var(--uiRgbAccentDeep));
+    box-shadow: none;
+  }
+}

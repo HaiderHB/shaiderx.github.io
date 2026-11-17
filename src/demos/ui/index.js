@@ -2,6 +2,7 @@
 // Gallery (dev only): /demo/ui/
 import tokenStyles from './tokens.module.css';
 
+export { Avatar, initials } from './Avatar';
 export {
   BadgeMeta,
   BadgeRow,
@@ -26,6 +27,7 @@ export { CodeView, CopyButton, InlineCode, RichText } from './CodeView';
 export { EvalTable } from './EvalTable';
 export { Input, Select, TextArea } from './Field';
 export { formatMs, formatTime, pct, percent, riskTone, seconds } from './format';
+export { Funnel } from './Funnel';
 export { highlightLines } from './highlight';
 export { JsonDetails, JsonView, tokenizeJson } from './JsonView';
 export { MarkdownLite, splitFences } from './MarkdownLite';
