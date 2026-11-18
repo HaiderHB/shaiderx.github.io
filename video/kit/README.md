@@ -242,3 +242,11 @@ they are re-cut on 1.1.
 - A ring's default pad (6 px) pokes past the safe area when a shot uses `pad: 0, margin: 4`: set `data-kit-pad` ≤ the shot margin.
 - Components inside a scrolling list report unclipped rects: track them with `{sel, clip: true}`.
 - Voice: place sound with `place-audio` (it applies the measured screencast lag, ~0.04 s), never by hand. Fish's Selene voice runs ~2.5 words/s at 1.15x, so a simulated answer of ~17 words is ~6 s.
+
+## Kit 2.1 pacing (2026-11-18)
+
+- Text screens (`what`, `problem`) run 3 s each. `Kit.launch.RULES.statement` = `{words: 10, maxWords: 12, sec: 3, minSec: 2.8, maxSec: 3.5}`.
+- The result rule: every hero / feature `<video>` shot carries `data-kit-lands="<s from the shot's start when its result is fully on screen>"`
+  and `data-kit-read="<words to read in the result>"`. `Kit.launch.landHold(words)` = `max(2.5, 0.5 + 0.3 x words)`, 6 s at most:
+  the result stays that long before the cut. QA fails a missing attribute or a short hold and warns on a wait over half the shot.
+  Cut the wait, keep the result.
