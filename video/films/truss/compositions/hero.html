@@ -1,10 +1,13 @@
 <template>
-  <!-- Truss launch film (kit 2, launch format). Clip `flow`, recorded 2026-11-17 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its example (model outputs recorded from live runs on the Vercel preview on 2026-11-17; checks, rules floor and payment endpoint run in the browser). Footage plays at 1x; every hold is real footage.
-       HERO 17.1-38.2 s, one bill in four shots. Scene time = film time - 17.1. The example is replayed four times
-       (the page's "New session" empties its in-browser ledger first), each time with a different card pinned:
-       0-5.2 Read and check is pressed beside the Northline invoice (click at 1.62); the scan sweeps down the page |
-       5.2-10.5 the typed bill: the fields land at 6.55 | 10.5-15.8 the checks: all eight listed, they tick from 11.8, 8/8 at 13.1 |
-       15.8-21.1 the decision: probabilities, rules floor and Approve land at 17.8, the note types. -->
+  <!-- Truss launch film (kit 2.1, launch format). Clip `flow`, recorded 2026-11-18 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its example (model outputs recorded from live runs on the Vercel preview on 2026-11-17; checks, rules floor and payment endpoint run in the browser). Footage plays at 1x; every hold is real footage.
+       HERO 10.8-36.4 s, one bill in four shots. Scene time = film time - 10.8. The example is replayed four times
+       (the page's "New session" empties its in-browser ledger first), each time with a different card pinned.
+       The result rule (kit 2.1): each shot starts about a second before its result is fully on screen and then
+       keeps it up max(2.5, 0.5 + 0.3 x words) s, 6 s at most (data-kit-lands / data-kit-read on the video).
+       0-4.7 the Northline invoice (there from frame 0); Read and check is pressed at 2.75; the scan sweeps; cut before the bill lands |
+       4.7-11.6 the typed bill: 0.6 s of loading, the fields land, the lines finish fading in at 5.6; held 6.0 s |
+       11.6-18.6 the checks: three are ticked at the cut, the rest tick, "8/8 passed" at 12.6; held 6.0 s |
+       18.6-25.6 the decision: 0.4 s pending, the bars, the rules floor and Approve land, the note is in at 19.6; held 6.0 s. -->
   <style>
     #root {
       position: absolute;
@@ -16,25 +19,25 @@
   <div id="root" data-composition-id="hero" data-width="1920" data-height="1080">
     <div id="hero-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="hero-cam" class="kit-cam">
-        <!-- H1: still, then Read and check is pressed; the scan sweeps the invoice -->
-        <video id="hero-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="5.2" data-media-start="25.1" data-track-index="0" muted playsinline></video>
-        <!-- H2: the typed bill pinned; the fields land -->
-        <video id="hero-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="5.2" data-duration="5.3" data-media-start="36.6" data-track-index="0" muted playsinline></video>
-        <!-- H3: the checks pinned; eight checks tick -->
-        <video id="hero-v3" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="10.5" data-duration="5.3" data-media-start="46.3" data-track-index="0" muted playsinline></video>
-        <!-- H4: the decision pinned; it lands, the note types -->
-        <video id="hero-v4" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="15.8" data-duration="5.3" data-media-start="56.35" data-track-index="0" muted playsinline></video>
-        <div id="hero-spot-bill" class="clip kit-spot" data-start="5.2" data-duration="5.3" data-kit-window="6.9,10.4" data-kit-focus="[&quot;billKv&quot;,&quot;lines&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="hero-spot-checks" class="clip kit-spot" data-start="10.5" data-duration="5.3" data-kit-window="12.5,15.7" data-kit-focus="checks" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="hero-spot-decision" class="clip kit-spot" data-start="15.8" data-duration="5.3" data-kit-window="18.5,21" data-kit-focus="decision" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <!-- H1: the invoice image is the result and is on screen from the first frame; the click starts the read -->
+        <video id="hero-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="4.7" data-media-start="24" data-kit-lands="0" data-kit-read="13" data-track-index="0" muted playsinline></video>
+        <!-- H2: the typed bill (fields, five lines, totals, remit-to): fully on screen at 0.9 s, held 6.0 s -->
+        <video id="hero-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="4.7" data-duration="6.9" data-media-start="37.6" data-kit-lands="0.9" data-kit-read="102" data-track-index="0" muted playsinline></video>
+        <!-- H3: eight checks: "8/8 passed" at 1.0 s, held 6.0 s -->
+        <video id="hero-v3" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="11.6" data-duration="7" data-media-start="52.05" data-kit-lands="1" data-kit-read="135" data-track-index="0" muted playsinline></video>
+        <!-- H4: the decision: bars at 0.4 s, the note in at 1.0 s, held 6.0 s -->
+        <video id="hero-v4" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="18.6" data-duration="7" data-media-start="66.85" data-kit-lands="1" data-kit-read="51" data-track-index="0" muted playsinline></video>
+        <div id="hero-spot-bill" class="clip kit-spot" data-start="4.7" data-duration="6.9" data-kit-window="5.4,11.5" data-kit-focus="[&quot;billKv&quot;,&quot;lines&quot;,&quot;billFoot&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-checks" class="clip kit-spot" data-start="11.6" data-duration="7" data-kit-window="11.9,18.5" data-kit-focus="checks" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-decision" class="clip kit-spot" data-start="18.6" data-duration="7" data-kit-window="19.8,25.5" data-kit-focus="decision" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
       </div>
     </div>
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": "runBox", "maxZoom": 1.15, "align": "top-left", "cut": true, "window": [0, 5.2], "label": "H1 the Read button and the invoice under it" },
-        { "t": 5.2, "focus": ["billKv", "lines"], "maxZoom": 1.7, "cut": true, "window": [6.9, 10.4], "label": "H2 the typed bill: fields and lines" },
-        { "t": 10.5, "focus": "checks", "maxZoom": 1.6, "pad": 8, "cut": true, "window": [12.5, 15.7], "label": "H3 eight checks in code" },
-        { "t": 15.8, "focus": "decision", "maxZoom": 1.6, "cut": true, "window": [18.5, 21], "label": "H4 the decision" }
+        { "t": 0, "focus": "runBox", "maxZoom": 1.15, "align": "top-left", "cut": true, "window": [0, 4.7], "label": "H1 the Read button and the invoice under it" },
+        { "t": 4.7, "focus": ["billKv", "lines", "billFoot"], "maxZoom": 1.7, "cut": true, "window": [5.4, 11.5], "label": "H2 the typed bill: fields, lines, totals, remit-to" },
+        { "t": 11.6, "focus": "checks", "maxZoom": 1.6, "pad": 8, "cut": true, "window": [11.9, 18.5], "label": "H3 eight checks in code" },
+        { "t": 18.6, "focus": "decision", "maxZoom": 1.6, "cut": true, "window": [19.8, 25.5], "label": "H4 the decision" }
       ]
     </script>
   </div>

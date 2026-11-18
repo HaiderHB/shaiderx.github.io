@@ -172,7 +172,7 @@ Never edit the outputs by hand.
 
 ## Launch film
 
-`video/films/truss` (kit 2, launch format, 70.6 s): SPEC.md (beat table), REVIEW.md (QA and honesty notes).
+`video/films/truss` (kit 2.1, launch format, 68.7 s): SPEC.md (beat table), REVIEW.md (QA and honesty notes).
 Web encode at `public/demo-videos/truss.mp4`.
 
 ## Take-down

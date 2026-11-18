@@ -1,8 +1,8 @@
 <template>
-  <!-- Truss launch film (kit 2, launch format). Clip `flow`, recorded 2026-11-17 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its example (model outputs recorded from live runs on the Vercel preview on 2026-11-17; checks, rules floor and payment endpoint run in the browser). Footage plays at 1x; every hold is real footage.
-       FEATURE 3 49.1-59.1 s: caught before money moves. Scene time = film time - 49.1.
-       0-5 Crestline with the decision pinned: Hold 100%, the rules floor (bank details differ from the vendor file), Hold for review, the note (call the number on file) land at 1.53 |
-       5-10 Keystone's payment card: "Stopped before payment · Already paid"; Try to pay it anyway is pressed (6.62): refused with 403. -->
+  <!-- Truss launch film (kit 2.1, launch format). Clip `flow`, recorded 2026-11-18 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its example (model outputs recorded from live runs on the Vercel preview on 2026-11-17; checks, rules floor and payment endpoint run in the browser). Footage plays at 1x; every hold is real footage.
+       FEATURE 3 50.2-57.2 s: caught before money moves. Scene time = film time - 50.2. One shot:
+       Keystone's payment card. "Stopped before payment · Already paid: INV-KD-0412 paid Oct 30, 2026 · PMT-88213" is on screen from the first frame; Try to pay it anyway is pressed at 1.51; "Refused with 403: This bill is rejected. Only approved bills can be paid." lands at 1.85 and is held 5.15 s (13 words: 4.4 s needed).
+       The kit 2.0 cut also had a shot of the changed bank details being held (Crestline); it was dropped to keep every result up for its full time inside 72 s. Its footage is in the take (media 108.3-121.0, decision fully in at 113.1) if it is wanted back. -->
   <style>
     #root {
       position: absolute;
@@ -14,18 +14,15 @@
   <div id="root" data-composition-id="caught" data-width="1920" data-height="1080">
     <div id="caught-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="caught-cam" class="kit-cam">
-        <video id="caught-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="5" data-media-start="87.5" data-track-index="0" muted playsinline></video>
-        <video id="caught-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="5" data-duration="5" data-media-start="99" data-track-index="0" muted playsinline></video>
-        <div id="caught-spot-hold" class="clip kit-spot" data-start="0" data-duration="5" data-kit-window="2.3,4.9" data-kit-focus="decision" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <!-- the payment card as it is, then with the refusal under the button (in the DOM at scene 6.83) -->
-        <div id="caught-spot-stop" class="clip kit-spot" data-start="5" data-duration="1.82" data-kit-window="5,6.5" data-kit-focus="pay" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="caught-spot-stop2" class="clip kit-spot" data-start="6.82" data-duration="3.18" data-kit-window="7,9.9" data-kit-focus="pay" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <video id="caught-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="7" data-media-start="127.45" data-kit-lands="1.85" data-kit-read="13" data-track-index="0" muted playsinline></video>
+        <!-- the payment card as it is, then with the refusal under the button (on screen from scene 1.8) -->
+        <div id="caught-spot-stop" class="clip kit-spot" data-start="0" data-duration="1.79" data-kit-window="0,1.5" data-kit-focus="pay" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="caught-spot-stop2" class="clip kit-spot" data-start="1.79" data-duration="5.21" data-kit-window="2,6.9" data-kit-focus="pay" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
       </div>
     </div>
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": "decision", "maxZoom": 1.6, "cut": true, "window": [2.3, 4.9], "label": "F3a changed bank details: held" },
-        { "t": 5, "focus": "pay", "maxZoom": 1.6, "cut": true, "window": [7, 9.9], "label": "F3b already paid: refused" }
+        { "t": 0, "focus": "pay", "maxZoom": 1.6, "cut": true, "window": [2, 6.9], "label": "F3 already paid: stopped, then refused" }
       ]
     </script>
   </div>

@@ -22,8 +22,12 @@
 //   decide    again with the decision pinned: probabilities, floor, Approve, the note
 //   pay       Simulate a timeout and retry is pressed in the payment card
 //   ledger    again, with the ledger pinned, the payment with timeout and retry (pressed off screen)
-//   hold      Crestline with the decision pinned: Hold for review
+//   hold      Crestline with the decision pinned: Hold for review (recorded with a full hold; not in the
+//             kit 2.1 cut of the film, see SPEC.md)
 //   stop      Keystone: the payment card "Stopped before payment"; Try to pay it anyway is pressed: 403
+// Kit 2.1, the result rule: every result is recorded with a real hold of 6-7 s after it is fully on screen
+// (the film keeps a result up max(2.5, 0.5 + 0.3 x words) s, 6 s at most; the screencast shows a change up to
+// 0.3 s after its DOM time while spinners run), so no shot needs a held frame.
 const fs = require("fs");
 const path = require("path");
 const cap = require("../../../kit/scripts/capture.cjs");
@@ -104,6 +108,17 @@ const runDone = (page) =>
 const payDone = (page) =>
   page.waitForFunction(() => [...document.querySelectorAll("button")].some((b) => /Send the same request again/.test(b.textContent) && !b.disabled), null, { timeout: 30000, polling: 30 });
 
+// text inside one card (by its title), e.g. the decision landing in the Decision card, not in the audit trail
+const seenIn = (page, title, re) =>
+  page.waitForFunction(
+    ([t, r]) => {
+      const c = [...document.querySelectorAll('[class*="Panel_card__"]')].find((x) => ((x.querySelector("h3") || {}).textContent || "").trim() === t);
+      return !!c && new RegExp(r).test(c.innerText);
+    },
+    [title, re],
+    { timeout: 30000, polling: 30 }
+  );
+
 async function park(clip) {
   await clip.page.mouse.move(PARK[0], PARK[1]);
   clip.setCursor(PARK[0], PARK[1]);
@@ -164,7 +179,7 @@ async function flow() {
   await seen(page, "Schema valid");
   clip.mark("bill-landed");
   await runDone(page);
-  await clip.wait(2600);
+  await clip.wait(6500); // the typed bill holds
 
   // checks: again with the checks pinned
   await freshNorthline(page);
@@ -173,10 +188,14 @@ async function flow() {
   await clip.wait(1400);
   await press(page, "Read and check");
   clip.mark("checks-pressed");
+  await seenIn(page, "Checks in code", "1/8 passed");
+  clip.mark("checks-first");
+  await seenIn(page, "Checks in code", "4/8 passed");
+  clip.mark("checks-four");
   await seen(page, "8/8 passed");
   clip.mark("checks-all");
   await runDone(page);
-  await clip.wait(2600);
+  await clip.wait(7500); // the eight checks hold
 
   // decide: again with the decision pinned; the run stays approved and unpaid for the payment shot
   await freshNorthline(page);
@@ -185,24 +204,24 @@ async function flow() {
   await clip.wait(1400);
   await press(page, "Read and check");
   clip.mark("decide-pressed");
-  await seen(page, "The stricter of the model and the rules");
+  await seenIn(page, "Decision", "the model may approve");
   clip.mark("decide-landed");
   await runDone(page);
-  clip.mark("decide-done");
-  await clip.wait(2600);
+  clip.mark("decide-done"); // the note has finished typing
+  await clip.wait(8000); // the decision holds
 
   // pay: still, then ONE action: Simulate a timeout and retry
   await pin(page, TRACK.pay, 84);
   clip.mark("pay-still");
   await clip.wait(1500);
   await clip.click(page.getByRole("button", { name: /Simulate a timeout and retry/ }), { label: "pay", move: 850 });
-  await seen(page, "timed out");
+  await seenIn(page, "Payment", "timed out");
   clip.mark("pay-timeout");
   await payDone(page);
   clip.mark("pay-done");
-  await clip.wait(2800);
+  await clip.wait(7500); // both attempts hold
   await park(clip);
-  await clip.wait(1300);
+  await clip.wait(900);
 
   // ledger: again, with the ledger pinned; the payment with timeout and retry is pressed off screen
   await freshNorthline(page);
@@ -215,7 +234,7 @@ async function flow() {
   clip.mark("ledger-pressed");
   await payDone(page);
   clip.mark("ledger-done");
-  await clip.wait(3200);
+  await clip.wait(8000); // the ledger holds
 
   // hold: Crestline with the decision pinned
   await pick(page, "Crestline Mechanical");
@@ -225,10 +244,11 @@ async function flow() {
   await clip.wait(1400);
   await press(page, "Read and check");
   clip.mark("hold-pressed");
-  await seen(page, "Hold for review");
+  await seenIn(page, "Decision", "at least hold");
   clip.mark("hold-landed");
   await runDone(page);
-  await clip.wait(2800);
+  clip.mark("hold-done"); // the note has finished typing
+  await clip.wait(8000); // the held decision holds
 
   // stop: Keystone; the payment card says it was stopped; ONE action: Try to pay it anyway
   await pick(page, "Keystone Drywall");
@@ -241,7 +261,7 @@ async function flow() {
   await clip.click(page.getByRole("button", { name: /Try to pay it anyway/ }), { label: "force", move: 850 });
   await seen(page, "Refused with 403");
   clip.mark("stop-refused");
-  await clip.wait(3000);
+  await clip.wait(7500); // the refusal holds
   await park(clip);
   await clip.wait(800);
   await unpin(page);
