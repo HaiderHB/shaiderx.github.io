@@ -35,3 +35,27 @@
   color: rgb(var(--rgbText));
   overflow-wrap: anywhere;
 }
+
+/* Phones: each check becomes its own block, the expected and actual values side by side under it */
+@media (max-width: 600px) {
+  .table {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .head:first-child {
+    display: none;
+  }
+
+  .label {
+    grid-column: 1 / -1;
+    padding-bottom: 0;
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText));
+  }
+
+  .label + .value,
+  .label + .value + .value {
+    border-top: 0;
+    align-items: flex-start;
+  }
+}

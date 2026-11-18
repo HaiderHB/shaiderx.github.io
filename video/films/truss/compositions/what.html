@@ -1,0 +1,31 @@
+<template>
+  <!-- Truss launch film (kit 2.1, launch format). Clip `flow`, recorded 2026-11-18 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its example (model outputs recorded from live runs on the Vercel preview on 2026-11-17; checks, rules floor and payment endpoint run in the browser). Footage plays at 1x; every hold is real footage.
+       WHAT IT IS 4.8-7.8 s (3 s, kit 2.1): one sentence over the top of the page while the on-load example plays, blurred and dimmed. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="what" data-width="1920" data-height="1080">
+    <div id="what-stage" class="kit-stage kit-backdrop" data-layout-allow-overflow>
+      <div id="what-cam" class="kit-cam">
+        <video id="what-v" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="3" data-media-start="0.4" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <div id="what-scrim" class="clip kit-scrim" data-start="0" data-duration="3" data-track-index="1" data-layout-ignore></div>
+    <div id="what-text" class="clip kit-statement" data-start="0" data-duration="3" data-track-index="2">
+      <div class="kit-statement-text">An AI agent that checks subcontractor bills *before paying* them.</div>
+      <div class="kit-statement-sub">A prototype built for Truss by Haider Bokhari</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.launch.statement({ id: "what", tl });
+      window.__timelines["what"] = tl;
+    })();
+  </script>
+</template>

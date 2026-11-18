@@ -68,6 +68,46 @@ export async function setJSON(key, value, ttlSeconds) {
   memory.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
 }
 
+/**
+ * Stores `value` only if `key` is not set yet; returns true when this call wrote it (Redis SET NX).
+ * Use it to claim something exactly once: an idempotency key, a payment per invoice.
+ */
+export async function setJSONIfAbsent(key, value, ttlSeconds) {
+  if (hasDurableStore) {
+    const [result] = await pipeline([['SET', key, JSON.stringify(value), 'EX', String(ttlSeconds), 'NX']]);
+    return result === 'OK';
+  }
+  const item = memory.get(key);
+  if (item && item.expiresAt > Date.now()) return false;
+  memory.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
+  return true;
+}
+
+/** Appends `value` to a list (Redis RPUSH, atomic), keeping at most `max` items; resets its TTL. */
+export async function pushJSON(key, value, ttlSeconds, max = 200) {
+  if (hasDurableStore) {
+    await pipeline([
+      ['RPUSH', key, JSON.stringify(value)],
+      ['LTRIM', key, String(-max), '-1'],
+      ['EXPIRE', key, String(ttlSeconds)],
+    ]);
+    return;
+  }
+  const item = memory.get(key);
+  const list = item && item.expiresAt > Date.now() ? item.value : [];
+  memory.set(key, { value: [...list, value].slice(-max), expiresAt: Date.now() + ttlSeconds * 1000 });
+}
+
+/** Reads a list written by pushJSON, oldest first ([] when missing). */
+export async function listJSON(key) {
+  if (hasDurableStore) {
+    const [items] = await pipeline([['LRANGE', key, '0', '-1']]);
+    return (items || []).map(item => JSON.parse(item));
+  }
+  const item = memory.get(key);
+  return item && item.expiresAt > Date.now() ? item.value : [];
+}
+
 /** Returns a cached result for `key`, or runs `compute` and caches it (saves credits on repeats). */
 export async function cached(key, ttlSeconds, compute) {
   const hit = await getJSON(`cache:${key}`);

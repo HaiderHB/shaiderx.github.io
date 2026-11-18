@@ -1,0 +1,43 @@
+<template>
+  <!-- Truss launch film (kit 2.1, launch format). Clip `flow`, recorded 2026-11-18 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its example (model outputs recorded from live runs on the Vercel preview on 2026-11-17; checks, rules floor and payment endpoint run in the browser). Footage plays at 1x; every hold is real footage.
+       FEATURE 2 36.4-50.2 s: pay once. Scene time = film time - 36.4. The result rule: the wait is cut, the result stays.
+       0-7.0 the payment card, close on its buttons and the attempts, from 1.1 s after Simulate a timeout and retry was pressed (the click is cut): "Sending the payment… / Attempt 1 sent, waiting…", "no reply after 1.52 s: timed out" at 0.45 (the simulated bank holds its reply 2.5 s after committing the charge), "Attempt 2 201, replayed …: no new charge" at 1.4; both rows held 5.6 s |
+       7.0-13.8 the ledger, the same flow replayed with the ledger pinned (pressed off screen): zeros for 0.65 s, then 1 charge, 2 requests, 1 retry deduplicated and both requests, fully in at 7.8; held 6.0 s. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="pay" data-width="1920" data-height="1080">
+    <div id="pay-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="pay-cam" class="kit-cam">
+        <!-- F2a: the two attempt rows are final at 1.4 s (17 words to read), held 5.6 s -->
+        <video id="pay-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="7" data-media-start="80" data-kit-lands="1.4" data-kit-read="17" data-track-index="0" muted playsinline></video>
+        <!-- F2b: the ledger with the charge and both requests is fully in at 0.8 s, held 6.0 s -->
+        <video id="pay-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="7" data-duration="6.8" data-media-start="98.2" data-kit-lands="0.8" data-kit-read="57" data-track-index="0" muted playsinline></video>
+        <!-- while the payment is in flight the lit box is the buttons, the status line and the attempt; once both attempts are final (scene 1.37 in the footage) it is the two attempt rows: the result -->
+        <div id="pay-spot-flight" class="clip kit-spot" data-start="0" data-duration="1.37" data-kit-window="0,1.2" data-kit-focus="[&quot;payActions&quot;,&quot;attempts&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="pay-spot-attempts" class="clip kit-spot" data-start="1.37" data-duration="5.63" data-kit-window="1.6,6.9" data-kit-focus="attempts" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <!-- the ledger as it is (empty), then with the charge and both requests (on screen from scene 7.65) -->
+        <div id="pay-spot-ledger" class="clip kit-spot" data-start="7" data-duration="0.64" data-kit-window="7,7.4" data-kit-focus="ledger" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="pay-spot-ledger2" class="clip kit-spot" data-start="7.64" data-duration="6.16" data-kit-window="7.9,13.7" data-kit-focus="ledger" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": ["payActions", "attempts"], "maxZoom": 2, "cut": true, "window": [0, 6.9], "label": "F2a the payment: timed out, retried, replayed" },
+        { "t": 7, "focus": "ledger", "maxZoom": 1.6, "cut": true, "window": [7.9, 13.7], "label": "F2b the ledger: one charge, one retry deduplicated" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "pay", tl });
+      window.__timelines["pay"] = tl;
+    })();
+  </script>
+</template>

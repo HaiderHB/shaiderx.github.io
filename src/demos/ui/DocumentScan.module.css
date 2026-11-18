@@ -1,0 +1,87 @@
+/* --- document scan: a page image on a paper card, a sweep while it is read ------------------- */
+
+.frame {
+  margin: 0;
+  display: grid;
+  gap: var(--uiGapL);
+}
+
+.link {
+  display: block;
+  border-radius: var(--uiRadiusM);
+  outline-offset: 3px;
+}
+
+.paper {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--uiRadiusM);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--uiLine),
+    var(--uiShadowRaised);
+  transition: box-shadow 240ms var(--uiEase);
+
+  .frame[data-done] & {
+    box-shadow:
+      0 0 0 2px rgb(var(--uiRgbAccent) / 0.55),
+      var(--uiShadowRaised);
+  }
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: filter 240ms var(--uiEase);
+
+  .frame[data-scanning] & {
+    filter: saturate(0.85) brightness(0.97);
+  }
+}
+
+.blank {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--uiHatch);
+}
+
+/* the sweep: a 2px accent line with a soft tint above it, top to bottom */
+.beam {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 22%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--uiRgbAccent) / 0) 0%,
+    rgb(var(--uiRgbAccent) / 0.14) 92%,
+    rgb(var(--uiRgbAccent) / 0.9) 98%,
+    rgb(var(--uiRgbAccent) / 0) 100%
+  );
+  animation: sweep 1.7s var(--uiEase) infinite;
+}
+
+@keyframes sweep {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(460%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beam {
+    animation: none;
+    transform: translateY(180%);
+  }
+}
+
+.caption {
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}

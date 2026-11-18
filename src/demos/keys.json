@@ -116,5 +116,13 @@
       "created": "2026-11-17",
       "expires": "2027-01-01"
     }
+  ],
+  "truss": [
+    {
+      "hash": "545b734ef2c0156aed2b889d8f7cd88a0cd72aec2057fb49fb5bd7445d66bfde",
+      "label": "Matthew Smith, Truss CEO (WaaS application message), 2026-11-17",
+      "created": "2026-11-17",
+      "expires": "2027-01-01"
+    }
   ]
 }
