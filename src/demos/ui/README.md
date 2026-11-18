@@ -19,7 +19,7 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 
 ## Catalog
 
-Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm. "via" means used
+Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman. "via" means used
 inside another kit component.
 
 | Component | What it is | Props | Used by |
@@ -53,7 +53,7 @@ inside another kit component.
 | `SplitBar` | One bar in proportional parts, with a legend | `parts` `[{ label, value, tone, display }]`, `legend`, `label` | A |
 | `MiniBars` | Small column chart: active column filled, the rest hatched | `data` `[{ label, value, display }]`, `active`, `max`, `height`, `label` | D |
 | `Sparkline` | Line over a short series with an end dot and optional threshold | `values`, `min`, `max`, `tone`, `height`, `threshold`, `label` | G |
-| `EvalTable` | Expected vs actual per check, with pass/fail icons | `rows` `[{ id, label, expected, actual, pass }]`, `columns` | D |
+| `EvalTable` | Expected vs actual per check, with pass/fail icons | `rows` `[{ id, label, expected, actual, pass }]`, `columns` | D, S |
 | `SegmentedControl` | One-of-n toggle | `options` `[{ value, label, disabled }]`, `value`, `onChange`, `label`, `variant` (`pill`, `box`), `disabled` | G |
 | `OptionList`, `IndexBadge` | Stacked, numbered sample picker; the square number | `options` `[{ value, label, hint }]`, `value`, `onChange`, `label` | D |
 | `ChoiceChips` | Row of toggle chips (samples, filters) | `options` `[{ value, label }]`, `value`, `onChange`, `label` | A |
@@ -68,7 +68,9 @@ inside another kit component.
 | `Caret`, `TypingDots`, `Spinner` | Streaming caret; "typing" dots; inline spinner (inherits a primary button's colour) | `variant` (`bar`, `soft`, `block`); `label`; none | D, A, G; G; D |
 | `EmptyState`, `SkeletonGrid` | Dashed placeholder before output arrives; shimmering cards while loading | `size` (`s`, `m`), `loading`; `count`, `label` | D, G; G |
 | `Notice` | Preview-mode (no key), info and error messages | `kind` (`info`, `error`), `size` (`s`, `m`), `flat`, `as`; `--uiNoticeRgb` | D, A, G |
-| `McpToolPanel` | Tool list → definition → arguments → JSON-RPC request and result, in the browser | `tools` (tools/list entries), `examples`, `call(name, args)`, `errorText`, `initialTool`, `hint`, `argsId` | D |
+| `McpToolPanel` | Tool list → definition → arguments → JSON-RPC request and result, in the browser | `tools` (tools/list entries), `examples`, `call(name, args)`, `errorText`, `initialTool`, `hint`, `argsId` | D, S |
+| `McpCallLog` | Streamed MCP `tools/call` rows: index, tool, its permission scope, what the gate did (allowed, blocked, awaiting approval, approved, rejected, error), the arguments on one line, a note (why it was blocked) and the result behind a disclosure; keeps the newest row in view inside its own scroll box | `calls` `[{ id, name, scope, status, args, result, note }]`, `statuses` (labels / tones per status), `scopeTones`, `pending`, `pendingLabel`, `empty`, `follow`, `active`, `argsClip`; `--uiCallLogHeight` | S |
+| `ApprovalCard` | An agent action waiting for a person (a send, a payment): status line, title, To / Subject rows, the content, evidence under it (judge scores), Approve / Reject; the buttons give way to the outcome once decided | `status` (`pending`, `approved`, `rejected`), `statusText`, `title`, `meta` `[[label, value]]`, `body`, `onApprove`, `onReject`, `approveLabel`, `rejectLabel`, `busy`, children | S |
 | `McpConnectCommand` | "Connect from Claude Code" command with copy | `label`, `command` | D |
 | `rpcRequest`, `toolResult`, `toolErrorResult` | JSON-RPC `tools/call` request and MCP result shapes | `(id, name, args)`; `(structured)`; `(text)` | G, D via McpToolPanel |
 | `formatMs`, `seconds`, `pct`, `percent`, `riskTone`, `formatTime` | Timings, probabilities, risk tone, mm:ss (`demos/ui/format`, pure JS) | see `format.js` | D, G (and G's findings API via `study.js`) |

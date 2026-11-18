@@ -1,0 +1,75 @@
+<template>
+  <!-- Superhuman launch film · every line of text except the two statement scenes and the end card.
+       Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
+       >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s; each cue starts on the cut of its shot and stays for the whole
+       shot (the shot's length comes from the result rule, kit 2.1). Labels sit under the headline. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.2" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="10.2" data-duration="53.6" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="63.8" data-track-index="2"
+      data-kit-chapters="The problem:0|The task:10.2|Permissions:32.9|Evals:45.8" data-layout-ignore></div>
+
+    <!-- HOOK -->
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.2" data-track-index="1">
+      <div class="kit-cap-head">Inbox triaged. Nothing sends without *you*.</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run, replayed faster</span></div>
+    </div>
+
+    <!-- HERO: one task, four shots -->
+    <div id="cap-h1" class="clip kit-cap kit-cap3" data-start="10.2" data-duration="5.3" data-track-index="1">
+      <div class="kit-cap-head">Triage the inbox and answer what's *urgent*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run, replayed faster</span></div>
+    </div>
+    <div id="cap-h2" class="clip kit-cap kit-cap3" data-start="15.5" data-duration="6.7" data-track-index="1">
+      <div class="kit-cap-head">It labels, drafts, then *asks* to send</div>
+    </div>
+    <div id="cap-h3" class="clip kit-cap kit-cap3" data-start="22.2" data-duration="6" data-track-index="1">
+      <div class="kit-cap-head">Its reply stops here, with a *fact-check* score</div>
+    </div>
+    <div id="cap-h4" class="clip kit-cap kit-cap3" data-start="28.2" data-duration="4.7" data-track-index="1">
+      <div class="kit-cap-head">Nothing is sent until you *approve* it</div>
+    </div>
+
+    <!-- FEATURE 2: permissions -->
+    <div id="cap-f2a" class="clip kit-cap kit-cap3" data-start="32.9" data-duration="6.1" data-track-index="1">
+      <div class="kit-cap-head">Narrow its access to *read and draft*</div>
+    </div>
+    <div id="cap-f2b" class="clip kit-cap kit-cap3" data-start="39" data-duration="6.8" data-track-index="1">
+      <div class="kit-cap-head">The server *blocks* every change it tries</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run, replayed faster</span></div>
+    </div>
+
+    <!-- FEATURE 3: evals -->
+    <div id="cap-f3a" class="clip kit-cap kit-cap3" data-start="45.8" data-duration="6" data-track-index="1">
+      <div class="kit-cap-head">Eight test tasks grade every *change*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded eval run</span></div>
+    </div>
+    <div id="cap-f3b" class="clip kit-cap kit-cap3" data-start="51.8" data-duration="6" data-track-index="1">
+      <div class="kit-cap-head">They caught a reply drafted to a *scam*</div>
+    </div>
+
+    <!-- PROOF: real numbers from the recorded eval run, one line for technical viewers -->
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="57.8" data-duration="6" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">8</span><span class="kit-stat-l">test tasks</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">0</span><span class="kit-stat-l">out-of-scope calls</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">0</span><span class="kit-stat-l">unapproved sends</span></span>
+      </div>
+      <div class="kit-hood">An LLM calls MCP-style tools · the server enforces scopes · a decision model grades replies</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

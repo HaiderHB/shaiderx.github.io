@@ -1,0 +1,948 @@
+/*
+ * Superhuman page layout. Cards, pills, the MCP call log, the approval card, eval table and tool
+ * panel come from demos/ui; colours, surfaces and radii are the --ui* tokens (accent set by
+ * DemoLayout). One saturated card on the page: the run glance beside the title.
+ */
+.page {
+  font-size: var(--fontSizeBodyS);
+  line-height: 1.5;
+}
+
+.muted {
+  color: var(--uiMuted);
+  font-size: var(--uiFontSmall);
+}
+
+.section {
+  margin-top: var(--space3XL);
+  scroll-margin-top: 96px;
+}
+
+.section:first-of-type {
+  margin-top: var(--spaceL);
+}
+
+.notice {
+  margin-top: var(--spaceS);
+}
+
+/* --- hero: the run at a glance (accent card) ---------------------------------------------- */
+
+.glance {
+  display: grid;
+  gap: var(--uiGapXL);
+}
+
+.glanceTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spaceM);
+}
+
+.glanceKind {
+  padding: 3px 11px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText));
+  background: rgb(var(--rgbText) / 0.18);
+}
+
+.glanceTurn {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiMuted);
+}
+
+.glanceHeadline {
+  display: flex;
+  align-items: center;
+  gap: var(--uiGapXL);
+  font-size: clamp(1.75rem, 1.2rem + 1.4vw, 2.5rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: var(--uiTrackDisplay);
+  color: rgb(var(--rgbText));
+
+  &::before {
+    content: '';
+    flex: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgb(var(--glanceTone, var(--rgbText)));
+    box-shadow: 0 0 0 4px rgb(255 255 255 / 0.22);
+  }
+
+  &[data-tone='ok'] {
+    --glanceTone: var(--uiRgbOk);
+  }
+
+  &[data-tone='warn'] {
+    --glanceTone: var(--uiRgbWarn);
+  }
+}
+
+.glanceTask {
+  margin: 0;
+  font-size: var(--uiFontSmall);
+  line-height: 1.45;
+  color: rgb(var(--rgbText) / 0.9);
+
+  & span {
+    color: var(--uiMuted);
+  }
+}
+
+.glanceStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--uiGapM);
+  margin: 0;
+
+  & div {
+    display: grid;
+    gap: 2px;
+    padding: var(--uiGapL) var(--uiGapXL);
+    border-radius: var(--uiRadiusM);
+    background: rgb(var(--rgbText) / 0.12);
+  }
+
+  & dt {
+    font-size: var(--uiFontMicro);
+    line-height: 1.3;
+    color: var(--uiMuted);
+  }
+
+  & dd {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 500;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--uiTrackTight);
+    color: rgb(var(--rgbText));
+  }
+}
+
+.glanceCalls {
+  display: grid;
+  gap: 4px;
+  min-height: calc(3 * 1.9em + 8px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  & li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--uiGapM);
+    padding: 3px 10px;
+    border-radius: var(--uiRadiusS);
+    font-size: var(--uiFontSmall);
+    line-height: 1.6;
+    color: var(--uiMuted);
+    background: rgb(var(--rgbText) / 0.08);
+    animation: glanceIn 300ms var(--uiEase) both;
+  }
+
+  & li[data-status='idle'] {
+    display: block;
+    background: none;
+  }
+
+  & code {
+    font-family: var(--uiMono);
+    font-size: var(--uiFontCode);
+    color: rgb(var(--rgbText));
+  }
+}
+
+@keyframes glanceIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glanceCalls li {
+    animation: none;
+  }
+}
+
+.glanceArg {
+  min-width: 0;
+  overflow: hidden;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.glanceStatus {
+  padding: 0 8px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontMicro);
+  font-weight: 600;
+  white-space: nowrap;
+  color: rgb(var(--rgbText));
+  background: rgb(var(--rgbText) / 0.16);
+
+  .glanceCalls li[data-status='blocked'] > & {
+    color: rgb(255 255 255);
+    background: rgb(var(--uiRgbBad) / 0.9);
+  }
+
+  .glanceCalls li[data-status='awaiting'] > & {
+    color: rgb(20 16 4);
+    background: rgb(var(--uiRgbWarn));
+  }
+}
+
+.glanceCtaRow {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+}
+
+.glanceFoot {
+  margin: 0;
+  font-size: var(--uiFontCaption);
+  color: var(--uiFaint);
+}
+
+/* --- task card: permission | task ------------------------------------------------------- */
+
+.taskCard {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--spaceL) var(--spaceXL);
+}
+
+.taskGrant,
+.taskText {
+  min-width: 0;
+}
+
+.grantControl {
+  width: 100%;
+
+  & button {
+    flex: 1;
+  }
+}
+
+.scopeList {
+  display: grid;
+  gap: var(--uiGapS);
+  margin: var(--spaceM) 0 0;
+  padding: 0;
+  list-style: none;
+
+  & li {
+    display: grid;
+    grid-template-columns: 18px 44px minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--uiGapM);
+    font-size: var(--uiFontSmall);
+    color: var(--uiFaint);
+  }
+
+  & li[data-on] {
+    color: rgb(var(--rgbText) / 0.88);
+  }
+}
+
+.scopeMark {
+  display: inline-grid;
+  place-items: center;
+  align-self: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 11px;
+  color: var(--uiFaint);
+  background: rgb(var(--rgbText) / 0.06);
+
+  .scopeList li[data-on] & {
+    color: rgb(var(--uiRgbOnStatus));
+    background: rgb(var(--uiRgbOk));
+  }
+}
+
+.scopeName {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  font-weight: 600;
+}
+
+.scopeTools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px var(--uiGapM);
+
+  & code {
+    font-family: var(--uiMono);
+    font-size: var(--uiFontCaption);
+  }
+
+  .scopeList li:not([data-on]) & code {
+    text-decoration: line-through;
+    text-decoration-color: rgb(var(--uiRgbBad) / 0.6);
+  }
+}
+
+.presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapS);
+  margin-bottom: var(--uiGapXL);
+
+  & button[aria-pressed='true'] {
+    color: rgb(var(--uiRgbAccent));
+    border-color: rgb(var(--uiRgbAccent) / 0.5);
+    background: rgb(var(--uiRgbAccent) / 0.12);
+  }
+}
+
+.taskInput {
+  min-height: 64px;
+  resize: vertical;
+}
+
+.runRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spaceS) var(--spaceM);
+  margin-top: var(--uiGapXL);
+}
+
+/* --- workspace: inbox | tool calls | gate + report ---------------------------------------- */
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr) minmax(0, 390px);
+  gap: var(--spaceL);
+  align-items: start;
+  margin-top: var(--spaceL);
+}
+
+.inboxCol,
+.callsCol,
+.sideCol {
+  min-width: 0;
+}
+
+.sideCol {
+  display: grid;
+  gap: var(--spaceL);
+}
+
+.callsCard {
+  /* the whole log fits the window on a laptop screen */
+  --uiCallLogHeight: clamp(380px, calc(100vh - 290px), 640px);
+}
+
+.callTotals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapS) var(--spaceM);
+  margin: calc(var(--uiGapS) * -1) 0 var(--uiGapXL);
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+
+  & strong {
+    font-variant-numeric: tabular-nums;
+    color: rgb(var(--rgbText));
+  }
+
+  & span[data-tone='bad'] strong {
+    color: color-mix(in sRGB, rgb(var(--uiRgbBad)) 80%, rgb(var(--rgbText)));
+  }
+
+  & span[data-tone='warn'] strong {
+    color: color-mix(in sRGB, rgb(var(--uiRgbWarn)) 80%, rgb(var(--rgbText)));
+  }
+}
+
+.callTurns {
+  margin-left: auto;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+}
+
+.gateIcon {
+  font-size: 18px;
+  color: rgb(var(--uiRgbWarn));
+}
+
+.approvals {
+  display: grid;
+  gap: var(--uiGapXL);
+
+  & article > p {
+    max-height: 168px;
+  }
+}
+
+.judgeRow {
+  margin: 0;
+}
+
+.final {
+  font-size: var(--uiFontNote);
+}
+
+.replies {
+  margin-top: var(--spaceM);
+  padding-top: var(--uiGapXL);
+  border-top: 1px solid var(--uiLine);
+
+  & ul {
+    display: grid;
+    gap: var(--uiGapXL);
+    margin: var(--uiGapM) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  & li {
+    display: grid;
+    gap: var(--uiGapS);
+  }
+}
+
+.replyHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--uiGapM);
+  min-width: 0;
+}
+
+.replySubject {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--uiFontSmall);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: rgb(var(--rgbText) / 0.86);
+}
+
+/* --- the sample inbox ------------------------------------------------------------------- */
+
+.inboxCard {
+  --uiCardPad: var(--spaceM);
+}
+
+.inboxLede {
+  margin: calc(var(--uiGapS) * -1) 0 var(--uiGapXL);
+  font-size: var(--uiFontCaption);
+  line-height: 1.45;
+  color: var(--uiMuted);
+}
+
+.threads {
+  max-height: 700px;
+  margin: 0 calc(var(--uiGapS) * -1);
+  padding: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  scrollbar-width: thin;
+}
+
+.thread {
+  border-radius: var(--uiRadiusM);
+  transition: background 240ms var(--uiEase), opacity 240ms var(--uiEase);
+
+  & + & {
+    margin-top: 2px;
+  }
+
+  &[data-active] {
+    background: rgb(var(--uiRgbAccent) / 0.14);
+    box-shadow: inset 2px 0 0 rgb(var(--uiRgbAccent));
+  }
+
+  &[data-gone] {
+    opacity: 0.5;
+  }
+}
+
+.threadButton {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: var(--uiGapM) var(--uiGapL);
+  border: 0;
+  border-radius: inherit;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(var(--rgbText) / 0.04);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgb(var(--uiRgbAccent));
+    outline-offset: -2px;
+  }
+}
+
+.threadTop {
+  display: flex;
+  align-items: baseline;
+  gap: var(--uiGapM);
+  min-width: 0;
+}
+
+.threadFrom {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--uiFontSmall);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: rgb(var(--rgbText) / 0.78);
+
+  .thread[data-unread] & {
+    font-weight: 600;
+    color: rgb(var(--rgbText));
+  }
+}
+
+.threadId,
+.threadDate {
+  flex: none;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiFaint);
+}
+
+.threadSubject {
+  overflow: hidden;
+  font-size: var(--uiFontCaption);
+  line-height: 1.4;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--uiMuted);
+}
+
+.threadChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.chip {
+  --chipRgb: var(--rgbText);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 7px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontMicro);
+  font-weight: 600;
+  line-height: 1.75;
+  white-space: nowrap;
+  color: color-mix(in sRGB, rgb(var(--chipRgb)) 76%, rgb(var(--rgbText)));
+  background: rgb(var(--chipRgb) / 0.14);
+
+  & svg {
+    font-size: 10px;
+  }
+
+  &[data-tone='soft'] {
+    color: var(--uiMuted);
+    background: rgb(var(--rgbText) / 0.07);
+  }
+
+  &[data-tone='accent'] {
+    --chipRgb: var(--uiRgbAccent);
+  }
+
+  &[data-tone='ok'] {
+    --chipRgb: var(--uiRgbOk);
+  }
+
+  &[data-tone='warn'] {
+    --chipRgb: var(--uiRgbWarn);
+  }
+
+  &[data-tone='bad'] {
+    --chipRgb: var(--uiRgbBad);
+  }
+}
+
+.preview {
+  display: grid;
+  gap: var(--uiGapL);
+  margin: 0 var(--uiGapL) var(--uiGapL);
+  padding: var(--uiGapXL);
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbInset));
+}
+
+.message {
+  min-width: 0;
+
+  & p {
+    margin: var(--uiGapXS) 0 0;
+    font-size: var(--uiFontCaption);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: rgb(var(--rgbText) / 0.84);
+  }
+
+  &[data-kind='draft'],
+  &[data-kind='sent'] {
+    padding-left: var(--uiGapL);
+    border-left: 2px solid rgb(var(--uiRgbAccent) / 0.6);
+  }
+
+  &[data-kind='sent'] {
+    border-left-color: rgb(var(--uiRgbOk) / 0.7);
+  }
+}
+
+/* --- evals ------------------------------------------------------------------------------ */
+
+.evalButton {
+  flex: none;
+}
+
+.evalLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+  gap: var(--spaceL);
+  align-items: start;
+  margin-top: var(--spaceM);
+}
+
+.evalAside {
+  position: sticky;
+  top: 96px;
+  order: 2;
+  min-width: 0;
+}
+
+.evalStats {
+  margin: 0;
+}
+
+.evalCaught {
+  margin-top: var(--spaceM);
+  padding: var(--uiGapXL) var(--uiGap2XL);
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusXL);
+  background: rgb(var(--uiRgbSurface));
+
+  & ul {
+    display: grid;
+    gap: var(--uiGapM);
+    margin: var(--uiGapM) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  & li {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: var(--uiGapM);
+    align-items: start;
+    font-size: var(--uiFontSmall);
+    line-height: 1.45;
+    color: var(--uiMuted);
+  }
+
+  & strong {
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText) / 0.88);
+  }
+}
+
+.evalLine {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spaceS) var(--spaceM);
+  margin-top: var(--spaceM);
+}
+
+.evalList {
+  display: grid;
+  gap: var(--uiGapM);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.evalItem {
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusXL);
+  background: rgb(var(--uiRgbSurface));
+  box-shadow: var(--uiShadowCard);
+
+  &[data-pass='false'] {
+    border-color: rgb(var(--uiRgbBad) / 0.35);
+  }
+}
+
+.evalHead {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto 64px 16px;
+  align-items: center;
+  gap: var(--uiGapXL);
+  width: 100%;
+  padding: var(--uiGapXL) var(--spaceM);
+  border: 0;
+  border-radius: inherit;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(var(--rgbText) / 0.03);
+  }
+
+  &:focus-visible {
+    outline: 2px solid rgb(var(--uiRgbAccent));
+    outline-offset: -2px;
+  }
+}
+
+.evalTitle {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+
+  & strong {
+    font-size: var(--fontSizeBodyS);
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText));
+  }
+
+  & span {
+    overflow: hidden;
+    font-size: var(--uiFontSmall);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--uiMuted);
+  }
+}
+
+.evalChevron {
+  color: var(--uiFaint);
+  transition: transform 200ms var(--uiEase);
+
+  .evalHead[aria-expanded='true'] & {
+    transform: rotate(180deg);
+  }
+}
+
+.callsAside {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapS);
+}
+
+.evalScore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--uiGapS);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontSmall);
+  font-variant-numeric: tabular-nums;
+}
+
+.evalBody {
+  display: grid;
+  gap: var(--spaceM);
+  padding: 0 var(--spaceM) var(--spaceM);
+}
+
+.evalExpect {
+  margin: 0;
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+
+  & strong {
+    font-weight: var(--fontWeightMedium);
+    color: rgb(var(--rgbText) / 0.86);
+  }
+}
+
+.evalJudges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapXL) var(--spaceL);
+}
+
+.evalJudge {
+  display: grid;
+  gap: var(--uiGapS);
+}
+
+.evalTrace {
+  --uiCallLogHeight: 420px;
+
+  & > summary {
+    width: fit-content;
+    cursor: pointer;
+    font-size: var(--uiFontSmall);
+    color: var(--uiMuted);
+  }
+
+  & > summary:hover {
+    color: rgb(var(--rgbText));
+  }
+}
+
+.evalLog {
+  margin: var(--uiGapXL) 0;
+}
+
+/* --- tools and notes -------------------------------------------------------------------- */
+
+.toolBar {
+  --uiCardPad: var(--uiGapXL);
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--uiGapXL);
+  margin: var(--spaceM) 0;
+}
+
+.flow {
+  margin-top: var(--spaceM);
+}
+
+.notes {
+  margin-top: var(--spaceL);
+}
+
+/* --- responsive ------------------------------------------------------------------------- */
+
+@media (max-width: 1240px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 380px);
+  }
+
+  .inboxCol {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .threads {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2px var(--uiGapM);
+    max-height: none;
+
+    & .thread + .thread {
+      margin-top: 0;
+    }
+  }
+}
+
+@media (max-width: 1040px) {
+  .evalLayout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .evalAside {
+    position: static;
+    order: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .taskCard {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sideCol {
+    display: contents;
+  }
+
+  .gateCard {
+    order: 1;
+  }
+
+  .callsCol {
+    order: 2;
+  }
+
+  .summaryCard {
+    order: 3;
+  }
+
+  .inboxCol {
+    order: 4;
+  }
+
+  .callsCard {
+    --uiCallLogHeight: 480px;
+  }
+
+  .threads {
+    max-height: 560px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    --uiCardPad: var(--spaceM);
+  }
+
+  .section {
+    margin-top: var(--space2XL);
+  }
+
+  .glanceStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grantControl {
+    flex-wrap: wrap;
+  }
+
+  .evalHead {
+    grid-template-columns: auto minmax(0, 1fr) auto 16px;
+    padding: var(--uiGapXL);
+  }
+
+  .evalGrant {
+    display: none;
+  }
+
+  .evalBody {
+    padding: 0 var(--uiGapXL) var(--uiGapXL);
+  }
+
+  .callTurns {
+    margin-left: 0;
+  }
+}

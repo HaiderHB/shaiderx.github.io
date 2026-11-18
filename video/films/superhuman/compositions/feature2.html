@@ -1,0 +1,39 @@
+<template>
+  <!-- Superhuman launch film (kit 2.1). Clip `main` (see hero.html for how it was recorded). The "Archive newsletters" task: its recorded live run with read + draft access (69 s live).
+       FEATURE 2 32.9-45.8 s: permissions. Scene time = film time - 32.9.
+       0-6.1 "Read + draft" is pressed at 1.23; the act tools are locked and struck through from 1.65, held 4.45 s
+       6.1-12.9 the tool-call log as that run ends: the last blocked call lands at 0.25, the pending row goes at 0.8, then the finished log holds 6.0 s (every archive and label call "blocked", each with the server's reason). -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="feature2" data-width="1920" data-height="1080">
+    <div id="feature2-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="feature2-cam" class="kit-cam">
+        <!-- F2a: the cursor comes to rest, "Read + draft" is pressed; the act scope locks and its tools are struck through -->
+        <video id="feature2-v1" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="0" data-duration="6.1" data-media-start="51.9" data-kit-lands="1.65" data-kit-read="13" data-track-index="0" muted playsinline></video>
+        <!-- F2b: the last blocked call lands, the run ends, the finished log holds -->
+        <video id="feature2-v2" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="6.1" data-duration="6.8" data-media-start="66.9" data-kit-lands="0.8" data-kit-read="57" data-track-index="0" muted playsinline></video>
+        <div id="feature2-spot-1" class="clip kit-spot" data-start="0" data-duration="6.1" data-kit-focus="taskGrant" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="feature2-spot-2" class="clip kit-spot" data-start="6.1" data-duration="6.8" data-kit-focus="callLog" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": "taskGrant", "maxZoom": 2, "cut": true, "window": [0, 6.1], "label": "F2a narrow the grant to read + draft" },
+        { "t": 6.1, "focus": "callLog", "maxZoom": 2, "cut": true, "window": [6.1, 12.9], "label": "F2b the server blocks archive and label" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "feature2", tl });
+      window.__timelines["feature2"] = tl;
+    })();
+  </script>
+</template>

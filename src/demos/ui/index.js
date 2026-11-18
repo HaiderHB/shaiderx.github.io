@@ -32,6 +32,7 @@ export { highlightLines } from './highlight';
 export { JsonDetails, JsonView, tokenizeJson } from './JsonView';
 export { MarkdownLite, splitFences } from './MarkdownLite';
 export {
+  McpCallLog,
   McpConnectCommand,
   McpToolPanel,
   rpcRequest,
@@ -56,6 +57,7 @@ export { StatusIcon } from './StatusIcon';
 export { ToolCall, ToolCallList } from './ToolCall';
 export { PipelineStrip, Timeline, TimelineStep } from './Timeline';
 export { TrackedText } from './TrackedText';
+export { ApprovalCard } from './Approval';
 export { AuditTrail } from './AuditTrail';
 export { ChatThread } from './Chat';
 export { CheckList } from './CheckList';

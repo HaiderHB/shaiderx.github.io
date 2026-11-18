@@ -124,3 +124,223 @@
     border-radius: var(--uiRadiusL);
   }
 }
+
+/* --- call log: streamed tools/call rows with the gate's verdict ------------------------- */
+
+.log {
+  max-height: var(--uiCallLogHeight, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.logList {
+  display: grid;
+  gap: var(--uiGapM);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.logEmpty {
+  margin: 0;
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+.call {
+  --callRgb: var(--rgbText);
+
+  display: grid;
+  gap: var(--uiGapS);
+  min-width: 0;
+  padding: var(--uiGapL) var(--uiGapXL);
+  border: 1px solid var(--uiLine);
+  border-left: 3px solid rgb(var(--callRgb) / 0.55);
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbRaised));
+  animation: callIn 320ms var(--uiEase) both;
+
+  &[data-tone='ok'] {
+    --callRgb: var(--uiRgbOk);
+  }
+
+  &[data-tone='warn'] {
+    --callRgb: var(--uiRgbWarn);
+
+    background: color-mix(in sRGB, rgb(var(--uiRgbWarn)) 7%, rgb(var(--uiRgbRaised)));
+  }
+
+  &[data-tone='bad'] {
+    --callRgb: var(--uiRgbBad);
+
+    background: color-mix(in sRGB, rgb(var(--uiRgbBad)) 7%, rgb(var(--uiRgbRaised)));
+  }
+
+  &[data-tone='muted'] {
+    --callRgb: var(--rgbText);
+
+    border-left-color: var(--uiLineStrong);
+  }
+
+  &[data-active] {
+    box-shadow: 0 0 0 2px rgb(var(--uiRgbAccent) / 0.55);
+  }
+
+  &[data-pending] {
+    border-style: dashed;
+    border-left-style: solid;
+    background: var(--uiHatch), rgb(var(--uiRgbRaised));
+  }
+}
+
+@keyframes callIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .call {
+    animation: none;
+  }
+}
+
+.callHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--uiGapS) var(--uiGapM);
+  min-width: 0;
+}
+
+.callIndex {
+  min-width: 22px;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiFaint);
+}
+
+.callName {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCode);
+  font-weight: 600;
+  color: rgb(var(--rgbText) / 0.92);
+}
+
+.scope {
+  --scopeRgb: var(--rgbText);
+
+  padding: 0 7px;
+  border-radius: var(--uiRadiusXS);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  line-height: 1.7;
+  color: color-mix(in sRGB, rgb(var(--scopeRgb)) 78%, rgb(var(--rgbText)));
+  box-shadow: inset 0 0 0 1px rgb(var(--scopeRgb) / 0.4);
+
+  &[data-tone='neutral'] {
+    color: var(--uiMuted);
+    box-shadow: inset 0 0 0 1px var(--uiLineStrong);
+  }
+
+  &[data-tone='accent'] {
+    --scopeRgb: var(--uiRgbAccent);
+  }
+
+  &[data-tone='warn'] {
+    --scopeRgb: var(--uiRgbWarn);
+  }
+}
+
+.callStatus {
+  --statusRgb: var(--rgbText);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 1px 9px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontCaption);
+  font-weight: 600;
+  white-space: nowrap;
+  color: color-mix(in sRGB, rgb(var(--statusRgb)) 74%, rgb(var(--rgbText)));
+  background: rgb(var(--statusRgb) / 0.14);
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgb(var(--statusRgb));
+  }
+
+  &[data-tone='ok'] {
+    --statusRgb: var(--uiRgbOk);
+  }
+
+  &[data-tone='warn'] {
+    --statusRgb: var(--uiRgbWarn);
+  }
+
+  &[data-tone='bad'] {
+    --statusRgb: var(--uiRgbBad);
+  }
+
+  &[data-tone='muted'] {
+    color: var(--uiMuted);
+    background: rgb(var(--rgbText) / 0.07);
+
+    &::before {
+      background: var(--uiFaint);
+    }
+  }
+}
+
+.callArgs {
+  display: block;
+  min-width: 0;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  color: rgb(var(--rgbText) / 0.72);
+}
+
+.callNote {
+  margin: 0;
+  font-size: var(--uiFontSmall);
+  line-height: 1.45;
+  color: color-mix(in sRGB, rgb(var(--callRgb)) 70%, rgb(var(--rgbText)));
+}
+
+.callResult {
+  min-width: 0;
+  font-size: var(--uiFontCaption);
+
+  & > summary {
+    width: fit-content;
+    cursor: pointer;
+    font-family: var(--uiMono);
+    font-size: var(--uiFontMicro);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--uiFaint);
+
+    &:hover {
+      color: var(--uiMuted);
+    }
+  }
+
+  & > pre {
+    margin-top: var(--uiGapS);
+  }
+}
+
+.pendingText {
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
