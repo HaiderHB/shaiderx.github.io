@@ -11,21 +11,24 @@ RUN:     <live | example | cached | mixed> (data-kit-run on the root). What was 
 
 Captions: one idea, one line, <= 8 words (12 at the very most), plain words, why it matters and not what was
 clicked. Reading time = max(2.5, 0.5 + 0.6 x words) s, never over 7 s. Each caption starts on the cut of its
-shot; the screen holds still ~1 s, ONE action happens, the result holds >= 1.5 s, cut.
+shot; the screen holds still ~1 s, ONE action happens, the result holds, cut.
+Text screens (what, problem) run 3 s each. The result rule: cut the wait, keep the result. Once the thing the
+caption promises is on screen it stays max(2.5, 0.5 + 0.3 x the words the viewer has to read in it) s before the
+cut. Write both numbers in the table ("lands at / held for") and on the shot (data-kit-lands, data-kit-read).
 
-| # | Beat | Seconds | Picture (real page footage) | Text on screen | Words / needs | Focus box (tracked component) | Honesty |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | HOOK | 0.0-4.2 | the best moment already happening, zoomed 1.5-2x | "<the outcome, <= 7 words>" | 6 / 4.1 s | `result` | label an example run / a speed change |
-| 2 | WHAT IT IS | 4.2-10.2 | the product, blurred and dimmed | "<one plain sentence a stranger understands>" + "A prototype built for {{COMPANY}} by Haider Bokhari" | 9 / 5.9 s | (statement) | |
-| 3 | PROBLEM | 10.2-16.2 | the "before" state, blurred and dimmed | "<the pain, in the viewer's own world>" | 9 / 5.9 s | (statement) | |
-| 4 | HERO 1 | 16.2-21.2 | start the task: ONE action | "<...>" | 7 / 4.7 s | `input` | |
-| 4 | HERO 2 | 21.2-26.2 | the work happens | "<...>" | 7 / 4.7 s | `output` | speed tag if sped up |
-| 4 | HERO 3 | 26.2-31.2 | the result, one detail | "<...>" | 7 / 4.7 s | `card` | |
-| 4 | HERO 4 | 31.2-36.2 | the result, the decision | "<...>" | 7 / 4.7 s | `decision` | |
-| 5 | FEATURE 2 | 36.2-45.2 | one idea tied to the same problem (1-2 shots) | "<...>" / "<...>" | | | |
-| 6 | FEATURE 3 | 45.2-54.2 | the coolest one, last (1-2 shots) | "<...>" / "<...>" | | | |
-| 7 | PROOF | 54.2-61.2 | the finished result, wider | 1-3 real numbers from the run + "Under the hood: <the ONE line for technical viewers>" | | `window` | numbers come from this run |
-| 8 | END | 61.2-66.2 | end card | "Built for {{COMPANY}} by Haider Bokhari" / "Try it live: the link is in my message" / "haiderb.com" | | | |
+| # | Beat | Seconds | Picture (real page footage) | Text on screen | Words / needs | Result lands at / held for | Focus box (tracked component) | Honesty |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | HOOK | 0.0-4.2 | the best moment already happening, zoomed 1.5-2x | "<the outcome, <= 7 words>" | 6 / 4.1 s |  | `result` | label an example run / a speed change |
+| 2 | WHAT IT IS | 4.2-7.2 | the product, blurred and dimmed | "<one plain sentence a stranger understands>" + "A prototype built for {{COMPANY}} by Haider Bokhari" | 9 / 3 s |  | (statement) | |
+| 3 | PROBLEM | 7.2-10.2 | the "before" state, blurred and dimmed | "<the pain, in the viewer's own world>" | 9 / 3 s |  | (statement) | |
+| 4 | HERO 1 | 10.2-15.2 | start the task: ONE action | "<...>" | 7 / 4.7 s | 2.0 s / 3.0 s | `input` | |
+| 4 | HERO 2 | 15.2-20.2 | the work happens | "<...>" | 7 / 4.7 s | 2.0 s / 3.0 s | `output` | speed tag if sped up |
+| 4 | HERO 3 | 20.2-25.2 | the result, one detail | "<...>" | 7 / 4.7 s | 2.0 s / 3.0 s | `card` | |
+| 4 | HERO 4 | 25.2-30.2 | the result, the decision | "<...>" | 7 / 4.7 s | 2.0 s / 3.0 s | `decision` | |
+| 5 | FEATURE 2 | 30.2-39.2 | one idea tied to the same problem (1-2 shots) | "<...>" / "<...>" | | | | |
+| 6 | FEATURE 3 | 39.2-48.2 | the coolest one, last (1-2 shots) | "<...>" / "<...>" | | | | |
+| 7 | PROOF | 48.2-55.2 | the finished result, wider | 1-3 real numbers from the run + "Under the hood: <the ONE line for technical viewers>" | | | `window` | numbers come from this run |
+| 8 | END | 55.2-60.2 | end card | "Built for {{COMPANY}} by Haider Bokhari" / "Try it live: the link is in my message" / "haiderb.com" | | | | |
 
 Chapters (3-4 plain labels on the progress bar): <The problem> · <The task> · <Feature 2> · <Feature 3>
 
