@@ -1,16 +1,18 @@
 <!doctype html>
 <!--
-  Affirm launch film (affirm), kit 2, launch format: hook, what it is, the problem, ONE task, two features,
+  Affirm launch film (affirm), kit 2.1, launch format: hook, what it is, the problem, ONE task, two features,
   proof, end card. Text-first, one music bed, no voice. The beat table is in SPEC.md.
+  Re-cut 2026-11-18 for kit 2.1: text screens run 3 s each; every hero / feature shot starts at most 1 s before
+  its result is on screen and then holds it 6 s (the result rule; data-kit-lands / data-kit-read on each shot).
     hook       0.0-4.2     the hero card as the date-change example resolves; the hook line
-    what       4.2-10.7    statement over the top of the page, blurred
-    problem    10.7-16.7   statement over the empty chat, blurred
-    hero       16.7-37.2   ask, three tool calls, the policy guardrails, confirm the change
-    feature2   37.2-47.0   a double charge: the dispute, then a person by rule (Disputes queue)
-    feature3   47.0-57.0   the note the human agent reads first
-    proof      57.0-63.5   the top of the page, wide, with three numbers from the run
-    launchend  63.5-68.5   Built for Affirm by Haider Bokhari / Try it live / haiderb.com
-    captions   0-63.5      hook line, one caption per shot, proof numbers, chapters + progress bar
+    what       4.2-7.2     statement over the top of the page, blurred
+    problem    7.2-10.2    statement over the empty chat, blurred
+    hero       10.2-37.4   her question and the reply, three tool calls, the policy guardrails, confirm the change
+    feature2   37.4-51.0   a double charge: the dispute, then a person by rule (Disputes queue)
+    feature3   51.0-57.2   the note the human agent reads first
+    proof      57.2-63.7   the top of the page, wide, with three numbers from the run
+    launchend  63.7-68.7   Built for Affirm by Haider Bokhari / Try it live / haiderb.com
+    captions   0-63.7      hook line, one caption per shot, proof numbers, chapters + progress bar
     music      one instrumental bed under the whole film: node ../../kit/scripts/music-bed.mjs .
   QA: node ../../kit/scripts/qa.mjs .   (or: node kit/scripts/qa.mjs films/affirm from video/)
   data-kit-format="launch" turns on the launch rules; data-kit-beat on each host names its beat;
@@ -50,38 +52,38 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-kit-format="launch" data-kit-accent="iris" data-kit-run="example" data-kit-jargon="Jev,DeepSeek" data-start="0" data-duration="68.5" data-width="1920" data-height="1080">
+    <div id="root" data-composition-id="main" data-kit-format="launch" data-kit-accent="iris" data-kit-run="example" data-kit-jargon="Jev,DeepSeek" data-start="0" data-duration="68.7" data-width="1920" data-height="1080">
       <div id="hook" data-composition-id="hook" data-composition-src="compositions/hook.html" data-kit-role="footage" data-kit-beat="hook"
         data-start="0" data-duration="4.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
 
       <div id="what" data-composition-id="what" data-composition-src="compositions/what.html" data-kit-role="statement" data-kit-beat="what"
-        data-start="4.2" data-duration="6.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
+        data-start="4.2" data-duration="3" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
 
       <div id="problem" data-composition-id="problem" data-composition-src="compositions/problem.html" data-kit-role="statement" data-kit-beat="problem"
-        data-start="10.7" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
+        data-start="7.2" data-duration="3" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
 
       <div id="hero" data-composition-id="hero" data-composition-src="compositions/hero.html" data-kit-role="footage" data-kit-beat="hero"
-        data-start="16.7" data-duration="20.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+        data-start="10.2" data-duration="27.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
 
       <div id="feature2" data-composition-id="feature2" data-composition-src="compositions/feature2.html" data-kit-role="footage" data-kit-beat="feature"
-        data-start="37.2" data-duration="9.8" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
+        data-start="37.4" data-duration="13.6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
 
       <div id="feature3" data-composition-id="feature3" data-composition-src="compositions/feature3.html" data-kit-role="footage" data-kit-beat="feature"
-        data-start="47" data-duration="10" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
+        data-start="51" data-duration="6.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
 
       <div id="proof" data-composition-id="proof" data-composition-src="compositions/proof.html" data-kit-role="footage" data-kit-beat="proof"
-        data-start="57" data-duration="6.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 7"></div>
+        data-start="57.2" data-duration="6.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 7"></div>
 
       <div id="launchend" data-composition-id="launchend" data-composition-src="kit/blocks/launch-end.html" data-kit-role="end-card" data-kit-beat="end"
         data-variable-values='{"built": "Built for *Affirm* by Haider Bokhari", "action": "Try it live: the link is in my message", "url": "haiderb.com"}'
-        data-start="63.5" data-duration="5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 8"></div>
+        data-start="63.7" data-duration="5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 8"></div>
 
       <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-kit-role="captions"
-        data-start="0" data-duration="63.5" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
+        data-start="0" data-duration="63.7" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
 
       <!-- the instrumental bed: written by node ../../kit/scripts/music-bed.mjs . (re-run when the length changes) -->
       <!-- kit:music:start -->
-      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112-long.mp3" data-kit-music="bright-pluck-112-long" data-start="0" data-duration="68.5" data-media-start="25" data-volume="0.575" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
+      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112-long.mp3" data-kit-music="bright-pluck-112-long" data-start="0" data-duration="68.7" data-media-start="24.8" data-volume="0.575" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
       <!-- kit:music:end -->
     </div>
     <script>

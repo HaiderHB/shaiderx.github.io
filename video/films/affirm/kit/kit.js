@@ -14,7 +14,7 @@
  */
 (function (g) {
   const Kit = (g.Kit = g.Kit || {});
-  Kit.version = "2.0.0";
+  Kit.version = "2.1.0";
   Kit.FRAME = { w: 1920, h: 1080, fps: 30 };
 
   Kit.time = {
@@ -1565,7 +1565,8 @@
     // one-line caption: 8 words (12 at the very most), 64-72 px, on screen 2.5-7 s and >= 0.5 + 0.6 s per word
     cue: { words: 8, maxWords: 12, base: 0.5, perWord: 0.6, minSec: 2.5, maxSec: 7, head: 68, minHead: 64, maxHead: 72, tracking: -0.022, width: 1920 - 2 * 120, chipWords: 5 },
     hook: { words: 7, maxSec: 5, head: 72 },
-    statement: { words: 12, maxWords: 16, maxSec: 8 },
+    // kit 2.1: a text-only screen (what, problem) stays 3 s (2.8-3.5); keep its sentence to 10 words
+    statement: { words: 10, maxWords: 12, sec: 3, minSec: 2.8, maxSec: 3.5 },
     // a stranger knows what it is and what problem it solves by here (seconds)
     whatBy: 12,
     problemBy: 20,
@@ -1579,6 +1580,10 @@
     // the scene rule: still, ONE action, the result holds
     still: 1.0,
     hold: 1.5,
+    // kit 2.1, the result rule: once the result a shot waits for is on screen (data-kit-lands) it stays
+    // max(2.5, 0.5 + 0.3 x data-kit-read words) s, 6 s at most, before the cut; a wait longer than half the
+    // shot (and 2.5 s) is trimmed, not shown
+    land: { hold: 2.5, base: 0.5, perWord: 0.3, maxHold: 6, waitShare: 0.5, waitSec: 2.5 },
     jargon: ["llm", "json", "api", "schema", "prompt", "token", "tokens", "embedding", "embeddings", "regex", "anchor", "anchored", "anchoring", "sse", "mcp", "rag", "webhook", "endpoint", "payload", "docx", "ooxml"],
   };
   const BEATS = ["hook", "what", "problem", "hero", "feature", "proof", "end"];
@@ -1627,12 +1632,19 @@
     let landed = 0.1;
     if (text) {
       if (Kit.captions) Kit.captions.accent(text);
-      landed = Kit.reveal.words(tl, text, 0.08, { stagger: 0.045, dur: 0.18 });
+      // kit 2.1: a 3 s screen has the whole sentence up within ~0.5 s
+      landed = Kit.reveal.words(tl, text, 0.06, duration <= 3.6 ? { stagger: 0.03, dur: 0.16 } : { stagger: 0.045, dur: 0.18 });
     }
     if (sub) Kit.reveal.blurIn(tl, sub, Math.min(landed + 0.1, 0.9), { dur: 0.3, blur: 6 });
     return { duration, region };
   }
 
-  Kit.launch = { RULES, BEATS, readingTime, isLaunch, mag, cover, statement };
+  // seconds a landed result must stay on screen before the cut (words = what the viewer has to read in it)
+  function landHold(words) {
+    const L = RULES.land;
+    return +Math.min(L.maxHold, Math.max(L.hold, L.base + L.perWord * (words || 0))).toFixed(2);
+  }
+
+  Kit.launch = { RULES, BEATS, readingTime, landHold, isLaunch, mag, cover, statement };
   if (typeof module === "object" && module.exports) module.exports = Kit;
 })(typeof window !== "undefined" ? window : globalThis);

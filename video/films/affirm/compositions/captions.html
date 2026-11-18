@@ -1,7 +1,7 @@
 <template>
   <!-- Affirm launch film · every line of text except the two statement scenes and the end card.
        Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
-       >= max(2.5, 0.5 + 0.6 x words) s; each cue starts on the cut of its shot. Labels sit under the headline. -->
+       >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s; each cue starts on the cut of its shot. Labels sit under the headline. -->
   <style>
     #root {
       position: absolute;
@@ -11,9 +11,9 @@
   </style>
   <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
     <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.2" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
-    <div id="cap-band" class="clip" data-start="16.7" data-duration="46.8" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
-    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="63.5" data-track-index="2"
-      data-kit-chapters="The problem:0|Move a date:16.7|A double charge:37.2|The hand-off:47" data-layout-ignore></div>
+    <div id="cap-band" class="clip" data-start="10.2" data-duration="53.5" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="63.7" data-track-index="2"
+      data-kit-chapters="The problem:0|Move a date:10.2|A double charge:37.4|The hand-off:51" data-layout-ignore></div>
 
     <!-- HOOK -->
     <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.2" data-track-index="1">
@@ -21,40 +21,37 @@
       <div class="kit-cap-tags"><span class="kit-chip">Example run, replayed faster</span></div>
     </div>
 
-    <!-- HERO: one task, four shots -->
-    <div id="cap-h1" class="clip kit-cap kit-cap3" data-start="16.7" data-duration="5" data-track-index="1">
+    <!-- HERO: one task, four shots. The answer first, then how the agent got there, then the tap. -->
+    <div id="cap-h1" class="clip kit-cap kit-cap3" data-start="10.2" data-duration="7" data-track-index="1">
       <div class="kit-cap-head">She asks to move her *payment date*</div>
-    </div>
-    <div id="cap-h2" class="clip kit-cap kit-cap3" data-start="21.7" data-duration="5.3" data-track-index="1">
-      <div class="kit-cap-head">The agent checks her loans and the *policy*</div>
       <div class="kit-cap-tags"><span class="kit-chip">Example run, replayed faster</span></div>
     </div>
-    <div id="cap-h3" class="clip kit-cap kit-cap3" data-start="27" data-duration="5.3" data-track-index="1">
-      <div class="kit-cap-head">Code checks *every rule* before she sees it</div>
+    <div id="cap-h2" class="clip kit-cap kit-cap3" data-start="17.2" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">First it checked her loans and the *policy*</div>
     </div>
-    <div id="cap-h4" class="clip kit-cap kit-cap3" data-start="32.3" data-duration="4.9" data-track-index="1">
+    <div id="cap-h3" class="clip kit-cap kit-cap3" data-start="24.2" data-duration="6.2" data-track-index="1">
+      <div class="kit-cap-head">Code checked *every rule* before she saw it</div>
+    </div>
+    <div id="cap-h4" class="clip kit-cap kit-cap3" data-start="30.4" data-duration="7" data-track-index="1">
       <div class="kit-cap-head">One tap, and her due date *moves*</div>
     </div>
 
     <!-- FEATURE 2: a double charge goes to a person -->
-    <div id="cap-f2a" class="clip kit-cap kit-cap3" data-start="37.2" data-duration="5" data-track-index="1">
+    <div id="cap-f2a" class="clip kit-cap kit-cap3" data-start="37.4" data-duration="7" data-track-index="1">
       <div class="kit-cap-head">A double charge? It opens a *dispute*.</div>
       <div class="kit-cap-tags"><span class="kit-chip">Example run, replayed faster</span></div>
     </div>
-    <div id="cap-f2b" class="clip kit-cap kit-cap3" data-start="42.2" data-duration="4.8" data-track-index="1">
+    <div id="cap-f2b" class="clip kit-cap kit-cap3" data-start="44.4" data-duration="6.6" data-track-index="1">
       <div class="kit-cap-head">Disputes always go to a *person*</div>
     </div>
 
     <!-- FEATURE 3: the note the person reads first -->
-    <div id="cap-f3a" class="clip kit-cap kit-cap3" data-start="47" data-duration="5.3" data-track-index="1">
+    <div id="cap-f3a" class="clip kit-cap kit-cap3" data-start="51" data-duration="6.2" data-track-index="1">
       <div class="kit-cap-head">The person gets a *summary*, not a transcript</div>
-    </div>
-    <div id="cap-f3b" class="clip kit-cap kit-cap3" data-start="52.3" data-duration="4.7" data-track-index="1">
-      <div class="kit-cap-head">Nobody has to explain it *twice*</div>
     </div>
 
     <!-- PROOF: real numbers from the recorded run (the hero card's own), one line for technical viewers -->
-    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="57" data-duration="6.5" data-track-index="1">
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="57.2" data-duration="6.5" data-track-index="1">
       <div class="kit-stats">
         <span class="kit-stat"><span class="kit-stat-n">3</span><span class="kit-stat-l">tool calls</span></span>
         <span class="kit-stat"><span class="kit-stat-n">5/5</span><span class="kit-stat-l">policy checks</span></span>
