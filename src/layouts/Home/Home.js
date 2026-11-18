@@ -1,5 +1,7 @@
 import eloquateLg from 'assets/Eloquate-large.png';
 import eloquateMd from 'assets/Eloquate-med.png';
+import geditLg from 'assets/Gedit-large.jpg';
+import geditMd from 'assets/Gedit-med.jpg';
 import stonksMd from 'assets/stonksMd.png';
 import stonksLg from 'assets/stonksLrg.png';
 import { Meta } from 'components/Meta';
@@ -37,6 +39,7 @@ export const Home = () => {
   const projectOne = useRef();
   const projectTwo = useRef();
   const projectThree = useRef();
+  const projectFour = useRef();
   const experience = useRef();
   const details = useRef();
   const testimonials = useRef();
@@ -50,6 +53,7 @@ export const Home = () => {
       projectOne,
       projectTwo,
       projectThree,
+      projectFour,
       testimonials,
       skills,
     ];
@@ -113,6 +117,27 @@ export const Home = () => {
         sectionRef={projectOne}
         visible={visibleSections.includes(projectOne.current)}
         index={1}
+        title="Gedit - AI Video Editor"
+        description="An AI video editor that turns days of editing into about an hour. Upload raw footage and it cuts, cleans up and captions the video, then you refine it in a timeline editor or by chatting with the AI."
+        buttonText="View project"
+        buttonLink="https://gedit.ai"
+        model={{
+          type: 'laptop',
+          alt: 'Gedit',
+          textures: [
+            {
+              srcSet: [geditMd, geditLg],
+              placeholder: geditMd,
+            },
+          ],
+        }}
+      />
+      <ProjectSummary
+        id="project-2"
+        alternate
+        sectionRef={projectTwo}
+        visible={visibleSections.includes(projectTwo.current)}
+        index={2}
         title="Designing the future of franchise training"
         description="Designing a platform to redefine franchise training with the power of AI"
         buttonText="View project"
@@ -129,11 +154,10 @@ export const Home = () => {
         }}
       />
       <ProjectSummary
-        id="project-2"
-        alternate
-        sectionRef={projectTwo}
-        visible={visibleSections.includes(projectTwo.current)}
-        index={2}
+        id="project-3"
+        sectionRef={projectThree}
+        visible={visibleSections.includes(projectThree.current)}
+        index={3}
         title="Galaxy Royale - Puzzle Strategy Game"
         description="Fully self taught and self made mobile game. Recognized by Google for high potential and uniqueness."
         buttonText="View Trailer"
@@ -154,10 +178,11 @@ export const Home = () => {
         }}
       />
       <ProjectSummary
-        id="project-3"
-        sectionRef={projectThree}
-        visible={visibleSections.includes(projectThree.current)}
-        index={3}
+        id="project-4"
+        alternate
+        sectionRef={projectFour}
+        visible={visibleSections.includes(projectFour.current)}
+        index={4}
         title="Demo live streaming app"
         description="Demo twitch replica app built using Next.js and Supabase in 1 day."
         buttonText="View project"
