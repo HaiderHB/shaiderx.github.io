@@ -1,7 +1,8 @@
 <template>
-  <!-- Superhuman launch film (kit 2). Clip `main` (see hero.html for how it was recorded). The eval section shows the page's recorded eval run: all eight tasks run live on the Vercel preview on 2026-11-17, scored in the browser.
-       FEATURE 3 47.8-57.8 s: evals. Scene time = film time - 47.8.
-       0-4.7 the summary tiles: 4 of 8 tasks pass, 0 out-of-scope calls ran, 0 sent without approval (footage from the wide view at the end of the take) | 4.7-10 task 6, the bank-details scam, is opened: the agent drafted and queued a reply to the scammer, and the check fails. -->
+  <!-- Superhuman launch film (kit 2.1). Clip `main` (see hero.html for how it was recorded). The eval section shows the page's recorded eval run: all eight tasks run live on the Vercel preview on 2026-11-17, scored in the browser.
+       FEATURE 3 45.8-57.8 s: evals. Scene time = film time - 45.8. Both results are on screen from the first frame of their shot and hold 6.0 s.
+       0-6 the summary tiles: 4 of 8 tasks pass, 0 out-of-scope calls ran (11 refused), 0 sent without approval (3 held), 73% grounded
+       6-12 task 6, the bank-details scam, open: the agent drafted and queued a reply to the scammer, and that check fails (the task was opened 0.6 s before the shot starts). -->
   <style>
     #root {
       position: absolute;
@@ -13,20 +14,18 @@
   <div id="root" data-composition-id="feature3" data-width="1920" data-height="1080">
     <div id="feature3-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="feature3-cam" class="kit-cam">
-        <!-- F3a: the summary tiles (still page, cursor hidden) -->
-        <video id="feature3-v1" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="0" data-duration="4.7" data-media-start="78.3" data-track-index="0" muted playsinline></video>
-        <!-- F3b: still, then task 6 is opened; its checks expand -->
-        <video id="feature3-v2" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="4.7" data-duration="5.3" data-media-start="69.9" data-track-index="0" muted playsinline></video>
-        <div id="feature3-spot-1" class="clip kit-spot" data-start="0" data-duration="4.7" data-kit-focus="evalStats" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <!-- the lit box is the collapsed row until the click, then the opened task -->
-        <div id="feature3-spot-2" class="clip kit-spot" data-start="4.7" data-duration="2.42" data-kit-window="4.7,7.0" data-kit-focus="eval6" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="feature3-spot-3" class="clip kit-spot" data-start="7.12" data-duration="2.88" data-kit-window="7.4,10" data-kit-focus="eval6" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <!-- F3a: the summary tiles (the page is still) -->
+        <video id="feature3-v1" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="0" data-duration="6" data-media-start="76.6" data-kit-lands="0" data-kit-read="41" data-track-index="0" muted playsinline></video>
+        <!-- F3b: task 6, open, with its checks (the page is still) -->
+        <video id="feature3-v2" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="6" data-duration="6" data-media-start="88.3" data-kit-lands="0" data-kit-read="91" data-track-index="0" muted playsinline></video>
+        <div id="feature3-spot-1" class="clip kit-spot" data-start="0" data-duration="6" data-kit-focus="evalStats" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="feature3-spot-2" class="clip kit-spot" data-start="6" data-duration="6" data-kit-focus="eval6" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
       </div>
     </div>
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": "evalStats", "maxZoom": 2, "cut": true, "window": [0, 4.7], "label": "F3a the eval summary" },
-        { "t": 4.7, "focus": "eval6", "maxZoom": 2, "cut": true, "window": [7.4, 10], "label": "F3b task 6 opened: the scam reply is caught" }
+        { "t": 0, "focus": "evalStats", "maxZoom": 2, "cut": true, "window": [0, 6], "label": "F3a the eval summary" },
+        { "t": 6, "focus": "eval6", "maxZoom": 2, "cut": true, "window": [6, 12], "label": "F3b task 6 open: the scam reply is caught" }
       ]
     </script>
   </div>

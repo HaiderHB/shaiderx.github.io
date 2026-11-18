@@ -1,7 +1,10 @@
 <template>
-  <!-- Superhuman launch film (kit 2, launch format). Clip `main`, recorded 2026-11-17 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its recorded live run of the triage task (model turns and judge answers recorded on the Vercel preview on 2026-11-17, 96 s live; replayed by the page in about 11 s; every tool call, gate decision and inbox change computed in the browser). Footage plays at 1x; every hold is real footage.
-       HERO 16.6-37.8 s, one task in four shots. Scene time = film time - 16.6.
-       0-5.3 Run the agent is pressed (triage task, full access; send asks you) | 5.3-10.6 the tool calls: reads, then labels (the same recorded run, replayed with the workspace in view) | 10.6-15.9 the reply lands in the approval gate, the judge's scores arrive | 15.9-21.2 Approve and send is pressed. -->
+  <!-- Superhuman launch film (kit 2.1, launch format). Clip `main`, recorded 2026-11-18 at 1360x765 CSS px, 2x device pixels, from an isolated next build/start of the demo with no key (preview mode): the page replays its recorded live run of the triage task (model turns and judge answers recorded on the Vercel preview on 2026-11-17, 96 s live; replayed by the page in about 11 s; every tool call, gate decision and inbox change computed in the browser). Footage plays at 1x; every hold is real footage.
+       HERO 10.2-32.9 s, one task in four shots. Scene time = film time - 10.2. data-kit-lands = seconds from the shot's start when its result is fully on screen; data-kit-read = the words to read in it (kit 2.1, the result rule).
+       0-5.3 Run the agent is pressed at 1.15; the button reads "Running" from 1.5 (held 3.8 s; the 16-word task is on screen all 5.3 s)
+       5.3-12.0 the tool-call log as the run ends: the last pending row goes at 0.7, then the finished log holds 6.0 s (labels, the drafted reply, the send "awaiting approval")
+       12.0-18.0 the approval gate: the held reply with the judge's scores and the buttons, there from the first frame, 6.0 s
+       18.0-22.7 Approve and send is pressed at 1.17; "Approved · sent (sample inbox only)" from 1.35, held 3.35 s. -->
   <style>
     #root {
       position: absolute;
@@ -13,26 +16,29 @@
   <div id="root" data-composition-id="hero" data-width="1920" data-height="1080">
     <div id="hero-stage" class="kit-stage" data-layout-allow-overflow>
       <div id="hero-cam" class="kit-cam">
-        <!-- H1: still, then Run the agent is pressed; the page says it replays the recorded live run -->
-        <video id="hero-v1" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="0" data-duration="5.3" data-media-start="0.6" data-track-index="0" muted playsinline></video>
-        <!-- H2: list_threads, four read_thread calls, then the labels -->
-        <video id="hero-v2" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="5.3" data-duration="5.3" data-media-start="20.6" data-track-index="0" muted playsinline></video>
-        <!-- H3: the gate: empty, then the held send, then the judge's scores and the buttons -->
-        <video id="hero-v3" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="10.6" data-duration="5.3" data-media-start="27.2" data-track-index="0" muted playsinline></video>
-        <!-- H4: still, then Approve and send is pressed; the card turns "Approved · sent (sample inbox only)" -->
-        <video id="hero-v4" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="15.9" data-duration="5.3" data-media-start="33.1" data-track-index="0" muted playsinline></video>
-        <div id="hero-spot-1" class="clip kit-spot" data-start="0" data-duration="5.3" data-kit-focus="taskText" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="hero-spot-2" class="clip kit-spot" data-start="5.3" data-duration="5.3" data-kit-focus="callLog" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="hero-spot-3" class="clip kit-spot" data-start="10.6" data-duration="5.3" data-kit-window="11.3,15.9" data-kit-focus="approval" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
-        <div id="hero-spot-4" class="clip kit-spot" data-start="15.9" data-duration="5.3" data-kit-focus="approval" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <!-- H1: the cursor comes to rest, Run the agent is pressed; "Running" (the page's replay notice appears under the lit box) -->
+        <video id="hero-v1" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="0" data-duration="5.3" data-media-start="2.0" data-kit-lands="1.5" data-kit-read="1" data-track-index="0" muted playsinline></video>
+        <!-- H2: the log's last pending row goes as the run ends, then the finished log holds -->
+        <video id="hero-v2" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="5.3" data-duration="6.7" data-media-start="28.6" data-kit-lands="0.7" data-kit-read="42" data-track-index="0" muted playsinline></video>
+        <!-- H3: the gate: the held reply, the judge's scores, Approve / Reject; the page is still -->
+        <video id="hero-v3" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="12" data-duration="6" data-media-start="29.95" data-kit-lands="0" data-kit-read="65" data-track-index="0" muted playsinline></video>
+        <!-- H4: Approve and send is pressed; the card turns "Approved · sent (sample inbox only)" and holds -->
+        <video id="hero-v4" class="clip kit-footage" src="assets/footage/main.mp4" data-kit-clip="main" data-start="18" data-duration="4.7" data-media-start="38.7" data-kit-lands="1.35" data-kit-read="5" data-track-index="0" muted playsinline></video>
+        <!-- the lit box is the task and the Run button as they are before the click; the page's notice lands under it -->
+        <div id="hero-spot-1" class="clip kit-spot" data-start="0" data-duration="5.3" data-kit-window="0,1.0" data-kit-focus="taskText" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-2" class="clip kit-spot" data-start="5.3" data-duration="6.7" data-kit-focus="callLog" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-3" class="clip kit-spot" data-start="12" data-duration="6" data-kit-focus="approval" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <!-- the card with its buttons until the click, then the approved card (shorter) -->
+        <div id="hero-spot-4" class="clip kit-spot" data-start="18" data-duration="1.38" data-kit-window="18,19.1" data-kit-focus="approval" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-5" class="clip kit-spot" data-start="19.38" data-duration="3.32" data-kit-window="19.6,22.7" data-kit-focus="approval" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
       </div>
     </div>
     <script type="application/json" class="kit-shots">
       [
-        { "t": 0, "focus": "taskText", "maxZoom": 2, "cut": true, "window": [0, 5.3], "label": "H1 the task, Run the agent" },
-        { "t": 5.3, "focus": "callLog", "maxZoom": 2, "cut": true, "window": [5.3, 10.6], "label": "H2 the tool calls: reads, then labels" },
-        { "t": 10.6, "focus": "approval", "maxZoom": 1.6, "cut": true, "window": [11.3, 15.9], "label": "H3 the reply held at the gate" },
-        { "t": 15.9, "focus": "approval", "maxZoom": 1.6, "cut": true, "window": [15.9, 21.2], "label": "H4 Approve and send" }
+        { "t": 0, "focus": "taskText", "maxZoom": 2, "cut": true, "window": [0, 1.0], "label": "H1 the task, Run the agent" },
+        { "t": 5.3, "focus": "callLog", "maxZoom": 2, "cut": true, "window": [5.3, 12], "label": "H2 the finished tool-call log" },
+        { "t": 12, "focus": "approval", "maxZoom": 1.6, "cut": true, "window": [12, 18], "label": "H3 the reply held at the gate" },
+        { "t": 18, "focus": "approval", "maxZoom": 1.6, "cut": true, "window": [18, 19.1], "label": "H4 Approve and send" }
       ]
     </script>
   </div>

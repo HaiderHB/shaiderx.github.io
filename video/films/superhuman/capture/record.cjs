@@ -9,15 +9,17 @@
 // Kit 2 capture settings: viewport 1360x765 CSS px at deviceScaleFactor 2 (frames 2720x1530); cursor about
 // 1.5x a system arrow, hidden when idle, resting 450 ms before every click.
 //
-// One continuous take, `main`, in page order:
-//   run       the task card: "Run the agent" is pressed (triage task, full access, send asks you)
-//   replay    the workspace (inbox | tool calls | approval gate): "Replay" replays the same recorded run so
-//             the reads, labels, the held send and the judge's scores land with all three cards in view
-//   approve   "Approve and send" on the held reply
-//   blocked   the "Archive newsletters" task: the grant is narrowed from full to read + draft, Run, then
-//             the workspace: every archive and label call is blocked by the server
-//   evals     the eval section: the summary tiles, then task 6 (the bank-details scam) is opened
-//   wide      the eval section, wide, for the proof
+// One continuous take, `main`, in page order. Every result is followed by a real hold on the page (kit 2.1,
+// the result rule), so the film never freezes a frame:
+//   run       the task card: "Run the agent" is pressed (triage task, full access, send asks you); holds 5.6 s
+//   replay    the workspace (inbox | tool calls | approval gate): "Replay" replays the same recorded run; when
+//             it ends the finished tool-call log and the held reply with its scores stay still for 7.4 s
+//   approve   "Approve and send" on the held reply; the approved card holds 3.9 s
+//   blocked   the "Archive newsletters" task: the grant is narrowed from full to read + draft (holds 5.8 s),
+//             Run, then the workspace: every archive and label call is blocked; the finished log holds 7.4 s
+//   tiles     the eval section from its heading: the summary tiles, held 7.8 s
+//   evals     task 6 (the bank-details scam) is opened and held 7.6 s
+//   wide      the eval section from its heading again, held 7.8 s (the proof)
 const fs = require("fs");
 const path = require("path");
 const cap = require("../../../kit/scripts/capture.cjs");
@@ -102,6 +104,12 @@ async function jumpEl(page, sel, y) {
 async function main() {
   const clip = await cap.startClip(Object.assign({ film: FILM, name: "main", url: BASE, track: TRACK }, VIEW));
   const { page } = clip;
+  const inLog = (text, n = 1) =>
+    page.waitForFunction(
+      ([t, n]) => [...document.querySelectorAll('[class*="Superhuman_callsCard__"] [class*="Mcp_callStatus__"]')].filter((el) => el.textContent.trim() === t).length >= n,
+      [text, n],
+      { timeout: 60000, polling: 30 }
+    );
   // pre-roll: the page replays its triage example on load; let it finish, then put the task card in view
   await runDone(page);
   await page.waitForTimeout(1500);
@@ -110,16 +118,17 @@ async function main() {
   await page.waitForTimeout(1500);
   await clip.begin();
 
-  // run: still, then ONE action: Run the agent (triage task, full access)
+  // run: still, then ONE action: Run the agent (triage task, full access). The card then holds (real hold).
   clip.mark("run-still");
   await clip.wait(1500);
   await clip.click(page.getByRole("button", { name: "Run the agent", exact: true }), { label: "run", move: 850 });
   await runStarted(page);
   clip.mark("run-started");
-  await clip.wait(2600);
+  await clip.wait(5600);
   await park(clip);
 
-  // replay: the workspace in view (inbox | tool calls | approval gate), then the same recorded run again
+  // replay: the workspace in view (inbox | tool calls | approval gate), then the same recorded run again.
+  // After the run ends the page is still for 7.4 s: the finished tool-call log and the held reply with its scores.
   await runDone(page);
   clip.mark("run-done");
   await scrollEl(clip, '[class*="Superhuman_workspace__"]', 100, 700);
@@ -129,21 +138,23 @@ async function main() {
   await runStarted(page);
   clip.mark("replay-started");
   await park(clip);
+  await inLog("awaiting approval");
+  clip.mark("send-row");
   await seen(page, "Send waiting for your approval");
   clip.mark("held");
   await runDone(page);
   clip.mark("replay-done");
   await page.waitForFunction(() => document.querySelectorAll('#gate [class*="Badges_score__"]').length > 0, null, { timeout: 30000, polling: 50 });
   clip.mark("judged");
-  await clip.wait(3200);
+  await clip.wait(7400);
 
-  // approve: still, then ONE action: Approve and send
+  // approve: still, then ONE action: Approve and send; the approved card holds
   clip.mark("approve-still");
   await clip.wait(1300);
   await clip.click(page.getByRole("button", { name: "Approve and send" }).first(), { label: "approve", move: 850 });
   await seen(page, "Approved");
   clip.mark("approved");
-  await clip.wait(3200);
+  await clip.wait(3900);
   await park(clip);
 
   // blocked: the archive task with read + draft access. Pick it and run it from the task card, then the workspace
@@ -156,11 +167,13 @@ async function main() {
   await clip.click(page.getByRole("button", { name: "Full, send asks me", exact: true }).first(), { label: "grant-full", move: 700 });
   await park(clip);
   await clip.wait(1500);
-  // grant: still, then ONE action: narrow the grant to read + draft (the act tools lock)
+  // grant: still, then ONE action: narrow the grant to read + draft (the act tools lock); the card holds
   clip.mark("grant-still");
   await clip.wait(1300);
   await clip.click(page.getByRole("button", { name: "Read + draft", exact: true }).first(), { label: "grant-draft", move: 800 });
-  await clip.wait(2800);
+  await page.waitForFunction(() => document.querySelectorAll('[class*="Superhuman_scopeList__"] li:not([data-on])').length === 1, null, { timeout: 10000, polling: 20 });
+  clip.mark("locked");
+  await clip.wait(5800);
   await clip.click(page.getByRole("button", { name: "Run the agent", exact: true }), { label: "run-archive", move: 700 });
   await runStarted(page);
   clip.mark("blocked-started");
@@ -168,30 +181,33 @@ async function main() {
   await scrollEl(clip, '[class*="Superhuman_workspace__"]', 100, 600);
   clip.mark("blocked-workspace");
   await park(clip);
-  await page.waitForFunction(
-    () => [...document.querySelectorAll('[class*="Mcp_callStatus__"]')].some((el) => el.textContent.trim() === "blocked"),
-    null,
-    { timeout: 30000, polling: 30 }
-  );
+  await inLog("blocked", 1);
   clip.mark("first-block");
+  await inLog("blocked", 10);
+  clip.mark("last-block");
   await runDone(page);
   clip.mark("blocked-done");
-  await clip.wait(4200);
+  await clip.wait(7400);
 
-  // evals: the section with task 6 near the top; the summary tiles stay beside it (sticky)
+  // evals: the section from its heading (the summary tiles, wide), held
+  await scrollEl(clip, "#evals", 96, 800);
+  clip.mark("tiles");
+  await clip.wait(7800);
+
+  // task 6 (the bank-details scam) near the top, opened, held
   await scrollEl(clip, evalItem(5), 100, 900);
   clip.mark("evals");
-  await clip.wait(5200);
+  await clip.wait(1400);
   clip.mark("eval6-still");
   await clip.click(page.locator(evalItem(6) + " button").first(), { label: "open-eval6", move: 850 });
   clip.mark("eval6-open");
-  await clip.wait(4200);
   await park(clip);
+  await clip.wait(7600);
 
-  // wide: the eval section from its heading
+  // wide: back to the eval section's heading, held
   await scrollEl(clip, "#evals", 96, 800);
   clip.mark("wide");
-  await clip.wait(7600);
+  await clip.wait(7800);
   await clip.finish();
 }
 

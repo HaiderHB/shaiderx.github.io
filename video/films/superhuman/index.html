@@ -1,16 +1,16 @@
 <!doctype html>
 <!--
   Superhuman launch film (superhuman), scaffolded by kit/scripts/new-film.mjs (kit 2, launch format).
-  The beat table is in SPEC.md.
+  The beat table is in SPEC.md. Re-cut on kit 2.1 (2026-11-18): 3 s text screens and the result rule.
     hook       0.0-4.2     the approval gate holds the agent's reply; the judge's scores land
-    what       4.2-10.7    statement: what it is, over the workspace while the agent works, blurred
-    problem    10.7-16.6   statement: the pain, over the untouched inbox
-    hero       16.6-37.8   ONE task: Run, the tool calls, the reply held at the gate, Approve and send
-    feature2   37.8-47.8   permissions: narrow the grant, the server blocks every change
-    feature3   47.8-57.8   evals: the summary, task 6 (the scam reply) opened
-    proof      57.8-64.3   the eval section, wide, with three numbers from the recorded eval run
-    launchend  64.3-69.3   Built for Superhuman by Haider Bokhari / Try it live / haiderb.com
-    captions   0-64.3      hook line, one caption per shot, proof numbers, chapters + progress bar
+    what       4.2-7.2     statement (3 s): what it is, over the workspace while the agent works, blurred
+    problem    7.2-10.2    statement (3 s): the pain, over the untouched inbox
+    hero       10.2-32.9   ONE task: Run, the finished tool-call log, the reply held at the gate, Approve and send
+    feature2   32.9-45.8   permissions: narrow the grant, the server blocks every change
+    feature3   45.8-57.8   evals: the summary tiles, task 6 (the scam reply) open
+    proof      57.8-63.8   the eval section, wide, with three numbers from the recorded eval run
+    launchend  63.8-68.8   Built for Superhuman by Haider Bokhari / Try it live / haiderb.com
+    captions   0-63.8      hook line, one caption per shot, proof numbers, chapters + progress bar
     music      one instrumental bed under the whole film: node ../../kit/scripts/music-bed.mjs .
   60-75 s (QA: 55-90 s). QA: node ../../kit/scripts/qa.mjs .   (or: npm run qa -- films/superhuman)
   data-kit-format="launch" turns on the launch rules; data-kit-beat on each host names its beat;
@@ -50,38 +50,38 @@
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-kit-format="launch" data-kit-accent="iris" data-kit-run="example" data-kit-jargon="Jev,DeepSeek,MCP" data-start="0" data-duration="69.3" data-width="1920" data-height="1080">
+    <div id="root" data-composition-id="main" data-kit-format="launch" data-kit-accent="iris" data-kit-run="example" data-kit-jargon="Jev,DeepSeek,MCP" data-start="0" data-duration="68.8" data-width="1920" data-height="1080">
       <div id="hook" data-composition-id="hook" data-composition-src="compositions/hook.html" data-kit-role="footage" data-kit-beat="hook"
         data-start="0" data-duration="4.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 1"></div>
 
       <div id="what" data-composition-id="what" data-composition-src="compositions/what.html" data-kit-role="statement" data-kit-beat="what"
-        data-start="4.2" data-duration="6.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
+        data-start="4.2" data-duration="3" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 2"></div>
 
       <div id="problem" data-composition-id="problem" data-composition-src="compositions/problem.html" data-kit-role="statement" data-kit-beat="problem"
-        data-start="10.7" data-duration="5.9" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
+        data-start="7.2" data-duration="3" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 3"></div>
 
       <div id="hero" data-composition-id="hero" data-composition-src="compositions/hero.html" data-kit-role="footage" data-kit-beat="hero"
-        data-start="16.6" data-duration="21.2" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
+        data-start="10.2" data-duration="22.7" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 4"></div>
 
       <div id="feature2" data-composition-id="feature2" data-composition-src="compositions/feature2.html" data-kit-role="footage" data-kit-beat="feature"
-        data-start="37.8" data-duration="10" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
+        data-start="32.9" data-duration="12.9" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 5"></div>
 
       <div id="feature3" data-composition-id="feature3" data-composition-src="compositions/feature3.html" data-kit-role="footage" data-kit-beat="feature"
-        data-start="47.8" data-duration="10" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
+        data-start="45.8" data-duration="12" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 6"></div>
 
       <div id="proof" data-composition-id="proof" data-composition-src="compositions/proof.html" data-kit-role="footage" data-kit-beat="proof"
-        data-start="57.8" data-duration="6.5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 7"></div>
+        data-start="57.8" data-duration="6" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 7"></div>
 
       <div id="launchend" data-composition-id="launchend" data-composition-src="kit/blocks/launch-end.html" data-kit-role="end-card" data-kit-beat="end"
         data-variable-values='{"built": "Built for *Superhuman* by Haider Bokhari", "action": "Try it live: the link is in my message", "url": "haiderb.com"}'
-        data-start="64.3" data-duration="5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 8"></div>
+        data-start="63.8" data-duration="5" data-track-index="1" data-track-kind="graphics" data-width="1920" data-height="1080" style="z-index: 8"></div>
 
       <div id="captions" data-composition-id="captions" data-composition-src="compositions/captions.html" data-kit-role="captions"
-        data-start="0" data-duration="64.3" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
+        data-start="0" data-duration="63.8" data-track-index="2" data-track-kind="captions" data-width="1920" data-height="1080" style="z-index: 20"></div>
 
       <!-- the instrumental bed: written by node ../../kit/scripts/music-bed.mjs . (re-run when the length changes) -->
       <!-- kit:music:start -->
-      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112-long.mp3" data-kit-music="bright-pluck-112-long" data-start="0" data-duration="69.3" data-media-start="24.2" data-volume="0.575" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
+      <audio id="music" class="clip kit-music" src="assets/music/bright-pluck-112-long.mp3" data-kit-music="bright-pluck-112-long" data-start="0" data-duration="68.8" data-media-start="24.7" data-volume="0.575" data-fade-in="0.3" data-fade-out="1.5" data-kit-lufs="-20" data-timeline-role="music" data-track-index="9"></audio>
       <!-- kit:music:end -->
     </div>
     <script>
