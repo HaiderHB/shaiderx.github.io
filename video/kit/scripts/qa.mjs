@@ -41,12 +41,16 @@
  *   captions        .kit-cap3 cues only: ONE line, no kicker, no detail line (FAIL); <= 8 words (WARN 9-12, FAIL
  *                   above; hook <= 7, FAIL); 64-72 px; on screen >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s
  *                   (FAIL); one proof cue with 1-3 numbers and at most one under-the-hood line (FAIL);
- *                   statement sentences <= 12 words (WARN, FAIL above 16) with the same reading time (FAIL)
+ *                   statement screens (what, problem) run 3 s each, 2.8-3.5 (FAIL), sentence <= 10 words
+ *                   (WARN, FAIL above 12)
  *   progress        a .kit-chapters element with 3-4 chapters (FAIL); a stepper with more than 4 steps (FAIL)
  *   attention       hero / feature shots show the page at >= 1.5x (camera zoom x the clip's stage scale; FAIL
  *                   unless the shot is "wide": true with a reason); a spotlight, ring or annotation per hero /
  *                   feature scene (WARN); the camera does not move under a caption (FAIL); captions land on a
- *                   cut or move, at most one click per caption, >= 1 s still before it and >= 1.5 s after (WARN)
+ *                   cut or move, at most one click per caption, >= 1 s still before it and >= 1.5 s after (WARN);
+ *                   the result rule (kit 2.1): every hero / feature shot names when its result is on screen
+ *                   (data-kit-lands, seconds from the shot's start) and then holds max(2.5, 0.5 + 0.3 x
+ *                   data-kit-read words) s before the cut (FAIL); a wait over half the shot warns
  *   honesty         data-kit-run on the root ("live" | "example" | "cached" | "mixed"; WARN if missing); example
  *                   and cached runs need a chip saying so (FAIL); a still held > 1.5 s in a footage scene needs
  *                   a "held frame" chip (FAIL); "If I join" content (FAIL); jargon in captions (WARN)
@@ -140,6 +144,10 @@ const duration = num(rootTag && rootTag.attrs["data-duration"], NaN);
 // kit 2: launch-format films opt in on the root and are gated by the launch rules (kit/lib/launch.js)
 const LAUNCH = !!rootTag && rootTag.attrs["data-kit-format"] === "launch";
 const L = Kit.launch ? Kit.launch.RULES : null;
+// kit 2.1 pacing rules; QA runs on the film's vendored lib, so a film synced before 2.1 falls back to these and is told to sync
+const LAND = (L && L.land) || { hold: 2.5, base: 0.5, perWord: 0.3, maxHold: 6, waitShare: 0.5, waitSec: 2.5 };
+const landHold = (w) => +Math.min(LAND.maxHold, Math.max(LAND.hold, LAND.base + LAND.perWord * (w || 0))).toFixed(2);
+const STMT = { sec: 3, minSec: 2.8, maxSec: 3.5 };
 if (LAUNCH && !L) {
   console.error('data-kit-format="launch" but the film\'s kit has no lib/launch.js: run npm run sync -- <slug> (kit 2)');
   process.exit(1);
@@ -508,6 +516,7 @@ hosts
 
 function launchChecks() {
   const R = L.cue;
+  if (!L.land) FAIL("kit", "this film vendors a kit older than 2.1.0 (3 s text screens, the result rule): npm run sync -- <slug>, then re-check");
   const beatHosts = pics.slice();
   const planOf = (id) => plans.find((p) => p.host.id === id);
   const extraJargon = ((rootTag.attrs["data-kit-jargon"] || "").split(/[,|]/).map((x) => x.trim().toLowerCase())).filter(Boolean);
@@ -546,14 +555,12 @@ function launchChecks() {
       if (h.role !== "statement") FAIL("beats", `${tag}: must be a statement scene (data-kit-role="statement", components/statement-scene.html)`);
       const text = Kit.text.plain(pick(h.html, "kit-statement-text") || "");
       const w = Kit.text.words(text);
-      const need = Kit.launch.readingTime(w);
       joined.push(text, Kit.text.plain(pick(h.html, "kit-statement-sub") || ""));
       if (!text) FAIL("captions", `${tag}: no .kit-statement-text`);
       else if (w > L.statement.maxWords) FAIL("captions", `${tag}: the sentence is ${w} words (<= ${L.statement.words})`);
       else if (w > L.statement.words) WARN("captions", `${tag}: the sentence is ${w} words (<= ${L.statement.words})`);
-      if (text && h.duration < need - 1e-6) FAIL("captions", `${tag}: on screen ${h.duration.toFixed(2)} s < reading time ${need.toFixed(2)} s (0.5 + 0.6 x ${w} words) "${text}"`);
-      else if (text) PASS("captions", `${tag}: "${text}" · ${w} words, needs ${need.toFixed(2)} s`);
-      if (h.duration > L.statement.maxSec + 1e-6) WARN("captions", `${tag}: a statement longer than ${L.statement.maxSec} s`);
+      if (h.duration < STMT.minSec - 1e-6 || h.duration > STMT.maxSec + 1e-6) FAIL("captions", `${tag}: a text screen runs ${STMT.sec} s (${STMT.minSec}-${STMT.maxSec}); this one runs ${h.duration.toFixed(2)} s "${text}"`);
+      else if (text) PASS("captions", `${tag}: "${text}" · ${w} words, ${h.duration.toFixed(2)} s`);
       if (!product.some((p) => p.host === h.id)) FAIL("beats", `${tag}: a statement sits over product footage (video or img with data-kit-clip), not a bare card`);
       if (!/\bkit-backdrop\b/.test(h.html) || !/\bkit-scrim\b/.test(h.html)) WARN("beats", `${tag}: no .kit-backdrop / .kit-scrim (the footage should be blurred and dimmed under the sentence)`);
       jargon(tag, text);
@@ -663,6 +670,18 @@ function launchChecks() {
     });
     if (mags.length) PASS("attention", `#${h.id} (${h.beat}): page shown at ${Math.min(...mags)}-${Math.max(...mags)}x over ${mags.length} shot${mags.length > 1 ? "s" : ""}`);
     if (tight && !tags(h.html).some((t) => hasClass(t, "kit-spot") || hasClass(t, "kit-ring") || hasClass(t, "kit-ann"))) WARN("attention", `#${h.id} (${h.beat}): no spotlight, ring or annotation: give the scene one focal point (.kit-spot)`);
+    // the result rule (kit 2.1): the wait is trimmed, the result stays long enough to read
+    if (tight) tags(h.html).filter((t) => t.name === "video" && t.attrs["data-kit-clip"]).forEach((t) => {
+      const s = num(t.attrs["data-start"]), d = num(t.attrs["data-duration"]);
+      const at = `#${h.id} shot #${t.attrs.id} ${(h.start + s).toFixed(2)}-${(h.start + s + d).toFixed(2)} s`;
+      if (t.attrs["data-kit-lands"] == null) return FAIL("attention", `${at}: no data-kit-lands (seconds from the shot's start when the result it waits for is fully on screen; 0 when it is there from the first frame)`);
+      const lands = num(t.attrs["data-kit-lands"], NaN), read = num(t.attrs["data-kit-read"], 0);
+      if (!Number.isFinite(lands) || lands < 0 || lands > d) return FAIL("attention", `${at}: data-kit-lands="${t.attrs["data-kit-lands"]}" is not inside the shot (0-${d} s)`);
+      const need = landHold(read), hold = d - lands;
+      if (hold < need - 0.05) FAIL("attention", `${at}: the result lands at ${lands.toFixed(2)} s and is cut ${hold.toFixed(2)} s later; it stays >= ${need.toFixed(2)} s (2.5, or 0.5 + 0.3 x ${read} words to read). Trim the wait before it, not the hold after it`);
+      else PASS("attention", `${at}: result on screen ${hold.toFixed(2)} s (needs ${need.toFixed(2)})`);
+      if (lands > Math.max(LAND.waitSec, d * LAND.waitShare) + 0.05) WARN("attention", `${at}: ${lands.toFixed(2)} s of waiting before the result (over half the shot): cut the wait or speed it up with a rate label`);
+    });
     const clicks = clicksOf(h);
     cues.filter((c) => !c.proof && c.start >= h.start - 0.05 && c.start < h.start + h.duration - 0.05).forEach((c) => {
       const tag = `#${c.id} ${c.start.toFixed(2)}-${c.end.toFixed(2)} s`;

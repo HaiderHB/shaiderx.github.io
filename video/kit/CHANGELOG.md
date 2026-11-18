@@ -155,6 +155,23 @@ What a kit 1.1 film must change to adopt the launch format (see video/README.md,
 5. Swap `kit/blocks/end-card.html` for `kit/blocks/launch-end.html` (host id `launchend`).
 6. `node kit/scripts/music-bed.mjs films/<slug>`; check, QA, review stills, render, `qa.mjs --video`.
 
+
+## 2.1.0 (2026-11-18) — pacing (Haider's review of the Affirm, Superhuman and Truss films)
+
+- **Text screens run 3 s each.** `RULES.statement` is now `{words: 10, maxWords: 12, sec: 3, minSec: 2.8, maxSec: 3.5}`;
+  QA fails a `what` / `problem` statement outside 2.8-3.5 s (it used to demand the caption reading time, ~6 s
+  each: 12 s of text before the product moved). `Kit.launch.statement` reveals the words faster on a 3 s screen.
+- **The result rule.** New `RULES.land` and `Kit.launch.landHold(words)`. Every hero / feature `<video>` shot
+  carries `data-kit-lands` (seconds from the shot's start when its result is fully on screen) and optionally
+  `data-kit-read` (words to read in it); QA fails a missing `data-kit-lands` and a result cut sooner than
+  `max(2.5, 0.5 + 0.3 x words)` s (6 s at most), and warns when the wait is over half the shot.
+- Film template: statements 4.2-7.2 and 7.2-10.2, everything after moved 6 s earlier (60.2 s total), shots carry
+  the two attributes, SPEC.md has a "Result lands at / held for" column.
+- What films must do: `npm run sync -- <slug>`, set both statement hosts to 3 s and move every later host, cue,
+  chapter and the music bed 6 s earlier, add `data-kit-lands` / `data-kit-read` to hero and feature shots and
+  re-cut any shot that fails. gc-ai, goodtime and reacher shipped under 2.0 and were not re-cut; they need this
+  before any re-render.
+
 ## Open suggestions from the v3 films (2026-11-15, not applied)
 
 No kit files changed for AssemblyAI or Great Question v3. Notes kept for a later version:
