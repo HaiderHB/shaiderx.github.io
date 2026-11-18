@@ -49,9 +49,9 @@ one focal point at a time, prove it, give one action.
 | # | Beat (`data-kit-beat`) | Seconds | Picture | Text |
 | --- | --- | --- | --- | --- |
 | 1 | `hook` | 0-4 | The demo's best moment already happening (the result landing), zoomed so it reads on a phone. No title card, no logo | ONE line, <= 7 words, naming the outcome in plain words |
-| 2 | `what` | ~4-10 | Statement scene over blurred, dimmed product footage | One plain sentence a stranger understands, big + "A prototype built for <Company> by Haider Bokhari" |
-| 3 | `problem` | ~10-17 | Statement scene over the "before" state | One line naming the pain in the viewer's own world |
-| 4 | `hero` | ~17-40 | ONE real task, start to finish, in 3-4 shots | One caption per shot |
+| 2 | `what` | 4-7 (3 s) | Statement scene over blurred, dimmed product footage | One plain sentence a stranger understands, big + "A prototype built for <Company> by Haider Bokhari" |
+| 3 | `problem` | 7-10 (3 s) | Statement scene over the "before" state | One line naming the pain in the viewer's own world |
+| 4 | `hero` | ~10-33 | ONE real task, start to finish, in 3-4 shots | One caption per shot |
 | 5 | `feature` | 8-10 s | One idea tied to the same problem | One caption per shot |
 | 6 | `feature` | 8-10 s | One idea, the coolest last | One caption per shot |
 | 7 | `proof` | ~6 | The finished result in a wider shot | 1-3 real numbers from the run + ONE small "under the hood" line (the only place implementation terms go) |
@@ -59,8 +59,22 @@ one focal point at a time, prove it, give one action.
 
 ### Rules (QA fails the film unless marked "warn")
 
+**Text screens run 3 s each (kit 2.1; Haider, 2026-11-18).** The `what` and `problem` statements are 3 s apiece
+(QA: 2.8-3.5 s, FAIL outside), sentence <= 10 words (WARN, FAIL above 12); the words are all up within ~0.5 s.
+Six seconds a screen (kit 2.0) read as stalling: 12 s passed before the product moved.
+
+**The result rule (kit 2.1): cut the wait, keep the result.** A shot never ends the moment its result appears.
+Once the thing the caption promises is fully on screen (the reply, the card, the decision) it stays
+`max(2.5, 0.5 + 0.3 x words the viewer has to read in it)` s, 6 s at most, before the cut. Take the time from
+the wait before it: start the shot later, cut the "thinking" dots, or speed the wait up with a rate label. Never
+spend 2 s on a spinner and then cut as the answer lands. Every hero / feature shot states it:
+`data-kit-lands="<seconds from the shot's start when the result is fully on screen>"` (0 when it is there from the
+first frame) and `data-kit-read="<words to read in the result>"` on its `<video>`. QA fails a missing
+`data-kit-lands` and a hold shorter than the rule, and warns when the wait is over half the shot. Take the
+landing time from the capture marks (`clip.mark()` when the result renders), then check it on a frame.
+
 **Scene rule.** The caption lands with the cut; the screen holds still 1-1.5 s; ONE action happens (the cursor
-rests 450 ms, then clicks); the result holds at least 1.5-2 s; cut. Never change a caption in the middle of an
+rests 450 ms, then clicks); the result holds (the result rule above); cut. Never change a caption in the middle of an
 action; one camera move per caption, at its start. (QA: a camera move under a caption fails; captions off the
 cut, two clicks under one caption, a click under 1 s after the caption or a result held under 1.5 s warn.)
 
@@ -69,7 +83,7 @@ jargon ("a decision model", not the model's name; "pinned to the exact words", n
 matters, not what was clicked. On screen at least `max(2.5, 0.5 + 0.6 x words)` s and never over 7 s. Headline
 64-72 px (68 by default; `--kit-cap3-head` on the film's `:root` to change it), ink on the solid band (contrast
 17:1). No kicker ("STEP 3 · ANCHOR"), no detail line, no stepper: 3-4 plain chapter labels over a thin progress
-bar (`.kit-chapters`). Statement sentences: <= 12 words, same reading time. Labels (`.kit-chip`, `.kit-speed`)
+bar (`.kit-chapters`). Statement sentences: <= 10 words on a 3 s screen (see above). Labels (`.kit-chip`, `.kit-speed`)
 sit under the headline and are not counted.
 
 **Attention.** One focal point per shot. Track ONE clause, ONE card, ONE button at capture and focus that: the
@@ -100,7 +114,8 @@ All commands run from `video/`. Heavy steps (next build/start, capture, footage,
    folder and copy `kit/templates/film/` over its `index.html`, `compositions/`, `SPEC.md`, `capture/`).
 2. **Beat table first**: fill `films/acme/SPEC.md`: beat, seconds, picture, caption, focus box, honesty. Check
    every word and number against the real page and run. Read each caption against its reading time
-   (8 words = 5.3 s, 7 = 4.7 s, 6 = 4.1 s). Add up the seconds: 60-75.
+   (8 words = 5.3 s, 7 = 4.7 s, 6 = 4.1 s). For every hero / feature shot write when its result lands and how
+   long it then stays (the result rule). Add up the seconds: 60-75.
 3. **Capture** (real demo, real UI): run the demo from an isolated copy (never run `next` inside the shared
    worktree: copy it without `node_modules`, `.next`, `video`, link `node_modules`, `next build && next start
    -p 3160`). Write `films/acme/capture/record.cjs` from the template: `track` every focus box; one take can

@@ -1,5 +1,5 @@
 <template>
-  <!-- PROBLEM 10.2-16.2 s: ONE line naming the pain in the viewer's own world, over the "before" state.
+  <!-- PROBLEM 7.2-10.2 s: ONE line naming the pain in the viewer's own world, over the "before" state.
        See kit/components/statement-scene.html: data-kit-cam="x,y,w,h" on the root frames one region of the footage;
        style="--kit-scrim: 0.84" on a white page keeps the sentence at 4.5:1. -->
   <style>
@@ -13,11 +13,11 @@
   <div id="root" data-composition-id="problem" data-width="1920" data-height="1080">
     <div id="problem-stage" class="kit-stage kit-backdrop" data-layout-allow-overflow>
       <div id="problem-cam" class="kit-cam">
-        <video id="problem-v" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="0" data-duration="6" data-media-start="0" data-track-index="0" muted playsinline></video>
+        <video id="problem-v" class="clip kit-footage" src="assets/footage/demo.mp4" data-kit-clip="demo" data-start="0" data-duration="3" data-media-start="0" data-track-index="0" muted playsinline></video>
       </div>
     </div>
-    <div id="problem-scrim" class="clip kit-scrim" data-start="0" data-duration="6" data-track-index="1" data-layout-ignore></div>
-    <div id="problem-text" class="clip kit-statement" data-start="0" data-duration="6" data-track-index="2">
+    <div id="problem-scrim" class="clip kit-scrim" data-start="0" data-duration="3" data-track-index="1" data-layout-ignore></div>
+    <div id="problem-text" class="clip kit-statement" data-start="0" data-duration="3" data-track-index="2">
       <div class="kit-statement-text">The pain this solves, in the viewer's *own words*.</div>
     </div>
   </div>
