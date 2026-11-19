@@ -172,6 +172,13 @@ What a kit 1.1 film must change to adopt the launch format (see video/README.md,
   re-cut any shot that fails. gc-ai, goodtime and reacher shipped under 2.0 and were not re-cut; they need this
   before any re-render.
 
+## 2.1.1 (2026-11-18) — Windows fixes (from apostra; no API change, no film change needed)
+
+- `scripts/sync.mjs`: linking `node_modules` into a film falls back to a directory junction when Windows refuses a
+  symlink (EPERM without Developer Mode). Other platforms are unchanged.
+- `scripts/qa.mjs`: imports `sync.mjs` through a file URL; a bare `C:\...` path threw ERR_UNSUPPORTED_ESM_URL_SCHEME
+  on Windows before any check ran.
+
 ## Open suggestions from the v3 films (2026-11-15, not applied)
 
 No kit files changed for AssemblyAI or Great Question v3. Notes kept for a later version:

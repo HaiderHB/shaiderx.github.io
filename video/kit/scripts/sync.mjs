@@ -54,7 +54,13 @@ export function syncFilm(filmDir) {
   try {
     fs.lstatSync(nm);
   } catch {
-    fs.symlinkSync(path.relative(film, path.join(VIDEO, "node_modules")), nm);
+    try {
+      fs.symlinkSync(path.relative(film, path.join(VIDEO, "node_modules")), nm);
+    } catch (error) {
+      // Windows without symlink rights (no Developer Mode): a directory junction needs none
+      if (error.code !== "EPERM" || process.platform !== "win32") throw error;
+      fs.symlinkSync(path.join(VIDEO, "node_modules"), nm, "junction");
+    }
   }
   // data/clips.js
   const dataDir = path.join(film, "data", "clips");

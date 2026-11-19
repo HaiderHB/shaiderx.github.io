@@ -66,7 +66,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { execFileSync, spawnSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const require = createRequire(import.meta.url);
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -90,7 +90,8 @@ const JSON_OUT = flag("--json");
 
 // ---------- load the film's own vendored kit (what renders), fall back to video/kit ----------
 const libDir = fs.existsSync(path.join(film, "kit", "lib")) ? path.join(film, "kit", "lib") : path.join(HERE, "..", "lib");
-const { libFiles } = await import(path.join(HERE, "sync.mjs"));
+// a file URL, not a bare path: Windows paths ("C:\...") are not valid import specifiers
+const { libFiles } = await import(pathToFileURL(path.join(HERE, "sync.mjs")).href);
 globalThis.Kit = undefined;
 const order = libFiles().filter((f) => fs.existsSync(path.join(libDir, f)));
 for (const f of order) require(path.join(libDir, f));
