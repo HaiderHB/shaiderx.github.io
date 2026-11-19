@@ -19,7 +19,7 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 
 ## Catalog
 
-Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman, **T** Truss. "via" means used
+Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman, **T** Truss, **SS** Stacksync. "via" means used
 inside another kit component.
 
 | Component | What it is | Props | Used by |
@@ -45,7 +45,7 @@ inside another kit component.
 | `NoteGrid` | "Design choices" / "How it works" notes | `items` `[{ title, text }]`, `variant` (`accent`, `boxed`) | D (accent), G (boxed) |
 | `PipelineStrip` | How a run works: numbered step cards with cost | `steps` `[{ label, what, cost }]`, `label` | D |
 | `Timeline`, `TimelineStep` | Run stages with marker (number, spinner, tick), timing and details | `index`, `status` (`pending`, `running`, `done`, `error`), `title`, `detail`, `ms` (formatted), children | D |
-| `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars on a hatched track, chosen option bold, threshold marks; `pending` keeps the rows while the model has not answered (empty tracks, "–") | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `accent`), `strong`, `marks`, `pending`; `options` `[{ value, label, tone }]`, `probabilities`, `choice`, `pending` | D, R, T |
+| `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars on a hatched track, chosen option bold, threshold marks; `pending` keeps the rows while the model has not answered (empty tracks, "–") | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `accent`), `strong`, `marks`, `pending`; `options` `[{ value, label, tone }]`, `probabilities`, `choice`, `pending` | D, R, T, SS |
 | `Funnel` | Narrowing counts, one bar per step (40 → 12 → 10 → 8); pending steps hatched, the last reached step in the accent | `steps` `[{ label, value, note }]` (`value: null` = not reached), `max`, `size` (`m`, `s`), `tone` (`accent`, `ink` on an accent card), `label` | R |
 | `Gauge` | Half-dial of ticks with a big value in the middle | `value` (0..1), `ticks`, `tone`, `caption`, `label`, children | D |
 | `Ring` | Circular progress around a short label | `value` (0..1), `tone`, `size`, `stroke`, `label`, children | D, G |
@@ -70,7 +70,7 @@ inside another kit component.
 | `Notice` | Preview-mode (no key), info and error messages | `kind` (`info`, `error`), `size` (`s`, `m`), `flat`, `as`; `--uiNoticeRgb` | D, A, G |
 | `McpToolPanel` | Tool list → definition → arguments → JSON-RPC request and result, in the browser | `tools` (tools/list entries), `examples`, `call(name, args)`, `errorText`, `initialTool`, `hint`, `argsId` | D, S |
 | `McpCallLog` | Streamed MCP `tools/call` rows: index, tool, its permission scope, what the gate did (allowed, blocked, awaiting approval, approved, rejected, error), the arguments on one line, a note (why it was blocked) and the result behind a disclosure; keeps the newest row in view inside its own scroll box | `calls` `[{ id, name, scope, status, args, result, note }]`, `statuses` (labels / tones per status), `scopeTones`, `pending`, `pendingLabel`, `empty`, `follow`, `active`, `argsClip`; `--uiCallLogHeight` | S |
-| `ApprovalCard` | An agent action waiting for a person (a send, a payment): status line, title, To / Subject rows, the content, evidence under it (judge scores), Approve / Reject; the buttons give way to the outcome once decided | `status` (`pending`, `approved`, `rejected`), `statusText`, `title`, `meta` `[[label, value]]`, `body`, `onApprove`, `onReject`, `approveLabel`, `rejectLabel`, `busy`, children | S |
+| `ApprovalCard` | An agent action waiting for a person (a send, a payment): status line, title, To / Subject rows, the content, evidence under it (judge scores), Approve / Reject; the buttons give way to the outcome once decided | `status` (`pending`, `approved`, `rejected`), `statusText`, `title`, `meta` `[[label, value]]`, `body`, `onApprove`, `onReject`, `approveLabel`, `rejectLabel`, `busy`, children | S, SS |
 | `McpConnectCommand` | "Connect from Claude Code" command with copy | `label`, `command` | D |
 | `rpcRequest`, `toolResult`, `toolErrorResult` | JSON-RPC `tools/call` request and MCP result shapes | `(id, name, args)`; `(structured)`; `(text)` | G, D via McpToolPanel |
 | `formatMs`, `seconds`, `pct`, `percent`, `riskTone`, `formatTime` | Timings, probabilities, risk tone, mm:ss (`demos/ui/format`, pure JS) | see `format.js` | D, G (and G's findings API via `study.js`) |
@@ -78,11 +78,12 @@ inside another kit component.
 | `srOnly`, `tokens` | Screen-reader-only class; the token class (DemoLayout applies it) | class names | D, A, G |
 | `ScheduleStrip` | A few days of a calendar as columns, blocks placed by time; shows what is held, just changed, moved away or dropped, over shaded availability | `days` `[{ id, label, sub }]`, `from`, `to` (hours), `blocks` `[{ id, day, start, end (minutes), title, sub, meta, tone, state, hint }]` (`state`: `changed`, `held`, `removed`, `dropped`), `windows`, `tz`, `legend` `[{ state, label }]`; `--uiStripHour` | GT |
 | `ChatThread` | Two-sided conversation with avatars, meta line, typing dots and a streaming caret; children under a bubble (change chips, a trace) | `messages` `[{ id, side (`start`, `end`), name, avatar, meta, text, pending, streaming, children }]`, `empty`, `follow`; `--uiChatHeight` | GT |
-| `AuditTrail` | Time-stamped record of what an agent and people did, actor pill by tone, optional action per row | `items` `[{ id, at, actor, tone, text, action }]`, `empty`, `label` | GT, T |
+| `AuditTrail` | Time-stamped record of what an agent and people did, actor pill by tone, optional action per row | `items` `[{ id, at, actor, tone, text, action }]`, `empty`, `label` | GT, T, SS |
 | `ToolCall`, `ToolCallList` | One tool call an agent made: status dot, name, inline args and a one-line result summary; opens to the arguments and the JSON result side by side (stacked under 640px) | `name`, `args`, `result`, `summary`, `tone` (`ok`, `warn`, `bad`), `ms`, `open`, `argsLabel`, `resultLabel`, `as`; list: `label` | AF (GT has the same row inline) |
-| `CheckList` | Rule checks a run went through (guardrails, policy, eligibility): icon, rule, detail, status word; `fixed` = code repaired it, with the removed text struck through | `items` `[{ id, label, status, detail, removed }]` (`status`: `pass`, `fixed`, `fail`, `na`), `statusLabels`, `label` | AF |
+| `CheckList` | Rule checks a run went through (guardrails, policy, eligibility): icon, rule, detail, status word; `fixed` = code repaired it, with the removed text struck through; `warn` = passes but a person should look (a policy flag, word "Review") | `items` `[{ id, label, status, detail, removed }]` (`status`: `pass`, `fixed`, `warn`, `fail`, `na`), `statusLabels`, `label` | AF, SS |
 | `DocumentScan` | A document image (invoice, receipt, form) on a paper card; a line sweeps down it while it is read, an accent edge once read; opens full size | `src`, `alt`, `width`, `height` (aspect), `scanning`, `done`, `href`, `caption`, `label`, children (overlays) | T |
-| `RequestLog` | Requests an API received, newest last: 24 h time with ms, method and path, a status pill (2xx ok, 4xx warn, 5xx / timeout bad, `pending` spinner), outcome, note, mono meta (idempotency key, attempt) | `items` `[{ id, at, method, path, status, outcome, note, meta, tone, highlight }]`, `empty`, `label` | T |
+| `FieldMap` | A field mapping between two systems as a diff (CRM → ERP): source path and value, arrow, target path, value and a note, status icon per row; on phones the target stacks under the source | `rows` `[{ id, from: { path, value }, to: { path, value, note }, status }]` (`status`: `pass`, `warn`, `fail`, `na`), `fromLabel`, `toLabel`, `label` | SS |
+| `RequestLog` | Requests an API received, newest last: 24 h time with ms, method and path, a status pill (2xx ok, 4xx warn, 5xx / timeout bad, `pending` spinner), outcome, note, mono meta (idempotency key, attempt) | `items` `[{ id, at, method, path, status, outcome, note, meta, tone, highlight }]`, `empty`, `label` | T, SS |
 
 ## Tokens
 

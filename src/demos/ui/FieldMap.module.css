@@ -1,0 +1,118 @@
+/* --- field map: source field -> target field, one row per mapping, status on the right ---------- */
+
+.map {
+  display: grid;
+  min-width: 0;
+}
+
+.head,
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1.25fr) 20px;
+  align-items: start;
+  gap: var(--uiGapXL);
+}
+
+.head {
+  padding: 0 0 var(--uiGapM);
+  font-size: var(--uiFontCaption);
+  font-weight: var(--fontWeightMedium);
+  color: var(--uiFaint);
+}
+
+.rows {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  padding: var(--uiGapL) 0;
+  border-top: 1px solid var(--uiLine);
+
+  &[data-status='na'] {
+    opacity: 0.55;
+  }
+}
+
+.side {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.path {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  color: var(--uiFaint);
+  overflow-wrap: anywhere;
+}
+
+.value {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCode);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText));
+  overflow-wrap: anywhere;
+
+  @nest .row[data-status='fail'] [data-target] & {
+    color: rgb(var(--uiRgbBad));
+  }
+}
+
+.note {
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+
+  @nest .row[data-status='fail'] & {
+    color: rgb(var(--uiRgbBad) / 0.9);
+  }
+
+  @nest .row[data-status='warn'] & {
+    color: rgb(var(--uiRgbWarn));
+  }
+}
+
+.arrow {
+  padding-top: 13px;
+  font-size: var(--uiFontSmall);
+  line-height: 1;
+  color: var(--uiFaint);
+  text-align: center;
+}
+
+.icon {
+  margin-top: 8px;
+}
+
+/* Phones: source over target, the arrow turned down, status on the right of the source */
+@media (max-width: 600px) {
+  .head {
+    display: none;
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr) 20px;
+    gap: var(--uiGapXS) var(--uiGapL);
+  }
+
+  .side[data-target] {
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: var(--uiGapXS);
+    padding-left: var(--uiGapXL);
+    border-left: 2px solid var(--uiLineStrong);
+  }
+
+  .arrow {
+    display: none;
+  }
+
+  .icon {
+    grid-column: 2;
+    grid-row: 1;
+    margin-top: 2px;
+  }
+}

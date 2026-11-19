@@ -1,0 +1,398 @@
+/*
+ * Stacksync page layout. Cards, pills, bars, check lists, the field map, the request log, the
+ * approval card and the audit trail come from demos/ui; colours, surfaces and radii are the --ui*
+ * tokens (accent set by DemoLayout). The verdict card is the one card that carries a status colour.
+ */
+.page {
+  font-size: var(--fontSizeBodyS);
+  line-height: 1.5;
+}
+
+.muted {
+  color: var(--uiMuted);
+  font-size: var(--uiFontSmall);
+}
+
+.small {
+  margin: var(--uiGapL) 0 0;
+  font-size: var(--uiFontCaption);
+  line-height: 1.5;
+  color: var(--uiMuted);
+}
+
+.mono {
+  font-family: var(--uiMono);
+  font-size: 0.94em;
+  font-variant-numeric: tabular-nums;
+}
+
+.section {
+  margin-top: var(--space3XL);
+  scroll-margin-top: 96px;
+}
+
+.section:first-of-type {
+  margin-top: var(--spaceL);
+}
+
+.notice {
+  margin-top: var(--spaceS);
+}
+
+.notes {
+  margin-top: var(--spaceM);
+}
+
+.cardLede {
+  margin: calc(var(--uiGapS) * -1) 0 var(--spaceS);
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+.bigNumber {
+  font-family: var(--uiMono);
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: var(--uiTrackDisplay);
+  font-variant-numeric: tabular-nums;
+  color: rgb(var(--rgbText));
+}
+
+/* --- grids -------------------------------------------------------------------------------------- */
+
+.topGrid,
+.planGrid,
+.applyGrid {
+  display: grid;
+  gap: var(--spaceL);
+  align-items: start;
+}
+
+.topGrid {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+}
+
+.planGrid {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+}
+
+.applyGrid {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+}
+
+@media (max-width: 960px) {
+  .topGrid,
+  .planGrid,
+  .applyGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Phones and tablets: the result first, the deal picker under it */
+  .verdict {
+    order: -1;
+  }
+}
+
+/* --- deal card ---------------------------------------------------------------------------------- */
+
+.samples {
+  margin-bottom: var(--spaceM);
+}
+
+.dealSummary {
+  padding: var(--uiGapXL) var(--uiGap2XL);
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbInset));
+}
+
+.dealTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--spaceM);
+}
+
+.dealName {
+  font-weight: var(--fontWeightMedium);
+  color: rgb(var(--rgbText));
+}
+
+.dealAmount {
+  font-family: var(--uiMono);
+  font-size: var(--fontSizeBodyM, 18px);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dealMeta {
+  margin: 2px 0 var(--uiGapL);
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}
+
+.lines {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--uiFontCaption);
+
+  & th {
+    padding: 0 0 var(--uiGapXS);
+    font-weight: var(--fontWeightMedium);
+    color: var(--uiFaint);
+    text-align: right;
+  }
+
+  & th:first-child {
+    text-align: left;
+  }
+
+  & td {
+    padding: var(--uiGapXS) 0;
+    border-top: 1px solid var(--uiLine);
+  }
+}
+
+.num {
+  font-family: var(--uiMono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+
+  &[data-hot] {
+    color: rgb(var(--uiRgbWarn));
+    font-weight: 600;
+  }
+}
+
+.dealActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--uiGapL);
+  margin-top: var(--spaceM);
+}
+
+.editor {
+  width: 100%;
+  min-height: 260px;
+  margin-top: var(--spaceS);
+  font-size: var(--uiFontCaption);
+}
+
+/* --- verdict card ------------------------------------------------------------------------------- */
+
+.verdict {
+  --verdictRgb: var(--uiRgbAccent);
+
+  border-top: 3px solid rgb(var(--verdictRgb) / 0.25);
+  transition: border-color 0.3s var(--uiEase);
+
+  &[data-route='auto'] {
+    --verdictRgb: var(--uiRgbOk);
+
+    border-top-color: rgb(var(--uiRgbOk));
+  }
+
+  &[data-route='approval'] {
+    --verdictRgb: var(--uiRgbWarn);
+
+    border-top-color: rgb(var(--uiRgbWarn));
+  }
+
+  &[data-route='block'] {
+    --verdictRgb: var(--uiRgbBad);
+
+    border-top-color: rgb(var(--uiRgbBad));
+  }
+}
+
+.verdictTop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spaceM);
+  min-height: 72px;
+  padding: var(--uiGapXL) var(--uiGap2XL);
+  border-radius: var(--uiRadiusL);
+  background: rgb(var(--verdictRgb) / 0.08);
+}
+
+.verdictProb {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+  text-align: right;
+}
+
+.verdictWait {
+  display: flex;
+  align-items: center;
+  gap: var(--uiGapL);
+  color: var(--uiMuted);
+}
+
+.verdictBars {
+  display: grid;
+  gap: var(--uiGapM);
+  margin-top: var(--spaceM);
+}
+
+.codeSays {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--uiGapL);
+  margin-top: var(--spaceM);
+  padding-top: var(--spaceS);
+  border-top: 1px solid var(--uiLine);
+  font-size: var(--uiFontSmall);
+  line-height: 1.45;
+}
+
+.reasons {
+  display: grid;
+  gap: var(--uiGapM);
+  margin: var(--spaceS) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--uiFontSmall);
+  line-height: 1.45;
+
+  & li {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    gap: var(--uiGapL);
+    align-items: start;
+  }
+}
+
+.verdictActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--uiGapL) var(--spaceM);
+  margin-top: var(--spaceM);
+}
+
+.timing {
+  margin-left: auto;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  color: var(--uiFaint);
+}
+
+/* --- plan --------------------------------------------------------------------------------------- */
+
+.planJson {
+  margin-top: var(--spaceM);
+}
+
+.slip {
+  display: grid;
+  justify-items: start;
+  gap: 0;
+  margin-top: var(--spaceM);
+  padding-top: var(--spaceS);
+  border-top: 1px solid var(--uiLine);
+}
+
+/* --- write once --------------------------------------------------------------------------------- */
+
+.keyRow {
+  display: grid;
+  gap: var(--uiGapXS);
+}
+
+.key {
+  justify-self: start;
+  max-width: 100%;
+  padding: var(--uiGapXS) var(--uiGapL);
+  border-radius: var(--uiRadiusS);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCode);
+  color: rgb(var(--rgbText));
+  background: rgb(var(--uiRgbInset));
+  overflow-wrap: anywhere;
+}
+
+.applyButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapL);
+  margin-top: var(--spaceM);
+}
+
+.requests {
+  margin-top: var(--spaceM);
+}
+
+.erpStat {
+  display: flex;
+  align-items: baseline;
+  gap: var(--uiGapL);
+  margin-bottom: var(--spaceS);
+}
+
+.orders {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  & li {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--uiGapL);
+    align-items: baseline;
+    padding: var(--uiGapL) 0;
+    border-top: 1px solid var(--uiLine);
+    font-size: var(--uiFontSmall);
+  }
+}
+
+.orderId {
+  font-family: var(--uiMono);
+  font-weight: 600;
+  color: rgb(var(--uiRgbOk));
+}
+
+.orderWho {
+  min-width: 0;
+}
+
+.orderTotal {
+  font-family: var(--uiMono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- approvals ---------------------------------------------------------------------------------- */
+
+.queue {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
+  gap: var(--spaceL);
+}
+
+.approval .reasons {
+  margin: var(--uiGapXL) 0 0;
+}
+
+@media (max-width: 600px) {
+  .bigNumber {
+    font-size: 32px;
+  }
+
+  .verdictTop {
+    padding: var(--uiGapL) var(--uiGapXL);
+  }
+
+  .verdictProb {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .timing {
+    margin-left: 0;
+  }
+}

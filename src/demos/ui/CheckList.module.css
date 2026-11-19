@@ -72,6 +72,11 @@
     background: rgb(var(--uiRgbWarn) / 0.14);
   }
 
+  @nest .item[data-status='warn'] & {
+    color: rgb(var(--uiRgbWarn));
+    background: rgb(var(--uiRgbWarn) / 0.14);
+  }
+
   @nest .item[data-status='fail'] & {
     color: rgb(var(--uiRgbBad));
     background: rgb(var(--uiRgbBad) / 0.14);
