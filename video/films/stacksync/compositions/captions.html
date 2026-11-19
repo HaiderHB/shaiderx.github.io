@@ -1,0 +1,70 @@
+<template>
+  <!-- Stacksync launch film · every line of text except the two statement scenes and the end card.
+       Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
+       >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s; each cue starts on the cut of its shot. Labels sit under the headline. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.5" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="10.5" data-duration="55" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="65.5" data-track-index="2"
+      data-kit-chapters="The problem:0|One deal:10.5|Blocked:45.5|Approval:52.5" data-layout-ignore></div>
+
+    <!-- HOOK -->
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.5" data-track-index="1">
+      <div class="kit-cap-head">Every field checked. *Safe* to write.</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded run</span></div>
+    </div>
+
+    <!-- HERO: one deal, five shots -->
+    <div id="cap-h1" class="clip kit-cap kit-cap3" data-start="10.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">An AI model drafts the *ERP sales order*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded run, replayed faster</span></div>
+    </div>
+    <div id="cap-h2" class="clip kit-cap kit-cap3" data-start="17.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">Code checks *every field* before any write</div>
+    </div>
+    <div id="cap-h3" class="clip kit-cap kit-cap3" data-start="24.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">A decision model scores it: *safe to apply*</div>
+    </div>
+    <div id="cap-h4" class="clip kit-cap kit-cap3" data-start="31.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">Written *once*, under an idempotency key</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Sample ERP, simulated</span></div>
+    </div>
+    <div id="cap-h5" class="clip kit-cap kit-cap3" data-start="38.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">A retry? Same key, *no duplicate* order</div>
+    </div>
+
+    <!-- FEATURE 2: blocked with reasons -->
+    <div id="cap-f2" class="clip kit-cap kit-cap3" data-start="45.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">Bad mapping or currency? *Blocked*, with reasons</div>
+    </div>
+
+    <!-- FEATURE 3: the approval card -->
+    <div id="cap-f3" class="clip kit-cap kit-cap3" data-start="52.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">New customer, 45% off? A *person* approves</div>
+    </div>
+
+    <!-- PROOF: the run's own numbers, one line for technical viewers -->
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="59.5" data-duration="6" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">11/11</span><span class="kit-stat-l">checks</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">97%</span><span class="kit-stat-l">safe</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">1</span><span class="kit-stat-l">order from 2 writes</span></span>
+      </div>
+      <div class="kit-hood">An LLM drafts · code checks · a decision model routes · one key per write</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

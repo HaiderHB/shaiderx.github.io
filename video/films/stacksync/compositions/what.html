@@ -1,0 +1,31 @@
+<template>
+  <!-- Stacksync launch film (kit 2.1, launch format). Clip `flow`, recorded 2026-11-19 at 1360x765 CSS px, 2x device pixels, from a next build/start of this branch with no demo key (preview mode): the page replays its recorded runs (the LLM's write plan and the decision model's route were recorded live on 2026-11-18); the checks, field map, final route and the write run in the browser on the same code as the API, the write against an in-tab sample ERP. Footage plays at 1x; every hold is real footage.
+       WHAT IT IS 4.5-7.5 s (3 s): one sentence over the top of the page with the clean deal's verdict, blurred and dimmed. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="what" data-width="1920" data-height="1080">
+    <div id="what-stage" class="kit-stage kit-backdrop" data-layout-allow-overflow>
+      <div id="what-cam" class="kit-cam">
+        <video id="what-v" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="3" data-media-start="8.0" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <div id="what-scrim" class="clip kit-scrim" data-start="0" data-duration="3" data-track-index="1" data-layout-ignore></div>
+    <div id="what-text" class="clip kit-statement" data-start="0" data-duration="3" data-track-index="2">
+      <div class="kit-statement-text">An AI agent that syncs CRM deals into ERPs, *safely*.</div>
+      <div class="kit-statement-sub">A prototype built for Stacksync by Haider Bokhari</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.launch.statement({ id: "what", tl });
+      window.__timelines["what"] = tl;
+    })();
+  </script>
+</template>

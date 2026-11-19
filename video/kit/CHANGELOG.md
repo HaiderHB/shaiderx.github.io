@@ -172,6 +172,15 @@ What a kit 1.1 film must change to adopt the launch format (see video/README.md,
   re-cut any shot that fails. gc-ai, goodtime and reacher shipped under 2.0 and were not re-cut; they need this
   before any re-render.
 
+## 2.1.0 additions (2026-11-19) — Windows fixes (from the Stacksync film; `Kit.version` unchanged)
+
+- `scripts/sync.mjs`: links a film's `node_modules` with a junction on Windows (a symlink needs developer mode
+  and failed with EPERM, so `new-film` stopped half-way).
+- `scripts/qa.mjs`, `scripts/edges.mjs`: import `sync.mjs` by file URL (a bare `C:\…` path is not an ESM
+  specifier); `qa.mjs --frames` runs `npx hyperframes snapshot` through a shell on Windows (`npx` is a `.cmd`)
+  and reports the spawn error instead of crashing on it.
+- No film change needed; behaviour on Linux and macOS is unchanged.
+
 ## Open suggestions from the v3 films (2026-11-15, not applied)
 
 No kit files changed for AssemblyAI or Great Question v3. Notes kept for a later version:

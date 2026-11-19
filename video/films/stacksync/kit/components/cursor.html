@@ -1,0 +1,9 @@
+<!--
+  kit/components/cursor.html — SNIPPET: overlay cursor that replays the REAL recorded pointer path
+  (events "cursor"/"click" from capture.cjs). The capture already draws a cursor in the page; use the
+  overlay only over held stills or when the page cursor is too small. Put it inside .kit-cam.
+  Script: Kit.cursor.follow(tl, "#SCENE-cursor", {clip: "s1", sceneClips: Kit.clips.fromDom(host), from: 2, to: 6})
+-->
+<svg id="SCENE-cursor" class="kit-cursor" viewBox="0 0 30 38" width="30" height="38" aria-hidden="true">
+  <path d="M2 2 L2 31 L9.5 24.5 L14.5 35.5 L19.5 33.3 L14.6 22.4 L24.5 22.4 Z" fill="#ffffff" stroke="#0b0d10" stroke-width="2.2" stroke-linejoin="round" />
+</svg>

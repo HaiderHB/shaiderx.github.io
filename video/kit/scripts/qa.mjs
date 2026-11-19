@@ -66,7 +66,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { execFileSync, spawnSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const require = createRequire(import.meta.url);
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -90,7 +90,7 @@ const JSON_OUT = flag("--json");
 
 // ---------- load the film's own vendored kit (what renders), fall back to video/kit ----------
 const libDir = fs.existsSync(path.join(film, "kit", "lib")) ? path.join(film, "kit", "lib") : path.join(HERE, "..", "lib");
-const { libFiles } = await import(path.join(HERE, "sync.mjs"));
+const { libFiles } = await import(pathToFileURL(path.join(HERE, "sync.mjs")).href); // a file URL: Windows paths are not import specifiers
 globalThis.Kit = undefined;
 const order = libFiles().filter((f) => fs.existsSync(path.join(libDir, f)));
 for (const f of order) require(path.join(libDir, f));
@@ -833,8 +833,8 @@ if (WANT_FRAMES) {
   } else {
     const sdir = path.join(OUT, "snap");
     fs.rmSync(sdir, { recursive: true, force: true });
-    const r = spawnSync("npx", ["hyperframes", "snapshot", film, "--at", times.join(","), "--no-end", "--keep", "-o", sdir, "--timeout", "120000"], { cwd: film, encoding: "utf8", maxBuffer: 64 << 20 });
-    if (r.status !== 0) FAIL("frames", "hyperframes snapshot failed: " + (r.stderr || r.stdout).slice(-400));
+    const r = spawnSync("npx", ["hyperframes", "snapshot", film, "--at", times.join(","), "--no-end", "--keep", "-o", sdir, "--timeout", "120000"], { cwd: film, encoding: "utf8", maxBuffer: 64 << 20, shell: process.platform === "win32" }); // npx is a .cmd on Windows
+    if (r.status !== 0) FAIL("frames", "hyperframes snapshot failed: " + (r.stderr || r.stdout || String(r.error)).slice(-400));
     times.forEach((t) => {
       const n = `at-${String(+t)}s.png`;
       pathFor[t] = path.join(sdir, n);
