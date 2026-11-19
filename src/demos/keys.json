@@ -124,5 +124,13 @@
       "created": "2026-11-17",
       "expires": "2027-01-01"
     }
+  ],
+  "stacksync": [
+    {
+      "hash": "340b5a2555adf49857c7ad8b5f94c1934191ecad3d797da038c25fa4135f630b",
+      "label": "Ruben Burdin / WaaS / 2026-11-18",
+      "created": "2026-11-19",
+      "expires": "2027-01-03"
+    }
   ]
 }

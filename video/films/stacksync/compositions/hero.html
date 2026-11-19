@@ -1,0 +1,49 @@
+<template>
+  <!-- Stacksync launch film (kit 2.1, launch format). Clip `flow`, recorded 2026-11-19 at 1360x765 CSS px, 2x device pixels, from a next build/start of this branch with no demo key (preview mode): the page replays its recorded runs (the LLM's write plan and the decision model's route were recorded live on 2026-11-18); the checks, field map, final route and the write run in the browser on the same code as the API, the write against an in-tab sample ERP. Footage plays at 1x; every hold is real footage.
+       HERO 10.5-45.5 s, one deal in five shots, 7 s each (scene time = film time - 10.5). The clean deal is run again
+       (pressed off screen) with a different card pinned for the first three shots. The result rule: each result is
+       fully on screen at data-kit-lands and held for the rest of the shot.
+       0-7 the field map: empty, then the plan's CRM -> ERP rows at 1.0 s | 7-14 eleven checks tick, "11/11 pass" at
+       1.0 s | 14-21 the route: "Safe to apply", 97%, "11 of 11 checks pass" at 1.0 s | 21-28 Apply to ERP clicked at
+       1.85 s: 201 created SO-10412 at 2.3 s | 28-35 Replay the retry clicked at 1.85 s: 200 replayed, no duplicate, at 2.3 s. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="hero" data-width="1920" data-height="1080">
+    <div id="hero-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="hero-cam" class="kit-cam">
+        <video id="hero-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="7" data-media-start="13.25" data-kit-lands="1.0" data-kit-read="14" data-track-index="0" muted playsinline></video>
+        <video id="hero-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="7" data-duration="7" data-media-start="24.75" data-kit-lands="1.0" data-kit-read="18" data-track-index="0" muted playsinline></video>
+        <video id="hero-v3" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="14" data-duration="7" data-media-start="35.45" data-kit-lands="1.0" data-kit-read="9" data-track-index="0" muted playsinline></video>
+        <video id="hero-v4" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="21" data-duration="7" data-media-start="45.05" data-kit-lands="2.3" data-kit-read="8" data-track-index="0" muted playsinline></video>
+        <video id="hero-v5" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="28" data-duration="7" data-media-start="53.75" data-kit-lands="2.3" data-kit-read="12" data-track-index="0" muted playsinline></video>
+        <div id="hero-spot1" class="clip kit-spot" data-start="0" data-duration="7" data-kit-window="1.1,6.9" data-kit-focus="[&quot;mapHead&quot;, &quot;mapRow5&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot2" class="clip kit-spot" data-start="7" data-duration="7" data-kit-window="8.1,13.9" data-kit-focus="[&quot;checksHead&quot;, &quot;checkRow7&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot3" class="clip kit-spot" data-start="14" data-duration="7" data-kit-window="15.1,20.9" data-kit-focus="verdict" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot4" class="clip kit-spot" data-start="21" data-duration="7" data-kit-window="21,27.9" data-kit-focus="apply" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot5" class="clip kit-spot" data-start="28" data-duration="7" data-kit-window="28,34.9" data-kit-focus="apply" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        {"t": 0, "focus": ["mapHead", "mapRow5"], "maxZoom": 1.7, "cut": true, "window": [1.1, 6.9], "label": "H1 the CRM -> ERP field map"},
+        {"t": 7, "focus": ["checksHead", "checkRow7"], "maxZoom": 1.7, "cut": true, "window": [8.1, 13.9], "label": "H2 eleven checks in code"},
+        {"t": 14, "focus": "verdict", "maxZoom": 1.7, "cut": true, "window": [15.1, 20.9], "label": "H3 the route"},
+        {"t": 21, "focus": "apply", "maxZoom": 1.7, "cut": true, "window": [21, 27.9], "label": "H4 apply: 201 created"},
+        {"t": 28, "focus": "apply", "maxZoom": 1.7, "cut": true, "window": [28, 34.9], "label": "H5 the retry: 200 replayed, no duplicate"}
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "hero", tl });
+      window.__timelines["hero"] = tl;
+    })();
+  </script>
+</template>

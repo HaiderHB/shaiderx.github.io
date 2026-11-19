@@ -70,7 +70,7 @@ import {
   seconds,
 } from 'demos/ui';
 import { ApprovalCard, AuditTrail, ChatThread, DocumentScan, McpCallLog, RequestLog, ScheduleStrip } from 'demos/ui';
-import { CheckList, ToolCall, ToolCallList } from 'demos/ui';
+import { CheckList, FieldMap, ToolCall, ToolCallList } from 'demos/ui';
 import Head from 'next/head';
 import { useState } from 'react';
 import {
@@ -428,6 +428,12 @@ const STRIP_LEGEND = [
   { state: 'changed', label: 'Just changed' },
   { state: 'removed', label: 'Moved away' },
   { state: 'dropped', label: 'Dropped out' },
+];
+// FieldMap (from the Stacksync demo)
+const FIELD_ROWS = [
+  { id: 'company', from: { path: 'company', value: 'Northwind Cold Storage' }, to: { path: 'entity', value: '4182', note: 'Northwind Cold Storage Inc.' }, status: 'pass' },
+  { id: 'currency', from: { path: 'deal_currency_code', value: 'EUR' }, to: { path: 'currency', value: 'EUR', note: 'customer bills GBP' }, status: 'fail' },
+  { id: 'line', from: { path: 'line 3', value: 'MON-ANN × 40 −45%' }, to: { path: 'items[2]', value: '2050 @ $660', note: 'Monitoring, annual per site' }, status: 'warn' },
 ];
 // ToolCall, CheckList (from the Affirm demo)
 const TOOL_CALLS = [
@@ -1423,6 +1429,9 @@ export default function UiGallery() {
           </Specimen>
           <Specimen name="RequestLog" note="2xx, 4xx, pending, a highlighted row" wide>
             <RequestLog items={REQUEST_ITEMS} label="Sample payment requests" />
+          </Specimen>
+          <Specimen name="FieldMap" note="pass, fail with a note, warn" wide>
+            <FieldMap rows={FIELD_ROWS} fromLabel="CRM deal" toLabel="ERP sales order" />
           </Specimen>
         </Group>
       </div>
