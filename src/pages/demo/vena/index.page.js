@@ -165,7 +165,7 @@ export default function VenaDemo() {
   const isSample = source === 'sample';
   const fileName = isSample ? SAMPLE_NAME : 'pasted.csv';
   const prof = useMemo(() => profile(csv), [csv]);
-  const rows = prof.ok ? prof.rows : [];
+  const rows = useMemo(() => (prof.ok ? prof.rows : []), [prof]);
   const running = run.status === 'running';
   const mapped = run.status === 'done';
 

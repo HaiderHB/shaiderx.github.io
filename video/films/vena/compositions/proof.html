@@ -1,0 +1,32 @@
+<template>
+  <!-- Vena launch film (kit 2.1, launch format). Clip `flow` (see hook.html). PROOF 57.5-64.0 s: the top of the page, wide,
+       after the on-load replay (media 0.5-7.0): the title and the card with the run's own numbers (38 / 38 match ground
+       truth, 36 by the fast model, 2 sent to the LLM, debits = credits). -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="proof" data-width="1920" data-height="1080">
+    <div id="proof-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="proof-cam" class="kit-cam">
+        <video id="proof-v" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="6.5" data-media-start="0.5" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": "heroText", "cut": true, "window": [0, 6.5], "label": "the top of the page: title and the 38 / 38 card" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "proof", tl });
+      window.__timelines["proof"] = tl;
+    })();
+  </script>
+</template>

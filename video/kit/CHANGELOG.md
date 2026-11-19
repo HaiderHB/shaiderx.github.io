@@ -172,6 +172,15 @@ What a kit 1.1 film must change to adopt the launch format (see video/README.md,
   re-cut any shot that fails. gc-ai, goodtime and reacher shipped under 2.0 and were not re-cut; they need this
   before any re-render.
 
+## 2.1.1 (2026-11-18) — Windows (additive, from the vena film)
+
+- `scripts/sync.mjs`: on Windows without symlink rights (EPERM), links a film's `node_modules` with a directory
+  junction instead of failing. Nothing changes elsewhere; no film needs a re-sync.
+- `scripts/capture.cjs`: when the 2x window comes up smaller than the viewport (branded Chrome, `launch: {channel:
+  "chrome"}`, counts its frame in `--window-size`), it grows the window by the gap over CDP instead of throwing.
+- `scripts/qa.mjs`, `scripts/edges.mjs`: the dynamic import of `sync.mjs` uses a file URL (Windows paths broke it);
+  `qa.mjs --frames` spawns `npx hyperframes snapshot` through a shell on Windows and reports a spawn error as text.
+
 ## Open suggestions from the v3 films (2026-11-15, not applied)
 
 No kit files changed for AssemblyAI or Great Question v3. Notes kept for a later version:

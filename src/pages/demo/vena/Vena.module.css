@@ -114,8 +114,6 @@
 }
 
 .side {
-  position: sticky;
-  top: 88px;
   display: grid;
   gap: var(--spaceL);
 }
@@ -140,7 +138,7 @@
 }
 
 .fileSheet {
-  --uiSheetHeight: 280px;
+  --uiSheetHeight: 340px;
 }
 
 .paste {
@@ -634,6 +632,10 @@
   align-items: start;
 }
 
+.checksCard {
+  --uiCardPad: 20px;
+}
+
 .statementsWrap {
   scroll-margin-top: 96px;
 }
@@ -863,7 +865,6 @@
   }
 
   .side {
-    position: static;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 }

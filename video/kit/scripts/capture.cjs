@@ -166,7 +166,18 @@ async function startClip(opts) {
   });
   if (opts.url) await page.goto(opts.url, { waitUntil: "networkidle" });
   if (dsf !== 1) {
-    const inner = await page.evaluate(() => [window.innerWidth, window.innerHeight]);
+    let inner = await page.evaluate(() => [window.innerWidth, window.innerHeight]);
+    if (inner[0] !== width || inner[1] !== height) {
+      // Branded Chrome (channel: "chrome") counts its own frame in --window-size: grow the window by the gap
+      const { windowId } = await cdp.send("Browser.getWindowForTarget");
+      const { bounds } = await cdp.send("Browser.getWindowBounds", { windowId });
+      await cdp.send("Browser.setWindowBounds", {
+        windowId,
+        bounds: { width: bounds.width + width - inner[0], height: bounds.height + height - inner[1] },
+      });
+      await page.waitForTimeout(300);
+      inner = await page.evaluate(() => [window.innerWidth, window.innerHeight]);
+    }
     if (inner[0] !== width || inner[1] !== height) throw new Error(`viewport is ${inner.join("x")}, wanted ${width}x${height} (deviceScaleFactor ${dsf})`);
   }
   await cdp.send("Page.startScreencast", { format: "jpeg", quality: opts.quality || 94, maxWidth: Math.round(width * dsf), maxHeight: Math.round(height * dsf), everyNthFrame: 1 });
