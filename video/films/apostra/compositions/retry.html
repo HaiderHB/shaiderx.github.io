@@ -1,0 +1,33 @@
+<template>
+  <!-- Apostra launch film (kit 2.1, launch format). Clip `flow` (see hook.html).
+       FEATURE 2 37.5-44.5 s: the create_media_buy request log. Retry the call (Riverline's) is pressed off screen at
+       0.84; a fourth row is on screen at 1.1: "replayed rl_mb_… · attempt 2", the same buy id as attempt 1. Held 5.9 s. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="retry" data-width="1920" data-height="1080">
+    <div id="retry-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="retry-cam" class="kit-cam">
+        <video id="retry-v" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="7" data-media-start="81.8" data-kit-lands="1.1" data-kit-read="14" data-track-index="0" muted playsinline></video>
+        <div id="retry-spot" class="clip kit-spot" data-start="0" data-duration="7" data-kit-focus="requests" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": "requests", "maxZoom": 1.8, "cut": true, "window": [0, 7], "label": "the request log: attempt 2 replayed, same buy id" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "retry", tl });
+      window.__timelines["retry"] = tl;
+    })();
+  </script>
+</template>

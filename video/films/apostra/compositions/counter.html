@@ -1,0 +1,39 @@
+<template>
+  <!-- Apostra launch film (kit 2.1, launch format). Clip `flow` (see hook.html).
+       FEATURE 3 44.5-57.5 s, the coolest last: a counteroffer outside the brief. Scene time = film time - 44.5.
+       0-6.5   the approval card: "The agent stopped: needs a person", The Meridian Post countered at $44 CPM, ceiling $38,
+               the reason; there from frame 0, held 6.5 s |
+       6.5-13  the same card; the cursor comes in at 0.8 and Approve $44 is clicked at 2.06; "Approved by you: booked at
+               the counter price" and the new buy id are in at 2.35; held 4.15 s. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="counter" data-width="1920" data-height="1080">
+    <div id="counter-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="counter-cam" class="kit-cam">
+        <video id="counter-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="6.5" data-media-start="90.6" data-kit-lands="0" data-kit-read="40" data-track-index="0" muted playsinline></video>
+        <video id="counter-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="6.5" data-duration="6.5" data-media-start="97.1" data-kit-lands="2.35" data-kit-read="10" data-track-index="0" muted playsinline></video>
+        <div id="counter-spot-1" class="clip kit-spot" data-start="0" data-duration="6.5" data-kit-focus="approval" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="counter-spot-2" class="clip kit-spot" data-start="6.5" data-duration="6.5" data-kit-focus="approval" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": "approval", "maxZoom": 1.7, "cut": true, "window": [0, 6.5], "label": "F3a the counteroffer, escalated" },
+        { "t": 6.5, "focus": "approval", "maxZoom": 1.7, "cut": true, "window": [6.5, 13], "label": "F3b a person approves" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "counter", tl });
+      window.__timelines["counter"] = tl;
+    })();
+  </script>
+</template>

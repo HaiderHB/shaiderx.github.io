@@ -1,0 +1,32 @@
+<template>
+  <!-- Apostra launch film (kit 2.1, launch format). Clip `flow` (see hook.html).
+       PROBLEM 7.7-10.7 s (3 s): one sentence over the products table, where seller products that break the brief are
+       marked with red crosses (CPM over the ceiling, gambling adjacency), blurred and dimmed. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+      --kit-backdrop-blur: 6px;
+    }
+  </style>
+  <div id="root" data-composition-id="problem" data-width="1920" data-height="1080" data-kit-cam="45,180,1048,590">
+    <div id="problem-stage" class="kit-stage kit-backdrop" data-layout-allow-overflow>
+      <div id="problem-cam" class="kit-cam">
+        <video id="problem-v" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="3" data-media-start="53.5" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <div id="problem-scrim" class="clip kit-scrim" data-start="0" data-duration="3" data-track-index="1" data-layout-ignore></div>
+    <div id="problem-text" class="clip kit-statement" data-start="0" data-duration="3" data-track-index="2">
+      <div class="kit-statement-text">Every seller is another integration, and another way to *overspend*.</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.launch.statement({ id: "problem", tl });
+      window.__timelines["problem"] = tl;
+    })();
+  </script>
+</template>

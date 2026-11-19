@@ -140,5 +140,13 @@
       "created": "2026-11-19",
       "expires": "2027-01-03"
     }
+  ],
+  "apostra": [
+    {
+      "hash": "0d9b9e026a2ba11845b938a2ed099a7fbdb25ac957a849a35182ff4788de01a5",
+      "label": "Brian O'Kelley / email / 2026-11-18",
+      "created": "2026-11-19",
+      "expires": "2027-01-03"
+    }
   ]
 }

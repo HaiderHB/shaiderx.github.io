@@ -1,0 +1,51 @@
+<template>
+  <!-- Apostra launch film (kit 2.1, launch format). Clip `flow` (see hook.html).
+       HERO 10.7-37.5 s, one brief in four shots. Scene time = film time - 10.7. The preset is run again with a
+       different card pinned each time (the button is pressed off screen after the first shot).
+       0-7.0     the brief card: Plan and book is clicked at 1.03; the fields the LLM read land at 2.2; held 4.8 s |
+       7.0-13.3  the MCP call log: tools/list and get_products on three sellers stream in; the third get_products
+                 is in at 2.9; held 3.4 s |
+       13.3-19.8 the products table: four products with red crosses, there from frame 0; held 6.5 s |
+       19.8-26.8 the bookings: Riverline is booked, Hollow Pine flips to Booked with its buy id at 0.9; held 6.1 s. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="hero" data-width="1920" data-height="1080">
+    <div id="hero-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="hero-cam" class="kit-cam">
+        <!-- H1: the brief; one click; the typed fields land (values: about 13 words to read) -->
+        <video id="hero-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="7" data-media-start="20.75" data-kit-lands="2.2" data-kit-read="13" data-track-index="0" muted playsinline></video>
+        <!-- H2: the call log streams; the third get_products is in at 2.9 s -->
+        <video id="hero-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="7" data-duration="6.3" data-media-start="36.6" data-kit-lands="2.9" data-kit-read="8" data-track-index="0" muted playsinline></video>
+        <!-- H3: every product against five checks, there from frame 0 -->
+        <video id="hero-v3" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="13.3" data-duration="6.5" data-media-start="53.5" data-kit-lands="0" data-kit-read="30" data-track-index="0" muted playsinline></video>
+        <!-- H4: two bookings land with their media buy ids -->
+        <video id="hero-v4" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="19.8" data-duration="7" data-media-start="70.3" data-kit-lands="0.9" data-kit-read="24" data-track-index="0" muted playsinline></video>
+        <div id="hero-spot-brief" class="clip kit-spot" data-start="0" data-duration="7" data-kit-focus='[{"x":45,"y":290,"w":748,"h":600}]' data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-calls" class="clip kit-spot" data-start="7" data-duration="6.3" data-kit-focus="callLog" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-screen" class="clip kit-spot" data-start="13.3" data-duration="6.5" data-kit-focus='[{"x":45,"y":180,"w":1048,"h":590}]' data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot-book" class="clip kit-spot" data-start="19.8" data-duration="7" data-kit-focus='[{"x":81,"y":545,"w":977,"h":445}]' data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": { "x": 45, "y": 290, "w": 748, "h": 600 }, "maxZoom": 1.6, "cut": true, "window": [0, 7], "label": "H1 the brief, the button and the fields the LLM read" },
+        { "t": 7, "focus": "callLog", "maxZoom": 1.7, "cut": true, "window": [7, 13.3], "label": "H2 the MCP call log" },
+        { "t": 13.3, "focus": { "x": 45, "y": 180, "w": 1048, "h": 590 }, "maxZoom": 1.6, "cut": true, "window": [13.3, 19.8], "label": "H3 products against five checks" },
+        { "t": 19.8, "focus": { "x": 81, "y": 545, "w": 977, "h": 445 }, "maxZoom": 1.8, "cut": true, "window": [19.8, 26.8], "label": "H4 two bookings with buy ids" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "hero", tl });
+      window.__timelines["hero"] = tl;
+    })();
+  </script>
+</template>
