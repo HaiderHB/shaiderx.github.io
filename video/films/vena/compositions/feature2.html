@@ -1,0 +1,39 @@
+<template>
+  <!-- Vena launch film (kit 2.1, launch format). Clip `flow` (see hook.html for how it was recorded). Footage plays at 1x.
+       FEATURE 2, provenance, 35.5-46.5 s. Scene time = film time - 35.5.
+       0-5.5 row 29 (AWS hosting) is clicked at 1.37 s; its source line opens with cells A29, B29 and D29 marked, fully
+       in at 1.7 s; held 3.8 s |
+       5.5-11.0 the same open row: the fast model's top three (94% under the 97% bar), the LLM's one-line reason, the
+       row's checks and its trust, 0.92 x 1.0 = 92 (on screen from the first frame of the shot). -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="feature2" data-width="1920" data-height="1080">
+    <div id="f2-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="f2-cam" class="kit-cam">
+        <video id="f2-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="5.5" data-media-start="58.28" data-kit-lands="1.7" data-kit-read="10" data-track-index="0" muted playsinline></video>
+        <video id="f2-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="5.5" data-duration="5.5" data-media-start="63.78" data-kit-lands="0" data-kit-read="14" data-track-index="0" muted playsinline></video>
+        <div id="f2-spot-source" class="clip kit-spot" data-start="0" data-duration="5.5" data-kit-window="1.8,5.5" data-kit-focus="[&quot;rL29&quot;,&quot;traceSource&quot;]" data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="f2-spot-why" class="clip kit-spot" data-start="5.5" data-duration="5.5" data-kit-focus="[&quot;traceWhy&quot;,&quot;traceTrust&quot;]" data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        { "t": 0, "focus": ["rL29", "traceSource"], "maxZoom": 1.7, "cut": true, "window": [1.8, 5.5], "label": "F2a row 29 opens on its source cells" },
+        { "t": 5.5, "focus": ["traceWhy", "traceTrust"], "maxZoom": 1.7, "cut": true, "window": [5.5, 11], "label": "F2b why it landed there, and its trust" }
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "feature2", tl });
+      window.__timelines["feature2"] = tl;
+    })();
+  </script>
+</template>

@@ -19,7 +19,7 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 
 ## Catalog
 
-Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman, **T** Truss, **SS** Stacksync. "via" means used
+Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman, **T** Truss, **SS** Stacksync, **V** Vena. "via" means used
 inside another kit component.
 
 | Component | What it is | Props | Used by |
@@ -84,6 +84,7 @@ inside another kit component.
 | `DocumentScan` | A document image (invoice, receipt, form) on a paper card; a line sweeps down it while it is read, an accent edge once read; opens full size | `src`, `alt`, `width`, `height` (aspect), `scanning`, `done`, `href`, `caption`, `label`, children (overlays) | T |
 | `FieldMap` | A field mapping between two systems as a diff (CRM → ERP): source path and value, arrow, target path, value and a note, status icon per row; on phones the target stacks under the source | `rows` `[{ id, from: { path, value }, to: { path, value, note }, status }]` (`status`: `pass`, `warn`, `fail`, `na`), `fromLabel`, `toLabel`, `label` | SS |
 | `RequestLog` | Requests an API received, newest last: 24 h time with ms, method and path, a status pill (2xx ok, 4xx warn, 5xx / timeout bad, `pending` spinner), outcome, note, mono meta (idempotency key, attempt) | `items` `[{ id, at, method, path, status, outcome, note, meta, tone, highlight }]`, `empty`, `label` | T, SS |
+| `SheetGrid` | A spreadsheet excerpt with column letters and row numbers, as Excel shows a file: an active row, single cells marked as the source of a value (`"B14": 'accent'`), struck-through dropped rows; scrolls sideways in its own box | `rows` (arrays of strings), `firstLine` or `lines` (explicit row numbers), `activeLine`, `cells` `{ ref: tone }` (`accent`, `ok`, `warn`, `bad`), `struck` (row numbers), `numeric` (column indexes), `columns`, `label`; `--uiSheetHeight` | V |
 
 ## Tokens
 

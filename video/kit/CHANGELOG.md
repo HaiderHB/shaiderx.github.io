@@ -172,14 +172,22 @@ What a kit 1.1 film must change to adopt the launch format (see video/README.md,
   re-cut any shot that fails. gc-ai, goodtime and reacher shipped under 2.0 and were not re-cut; they need this
   before any re-render.
 
-## 2.1.0 additions (2026-11-19) — Windows fixes (from the Stacksync film; `Kit.version` unchanged)
+## 2.1.0 additions (2026-11-18) — Windows fixes (from the Stacksync, Vena and Apostra films; scripts only, `Kit.version` unchanged)
 
-- `scripts/sync.mjs`: links a film's `node_modules` with a junction on Windows (a symlink needs developer mode
-  and failed with EPERM, so `new-film` stopped half-way).
-- `scripts/qa.mjs`, `scripts/edges.mjs`: import `sync.mjs` by file URL (a bare `C:\…` path is not an ESM
-  specifier); `qa.mjs --frames` runs `npx hyperframes snapshot` through a shell on Windows (`npx` is a `.cmd`)
-  and reports the spawn error instead of crashing on it.
-- No film change needed; behaviour on Linux and macOS is unchanged.
+The three films were made on Windows the same day and each patched the kit scripts; this is the one merged version.
+Nothing in `lib/` or `kit.css` changed, so no film's vendored kit goes stale and no film needs a re-sync.
+
+- `scripts/sync.mjs`: still tries the relative symlink for a film's `node_modules` first; when Windows refuses it
+  (EPERM, no Developer Mode) it falls back to a directory junction (absolute target, needs no rights), so `new-film`
+  no longer stops half-way. Any other error, or EPERM on another platform, still throws.
+- `scripts/qa.mjs`, `scripts/edges.mjs`: import `sync.mjs` by file URL; a bare `C:\…` path is not an ESM specifier
+  and threw ERR_UNSUPPORTED_ESM_URL_SCHEME before any check ran.
+- `scripts/qa.mjs --frames`: spawns `npx hyperframes snapshot` through a shell on Windows only (`npx` is a `.cmd`,
+  which Node won't spawn directly) and reports a spawn error as text instead of crashing on it.
+- `scripts/capture.cjs`: when the 2x window comes up smaller than the viewport (branded Chrome, `launch: { channel:
+  "chrome" }`, counts its own frame in `--window-size`), it grows the window by the gap over CDP. If that doesn't
+  fix it (or CDP can't resize), it throws the same viewport error as before.
+- Linux and macOS behave as before: the symlink path, the bare `npx` spawn and an exact viewport are unchanged.
 
 ## Open suggestions from the v3 films (2026-11-15, not applied)
 

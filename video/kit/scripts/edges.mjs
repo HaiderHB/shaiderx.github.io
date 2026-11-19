@@ -35,7 +35,8 @@ const MIN = parseFloat(val("--min", "4"));
 const JSON_OUT = argv.includes("--json");
 
 const libDir = fs.existsSync(path.join(film, "kit", "lib")) ? path.join(film, "kit", "lib") : path.join(HERE, "..", "lib");
-const { libFiles } = await import(pathToFileURL(path.join(HERE, "sync.mjs")).href); // a file URL: Windows paths are not import specifiers
+// a file URL, not a bare path: Windows paths ("C:\...") are not valid import specifiers
+const { libFiles } = await import(pathToFileURL(path.join(HERE, "sync.mjs")).href);
 globalThis.Kit = undefined;
 for (const f of libFiles().filter((f) => fs.existsSync(path.join(libDir, f)))) require(path.join(libDir, f));
 const Kit = globalThis.Kit;

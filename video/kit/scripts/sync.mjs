@@ -54,9 +54,14 @@ export function syncFilm(filmDir) {
   try {
     fs.lstatSync(nm);
   } catch {
-    // Windows without developer mode refuses symlinks (EPERM); a junction (absolute target) needs no rights
-    if (process.platform === "win32") fs.symlinkSync(path.join(VIDEO, "node_modules"), nm, "junction");
-    else fs.symlinkSync(path.relative(film, path.join(VIDEO, "node_modules")), nm);
+    try {
+      fs.symlinkSync(path.relative(film, path.join(VIDEO, "node_modules")), nm);
+    } catch (error) {
+      // Windows without developer mode refuses symlinks (EPERM): a directory junction
+      // (absolute target) needs no rights. Any other error, or any other platform, still throws.
+      if (error.code !== "EPERM" || process.platform !== "win32") throw error;
+      fs.symlinkSync(path.join(VIDEO, "node_modules"), nm, "junction");
+    }
   }
   // data/clips.js
   const dataDir = path.join(film, "data", "clips");

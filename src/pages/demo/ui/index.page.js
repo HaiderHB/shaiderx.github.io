@@ -69,7 +69,7 @@ import {
   riskTone,
   seconds,
 } from 'demos/ui';
-import { ApprovalCard, AuditTrail, ChatThread, DocumentScan, McpCallLog, RequestLog, ScheduleStrip } from 'demos/ui';
+import { ApprovalCard, AuditTrail, ChatThread, DocumentScan, McpCallLog, RequestLog, ScheduleStrip, SheetGrid } from 'demos/ui';
 import { CheckList, FieldMap, ToolCall, ToolCallList } from 'demos/ui';
 import Head from 'next/head';
 import { useState } from 'react';
@@ -304,6 +304,15 @@ const TOOLS = [
     },
     annotations: { readOnlyHint: true, openWorldHint: false },
   },
+];
+
+// SheetGrid (from the Vena demo)
+const SHEET_ROWS = [
+  ['Acct', 'Description', 'Period', 'Debit', 'Credit'],
+  ['1590', 'Accum depr - equip', '10/2026', '', '402,615.00'],
+  ['4100', 'Consulting', '10/2026', '', '920,000.00'],
+  ['6500', 'Prof fees - legal/audit', '10/2026', '410,000.00', ''],
+  ['6500', 'Prof fees - legal/audit', '10/2026', '410,000.00', ''],
 ];
 
 // DocumentScan, RequestLog (from the Truss demo)
@@ -1432,6 +1441,17 @@ export default function UiGallery() {
           </Specimen>
           <Specimen name="FieldMap" note="pass, fail with a note, warn" wide>
             <FieldMap rows={FIELD_ROWS} fromLabel="CRM deal" toLabel="ERP sales order" />
+          </Specimen>
+          <Specimen name="SheetGrid" note="active row, marked source cells, a struck duplicate" wide>
+            <SheetGrid
+              rows={SHEET_ROWS}
+              firstLine={2}
+              activeLine={4}
+              cells={{ B4: 'accent', E4: 'accent' }}
+              struck={[6]}
+              numeric={[3, 4]}
+              label="Sample trial-balance excerpt"
+            />
           </Specimen>
         </Group>
       </div>
