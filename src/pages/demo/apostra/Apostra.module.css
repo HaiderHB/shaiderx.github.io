@@ -1,0 +1,571 @@
+/* Apostra page styles. Shared pieces come from demos/ui and read the --ui* tokens; the accent is
+   set with <DemoLayout accent="cobalt">. */
+.page {
+  font-size: var(--fontSizeBodyS);
+  line-height: 1.5;
+}
+
+.muted {
+  color: var(--uiMuted);
+  font-size: var(--uiFontSmall);
+}
+
+.srOnlyLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.section {
+  margin-top: var(--space3XL);
+  scroll-margin-top: 96px;
+}
+
+.exampleNote {
+  margin: -4px 0 var(--spaceM);
+  padding: var(--uiGapL) var(--uiGap2XL);
+  border-radius: var(--uiRadiusM);
+  font-size: var(--uiFontSmall);
+  line-height: 1.5;
+  color: var(--uiMuted);
+  background: rgb(var(--uiRgbInset));
+}
+
+.notes {
+  margin-top: var(--spaceM);
+}
+
+.num {
+  text-align: right;
+  font-family: var(--uiMono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.productMeta {
+  display: block;
+  margin-top: 2px;
+  color: var(--uiMuted);
+  font-size: var(--uiFontCaption);
+  font-weight: 400;
+}
+
+.footnote {
+  margin: var(--spaceM) 0 0;
+  color: var(--uiMuted);
+  font-size: var(--uiFontCaption);
+  line-height: 1.5;
+}
+
+.buyId {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCode);
+  padding: 2px 8px;
+  border-radius: var(--uiRadiusXS);
+  background: rgb(var(--uiRgbInset));
+  color: rgb(var(--uiRgbInk));
+}
+
+/* --- grids ------------------------------------------------------------------------------------ */
+
+.gridBrief,
+.gridScreen,
+.gridBook,
+.gridAudit {
+  display: grid;
+  gap: var(--spaceL);
+  align-items: start;
+}
+
+.gridBrief {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+}
+
+.gridScreen {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+}
+
+.gridBook {
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+}
+
+.gridAudit {
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+}
+
+/* --- hero glance ------------------------------------------------------------------------------ */
+
+.glance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spaceM);
+  min-width: 300px;
+}
+
+.glanceHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spaceS);
+  font-size: var(--uiFontSmall);
+}
+
+.glanceBig {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.glanceLabel {
+  color: var(--uiMuted);
+  font-size: var(--uiFontSmall);
+  font-weight: 500;
+}
+
+.glanceValue {
+  font-size: clamp(34px, 4vw, 46px);
+  font-weight: 600;
+  letter-spacing: var(--uiTrackDisplay);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+
+.glanceOf {
+  font-size: 0.42em;
+  font-weight: 500;
+  color: var(--uiMuted);
+  letter-spacing: 0;
+}
+
+.glanceWait {
+  margin-top: var(--uiGapS);
+  align-self: flex-start;
+  padding: 3px 10px;
+  border-radius: var(--uiRadiusPill);
+  font-size: var(--uiFontSmall);
+  font-weight: 500;
+  color: rgb(var(--uiRgbWarn));
+  background: rgb(var(--uiRgbWarn) / 0.12);
+  text-decoration: none;
+}
+
+.glanceWait:hover {
+  background: rgb(var(--uiRgbWarn) / 0.2);
+}
+
+.glanceTrack {
+  height: 10px;
+  border-radius: var(--uiRadiusPill);
+  background: var(--uiHatch);
+}
+
+.glanceStats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spaceS);
+  margin: 0;
+  padding-top: var(--spaceM);
+  border-top: 1px solid var(--uiLine);
+}
+
+.glanceStats dt {
+  color: var(--uiMuted);
+  font-size: var(--uiFontCaption);
+}
+
+.glanceStats dd {
+  margin: 2px 0 0;
+  font-family: var(--uiMono);
+  font-size: var(--fontSizeBodyM, 17px);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- brief ---------------------------------------------------------------------------------- */
+
+.briefCard,
+.callsCard,
+.screenCard,
+.shortlistCard,
+.bookCard,
+.messagesCard,
+.finalCard,
+.escalationEmpty {
+  min-width: 0;
+}
+
+.presetRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapS);
+  margin: var(--spaceS) 0 var(--spaceM);
+}
+
+.briefInput {
+  min-height: 92px;
+  font-size: var(--fontSizeBodyS);
+  line-height: 1.5;
+}
+
+.runRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spaceS) var(--spaceM);
+  margin-top: var(--spaceM);
+}
+
+.notice {
+  margin: var(--spaceS) 0 0;
+  padding: var(--uiGapM) var(--uiGapXL);
+  border-radius: var(--uiRadiusS);
+  font-size: var(--uiFontSmall);
+  color: rgb(var(--uiRgbInk));
+  background: rgb(var(--uiRgbWarn) / 0.12);
+}
+
+.parsed {
+  margin-top: var(--spaceL);
+  padding-top: var(--spaceM);
+  border-top: 1px solid var(--uiLine);
+}
+
+.briefKv {
+  --uiKvColumns: 2;
+  margin-top: var(--spaceS);
+}
+
+/* --- calls ---------------------------------------------------------------------------------- */
+
+.callLog {
+  --uiCallLogHeight: 330px;
+  margin-top: var(--spaceS);
+}
+
+.inspect {
+  margin-top: var(--spaceM);
+  padding-top: var(--spaceM);
+  border-top: 1px solid var(--uiLine);
+}
+
+.inspectHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spaceS);
+  flex-wrap: wrap;
+  margin-bottom: var(--spaceS);
+}
+
+.inspectSelect {
+  max-width: 100%;
+  font-size: var(--uiFontSmall);
+}
+
+.exchange {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--spaceM);
+}
+
+.exchange > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--uiGapS);
+}
+
+.exchange pre {
+  max-height: 300px;
+  overflow: auto;
+}
+
+/* --- screen --------------------------------------------------------------------------------- */
+
+.screenTable {
+  margin-top: var(--spaceS);
+  display: flex;
+  flex-direction: column;
+}
+
+.screenRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px repeat(5, 58px);
+  align-items: center;
+  gap: var(--uiGapM);
+  padding: var(--uiGapL) 0;
+  border-top: 1px solid var(--uiLine);
+}
+
+.screenRow[data-head] {
+  border-top: 0;
+  padding-top: 0;
+  color: var(--uiMuted);
+  font-size: var(--uiFontCaption);
+  font-weight: 500;
+}
+
+.screenRow:not([data-head]):not([data-eligible]) .productName {
+  color: var(--uiMuted);
+}
+
+.productCell {
+  min-width: 0;
+}
+
+.productName {
+  font-weight: 500;
+}
+
+.excluded {
+  color: rgb(var(--uiRgbBad));
+  font-weight: 500;
+}
+
+.checkHead {
+  text-align: center;
+}
+
+.checkCell {
+  display: flex;
+  justify-content: center;
+}
+
+/* --- shortlist ------------------------------------------------------------------------------ */
+
+.picks {
+  list-style: none;
+  margin: var(--spaceS) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spaceM);
+}
+
+.pick {
+  padding: var(--spaceM);
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbRaised));
+  border: 1px solid var(--uiLine);
+}
+
+.pickHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spaceS);
+}
+
+.pickName {
+  font-weight: 500;
+  min-width: 0;
+}
+
+.pickBudget {
+  font-family: var(--uiMono);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--fontSizeBodyM, 17px);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.why {
+  margin: var(--uiGapS) 0 var(--uiGapL);
+  color: var(--uiMuted);
+  font-size: var(--uiFontSmall);
+}
+
+.scores {
+  display: flex;
+  flex-direction: column;
+  gap: var(--uiGapS);
+}
+
+.dropped {
+  margin-top: var(--spaceM);
+}
+
+.dropped ul {
+  margin: var(--uiGapS) 0 0;
+  padding-left: 18px;
+  font-size: var(--uiFontSmall);
+}
+
+/* --- book ----------------------------------------------------------------------------------- */
+
+.checks {
+  margin-top: var(--spaceS);
+}
+
+.bookings {
+  list-style: none;
+  margin: var(--spaceL) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spaceS);
+}
+
+.booking {
+  padding: var(--spaceM);
+  border-radius: var(--uiRadiusM);
+  border: 1px solid var(--uiLine);
+  background: rgb(var(--uiRgbRaised));
+}
+
+.booking[data-status='awaiting'] {
+  border-color: rgb(var(--uiRgbWarn) / 0.5);
+}
+
+.bookingMain {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spaceS);
+}
+
+.bookingMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spaceS);
+  margin-top: var(--uiGapL);
+}
+
+.bookCount {
+  margin: var(--uiGapM) 0 0;
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+.bookCount strong {
+  color: rgb(var(--uiRgbOk));
+  font-weight: 600;
+}
+
+.requests {
+  margin-top: var(--spaceL);
+  display: flex;
+  flex-direction: column;
+  gap: var(--uiGapS);
+}
+
+.approval {
+  position: sticky;
+  top: 96px;
+}
+
+/* --- audit ---------------------------------------------------------------------------------- */
+
+.thread {
+  --uiChatHeight: 520px;
+  margin-top: var(--spaceS);
+}
+
+.planTable {
+  width: 100%;
+  margin-top: var(--spaceS);
+  border-collapse: collapse;
+  font-size: var(--uiFontNote);
+}
+
+.planTable th {
+  text-align: left;
+  color: var(--uiMuted);
+  font-size: var(--uiFontCaption);
+  font-weight: 500;
+  padding: 0 var(--uiGapM) var(--uiGapM) 0;
+}
+
+.planTable th.num {
+  text-align: right;
+}
+
+.planTable td {
+  padding: var(--uiGapL) var(--uiGapM) var(--uiGapL) 0;
+  border-top: 1px solid var(--uiLine);
+  vertical-align: top;
+}
+
+.planTable th:last-child,
+.planTable td:last-child {
+  padding-right: 0;
+}
+
+.planTable tr[data-status='declined'] td,
+.planTable tr[data-status='awaiting'] td {
+  color: var(--uiMuted);
+}
+
+.planTable tfoot td {
+  font-weight: 600;
+  border-top: 1px solid var(--uiLineStrong);
+}
+
+.auditBox {
+  margin-top: var(--spaceL);
+  display: flex;
+  flex-direction: column;
+  gap: var(--uiGapS);
+}
+
+/* --- responsive ----------------------------------------------------------------------------- */
+
+@media (max-width: 1080px) {
+  .gridScreen,
+  .gridBook {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .approval {
+    position: static;
+  }
+}
+
+@media (max-width: 880px) {
+  .gridBrief,
+  .gridAudit {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    --uiCardPad: var(--spaceM);
+  }
+
+  .section {
+    margin-top: var(--space2XL);
+  }
+
+  .glance {
+    min-width: 0;
+  }
+
+  .exchange {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .briefKv {
+    --uiKvColumns: 1;
+  }
+
+  .screenRow {
+    grid-template-columns: minmax(0, 1fr) 44px repeat(5, 22px);
+    gap: 6px;
+  }
+
+  .checkHead {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    justify-self: center;
+    font-size: 10px;
+  }
+
+  .screenRow[data-head] {
+    align-items: end;
+  }
+}
