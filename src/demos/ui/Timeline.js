@@ -10,8 +10,9 @@ export function Timeline({ className, children }) {
 }
 
 /**
- * One stage of a run. status: 'pending' | 'running' | 'done' | 'error'.
- * The marker shows the step number, a spinner while running and a tick when done;
+ * One stage of a run. status: 'pending' | 'running' | 'done' | 'error' | 'paused'.
+ * The marker shows the step number, a spinner while running, a tick when done and a pause mark
+ * (warn tone, dashed rail) while the run waits on a person (a human handoff);
  * `ms` (a number) is formatted on the right. Children render under the heading.
  */
 export function TimelineStep({ index, status = 'pending', title, detail, ms, children }) {
@@ -22,6 +23,8 @@ export function TimelineStep({ index, status = 'pending', title, detail, ms, chi
           <Spinner />
         ) : status === 'done' ? (
           <StatusIcon variant="solid" status="pass" />
+        ) : status === 'paused' ? (
+          <span className={styles.pause} aria-label="Paused" />
         ) : (
           index + 1
         )}

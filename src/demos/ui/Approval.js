@@ -15,7 +15,9 @@ const STATE = {
  * Approve / Reject. Once decided, the buttons give way to the outcome line.
  * status: 'pending' | 'approved' | 'rejected'; statusText: { pending, approved, rejected };
  * meta: [[label, value]] (To, Subject); body: the text that would go out; children render
- * under the body; onApprove / onReject; approveLabel / rejectLabel; busy disables both.
+ * under the body; onApprove / onReject; approveLabel / rejectLabel; busy disables both;
+ * approveDisabled disables Approve alone (a failed check); extra: more buttons in the same row
+ * (an Edit), shown while pending.
  */
 export function ApprovalCard({
   title,
@@ -32,6 +34,8 @@ export function ApprovalCard({
   approveLabel = 'Approve',
   rejectLabel = 'Reject',
   busy = false,
+  approveDisabled = false,
+  extra,
   className,
   children,
   ...rest
@@ -61,10 +65,11 @@ export function ApprovalCard({
       {status === 'pending' && (onApprove || onReject) && (
         <div className={styles.actions}>
           {onApprove && (
-            <Button size="s" onClick={onApprove} disabled={busy}>
+            <Button size="s" onClick={onApprove} disabled={busy || approveDisabled}>
               {approveLabel}
             </Button>
           )}
+          {extra}
           {onReject && (
             <Button size="s" variant="secondary" onClick={onReject} disabled={busy}>
               {rejectLabel}

@@ -1,0 +1,70 @@
+<template>
+  <!-- CoinTracker launch film · every line of text except the two statement scenes and the end card.
+       Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
+       >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s; each cue starts on the cut of its shot. Labels sit under the headline. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.5" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="10.5" data-duration="53.6" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="64.1" data-track-index="2"
+      data-kit-chapters="The problem:0|One harvest:10.5|Handoff:44.5|CPA:51.5" data-layout-ignore></div>
+
+    <!-- HOOK -->
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.5" data-track-index="1">
+      <div class="kit-cap-head">Money never moves without your *approval*.</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded run</span></div>
+    </div>
+
+    <!-- HERO: prepare the file, approve the harvest, survive the timeout, verify -->
+    <div id="cap-h1" class="clip kit-cap kit-cap3" data-start="10.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">It reads the documents and proposes *moves*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded run, replayed faster</span></div>
+    </div>
+    <div id="cap-h2" class="clip kit-cap kit-cap3" data-start="17.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">Money moves always wait for the *household*</div>
+    </div>
+    <div id="cap-h3" class="clip kit-cap kit-cap3" data-start="24.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">The broker times out. The retry is *safe*.</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Simulated broker and timeout</span></div>
+    </div>
+    <div id="cap-h4" class="clip kit-cap kit-cap3" data-start="31.5" data-duration="6" data-track-index="1">
+      <div class="kit-cap-head">Same key again: still *one order*</div>
+    </div>
+    <div id="cap-h5" class="clip kit-cap kit-cap3" data-start="37.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">Done only when the broker *matches*</div>
+    </div>
+
+    <!-- FEATURE 2: the handoff resumes mid-run -->
+    <div id="cap-f2" class="clip kit-cap kit-cap3" data-start="44.5" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">Missing form? It asks, then resumes *mid-run*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Sample file</span></div>
+    </div>
+
+    <!-- FEATURE 3: the CPA queue -->
+    <div id="cap-f3" class="clip kit-cap kit-cap3" data-start="51.5" data-duration="6.6" data-track-index="1">
+      <div class="kit-cap-head">Judgement calls go to the *CPA's* queue</div>
+    </div>
+
+    <!-- PROOF: the run's own numbers, one line for technical viewers -->
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="58.1" data-duration="6" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">26/26</span><span class="kit-stat-l">figures checked</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">1</span><span class="kit-stat-l">order from 3 sends</span></span>
+      </div>
+      <div class="kit-hood">An LLM reads and proposes · code checks · a decision model routes</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>
