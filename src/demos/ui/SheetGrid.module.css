@@ -1,0 +1,114 @@
+/* --- sheet grid: a spreadsheet excerpt with column letters and row numbers --------------------- */
+
+.sheet {
+  max-height: var(--uiSheetHeight, none);
+  overflow: auto;
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbInset));
+  box-shadow: inset 0 0 0 1px var(--uiLine);
+  overscroll-behavior: contain;
+
+  &:focus-visible {
+    outline: 2px solid rgb(var(--uiRgbAccent));
+    outline-offset: 2px;
+  }
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 100%;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+
+  & th,
+  & td {
+    padding: 6px 10px;
+    border-right: 1px solid var(--uiLine);
+    border-bottom: 1px solid var(--uiLine);
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  & td {
+    color: rgb(var(--uiRgbInk) / 0.86);
+    transition: background-color 240ms var(--uiEase), box-shadow 240ms var(--uiEase);
+  }
+
+  & td[data-numeric] {
+    text-align: right;
+  }
+
+  & tr:last-child th,
+  & tr:last-child td {
+    border-bottom: 0;
+  }
+}
+
+.corner,
+.colHead,
+.rowHead {
+  position: sticky;
+  z-index: 1;
+  background: rgb(var(--uiRgbRaised));
+  color: var(--uiFaint);
+  font-weight: 500;
+  font-size: var(--uiFontMicro);
+}
+
+.corner,
+.colHead {
+  top: 0;
+  text-align: center !important;
+}
+
+.corner {
+  left: 0;
+  z-index: 2;
+}
+
+.rowHead {
+  left: 0;
+  min-width: 34px;
+  text-align: right !important;
+}
+
+/* The active row: a soft band and an accent edge on its number */
+.table tr[data-active] td {
+  background: rgb(var(--uiRgbAccent) / 0.08);
+}
+
+.table tr[data-active] .rowHead {
+  color: rgb(var(--uiRgbAccent));
+  box-shadow: inset 3px 0 0 rgb(var(--uiRgbAccent));
+}
+
+.table tr[data-struck] td {
+  color: var(--uiFaint);
+  text-decoration: line-through;
+  text-decoration-color: rgb(var(--uiRgbWarn) / 0.8);
+}
+
+/* Marked cells: the exact source of a value */
+.table td[data-mark] {
+  --markRgb: var(--uiRgbAccent);
+
+  background: rgb(var(--markRgb) / 0.16);
+  box-shadow: inset 0 0 0 1.5px rgb(var(--markRgb));
+  color: rgb(var(--uiRgbInk));
+  font-weight: 500;
+}
+
+.table td[data-mark='ok'] {
+  --markRgb: var(--uiRgbOk);
+}
+
+.table td[data-mark='warn'] {
+  --markRgb: var(--uiRgbWarn);
+}
+
+.table td[data-mark='bad'] {
+  --markRgb: var(--uiRgbBad);
+}

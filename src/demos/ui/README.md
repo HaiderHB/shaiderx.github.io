@@ -19,7 +19,7 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 
 ## Catalog
 
-Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman, **T** Truss. "via" means used
+Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman, **T** Truss, **V** Vena. "via" means used
 inside another kit component.
 
 | Component | What it is | Props | Used by |
@@ -82,6 +82,7 @@ inside another kit component.
 | `ToolCall`, `ToolCallList` | One tool call an agent made: status dot, name, inline args and a one-line result summary; opens to the arguments and the JSON result side by side (stacked under 640px) | `name`, `args`, `result`, `summary`, `tone` (`ok`, `warn`, `bad`), `ms`, `open`, `argsLabel`, `resultLabel`, `as`; list: `label` | AF (GT has the same row inline) |
 | `CheckList` | Rule checks a run went through (guardrails, policy, eligibility): icon, rule, detail, status word; `fixed` = code repaired it, with the removed text struck through | `items` `[{ id, label, status, detail, removed }]` (`status`: `pass`, `fixed`, `fail`, `na`), `statusLabels`, `label` | AF |
 | `DocumentScan` | A document image (invoice, receipt, form) on a paper card; a line sweeps down it while it is read, an accent edge once read; opens full size | `src`, `alt`, `width`, `height` (aspect), `scanning`, `done`, `href`, `caption`, `label`, children (overlays) | T |
+| `SheetGrid` | A spreadsheet excerpt with column letters and row numbers, as Excel shows a file: an active row, single cells marked as the source of a value (`"B14": 'accent'`), struck-through dropped rows; scrolls sideways in its own box | `rows` (arrays of strings), `firstLine` or `lines` (explicit row numbers), `activeLine`, `cells` `{ ref: tone }` (`accent`, `ok`, `warn`, `bad`), `struck` (row numbers), `numeric` (column indexes), `columns`, `label`; `--uiSheetHeight` | V |
 | `RequestLog` | Requests an API received, newest last: 24 h time with ms, method and path, a status pill (2xx ok, 4xx warn, 5xx / timeout bad, `pending` spinner), outcome, note, mono meta (idempotency key, attempt) | `items` `[{ id, at, method, path, status, outcome, note, meta, tone, highlight }]`, `empty`, `label` | T |
 
 ## Tokens

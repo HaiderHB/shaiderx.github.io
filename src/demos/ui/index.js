@@ -64,6 +64,7 @@ export { CheckList } from './CheckList';
 export { ScheduleStrip } from './Schedule';
 export { DocumentScan } from './DocumentScan';
 export { RequestLog } from './RequestLog';
+export { SheetGrid } from './SheetGrid';
 
 /** Class that defines the --ui* tokens; DemoLayout applies it to every demo. */
 export const tokens = tokenStyles.tokens;
