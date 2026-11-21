@@ -148,5 +148,19 @@
       "created": "2026-11-19",
       "expires": "2027-01-03"
     }
+  ],
+  "housesigma": [
+    {
+      "hash": "27d41a5f3993b2f7c4b72ecf18f008b26436ea8c0b75ad7887aba5ac6ed60330",
+      "label": "Victor Chen (HouseSigma Director of Product) / 2026-11-21",
+      "created": "2026-11-21",
+      "expires": "2027-01-05"
+    },
+    {
+      "hash": "9ccd2a4a1c83948d1cfcea324ddc8e823d9a3bafea0a018406649aff40545003",
+      "label": "housesigma review (Haider)",
+      "created": "2026-11-21",
+      "expires": "2027-01-05"
+    }
   ]
 }
