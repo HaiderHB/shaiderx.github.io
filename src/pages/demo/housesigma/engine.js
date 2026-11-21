@@ -368,12 +368,12 @@ export function offerBrief(home, value = valuation(home)) {
   if (value.rule === 'underpriced') {
     reasons.push({
       tone: 'warn',
-      text: `Listed ${money(estimate.low - home.listPrice)} under the low end of the estimate${home.offerDate ? `, with offers held until ${shortDate(home.offerDate)}` : ''}. A low list price is there to draw several bids: anchor on the estimate, not the asking price.`,
+      text: `Listed ${money(estimate.mid - home.listPrice)} under the middle of the estimate${home.offerDate ? `, with offers held until ${shortDate(home.offerDate)}` : ''}. A low list price is there to draw several bids: anchor on the estimate, not the asking price.`,
     });
   } else if (value.rule === 'overpriced') {
     reasons.push({
       tone: 'ok',
-      text: `Listed ${money(home.listPrice - estimate.high)} above the high end of what comparable sales support. The asking price is not the anchor here.`,
+      text: `Listed ${money(home.listPrice - estimate.mid)} above the middle of the estimate, and over the top of the range comparable sales support. The asking price is not the anchor here.`,
     });
   } else {
     reasons.push({ tone: 'accent', text: `Asking price sits inside the estimate range (${money(estimate.low)} to ${money(estimate.high)}).` });

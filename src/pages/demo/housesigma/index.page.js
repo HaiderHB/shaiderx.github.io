@@ -26,7 +26,7 @@ import {
   srOnly,
 } from 'demos/ui';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FiArrowUp, FiSearch, FiSliders } from 'react-icons/fi';
+import { FiArrowUp, FiSearch, FiSliders, FiX } from 'react-icons/fi';
 import { CITIES, TODAY, TYPES, getMarket } from './data';
 import {
   EMPTY_FILTERS,
@@ -278,12 +278,22 @@ export default function HousesigmaDemo() {
         return;
       }
       applyFilters({ ...EMPTY_FILTERS, ...result.filters });
+      // A freshly read ask starts its own saved search: the recorded weekly update no longer applies
+      if (hasKey) setPulse({ status: 'idle', kind: 'live', text: '', key: '', error: '' });
       setSort('value');
       setParse({ status: 'done', kind: hasKey ? 'live' : 'example', notes: result.notes, unmapped: result.unmapped, ms: result.ms, cached: result.cached, error: '', notice: '' });
     } catch (error) {
       if (id !== runId.current) return;
       setParse({ status: 'error', kind: 'live', notes: [], unmapped: [], ms: null, notice: '', error: error.message });
     }
+  }
+
+  function clearAsk() {
+    runId.current += 1;
+    setAsk('');
+    applyFilters(EMPTY_FILTERS);
+    setParse({ status: 'idle', kind: 'live', notes: [], unmapped: [], ms: null, error: '', notice: '' });
+    if (typeof document !== 'undefined') document.getElementById('hs-ask')?.focus();
   }
 
   function pickAsk(text) {
@@ -397,6 +407,11 @@ export default function HousesigmaDemo() {
                 enterKeyHint="search"
                 onChange={event => setAsk(event.target.value)}
               />
+              {ask && !loading && (
+                <button type="button" className={styles.askClear} aria-label="Clear the search" onClick={clearAsk} data-action="clear">
+                  <FiX aria-hidden />
+                </button>
+              )}
               <button type="submit" className={styles.askGo} disabled={loading || ask.trim().length < 3} aria-label="Search" data-action="ask">
                 {loading ? <Spinner /> : <FiArrowUp aria-hidden />}
               </button>
@@ -412,7 +427,7 @@ export default function HousesigmaDemo() {
 
             <div className={styles.understood} data-track="chips" aria-live="polite">
               <div className={styles.understoodHead}>
-                <span className={styles.label}>{loading ? 'Reading your ask' : 'Understood as'}</span>
+                <span className={styles.label}>{loading ? 'Reading your ask' : parse.status === 'done' ? 'Understood as' : 'Filters'}</span>
                 {!loading && parse.status === 'done' && (
                   <span className={styles.muted}>
                     {parse.kind === 'example' ? `recorded run, ${recordedDay}` : `the LLM${parse.ms ? `, ${(parse.ms / 1000).toFixed(1)} s` : ''}${parse.cached ? ' (cached)' : ''} · checked in code`}
@@ -434,7 +449,7 @@ export default function HousesigmaDemo() {
                   {chips.map((chip, index) => (
                     <FilterChip key={`${chip.key}${chip.value || ''}`} label={chip.label} count={steps[index + 1]?.count} onRemove={() => applyFilters(removeChip(filters, chip))} />
                   ))}
-                  {chips.length === 0 && <span className={styles.muted}>No filters: showing every active listing.</span>}
+                  {chips.length === 0 && <span className={styles.muted}>No filters yet: every active listing is showing. Describe a home above, or add filters by hand.</span>}
                   {parse.unmapped?.map(text => (
                     <span key={text} className={styles.unmapped} title="The sample data has no field for this, so it is not used">
                       not searchable yet: “{text}”
