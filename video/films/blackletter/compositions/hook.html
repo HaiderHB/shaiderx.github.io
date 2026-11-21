@@ -1,0 +1,33 @@
+<template>
+  <!-- Blackletter launch film (kit 2.1, launch format). Clip `flow`, recorded 2026-11-21 at 1360x765 CSS px, 2x device pixels, from a
+       production build of the demo with a demo key: every model call in the take is live. Footage plays at 1x; waits are cut, never sped up.
+       HOOK 0-4.5 s: the first flag lands with its confidence bars while its quote lights up in the document (media 4.9-9.4). -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="hook" data-width="1920" data-height="1080">
+    <div id="hook-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="hook-cam" class="kit-cam">
+        <video id="hook-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="4.5" data-media-start="4.9" data-track-index="0" muted playsinline></video>
+        <div id="hook-spot1" class="clip kit-spot" data-start="0" data-duration="4.5" data-kit-window="0.5,4.5" data-kit-focus="[&quot;clause1&quot;, &quot;flagPool&quot;]" data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        {"t": 0, "focus": ["clause1", "flagPool"], "cut": true, "window": [0.5, 4.5], "label": "first flag lands, its words light up in the document"}
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "hook", tl });
+      window.__timelines["hook"] = tl;
+    })();
+  </script>
+</template>
