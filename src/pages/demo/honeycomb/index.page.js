@@ -354,7 +354,7 @@ export default function HoneycombDemo() {
                     )
                   )}
                   <span className={styles.muted}>
-                    {hasKey ? 'Live: about 30 seconds, about 1 cent' : 'Preview: recorded run shown'}
+                    {hasKey ? 'Live: under a minute, about 1 cent' : 'Preview: recorded run shown'}
                   </span>
                 </div>
               </div>

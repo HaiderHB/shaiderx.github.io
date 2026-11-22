@@ -36,7 +36,7 @@ shows the raw JSON behind every call.
 - **Preview (no key):** the page replays one recorded investigation of incident 1 and shows the recorded eval
   (5 incidents x 2 configs x 3 trials = 30 investigations: 14/15 correct with skills, 6/15 without). All of it is real output, written to `example.js` by a
   script, not edited by hand. Skills can be edited but runs need a key.
-- **Live (private link):** `POST /api/demo/honeycomb/run/` streams one investigation (about 30 s, about 13 short LLM
+- **Live (private link):** `POST /api/demo/honeycomb/run/` streams one investigation (35-55 s, about 13 short LLM
   calls and 5 decision-model calls, roughly one cent). `POST /api/demo/honeycomb/eval/` runs one incident for the
   eval; the page calls it ten times, two at a time (about 4 minutes). Identical runs replay from cache.
 
@@ -69,6 +69,10 @@ the gate that keeps concurrent LLM calls under the provider's account cap.
   incident 5.
 - Wall-clock time is on the root-cause card but not in the eval table: evals run under a shared provider rate
   limit, so time per run mostly measures queueing. Queries and LLM calls are counted instead.
+
+- After the recording, one live run named an extra segment ("free-tier") in the summary and "cleared" the region
+  that was part of the culprit. The coordinator prompt now says to name only the chosen culprit's values and never to
+  clear one of them (cache version v13). The recorded example predates that one-line change.
 
 ## What I cut
 

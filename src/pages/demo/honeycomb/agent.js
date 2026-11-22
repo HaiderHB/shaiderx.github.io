@@ -643,7 +643,7 @@ Answer with JSON only:
 {"statement":"under 40 words, plain: what is slow, for whom, since when, with the numbers that prove it","ruled_out":"under 25 words: what was cleared and why","next_step":"under 16 words: the safest first action"${
       chosen ? '' : `,"service":"one of ${SERVICE_NAMES.join(', ')}","culprit":{"attribute":"value"}`
     }}
-Rules: write about the CHOSEN culprit. Use only values and numbers that appear in the alert, findings, evidence or candidate scores. Never blame something the findings cleared.
+Rules: write about the CHOSEN culprit. Use only values and numbers that appear in the alert, findings, evidence or candidate scores. Never blame something the findings cleared. In the statement, name only the attribute values of the CHOSEN culprit (no other segments). ruled_out must never clear a service, region, build or flag that is part of the CHOSEN culprit.
 
 ${skillsBlock(skills)}`,
     user: `${brief(alert, triageRows, [])}\n\nFINDINGS\n${evidenceText}\n\nCANDIDATE CULPRITS, scored by code\n${candidateText}`,

@@ -8,7 +8,7 @@ import { getJSON, setJSON } from 'demos/store';
 import { HYPOTHESES, investigate } from 'pages/demo/honeycomb/agent';
 
 export const MODEL = DEMO_LLM.model();
-export const VERSION = 'honeycomb-v12';
+export const VERSION = 'honeycomb-v13';
 export const CACHE_SECONDS = 12 * 3600;
 
 export const hash = (...parts) =>
