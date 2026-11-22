@@ -156,8 +156,8 @@ export async function* chatStream({ provider, model, system, messages, maxTokens
 /**
  * One LLM turn with tools (OpenAI-style function calling) through fal, OpenAI or Gemini.
  * tools: [{ type: 'function', function: { name, description, parameters } }].
- * Returns { content, toolCalls: [{ id, name, args }], finishReason }; args are parsed ({} if
- * not JSON).
+ * Returns { content, toolCalls: [{ id, name, args }], finishReason, usage }; args are parsed ({}
+ * if not JSON); usage is { inputTokens, outputTokens } or null.
  * Some models answer with JSON in the text instead of a tool call: callers should fall back.
  */
 export async function chatTools({
@@ -210,7 +210,11 @@ export async function chatTools({
     return { id: call.id, name: call.function?.name, args };
   });
   const finishReason = data.choices?.[0]?.finish_reason;
-  return { content: message.content || '', toolCalls, finishReason };
+  // usage: token counts as the provider reports them (null when it sends none)
+  const usage = data.usage
+    ? { inputTokens: data.usage.prompt_tokens ?? 0, outputTokens: data.usage.completion_tokens ?? 0 }
+    : null;
+  return { content: message.content || '', toolCalls, finishReason, usage };
 }
 
 /**
