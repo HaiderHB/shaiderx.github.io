@@ -1,0 +1,72 @@
+<template>
+  <!-- Blackletter launch film · every line of text except the two statement scenes and the end card.
+       Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
+       >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s; each cue starts on the cut of its shot. Labels sit under the headline. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.5" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="10.5" data-duration="53.5" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="64" data-track-index="2"
+      data-kit-chapters="The problem:0|Review:10.5|Lawyer feedback:27|Evals:39.5" data-layout-ignore></div>
+
+    <!-- HOOK -->
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.5" data-track-index="1">
+      <div class="kit-cap-head">Contract review that *learns from lawyers*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Live run</span></div>
+    </div>
+
+    <!-- HERO: one term sheet, three shots -->
+    <div id="cap-h1" class="clip kit-cap kit-cap3" data-start="10.5" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">The agent checks each clause against the *playbook*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Live run, sample document</span></div>
+    </div>
+    <div id="cap-h2" class="clip kit-cap kit-cap3" data-start="16" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">Each flag: *exact quote*, the rule, a redline</div>
+    </div>
+    <div id="cap-h3" class="clip kit-cap kit-cap3" data-start="21.5" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">A fast second model scores *its confidence*</div>
+    </div>
+
+    <!-- FEATURE 2: lawyer review -->
+    <div id="cap-f2a" class="clip kit-cap kit-cap3" data-start="27" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">A lawyer rejects one flag and *says why*</div>
+    </div>
+    <div id="cap-f2b" class="clip kit-cap kit-cap3" data-start="34" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">That rejection becomes a *permanent test case*</div>
+    </div>
+
+    <!-- FEATURE 3: learn and re-score -->
+    <div id="cap-f3a" class="clip kit-cap kit-cap3" data-start="39.5" data-duration="6.5" data-track-index="1">
+      <div class="kit-cap-head">The reason becomes a *clearer playbook rule*</div>
+    </div>
+    <div id="cap-f3b" class="clip kit-cap kit-cap3" data-start="46" data-duration="6" data-track-index="1">
+      <div class="kit-cap-head">Every document re-scored: *precision 77% to 83%*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">19 s wait cut</span></div>
+    </div>
+    <div id="cap-f3c" class="clip kit-cap kit-cap3" data-start="52" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">And it shows exactly *which flag changed*</div>
+    </div>
+
+    <!-- PROOF: the run's own numbers, one line for technical viewers -->
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="57.5" data-duration="6.5" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">77% → 83%</span><span class="kit-stat-l">precision after one rejection</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">11</span><span class="kit-stat-l">labelled issues</span></span>
+      </div>
+      <div class="kit-hood">An LLM reviews · code pins every quote · a fast decision model scores · evals run in code</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>
