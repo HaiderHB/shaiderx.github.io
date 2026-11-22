@@ -1,0 +1,1146 @@
+/* Honeycomb page styles. Shared pieces come from demos/ui and read the --ui* tokens.
+   The accent is picked with <DemoLayout accent="cobalt">, not overridden here. */
+.page {
+  font-size: var(--fontSizeBodyS);
+  line-height: 1.5;
+}
+
+.muted {
+  color: var(--uiMuted);
+  font-size: var(--fontSizeBodyXS);
+}
+
+.section {
+  margin-top: var(--space3XL);
+  scroll-margin-top: 96px;
+}
+
+.section:first-of-type {
+  margin-top: var(--spaceL);
+}
+
+.notice {
+  margin-top: var(--spaceS);
+}
+
+.notes {
+  margin-top: var(--spaceM);
+}
+
+/* ---- Alert + ranking ---- */
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: var(--spaceL);
+  align-items: stretch;
+  margin-top: var(--spaceL);
+}
+
+.alert {
+  border-color: rgb(var(--uiRgbBad) / 0.35);
+}
+
+.alertHead {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spaceL);
+  align-items: flex-start;
+}
+
+.alertBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapM);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontLabel);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgb(var(--uiRgbBad));
+}
+
+.alertDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgb(var(--uiRgbBad));
+  box-shadow: 0 0 0 0 rgb(var(--uiRgbBad) / 0.5);
+  animation: alertPulse 1.6s var(--uiEase) infinite;
+}
+
+@keyframes alertPulse {
+  70% {
+    box-shadow: 0 0 0 8px rgb(var(--uiRgbBad) / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(var(--uiRgbBad) / 0);
+  }
+}
+
+.alertTitle {
+  margin: var(--uiGapS) 0 var(--uiGapXS);
+  font-size: var(--fontSizeH4);
+  font-weight: 600;
+  letter-spacing: var(--uiTrackTight);
+  line-height: 1.15;
+}
+
+.alertSub {
+  margin: 0;
+  color: var(--uiMuted);
+  font-size: var(--uiFontNote);
+}
+
+.alertStats {
+  display: flex;
+  gap: var(--spaceM);
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.alertStats div {
+  text-align: right;
+}
+
+.alertStats dt {
+  font-size: var(--uiFontMicro);
+  color: var(--uiMuted);
+}
+
+.alertStats dd {
+  margin: 0;
+  font-family: var(--uiMono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: var(--spaceM);
+}
+
+.chartLine {
+  fill: none;
+  stroke: rgb(var(--uiRgbAccent));
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+}
+
+.chartBurn {
+  fill: rgb(var(--uiRgbBad) / 0.1);
+}
+
+.chartGrid {
+  stroke: var(--uiLine);
+  stroke-width: 1;
+}
+
+.chartThreshold {
+  stroke: rgb(var(--uiRgbBad));
+  stroke-width: 1.2;
+  stroke-dasharray: 5 4;
+}
+
+.chartMarker {
+  stroke: rgb(var(--uiRgbWarn));
+  stroke-width: 1.2;
+}
+
+.chartMarkerHead {
+  fill: rgb(var(--uiRgbWarn));
+}
+
+.chartTick {
+  fill: var(--uiMuted);
+  font-family: var(--uiMono);
+  font-size: 10px;
+}
+
+.chartLegend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--uiGapS) var(--uiGapM);
+  margin: var(--uiGapS) 0 0;
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}
+
+.chartLegend span {
+  display: inline-block;
+  width: 16px;
+  height: 0;
+  border-top: 2px solid rgb(var(--uiRgbAccent));
+  margin-left: var(--uiGapM);
+}
+
+.chartLegend span:first-child {
+  margin-left: 0;
+}
+
+.chartLegend span[data-key='threshold'] {
+  border-top: 2px dashed rgb(var(--uiRgbBad));
+}
+
+.chartLegend span[data-key='marker'] {
+  width: 0;
+  height: 12px;
+  border-top: 0;
+  border-left: 2px solid rgb(var(--uiRgbWarn));
+}
+
+.controls {
+  margin-top: var(--spaceM);
+  padding-top: var(--spaceM);
+  border-top: 1px solid var(--uiLine);
+}
+
+.runRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spaceS) var(--spaceM);
+  margin-top: var(--spaceM);
+}
+
+.rank {
+  display: flex;
+  flex-direction: column;
+}
+
+.rankNote {
+  margin: var(--spaceS) 0 0;
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+.rankWarn {
+  margin: var(--uiGapM) 0 0;
+  font-size: var(--uiFontSmall);
+  color: rgb(var(--uiRgbWarn));
+}
+
+.triage {
+  margin-top: auto;
+  padding-top: var(--spaceM);
+  display: grid;
+  gap: var(--uiGapXS);
+  font-size: var(--uiFontCaption);
+}
+
+.triageLabel {
+  color: var(--uiMuted);
+  font-size: var(--uiFontMicro);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--uiGapXS);
+}
+
+.triageRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 44px;
+  gap: var(--uiGapM);
+  font-family: var(--uiMono);
+  font-variant-numeric: tabular-nums;
+  color: var(--uiMuted);
+}
+
+.triageRow b {
+  text-align: right;
+  font-weight: 500;
+}
+
+.triageRow[data-hot] {
+  color: rgb(var(--uiRgbInk));
+}
+
+.triageRow[data-hot] b {
+  color: rgb(var(--uiRgbBad));
+  font-weight: 600;
+}
+
+/* ---- Agent lanes ---- */
+.lanes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spaceL);
+  margin-top: var(--spaceL);
+  align-items: start;
+}
+
+.lane {
+  --uiCardPad: var(--spaceM);
+  min-width: 0;
+}
+
+.laneHead {
+  display: flex;
+  align-items: center;
+  gap: var(--uiGapXL);
+}
+
+.laneLetter {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: var(--uiRadiusS);
+  font-family: var(--uiMono);
+  font-weight: 600;
+  color: rgb(var(--uiRgbAccent));
+  background: rgb(var(--uiRgbAccent) / 0.14);
+}
+
+.laneTitle {
+  flex: 1;
+  min-width: 0;
+}
+
+.laneTitle h3 {
+  margin: 0;
+  font-size: var(--fontSizeBodyS);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.laneTitle span {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+  font-variant-numeric: tabular-nums;
+}
+
+.laneEmpty {
+  margin: var(--spaceM) 0 0;
+  padding: var(--spaceM);
+  border-radius: var(--uiRadiusM);
+  background: var(--uiHatch);
+  color: var(--uiMuted);
+  font-size: var(--uiFontSmall);
+}
+
+.calls {
+  list-style: none;
+  margin: var(--spaceM) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--uiGapM);
+}
+
+.call {
+  border: 1px solid var(--uiLine);
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbInset));
+  animation: rise 0.35s var(--uiEase) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.call summary {
+  display: flex;
+  gap: var(--uiGapL);
+  padding: var(--uiGapL) var(--uiGapXL);
+  cursor: pointer;
+  list-style: none;
+}
+
+.call summary::-webkit-details-marker {
+  display: none;
+}
+
+.callId {
+  flex-shrink: 0;
+  align-self: flex-start;
+  min-width: 26px;
+  padding: 1px 5px;
+  border-radius: var(--uiRadiusXS);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-weight: 600;
+  text-align: center;
+  color: rgb(var(--uiRgbAccent));
+  background: rgb(var(--uiRgbAccent) / 0.14);
+}
+
+.callMain {
+  display: grid;
+  gap: var(--uiGapXS);
+  min-width: 0;
+  flex: 1;
+}
+
+.callName {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--uiGapXS) var(--uiGapS);
+}
+
+.callName code,
+.compareCalls code {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCode);
+  font-weight: 600;
+}
+
+.arg {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  padding: 1px 6px;
+  border-radius: var(--uiRadiusXS);
+  background: var(--uiWellStrong);
+  overflow-wrap: anywhere;
+}
+
+.arg span {
+  color: var(--uiMuted);
+}
+
+.arg[data-strong] {
+  background: rgb(var(--uiRgbAccent) / 0.14);
+}
+
+.because {
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+  line-height: 1.4;
+}
+
+.skillRef,
+.callRef {
+  display: inline-block;
+  padding: 0 5px;
+  margin: 0 1px;
+  border-radius: var(--uiRadiusXS);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.skillRef {
+  color: rgb(var(--uiRgbOnAccent));
+  background: rgb(var(--uiRgbAccentDeep));
+}
+
+.callRef {
+  color: rgb(var(--uiRgbAccent));
+  background: rgb(var(--uiRgbAccent) / 0.14);
+}
+
+.callResult {
+  display: flex;
+  align-items: center;
+  gap: var(--uiGapS);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.callResult[data-pending] {
+  color: var(--uiMuted);
+}
+
+.callDetail {
+  padding: 0 var(--uiGapXL) var(--uiGapXL);
+  display: grid;
+  gap: var(--uiGapS);
+}
+
+.finding {
+  margin-top: var(--spaceM);
+  padding: var(--uiGapXL);
+  border-radius: var(--uiRadiusM);
+  border: 1px solid var(--uiLineStrong);
+  border-left: 3px solid rgb(var(--uiRgbWarn));
+  background: rgb(var(--uiRgbRaised));
+  animation: rise 0.4s var(--uiEase) both;
+}
+
+.finding[data-verdict='supported'] {
+  border-left-color: rgb(var(--uiRgbOk));
+}
+
+.finding[data-verdict='ruled_out'] {
+  border-left-color: rgb(var(--uiRgbBad));
+}
+
+.findingHead {
+  margin: var(--uiGapXS) 0 0;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.findingDetail {
+  margin: var(--uiGapXS) 0 0;
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+.evidence {
+  margin-top: var(--uiGapL);
+  display: grid;
+  gap: var(--uiGapXS);
+}
+
+.evidenceRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+}
+
+.evidenceLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.evidenceTrack {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--uiHatch);
+  overflow: hidden;
+}
+
+.evidenceFill,
+.evidenceGhost {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 3px;
+}
+
+.evidenceFill {
+  background: rgb(var(--uiRgbAccent));
+  opacity: 0.9;
+}
+
+.evidenceGhost {
+  background: rgb(var(--uiRgbInk) / 0.35);
+  z-index: 1;
+  height: 2px;
+  top: 2px;
+}
+
+.evidenceValue {
+  color: var(--uiMuted);
+  font-variant-numeric: tabular-nums;
+}
+
+.grounded {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapS);
+  margin-top: var(--uiGapL);
+  font-size: var(--uiFontCaption);
+  color: rgb(var(--uiRgbWarn));
+}
+
+.grounded[data-ok] {
+  color: var(--uiMuted);
+}
+
+/* ---- Root cause ---- */
+.rootWait {
+  margin-top: var(--spaceL);
+}
+
+.root {
+  margin-top: var(--spaceL);
+  animation: rise 0.5s var(--uiEase) both;
+}
+
+.rootMeta {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}
+
+.rootGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  gap: var(--spaceXL);
+  align-items: start;
+}
+
+.rootStatement {
+  margin: 0;
+  font-size: var(--fontSizeH5);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: var(--uiTrackTight);
+}
+
+.culprit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--uiGapS);
+  margin-top: var(--spaceM);
+}
+
+.culprit code {
+  padding: 3px 9px;
+  border-radius: var(--uiRadiusS);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCode);
+  font-weight: 600;
+  color: rgb(var(--uiRgbOnAccent));
+  background: rgb(var(--uiRgbAccentDeep));
+  overflow-wrap: anywhere;
+}
+
+.culprit code:first-child {
+  color: rgb(var(--uiRgbInk));
+  background: var(--uiWellStrong);
+}
+
+.rootFacts {
+  margin: var(--spaceM) 0 0;
+  display: grid;
+  gap: var(--uiGapL);
+}
+
+.rootFacts dt {
+  font-size: var(--uiFontMicro);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--uiMuted);
+}
+
+.rootFacts dd {
+  margin: 0;
+  font-size: var(--uiFontNote);
+}
+
+.rootChecks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--spaceM);
+}
+
+.proof {
+  display: grid;
+  gap: var(--uiGapM);
+  padding: var(--spaceM);
+  border-radius: var(--uiRadiusL);
+  background: rgb(var(--uiRgbSurface));
+  border: 1px solid var(--uiLine);
+}
+
+.proofTiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spaceM);
+  margin-bottom: var(--uiGapM);
+}
+
+.proofTiles b {
+  display: block;
+  font-size: var(--fontSizeH3);
+  font-weight: 600;
+  letter-spacing: var(--uiTrackDisplay);
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+.proofTiles span {
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}
+
+.proofRow {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr) 72px;
+  gap: var(--uiGapL);
+  align-items: center;
+  font-size: var(--uiFontSmall);
+}
+
+.proofRow b {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.proofTrack,
+.traceTrack,
+.scoreTrack {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--uiHatch);
+  overflow: hidden;
+}
+
+.proofTrack span,
+.traceTrack span,
+.scoreTrack span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: rgb(var(--uiRgbInk) / 0.3);
+}
+
+.proofRow[data-hot] .proofTrack span,
+.traceRow[data-hot] .traceTrack span {
+  background: rgb(var(--uiRgbBad));
+}
+
+.trace {
+  display: grid;
+  gap: var(--uiGapXS);
+  margin-top: var(--uiGapL);
+  padding-top: var(--uiGapXL);
+  border-top: 1px solid var(--uiLine);
+}
+
+.traceRow {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr) 64px;
+  gap: var(--uiGapL);
+  align-items: center;
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+}
+
+.traceName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.traceName em {
+  font-style: normal;
+  color: var(--uiMuted);
+  margin-left: 6px;
+}
+
+.traceMs {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.traceRow[data-hot] {
+  font-weight: 600;
+}
+
+.rootMore {
+  margin-top: var(--spaceM);
+  padding-top: var(--spaceM);
+  border-top: 1px solid var(--uiLine);
+}
+
+.rootMore summary {
+  cursor: pointer;
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+.candidates {
+  display: grid;
+  gap: var(--uiGapXS);
+  margin-top: var(--spaceM);
+}
+
+.candidateHead,
+.candidate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px 190px;
+  gap: var(--spaceM);
+  align-items: center;
+}
+
+.candidateHead {
+  font-size: var(--uiFontMicro);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--uiMuted);
+}
+
+.candidate {
+  padding: var(--uiGapL) var(--uiGapXL);
+  border-radius: var(--uiRadiusM);
+  border: 1px solid var(--uiLine);
+  background: rgb(var(--uiRgbSurface));
+}
+
+.candidate[data-chosen] {
+  border-color: rgb(var(--uiRgbOk) / 0.6);
+}
+
+.candidateName {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--uiGapXS) var(--uiGapM);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.candidateName code {
+  font-weight: 600;
+}
+
+.scoreCell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px;
+  gap: var(--uiGapM);
+  align-items: center;
+}
+
+.scoreCell b {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.candidate[data-chosen] .scoreTrack span {
+  background: rgb(var(--uiRgbOk));
+}
+
+/* ---- Skills ---- */
+.skillsGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--spaceL);
+  align-items: start;
+  margin-top: var(--spaceL);
+}
+
+.skills {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--spaceM);
+}
+
+.skillHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--uiGapM);
+  flex-wrap: wrap;
+  margin-bottom: var(--uiGapS);
+}
+
+.skillToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapM);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.skillToggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: rgb(var(--uiRgbAccent));
+}
+
+.skillId {
+  padding: 0 6px;
+  border-radius: var(--uiRadiusXS);
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  line-height: 1.6;
+  color: rgb(var(--uiRgbOnAccent));
+  background: rgb(var(--uiRgbAccentDeep));
+}
+
+.skill[data-off] .skillId {
+  color: var(--uiMuted);
+  background: var(--uiWellStrong);
+}
+
+.skill[data-off] .skillTitle {
+  color: var(--uiMuted);
+  text-decoration: line-through;
+}
+
+.skillCited {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontMicro);
+  color: rgb(var(--uiRgbAccent));
+}
+
+.skillCited[data-zero] {
+  color: var(--uiFaint);
+}
+
+.skillText {
+  min-height: 0;
+  font-size: var(--uiFontSmall);
+  line-height: 1.45;
+  resize: vertical;
+}
+
+.compareGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--spaceL);
+}
+
+.compareCol {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--uiGapXL);
+  align-items: flex-start;
+}
+
+.compareHead {
+  display: flex;
+  align-items: center;
+  gap: var(--uiGapL);
+}
+
+.compareHead h3 {
+  margin: 0;
+  font-size: var(--fontSizeBodyS);
+  font-weight: 600;
+}
+
+.compareCalls {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--uiGapM);
+  width: 100%;
+}
+
+.compareCalls li {
+  display: flex;
+  gap: var(--uiGapL);
+  font-size: var(--uiFontSmall);
+}
+
+.compareCalls li > span:last-child {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--uiGapS);
+  min-width: 0;
+}
+
+.compareResult {
+  display: grid;
+  gap: var(--uiGapXS);
+  width: 100%;
+  padding: var(--uiGapXL);
+  border-radius: var(--uiRadiusM);
+  background: rgb(var(--uiRgbInset));
+}
+
+.compareResult .grounded {
+  margin-top: 0;
+  color: rgb(var(--uiRgbWarn));
+}
+
+.compareResult .grounded[data-ok] {
+  color: rgb(var(--uiRgbOk));
+}
+
+.compareResult code {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  overflow-wrap: anywhere;
+}
+
+.compareMeta {
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+}
+
+/* ---- Evals ---- */
+.evalStats {
+  margin-top: var(--spaceL);
+}
+
+.evalCard {
+  margin-top: var(--spaceL);
+}
+
+.evalTable {
+  display: grid;
+}
+
+.evalRow {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) repeat(var(--evalConfigs, 2), minmax(0, 3fr));
+  gap: var(--spaceM);
+  align-items: center;
+  padding: var(--uiGapXL) 0;
+  border-top: 1px solid var(--uiLine);
+}
+
+.evalRow[data-head] {
+  border-top: 0;
+  padding-top: 0;
+  font-size: var(--uiFontMicro);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--uiMuted);
+}
+
+.evalRow b {
+  font-weight: 600;
+}
+
+.evalTruth {
+  display: block;
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+.evalCell {
+  display: grid;
+  gap: 2px;
+}
+
+.evalScore {
+  display: flex;
+  align-items: center;
+  gap: var(--uiGapL);
+}
+
+.evalScore b {
+  font-family: var(--uiMono);
+  font-size: var(--fontSizeBodyM);
+  font-variant-numeric: tabular-nums;
+}
+
+.evalIcons {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapXS);
+}
+
+.evalIcons > span {
+  display: inline-flex;
+}
+
+.evalNote,
+.evalPending {
+  font-family: var(--uiMono);
+  font-size: var(--uiFontCaption);
+  color: var(--uiMuted);
+  font-variant-numeric: tabular-nums;
+}
+
+.evalPending {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--uiGapM);
+}
+
+.evalFoot {
+  margin: var(--spaceM) 0 0;
+  padding-top: var(--spaceM);
+  border-top: 1px solid var(--uiLine);
+  font-size: var(--uiFontSmall);
+  color: var(--uiMuted);
+}
+
+@media (max-width: 1020px) {
+  .top,
+  .skillsGrid,
+  .rootGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lanes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    --uiCardPad: var(--spaceM);
+  }
+
+  .section {
+    margin-top: var(--space2XL);
+  }
+
+  .alertHead {
+    flex-direction: column;
+    gap: var(--spaceS);
+  }
+
+  .alertStats div {
+    text-align: left;
+  }
+
+  .compareGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .candidateHead {
+    display: none;
+  }
+
+  .candidate {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .candidateName {
+    grid-column: 1 / -1;
+  }
+
+  .proofRow {
+    grid-template-columns: 104px minmax(0, 1fr) 64px;
+  }
+
+  .traceRow {
+    grid-template-columns: 118px minmax(0, 1fr) 56px;
+  }
+
+  .evalRow {
+    grid-template-columns: repeat(var(--evalConfigs, 2), minmax(0, 1fr));
+    gap: var(--spaceS);
+  }
+
+  .evalRow[data-head] {
+    display: none;
+  }
+
+  .evalRow > div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .evalCell::before {
+    content: attr(data-label);
+    font-size: var(--uiFontMicro);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--uiMuted);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .call,
+  .finding,
+  .root {
+    animation: none;
+  }
+
+  .alertDot {
+    animation: none;
+  }
+}
