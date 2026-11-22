@@ -1,0 +1,107 @@
+/*
+ * kit/tokens.css — house style for Haider's demo launch films (1920x1080, 30 fps).
+ * Loaded once by the film's index.html; every scene and block reads these variables.
+ *
+ * Kit 1.1: the palette matches the demo UI revamp (src/demos/ui/tokens.module.css, dark theme):
+ * ground = the demo canvas rgb(10 10 15), ink = rgb(242 241 249), and ONE accent per film = the
+ * accent its demo page uses. Set it on the film's root: <div id="root" data-kit-accent="iris">.
+ *   iris   #8e78ff  (DemoLayout default; Distru)
+ *   cobalt #6896ff  (AssemblyAI)
+ *   coral  #ff8060  (Great Question)
+ *   cyan   #00e5ff  (the kit 1.0 accent, for older films)
+ * Films use only the first colour of each pair: no gradients, glow or glass in the film's own graphics.
+ *
+ * Variables
+ *   colour   --kit-ground (+ --kit-ground-rgb), --kit-panel, --kit-ink, --kit-quiet, --kit-dim-ink,
+ *            --kit-accent (+ --kit-accent-rgb), --kit-on-accent, --kit-line, --kit-dim
+ *   type     --kit-font (Inter; bundled weights 400/700/900), --kit-mono (JetBrains Mono)
+ *   frame    --kit-w / --kit-h (canvas), --kit-margin (24px framing margin),
+ *            --kit-band-top (y where the caption band starts; the camera never frames
+ *            the focused component below this line while captions are on),
+ *            --kit-gutter (v1 cards and captions), --kit-gutter2 (v2 caption band)
+ *   caption  --kit-cap-* (v1 cue), --kit-cap2-* (v2 cue: kicker / head / detail), --kit-ann-* (annotation)
+ *   launch   --kit-cap3-* (kit 2 one-line caption and hook), --kit-chapters-top, --kit-statement,
+ *            --kit-backdrop-blur, --kit-scrim, --kit-spot-dim
+ * Rules (see video/README.md): no glow, no glass, no decorative gradients, no target-company logo.
+ * Keep lib/camera.js SAFE.bandTop in sync with --kit-band-top, and lib/text.js CAP2 with --kit-cap2-*.
+ */
+:root {
+  --kit-ground: #0a0a0f;
+  --kit-ground-rgb: 10 10 15;
+  --kit-panel: #14141c;
+  --kit-ink: #f2f1f9;
+  --kit-ink-rgb: 242 241 249;
+  --kit-quiet: rgb(242 241 249 / 0.62);
+  --kit-dim-ink: rgb(242 241 249 / 0.4);
+  --kit-accent: #8e78ff;
+  --kit-accent-rgb: 142 120 255;
+  --kit-on-accent: #0a0a0f;
+  --kit-line: rgb(242 241 249 / 0.16);
+  --kit-dim: rgb(6 6 10 / 0.55);
+
+  --kit-font: "Inter", sans-serif;
+  --kit-mono: "JetBrains Mono", monospace;
+
+  --kit-w: 1920px;
+  --kit-h: 1080px;
+  --kit-margin: 24px;
+  --kit-gutter: 160px;
+  --kit-gutter2: 120px;
+  --kit-band-top: 840px;
+
+  /* v1 cue (.kit-cap > .kit-cap-label / .kit-cap-main / .kit-cap-note) */
+  --kit-cap-label: 28px;
+  --kit-cap-main: 48px;
+  --kit-cap-note: 28px;
+  --kit-cap-bottom: 60px;
+
+  /* v2 cue (.kit-cap.kit-cap2 > .kit-cap-kicker / .kit-cap-head / .kit-cap-detail), kit 1.1 */
+  --kit-cap2-top: 864px;
+  --kit-cap2-kicker: 28px;
+  --kit-cap2-head: 58px;
+  --kit-cap2-detail: 32px;
+
+  /* annotation label (.kit-ann-label), kit 1.1 */
+  --kit-ann-size: 32px;
+
+  /* kit 2, launch format: one-line caption (64-72 px), hook line, statement, chapters, spotlight, backdrop.
+     Keep lib/launch.js RULES in sync with --kit-cap3-*. */
+  --kit-cap3-top: 866px;
+  --kit-cap3-head: 68px;
+  --kit-cap3-hook: 72px;
+  --kit-chapters-top: 1004px;
+  --kit-statement: 96px;
+  --kit-backdrop-blur: 10px;
+  --kit-scrim: 0.62;
+  --kit-spot-dim: rgb(6 6 10 / 0.66);
+
+  --kit-display: 104px;
+  --kit-head: 72px;
+  --kit-line-size: 52px;
+  --kit-label: 28px;
+
+  --kit-ring: 3px;
+  --kit-ring-radius: 12px;
+}
+
+/* one accent per film, matching the demo page's DemoLayout accent */
+[data-kit-accent="iris"] {
+  --kit-accent: #8e78ff;
+  --kit-accent-rgb: 142 120 255;
+  --kit-on-accent: #0a0a0f;
+}
+[data-kit-accent="cobalt"] {
+  --kit-accent: #6896ff;
+  --kit-accent-rgb: 104 150 255;
+  --kit-on-accent: #0a0a0f;
+}
+[data-kit-accent="coral"] {
+  --kit-accent: #ff8060;
+  --kit-accent-rgb: 255 128 96;
+  --kit-on-accent: #0a0a0f;
+}
+[data-kit-accent="cyan"] {
+  --kit-accent: #00e5ff;
+  --kit-accent-rgb: 0 229 255;
+  --kit-on-accent: #0a0a0f;
+}

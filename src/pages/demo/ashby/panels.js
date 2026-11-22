@@ -426,7 +426,8 @@ function EmailBox({ candidate, email, onEmail }) {
  * no longer applies: the "you already met them" moment, beside the page title.
  */
 export function SecondLook({ rows, run, label, onOpen }) {
-  const pick = rows.find(row => {
+  // Only once the run is done: mid-run the pool is partial and the pick would change under the reader
+  const pick = run.done && rows.find(row => {
     const application = lastApplication(candidateById(row.id));
     const verdict = run.verdicts?.[row.id];
     return ['level', 'skills'].includes(application?.reason) && verdict && verdict.concern < 0.35;
