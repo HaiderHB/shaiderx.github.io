@@ -41,8 +41,9 @@ replay the page recomputes every tool result and the sandbox world from the reco
 - **Preview (no key):** replays two runs recorded through the live route on 2026-11-21 (`example.js`, written by a
   script, not edited): the hero task with the improved wording (10 tool calls, 0 errors, 1 lint fix, 7/7 checks)
   and with the vague wording (14 calls, 9 errors, stopped at the step budget, 1/7). The safety section is live.
-- **Live (private link):** `POST /api/demo/resend/run/` streams one run (40-75 s, about two cents). "Run both
-  live" in the report runs both wordings at once. A repeat of the same task, wording and New York day replays
+- **Live (private link):** `POST /api/demo/resend/run/` streams one run (40-75 s, about two cents). No new turn
+  starts after 95 s, so a slow run (the vague wording) ends with "Stopped at the time budget" inside the route's
+  120 s limit. "Run both live" in the report runs both wordings at once (tested: about 3 minutes locally). A repeat of the same task, wording and New York day replays
   from cache, free. `POST /api/demo/resend/broadcast/` is the store-backed endpoint (free, rate-limited).
 
 Env vars: `FAL_API_KEY` (LLM). Optional `DEMO_RESEND_LLM_SLOTS` (default 3), the gate that keeps concurrent LLM calls

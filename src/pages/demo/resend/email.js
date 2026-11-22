@@ -174,8 +174,10 @@ export function normaliseBody(input, path = 'body', depth = 0) {
 
 // ---- render ---------------------------------------------------------------------------------
 
-// The brand kit's launch image, drawn in code (sample asset: no image is fetched)
-function heroImageSvg(width, height) {
+// The brand kit's launch image, drawn in code (sample asset: no image is fetched). It is 2:1 whatever
+// height the template asks for, as a real image file would be.
+function heroImageSvg(width) {
+  const height = Math.round(width / 2);
   const bars = [0.42, 0.58, 0.5, 0.74, 0.66, 0.88, 0.8]
     .map((value, index) => {
       const x = 330 + index * 34;
@@ -210,7 +212,7 @@ function nodeHtml(node, ctx) {
     case 'Link':
       return `<p style="margin:0 0 14px;font-size:14px;${align}"><a href="${escapeHtml(fillPlaceholders(node.href))}" style="color:${node.color || ctx.link};text-decoration:underline">${escapeHtml(node.text)}</a></p>`;
     case 'Img': {
-      const src = node.src === HERO_IMAGE ? heroImageSvg(node.width, node.height) : placeholderSvg(node.width, node.height, node.alt || 'image');
+      const src = node.src === HERO_IMAGE ? heroImageSvg(node.width) : placeholderSvg(node.width, node.height, node.alt || 'image');
       return `<img src="${src}" alt="${escapeHtml(node.alt)}" width="${node.width}" style="display:block;width:100%;max-width:${node.width}px;height:auto;border:0;margin:0 0 18px;border-radius:10px">`;
     }
     case 'List':

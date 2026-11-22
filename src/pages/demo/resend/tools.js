@@ -566,6 +566,13 @@ const TOOLS = {
   },
 };
 
+/** A copy of obj without the given keys. */
+export function omit(obj, keys) {
+  const copy = { ...obj };
+  for (const key of keys) delete copy[key];
+  return copy;
+}
+
 // The vague server's errors: the same failure, without the sentence that says how to fix it
 const TERSE = {
   invalid_args: 'Invalid arguments.',
@@ -591,8 +598,8 @@ export function callTool(world, name, args, variant = 'clear') {
   try {
     const out = tool(world, args && typeof args === 'object' && !Array.isArray(args) ? args : {});
     let result = out.result;
-    if (vague && name === 'lint_email') result = { ...result, checks: result.checks.map(({ fix, ...check }) => check) };
-    if (vague && result.next) result = (({ next, ...rest }) => rest)(result);
+    if (vague && name === 'lint_email') result = { ...result, checks: result.checks.map(check => omit(check, ['fix'])) };
+    if (vague && result.next) result = omit(result, ['next']);
     return { world: out.world, result, isError: false };
   } catch (error) {
     if (!(error instanceof ToolError)) throw error;

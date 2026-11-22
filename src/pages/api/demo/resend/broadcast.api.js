@@ -14,6 +14,7 @@ import {
   callTool,
   checkIdempotencyKey,
   newWorld,
+  omit,
   prepareBroadcast,
   ToolError,
 } from 'pages/demo/resend/tools';
@@ -64,7 +65,7 @@ async function schedule(req, res, session) {
     if (body.dry_run !== false) {
       const record = broadcastRecord(world, prepared, 'dry-run');
       await log(session, { op: 'schedule', status: 200, outcome: 'dry run', attempt, note: 'nothing scheduled' });
-      const { broadcast_id, idempotency_key, hash, status, ...preview } = record;
+      const preview = omit(record, ['broadcast_id', 'idempotency_key', 'hash', 'status']);
       return res.status(200).json({ dry_run: true, would_schedule: preview, note: 'Nothing was scheduled.' });
     }
     const key = checkIdempotencyKey(keyText);

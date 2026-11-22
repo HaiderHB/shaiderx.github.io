@@ -1,0 +1,36 @@
+<template>
+  <!-- Resend launch film (kit 2.1, launch format). Clip `flow` (see hero.html). The agent UX report shows two recorded runs (2026-11-21, through the real route): the launch task with vague tool descriptions and with the improved ones. Footage at 1x.
+       FEATURE 3 49-62 s: tool descriptions are the agent's interface. Scene time = film time - 49.
+       0-6.5 where the vague run stumbled: errors as the agent read them and its guesses (media 115.4), there from frame 0 | 6.5-13 vague against improved: tool calls, errors, retries, tokens, checks (media 107.4), there from frame 0. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="feature3" data-width="1920" data-height="1080">
+    <div id="feature3-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="feature3-cam" class="kit-cam">
+        <video id="feature3-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="6.5" data-media-start="115.4" data-kit-lands="0" data-kit-read="20" data-track-index="0" muted playsinline></video>
+        <video id="feature3-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="6.5" data-duration="6.5" data-media-start="107.4" data-kit-lands="0" data-kit-read="16" data-track-index="0" muted playsinline></video>
+        <div id="feature3-spot1" class="clip kit-spot" data-start="0" data-duration="6.5" data-kit-focus="[&quot;stumble1&quot;, &quot;stumble3&quot;]" data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="feature3-spot2" class="clip kit-spot" data-start="6.5" data-duration="6.5" data-kit-focus="compare" data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        {"t": 0, "focus": ["stumble1", "stumble3"], "cut": true, "window": [0.05, 6.5], "label": "F3a the vague run guesses", "maxZoom": 1.7},
+        {"t": 6.5, "focus": "compare", "cut": true, "window": [6.5, 13], "label": "F3b vague against improved", "maxZoom": 1.7}
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "feature3", tl });
+      window.__timelines["feature3"] = tl;
+    })();
+  </script>
+</template>

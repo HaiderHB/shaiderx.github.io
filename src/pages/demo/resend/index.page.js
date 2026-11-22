@@ -97,6 +97,10 @@ export default function ResendDemo() {
   const [version, setVersion] = useState(null);
   const [approval, setApproval] = useState({ status: 'pending' });
   const token = useRef(0);
+  // While a run restarts, the workspace keeps its height, so the page below does not jump up under the reader
+  const workspace = useRef(null);
+  const [holdHeight, setHoldHeight] = useState(0);
+  const holdLayout = () => setHoldHeight(workspace.current?.offsetHeight || 0);
 
   // Retry safety: a store-backed broadcast endpoint, one ledger per page visit
   const session = useRef('');
@@ -130,6 +134,7 @@ export default function ResendDemo() {
 
   async function replay() {
     const mine = ++token.current;
+    holdLayout();
     resetSideEffects();
     setNotice('');
     setTask(HERO_TASK);
@@ -143,12 +148,14 @@ export default function ResendDemo() {
       setRun(state);
     }
     setStatus('done');
+    setHoldHeight(0);
   }
 
   function skipToResult() {
     token.current += 1;
     setRun({ ...foldRun(EXAMPLE.clear), kind: 'example' });
     setStatus('done');
+    setHoldHeight(0);
   }
 
   async function runLive(event) {
@@ -161,6 +168,7 @@ export default function ResendDemo() {
       return;
     }
     const mine = ++token.current;
+    holdLayout();
     resetSideEffects();
     setNotice('');
     setStatus('running');
@@ -178,6 +186,7 @@ export default function ResendDemo() {
       setRun(current => ({ ...current, error: error.message, done: true }));
       setStatus('error');
     }
+    if (token.current === mine) setHoldHeight(0);
   }
 
   // ---- the broadcast endpoint (free: no model calls, so it works without a key) --------------
@@ -384,7 +393,7 @@ export default function ResendDemo() {
             </form>
           </Card>
 
-          <div className={styles.workspace}>
+          <div ref={workspace} className={styles.workspace} style={holdHeight ? { minHeight: holdHeight } : undefined}>
             <Card className={styles.callsCard} data-kit="calls">
               <CardHead aside={<RunTotals run={run} />}>
                 <CardTitle>Tool calls</CardTitle>

@@ -86,7 +86,8 @@ export async function runTask({ task, variant }, onEvent) {
     }
     return { events: replay, cached: true };
   }
-  const { events } = await runAgent({ task, variant, now: Date.now() }, { turn }, event => onEvent(event, false));
+  // The route allows 120 s; no new turn starts after 95 s, so a slow run ends with its own final event
+  const { events } = await runAgent({ task, variant, now: Date.now(), budgetMs: 95_000 }, { turn }, event => onEvent(event, false));
   if (events.some(event => event.t === 'final')) await setJSON(`cache:${key}`, events, CACHE_SECONDS).catch(() => {});
   return { events, cached: false };
 }

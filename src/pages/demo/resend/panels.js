@@ -43,7 +43,8 @@ const CALL_STATUSES = {
 
 function callNote(call) {
   if (call.isError) return call.result?.error;
-  const result = call.result || {};
+  if (!call.result) return null;
+  const result = call.result;
   if (call.name === 'lint_email') return `v${result.version}: ${result.errors} errors, ${result.warnings} warnings`;
   if (call.name === 'create_template') return `${result.template_id} v${result.version} saved, ${result.components} components`;
   if (call.name === 'schedule_broadcast' && result.dry_run)

@@ -37,7 +37,7 @@ How to work:
  * Runs one task. models: { turn({ system, messages, tools }) -> { content, toolCalls, usage, ms } }.
  * emit gets every event. Returns { events, world }.
  */
-export async function runAgent({ task, variant = 'clear', now = Date.now() }, models, emit) {
+export async function runAgent({ task, variant = 'clear', now = Date.now(), budgetMs = Infinity }, models, emit) {
   const events = [];
   const send = event => {
     events.push(event);
@@ -52,7 +52,13 @@ export async function runAgent({ task, variant = 'clear', now = Date.now() }, mo
   let final = '';
   send({ t: 'start', variant, task, now });
 
+  let outOfTime = false;
   for (let n = 1; n <= MAX_TURNS && calls < MAX_CALLS; n++) {
+    // A time budget keeps a run inside the serverless function's limit; a slow run stops, it is not cut off
+    if (Date.now() - started > budgetMs) {
+      outOfTime = true;
+      break;
+    }
     const out = await models.turn({ system, messages, tools });
     const usage = out.usage || estimateUsage(system, messages, out);
     send({ t: 'turn', n, ms: out.ms ?? null, tokensIn: usage.inputTokens, tokensOut: usage.outputTokens, estimated: !out.usage, content: trim(out.content, 600) });
@@ -77,7 +83,7 @@ export async function runAgent({ task, variant = 'clear', now = Date.now() }, mo
       messages.push({ role: 'tool', tool_call_id: call.id, content: JSON.stringify(ran.result) });
     }
   }
-  send({ t: 'final', text: final || 'Stopped at the step budget.' });
+  send({ t: 'final', text: final || (outOfTime ? 'Stopped at the time budget.' : 'Stopped at the step budget.') });
   send({ t: 'done', ms: Date.now() - started });
   return { events, world };
 }

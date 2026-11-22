@@ -3,6 +3,8 @@
 .page {
   font-size: var(--fontSizeBodyS);
   line-height: 1.5;
+  /* Replays empty and refill the workspace: keep the reader's scroll where they put it */
+  overflow-anchor: none;
 }
 
 .muted {
@@ -150,6 +152,8 @@
   gap: var(--spaceL);
   align-items: start;
   margin-top: var(--spaceL);
+  /* A restarted run empties these cards; without this the browser re-anchors the scroll to the next section */
+  overflow-anchor: none;
 }
 
 .callsCard {
