@@ -1,0 +1,11 @@
+<!--
+  kit/components/headline-overlay.html — SNIPPET: kicker + headline in the caption band over footage
+  (what the cold-open block uses). Use it in a footage scene that IS the opening, instead of the block.
+  Wrap in a timed .clip; put a .kit-band behind it. The camera keeps the focus above the band.
+  Script: Kit.reveal.words(tl, document.getElementById("SCENE-head"), 0.05, {firstOpacity: 0.45})
+-->
+<div id="SCENE-band-w" class="clip" data-start="0" data-duration="2.2" data-track-index="2" data-layout-ignore><div class="kit-band" style="opacity: 1"></div></div>
+<div id="SCENE-headline" class="clip kit-headline" data-start="0" data-duration="2.2" data-track-index="3" data-layout-allow-caption-zone>
+  <div class="kit-kicker">Prototype for Company · Haider Bokhari</div>
+  <div id="SCENE-head" class="kit-head">Order email to <span class="hi">confirmed</span> order</div>
+</div>

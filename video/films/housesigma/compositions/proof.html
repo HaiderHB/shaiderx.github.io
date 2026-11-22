@@ -1,0 +1,31 @@
+<template>
+  <!-- HouseSigma launch film (kit 2.1, launch format). Clip `flow`, recorded 2026-11-21 at 1360x765 CSS px, 2x device pixels, from a production build of the demo opened with a demo key: every model call in the take is live (server restarted before the take, nothing cached). Footage plays at 1x; every hold is real footage.
+       PROOF 58-64.5 s: the top of the page, wide (media 80.5-87): the title and the search with its six checked filters and 12 of 580 homes. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="proof" data-width="1920" data-height="1080">
+    <div id="proof-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="proof-cam" class="kit-cam">
+        <video id="proof-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="6.5" data-media-start="79.67" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        {"t": 0, "focus": "heroText", "cut": true, "window": [0, 6.5], "label": "the top of the page, wide"}
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "proof", tl });
+      window.__timelines["proof"] = tl;
+    })();
+  </script>
+</template>
