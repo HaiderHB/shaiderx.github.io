@@ -190,5 +190,19 @@
       "created": "2026-11-21",
       "expires": "2027-01-05"
     }
+  ],
+  "ashby": [
+    {
+      "hash": "5d46e2b08d22e28b4c6c56127af3b28ec8c95c31c7a5fd66d4a71d9a1ed898e2",
+      "label": "Abhik Pramanik (Ashby CTO) / 2026-11-21",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    },
+    {
+      "hash": "9479eab3711879e2db4875e390e3efa1d1fb2290aa0d9f6b6bb03757cf222c87",
+      "label": "ashby review (Haider)",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    }
   ]
 }
