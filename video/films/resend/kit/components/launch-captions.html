@@ -1,0 +1,56 @@
+<!--
+  kit/components/launch-captions.html — skeleton of compositions/captions.html for a launch-format film
+  (kit 2). One host over the whole film up to the end card. It carries every line of text except the two
+  statement scenes and the end card: the hook line, one caption per shot, the proof numbers, and the
+  chapters (3-4 plain labels over a thin progress bar).
+
+  Rules (QA fails the film otherwise)
+    one cue at a time; ONE line; <= 8 words (9-12 warns, more fails); 68 px (64-72); no kicker, no stepper
+    on screen >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s; the hook line <= 7 words
+    plain words: say what it means for the viewer, not what was clicked; no internal names
+    the cue starts on the cut / camera move of its shot, and the camera does not move again under it
+    labels (.kit-chip, .kit-speed) sit in .kit-cap-tags under the headline: example runs, speed changes,
+    held frames. They are labels (<= 5 words), not counted in the reading time.
+  The band (.kit-band2) is on wherever a cue is on; leave it off under the statement scenes.
+  Used by: gc-ai.
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <!-- band under the hook, then from the hero to the end of the proof beat -->
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.2" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="16.4" data-duration="48.2" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="64.6" data-track-index="2"
+      data-kit-chapters="Why:0|The review:16.4|No guessing:38.4|Word export:48.4" data-layout-ignore></div>
+
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.2" data-track-index="1">
+      <div class="kit-cap-head">The outcome in *seven words* or fewer</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run</span></div>
+    </div>
+
+    <div id="cap-hero-1" class="clip kit-cap kit-cap3" data-start="16.4" data-duration="4.7" data-track-index="1">
+      <div class="kit-cap-head">One idea, eight words, why it *matters*</div>
+    </div>
+
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="57.6" data-duration="7" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">13</span><span class="kit-stat-l">clauses</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">14</span><span class="kit-stat-l">redlines</span></span>
+      </div>
+      <div class="kit-hood">Under the hood: the one line where implementation terms go</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

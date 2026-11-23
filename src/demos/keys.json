@@ -218,5 +218,19 @@
       "created": "2026-11-22",
       "expires": "2027-01-06"
     }
+  ],
+  "resend": [
+    {
+      "hash": "c15c227997d38b17cb4872ff7f309661e4106654913fb6e47aa9579fa85f06d3",
+      "label": "Resend DevTools lead / 2026-11-21",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    },
+    {
+      "hash": "b32b080997da1b27cdfdc7ce9c46dff9074df557d61ecfeb611a5c84bb3afb04",
+      "label": "resend review (Haider)",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    }
   ]
 }

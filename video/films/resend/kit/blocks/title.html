@@ -1,0 +1,71 @@
+<!--
+  kit/blocks/title.html — OPTIONAL short title card (kicker, title, credit). Retention rule: a film
+  opens on product footage (cold-open block), so use this only as a <= 1.8 s chapter or not at all.
+  QA fails any title/problem card longer than 2.0 s.
+
+  Host:
+    <div id="title" data-composition-id="title" data-composition-src="kit/blocks/title.html"
+      data-kit-role="title" data-start="…" data-duration="1.6" data-track-index="1"
+      data-track-kind="graphics" data-width="1920" data-height="1080"
+      data-variable-values='{"kicker": "Sample 3", "title": "License expires *before* delivery", "credit": ""}'></div>
+
+  Variables
+    kicker  cyan label line (optional, "" hides it)
+    title   up to 2 lines at 104 px; *word* = the one cyan word
+    credit  small quiet line under the title (optional)
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--kit-ground);
+    }
+    #ti-label {
+      top: 332px;
+    }
+    #ti-head {
+      top: 380px;
+    }
+    #ti-credit {
+      position: absolute;
+      left: var(--kit-gutter);
+      top: 640px;
+      font-family: var(--kit-font);
+      font-size: 34px;
+      font-weight: 400;
+      color: var(--kit-quiet);
+    }
+  </style>
+  <div
+    id="root"
+    data-composition-id="title"
+    data-width="1920"
+    data-height="1080"
+    data-composition-variables='[
+      {"id":"kicker","type":"string","label":"Kicker","default":"Kicker"},
+      {"id":"title","type":"string","label":"Title (*word* = cyan)","default":"Short *title* here"},
+      {"id":"credit","type":"string","label":"Credit","default":""}
+    ]'
+  >
+    <div id="ti-card" class="clip kit-card" data-start="0" data-duration="3" data-track-index="0">
+      <div id="ti-label" class="kit-card-label" data-var-text="kicker">Kicker</div>
+      <div id="ti-head" class="kit-card-head" data-var-text="title">Short title here</div>
+      <div id="ti-credit" data-var-text="credit"></div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const inner = document.querySelector('[data-composition-id="title"][data-composition-variables]');
+      const v = Kit.blocks.vars(inner, "title");
+      Kit.blocks.rich(document.getElementById("ti-head"), v.title);
+      document.getElementById("ti-label").textContent = v.kicker || "";
+      document.getElementById("ti-credit").textContent = v.credit || "";
+      Kit.reveal.fadeIn(tl, "#ti-label", 0, 0.2);
+      const landed = Kit.reveal.words(tl, document.getElementById("ti-head"), 0.02, { stagger: 0.06, firstOpacity: 0.45 });
+      Kit.reveal.fadeIn(tl, "#ti-credit", landed, 0.25);
+      window.__timelines["title"] = tl;
+    })();
+  </script>
+</template>
