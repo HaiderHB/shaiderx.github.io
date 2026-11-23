@@ -1,0 +1,31 @@
+<template>
+  <!-- Mastra launch film (kit 2.1, launch format). Clip `flow` (see hero.html).
+       PROOF 58.5-65 s: the rollout section, wide (media 58.0-64.5): candidate grid, gate and per-cluster rows. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="proof" data-width="1920" data-height="1080">
+    <div id="proof-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="proof-cam" class="kit-cam">
+        <video id="proof-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="6.5" data-media-start="58.0" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        {"t": 0, "focus": ["rolloutHead", "gate"], "cut": true, "window": [0, 6.5], "label": "the rollout, wide"}
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "proof", tl });
+      window.__timelines["proof"] = tl;
+    })();
+  </script>
+</template>

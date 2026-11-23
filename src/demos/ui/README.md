@@ -19,7 +19,7 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 
 ## Catalog
 
-Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman, **T** Truss, **SS** Stacksync, **V** Vena. "via" means used
+Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman, **T** Truss, **SS** Stacksync, **V** Vena, **M** Mastra. "via" means used
 inside another kit component.
 
 | Component | What it is | Props | Used by |
@@ -85,6 +85,7 @@ inside another kit component.
 | `FieldMap` | A field mapping between two systems as a diff (CRM → ERP): source path and value, arrow, target path, value and a note, status icon per row; on phones the target stacks under the source | `rows` `[{ id, from: { path, value }, to: { path, value, note }, status }]` (`status`: `pass`, `warn`, `fail`, `na`), `fromLabel`, `toLabel`, `label` | SS |
 | `RequestLog` | Requests an API received, newest last: 24 h time with ms, method and path, a status pill (2xx ok, 4xx warn, 5xx / timeout bad, `pending` spinner), outcome, note, mono meta (idempotency key, attempt) | `items` `[{ id, at, method, path, status, outcome, note, meta, tone, highlight }]`, `empty`, `label` | T, SS |
 | `SheetGrid` | A spreadsheet excerpt with column letters and row numbers, as Excel shows a file: an active row, single cells marked as the source of a value (`"B14": 'accent'`), struck-through dropped rows; scrolls sideways in its own box | `rows` (arrays of strings), `firstLine` or `lines` (explicit row numbers), `activeLine`, `cells` `{ ref: tone }` (`accent`, `ok`, `warn`, `bad`), `struck` (row numbers), `numeric` (column indexes), `columns`, `label`; `--uiSheetHeight` | V |
+| `TraceWaterfall` | One agent trace as a span tree with a latency waterfall: agent run, memory, model steps and tool calls indented by depth, each with a kind tag, name, mono meta (tokens, status) and a bar on the trace's time axis; a span with `detail` opens to show it (arguments, result, model text); on phones the bar drops under the name | `spans` `[{ id, depth, kind, name, start, ms, meta, tone, detail }]` (`tone`: `ok`, `warn`, `bad`, `idle`), `total` (axis ms), `open` (span ids), `kinds` (labels per kind), `label` | M |
 
 ## Tokens
 

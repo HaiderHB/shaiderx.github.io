@@ -190,5 +190,19 @@
       "created": "2026-11-21",
       "expires": "2027-01-05"
     }
+  ],
+  "mastra": [
+    {
+      "hash": "a78ed795346c2ba4acb9eb80471eff1d27535cfa759bdc8b5376ac5fa59febb7",
+      "label": "Abhi Aiyer (Mastra CTO) / 2026-11-21",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    },
+    {
+      "hash": "e974ac7574eec2da0ecbda7f623fa7f855cb30a06b4d833691bd174fb2735447",
+      "label": "mastra review (Haider)",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    }
   ]
 }

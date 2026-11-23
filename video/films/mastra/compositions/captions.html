@@ -1,0 +1,73 @@
+<template>
+  <!-- Mastra launch film · every line of text except the two statement scenes and the end card.
+       Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
+       >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s; each cue starts on the cut of its shot. Labels sit under the headline. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.5" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="10.5" data-duration="54.5" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="65" data-track-index="2"
+      data-kit-chapters="The problem:0|One benchmark:10.5|Suggestions:35|Rollout:46" data-layout-ignore></div>
+
+    <!-- HOOK -->
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.5" data-track-index="1">
+      <div class="kit-cap-head">*13 → 27* passing, two regressions caught</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run</span></div>
+    </div>
+
+    <!-- HERO: one benchmark run, four shots -->
+    <div id="cap-h1" class="clip kit-cap kit-cap3" data-start="10.5" data-duration="6.2" data-track-index="1">
+      <div class="kit-cap-head">Run the support agent on *40 cases*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run</span></div>
+    </div>
+    <div id="cap-h2" class="clip kit-cap kit-cap3" data-start="16.7" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">Failures grouped by cause, *read from traces*</div>
+    </div>
+    <div id="cap-h3" class="clip kit-cap kit-cap3" data-start="22.2" data-duration="6.3" data-track-index="1">
+      <div class="kit-cap-head">Each trace pinpoints the *exact failing call*</div>
+    </div>
+    <div id="cap-h4" class="clip kit-cap kit-cap3" data-start="28.5" data-duration="6.5" data-track-index="1">
+      <div class="kit-cap-head">Graded in code against the *expected outcome*</div>
+    </div>
+
+    <!-- FEATURE 2: suggestions -->
+    <div id="cap-f2a" class="clip kit-cap kit-cap3" data-start="35" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">Each cause gets a proposed *config fix*</div>
+    </div>
+    <div id="cap-f2b" class="clip kit-cap kit-cap3" data-start="40.5" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">Memory window too short? *A one-line diff*</div>
+    </div>
+
+    <!-- FEATURE 3: the rollout -->
+    <div id="cap-f3a" class="clip kit-cap kit-cap3" data-start="46" data-duration="6" data-track-index="1">
+      <div class="kit-cap-head">Re-run the same 40 cases *with fixes*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Example run</span></div>
+    </div>
+    <div id="cap-f3b" class="clip kit-cap kit-cap3" data-start="52" data-duration="6.5" data-track-index="1">
+      <div class="kit-cap-head">Better, not just different: *2 regressions caught*</div>
+    </div>
+
+    <!-- PROOF: the run's own numbers, one line for technical viewers -->
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="58.5" data-duration="6.5" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">13 → 27</span><span class="kit-stat-l">of 40 pass</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">5</span><span class="kit-stat-l">causes</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">2</span><span class="kit-stat-l">regressions</span></span>
+      </div>
+      <div class="kit-hood">LLM runs the agent and drafts fixes · code grades, clusters and gates</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>
