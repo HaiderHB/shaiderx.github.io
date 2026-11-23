@@ -1197,7 +1197,7 @@ export default function UiGallery() {
           <Specimen name="PipelineStrip" wide bare>
             <PipelineStrip steps={FLOW} />
           </Specimen>
-          <Specimen name="Timeline + TimelineStep" note="done, running, pending, error">
+          <Specimen name="Timeline + TimelineStep" note="done, running, pending, error, paused">
             <Timeline>
               <TimelineStep
                 index={0}
@@ -1216,6 +1216,7 @@ export default function UiGallery() {
               <TimelineStep index={3} status="error" title="Draft" detail="Reply">
                 <p className={styles.small}>Step body goes here.</p>
               </TimelineStep>
+              <TimelineStep index={4} status="paused" title="File" detail="Waiting on a person" />
             </Timeline>
           </Specimen>
           <Specimen name="EvalTable">

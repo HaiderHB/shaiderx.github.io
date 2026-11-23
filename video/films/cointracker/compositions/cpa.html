@@ -1,0 +1,31 @@
+<template>
+  <!-- CoinTracker launch film (kit 2.1). FEATURE 3 51.5-58.1 s: the CPA queue (switched off screen): the roof card with its two treatments; "Sign off" clicked at 1.41 s; "Signed off: Repair (deductible this year)" at 1.58 s. Clip `flow` from 69.6 s. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="cpa" data-width="1920" data-height="1080">
+    <div id="cpa-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="cpa-cam" class="kit-cam">
+        <video id="cpa-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="6.6" data-media-start="69.6" data-kit-lands="1.58" data-kit-read="8" data-track-index="0" muted playsinline></video>
+        <div id="cpa-spot1" class="clip kit-spot" data-start="0" data-duration="6.6" data-kit-window="0,6.5" data-kit-focus="[&quot;cpaOptions&quot;, &quot;cpaRow&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        {"t": 0, "focus": ["cpaOptions", "cpaRow"], "maxZoom": 1.8, "cut": true, "window": [0, 6.5], "label": "F3 the CPA signs off the roof treatment"}
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "cpa", tl });
+      window.__timelines["cpa"] = tl;
+    })();
+  </script>
+</template>

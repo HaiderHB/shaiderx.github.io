@@ -1,0 +1,49 @@
+<template>
+  <!-- CoinTracker launch film (kit 2.1, launch format). Clip `flow`, recorded 2026-11-19 at 1360x765 CSS px, 2x device pixels, from a next build/start of this branch with no demo key (preview mode): the page replays its recorded run (the LLM's record and actions and the decision model's routes were recorded live on 2026-11-19); the checks, the code floor, approvals, the simulated broker (an in-tab store), the retry and verification run in the browser on the same code as the API. Footage plays at 1x; every hold is real footage.
+       HERO 10.5-44.5 s, one task in five shots (scene time = film time - 10.5): prepare the file, see the money moves held, approve the harvest through a broker timeout, replay the retry, verify it finished.
+       0-7   the agent card: "Prepare my 2026 tax file" clicked at 1.0 s; the six steps run, step 6 pauses; landed at 3.4 s
+       7-14  the "Your approval" lane: the agent re-run (pressed off screen); the two money moves land, auto-run locked, at 3.4 s
+       14-21 the approve row + the broker panel (simulated timeout on): "Approve the sell order" clicked at 1.02 s; 504 timed out, then 200 replayed, at 3.47 s
+       21-27 "Replay the retry" clicked at 1.34 s: a third row, 200 replayed, at 1.74 s
+       27-34 "Verify it finished" clicked at 1.36 s: four checks and "Done: the broker matches what was approved." at 1.8 s -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="hero" data-width="1920" data-height="1080">
+    <div id="hero-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="hero-cam" class="kit-cam">
+        <video id="hero-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="7" data-media-start="1.85" data-kit-lands="3.4" data-kit-read="10" data-track-index="0" muted playsinline></video>
+        <video id="hero-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="7" data-duration="7" data-media-start="13.45" data-kit-lands="3.4" data-kit-read="10" data-track-index="0" muted playsinline></video>
+        <video id="hero-v3" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="14" data-duration="7" data-media-start="26.7" data-kit-lands="3.47" data-kit-read="10" data-track-index="0" muted playsinline></video>
+        <video id="hero-v4" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="21" data-duration="6" data-media-start="37.5" data-kit-lands="1.74" data-kit-read="10" data-track-index="0" muted playsinline></video>
+        <video id="hero-v5" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="27" data-duration="7" data-media-start="47.4" data-kit-lands="1.8" data-kit-read="15" data-track-index="0" muted playsinline></video>
+        <div id="hero-spot1" class="clip kit-spot" data-start="0" data-duration="7" data-kit-window="3.5,6.9" data-kit-focus="[&quot;runButton&quot;, &quot;pausedNote&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot2" class="clip kit-spot" data-start="7" data-duration="7" data-kit-window="10.5,13.9" data-kit-focus="actionSell" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot3" class="clip kit-spot" data-start="14" data-duration="7" data-kit-window="14,20.9" data-kit-focus="[&quot;approveRow&quot;, &quot;toggle&quot;, &quot;requests&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot4" class="clip kit-spot" data-start="21" data-duration="6" data-kit-window="21,26.9" data-kit-focus="[&quot;requests&quot;, &quot;execButtons&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="hero-spot5" class="clip kit-spot" data-start="27" data-duration="7" data-kit-window="29,33.9" data-kit-focus="[&quot;execButtons&quot;, &quot;verify&quot;]" data-kit-pad="10" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        {"t": 0, "focus": ["runButton", "pausedNote"], "maxZoom": 1.8, "cut": true, "window": [3.5, 6.9], "label": "H1 prepare the file: six steps, step 6 pauses"},
+        {"t": 7, "focus": "actionSell", "maxZoom": 1.8, "cut": true, "window": [10.5, 13.9], "label": "H2 the sell order, held for the household"},
+        {"t": 14, "focus": ["approveRow", "toggle", "requests"], "maxZoom": 1.8, "cut": true, "window": [14, 20.9], "label": "H3 approve: 504 timed out, 200 replayed"},
+        {"t": 21, "focus": ["requests", "execButtons"], "maxZoom": 1.8, "cut": true, "window": [21, 26.9], "label": "H4 replay the retry: still one order"},
+        {"t": 27, "focus": ["execButtons", "verify"], "maxZoom": 1.8, "cut": true, "window": [29, 33.9], "label": "H5 verify it finished: 4 of 4"}
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "hero", tl });
+      window.__timelines["hero"] = tl;
+    })();
+  </script>
+</template>

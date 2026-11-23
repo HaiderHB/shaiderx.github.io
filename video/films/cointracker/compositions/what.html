@@ -1,0 +1,30 @@
+<template>
+  <!-- CoinTracker launch film (kit 2.1). WHAT IT IS 4.5-7.5 s (3 s): one sentence over the top of the page (filing progress, the agent, the actions), blurred and dimmed. Clip `flow` at 78.6 s. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="what" data-width="1920" data-height="1080">
+    <div id="what-stage" class="kit-stage kit-backdrop" data-layout-allow-overflow>
+      <div id="what-cam" class="kit-cam">
+        <video id="what-v" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="3" data-media-start="78.6" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <div id="what-scrim" class="clip kit-scrim" data-start="0" data-duration="3" data-track-index="1" data-layout-ignore></div>
+    <div id="what-text" class="clip kit-statement" data-start="0" data-duration="3" data-track-index="2">
+      <div class="kit-statement-text">An AI agent that prepares a household's *tax file*.</div>
+      <div class="kit-statement-sub">A prototype built for CoinTracker by Haider Bokhari</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.launch.statement({ id: "what", tl });
+      window.__timelines["what"] = tl;
+    })();
+  </script>
+</template>

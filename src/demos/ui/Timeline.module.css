@@ -64,6 +64,22 @@
     color: rgb(var(--uiRgbOnStatus));
     background: rgb(var(--uiRgbBad));
   }
+
+  @nest .step[data-status='paused'] & {
+    background: rgb(var(--uiRgbWarn) / 0.16);
+    box-shadow: 0 0 0 4px rgb(var(--uiRgbWarn) / 0.1);
+  }
+}
+
+/* Paused (waiting on a person): two bars in the warn tone */
+.pause {
+  width: 10px;
+  height: 11px;
+  border-inline: 3px solid rgb(var(--uiRgbWarn));
+}
+
+.step[data-status='paused']:not(:last-child)::before {
+  background: repeating-linear-gradient(to bottom, rgb(var(--uiRgbWarn) / 0.5) 0 4px, transparent 4px 8px);
 }
 
 .body {

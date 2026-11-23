@@ -148,5 +148,13 @@
       "created": "2026-11-19",
       "expires": "2027-01-03"
     }
+  ],
+  "cointracker": [
+    {
+      "hash": "d8487abd57fbe0f08dec3b32ea590769f72f1653cc3ce8198ee1a7b1bc8944d9",
+      "label": "Kenan Mesic / LinkedIn / 2026-11-19",
+      "created": "2026-11-19",
+      "expires": "2027-01-03"
+    }
   ]
 }

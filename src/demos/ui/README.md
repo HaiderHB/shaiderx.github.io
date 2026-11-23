@@ -19,7 +19,7 @@ import { Button, Card, CardHead, CardTitle, JsonView, Notice, srOnly } from 'dem
 
 ## Catalog
 
-Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman, **T** Truss, **SS** Stacksync, **V** Vena. "via" means used
+Demos: **D** Distru, **A** AssemblyAI, **G** Great Question, **GT** GoodTime, **R** Reacher, **AF** Affirm, **S** Superhuman, **T** Truss, **SS** Stacksync, **V** Vena, **CT** CoinTracker. "via" means used
 inside another kit component.
 
 | Component | What it is | Props | Used by |
@@ -44,7 +44,7 @@ inside another kit component.
 | `KeyValues` | Label/value grid (`dl`) | `items` `[[label, value]]`; `--uiKvColumns`, `--uiKvGap` | D |
 | `NoteGrid` | "Design choices" / "How it works" notes | `items` `[{ title, text }]`, `variant` (`accent`, `boxed`) | D (accent), G (boxed) |
 | `PipelineStrip` | How a run works: numbered step cards with cost | `steps` `[{ label, what, cost }]`, `label` | D |
-| `Timeline`, `TimelineStep` | Run stages with marker (number, spinner, tick), timing and details | `index`, `status` (`pending`, `running`, `done`, `error`), `title`, `detail`, `ms` (formatted), children | D |
+| `Timeline`, `TimelineStep` | Run stages with marker (number, spinner, tick), timing and details; `paused` = the run waits on a person (pause mark in the warn tone, dashed rail), for human handoffs that resume mid-run | `index`, `status` (`pending`, `running`, `done`, `error`, `paused`), `title`, `detail`, `ms` (formatted), children | D, CT (`paused`) |
 | `ProbabilityBar`, `ProbabilityBars` | Decision probabilities as bars on a hatched track, chosen option bold, threshold marks; `pending` keeps the rows while the model has not answered (empty tracks, "–") | `label`, `value`, `tone` (`ok`, `warn`, `bad`, `accent`), `strong`, `marks`, `pending`; `options` `[{ value, label, tone }]`, `probabilities`, `choice`, `pending` | D, R, T, SS |
 | `Funnel` | Narrowing counts, one bar per step (40 → 12 → 10 → 8); pending steps hatched, the last reached step in the accent | `steps` `[{ label, value, note }]` (`value: null` = not reached), `max`, `size` (`m`, `s`), `tone` (`accent`, `ink` on an accent card), `label` | R |
 | `Gauge` | Half-dial of ticks with a big value in the middle | `value` (0..1), `ticks`, `tone`, `caption`, `label`, children | D |
@@ -70,7 +70,7 @@ inside another kit component.
 | `Notice` | Preview-mode (no key), info and error messages | `kind` (`info`, `error`), `size` (`s`, `m`), `flat`, `as`; `--uiNoticeRgb` | D, A, G |
 | `McpToolPanel` | Tool list → definition → arguments → JSON-RPC request and result, in the browser | `tools` (tools/list entries), `examples`, `call(name, args)`, `errorText`, `initialTool`, `hint`, `argsId` | D, S |
 | `McpCallLog` | Streamed MCP `tools/call` rows: index, tool, its permission scope, what the gate did (allowed, blocked, awaiting approval, approved, rejected, error), the arguments on one line, a note (why it was blocked) and the result behind a disclosure; keeps the newest row in view inside its own scroll box | `calls` `[{ id, name, scope, status, args, result, note }]`, `statuses` (labels / tones per status), `scopeTones`, `pending`, `pendingLabel`, `empty`, `follow`, `active`, `argsClip`; `--uiCallLogHeight` | S |
-| `ApprovalCard` | An agent action waiting for a person (a send, a payment): status line, title, To / Subject rows, the content, evidence under it (judge scores), Approve / Reject; the buttons give way to the outcome once decided | `status` (`pending`, `approved`, `rejected`), `statusText`, `title`, `meta` `[[label, value]]`, `body`, `onApprove`, `onReject`, `approveLabel`, `rejectLabel`, `busy`, children | S, SS |
+| `ApprovalCard` | An agent action waiting for a person (a send, a payment): status line, title, To / Subject rows, the content, evidence under it (judge scores), Approve / Reject; the buttons give way to the outcome once decided | `status` (`pending`, `approved`, `rejected`), `statusText`, `title`, `meta` `[[label, value]]`, `body`, `onApprove`, `onReject`, `approveLabel`, `rejectLabel`, `busy`, `approveDisabled` (a failed check blocks Approve alone), `extra` (more buttons in the row while pending, e.g. Edit), children | S, SS, CT |
 | `McpConnectCommand` | "Connect from Claude Code" command with copy | `label`, `command` | D |
 | `rpcRequest`, `toolResult`, `toolErrorResult` | JSON-RPC `tools/call` request and MCP result shapes | `(id, name, args)`; `(structured)`; `(text)` | G, D via McpToolPanel |
 | `formatMs`, `seconds`, `pct`, `percent`, `riskTone`, `formatTime` | Timings, probabilities, risk tone, mm:ss (`demos/ui/format`, pure JS) | see `format.js` | D, G (and G's findings API via `study.js`) |
