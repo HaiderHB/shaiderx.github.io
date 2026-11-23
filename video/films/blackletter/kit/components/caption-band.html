@@ -1,0 +1,71 @@
+<!--
+  kit/components/caption-band.html — SNIPPET: the film's captions composition (compositions/captions.html).
+  One host holds every cue (data-track-kind="captions", data-kit-role="captions"). Styles: kit.css.
+  Kit 1.1 (text-first films, no voice): the band carries the whole story in a "product demo" format.
+
+  v2 cue = .kit-cap.kit-cap2 (the v1 .kit-cap-label/-main/-note cue still works; QA warns on it)
+    .kit-cap-kicker   the step / chapter: "Step 2 · Check" (uppercase, accent); tags sit after it
+    .kit-cap-head     ONE headline, <= ~10 words, one line at 58 px; *word* = the accent word
+    .kit-cap-detail   optional, <= ~14 words, one line at 32 px
+    data-kit-step     1-based step this cue belongs to: lights that segment of the .kit-progress stepper
+  .kit-progress       the slim step indicator at the right end of the kicker row ("3 / 7" + segments);
+                      data-kit-steps = the step names in order; built and animated by Kit.captions.animate
+  .kit-band.kit-band2 the solid band (no gradient), y >= 840
+
+  Rules (QA)
+    - One caption on screen at a time (cues never overlap); at most one annotation besides it.
+    - Reading time: on screen >= 0.6 s + 0.35 s per word of head + detail + honesty chips (FAIL).
+      The kicker and speed tags are labels and are not counted. 8 head words + 6 detail words = 5.5 s.
+    - Head and detail must each fit one line (QA measures them with Inter's glyph widths).
+    - Footage scenes frame the focused component above the band (Kit.camera safe area), so a caption
+      never covers it; a captions:false shot fails while a cue is on.
+    - Every sped-up footage clip gets a .kit-speed tag showing its rate ("6x") for the clip's window
+      (data-tag-start / data-tag-end, composition-local seconds). QA fails an unlabelled speed change.
+    - Honesty labels (cached replay, simulated participant, example run) go in a .kit-chip in the kicker row
+      or in the detail line.
+
+  Variables per cue: id, data-start, data-duration (composition-local), data-kit-step; kicker, head, detail text.
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band" class="clip" data-start="0" data-duration="30" data-track-index="0" data-layout-ignore>
+      <div class="kit-band kit-band2"></div>
+    </div>
+    <div id="cap-progress" class="clip kit-progress" data-start="0" data-duration="30" data-track-index="2"
+      data-kit-steps="Input,Extract,Evals" data-layout-ignore></div>
+
+    <div id="cap-input" class="clip kit-cap kit-cap2" data-start="0.2" data-duration="5.2" data-kit-step="1" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 1 · The input</span></div>
+      <div class="kit-cap-head">A messy order email comes *in*</div>
+      <div class="kit-cap-detail">Vague quantity, one item out of stock.</div>
+    </div>
+
+    <div id="cap-run" class="clip kit-cap kit-cap2" data-start="5.6" data-duration="3.2" data-kit-step="2" data-track-index="1">
+      <div class="kit-cap-kicker">
+        <span>Step 2 · Extract</span>
+        <span class="kit-speed" data-rate="4" data-tag-start="5.6" data-tag-end="7.6">4x</span>
+      </div>
+      <div class="kit-cap-head">The LLM turns it into *typed JSON*</div>
+    </div>
+
+    <div id="cap-cache" class="clip kit-cap kit-cap2" data-start="9" data-duration="5.6" data-kit-step="3" data-track-index="1">
+      <div class="kit-cap-kicker"><span>Step 3 · Evals</span><span class="kit-chip">Cached replay</span></div>
+      <div class="kit-cap-head">3 of 3 samples *pass*</div>
+      <div class="kit-cap-detail">Samples 2 and 3 replayed today's live runs.</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

@@ -66,6 +66,7 @@ export { DocumentScan } from './DocumentScan';
 export { RequestLog } from './RequestLog';
 export { FieldMap } from './FieldMap';
 export { SheetGrid } from './SheetGrid';
+export { TraceWaterfall } from './TraceWaterfall';
 
 /** Class that defines the --ui* tokens; DemoLayout applies it to every demo. */
 export const tokens = tokenStyles.tokens;

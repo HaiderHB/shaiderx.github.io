@@ -1,0 +1,75 @@
+<template>
+  <!-- Honeycomb launch film · every line of text except the two statement scenes and the end card.
+       Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
+       >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s; each cue starts on the cut of its shot. Labels sit under the headline. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.5" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="10.5" data-duration="55.5" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="66" data-track-index="2"
+      data-kit-chapters="The problem:0|One alert:10.5|Skills:36|Evals:47.5" data-layout-ignore></div>
+
+    <!-- HOOK -->
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.5" data-track-index="1">
+      <div class="kit-cap-head">Root cause found *before anyone looks*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded run, replayed</span></div>
+    </div>
+
+    <!-- HERO: one alert, four shots -->
+    <div id="cap-h1" class="clip kit-cap kit-cap3" data-start="10.5" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">Checkout SLO starts burning: *6.5x budget*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Sample data</span></div>
+    </div>
+    <div id="cap-h2" class="clip kit-cap kit-cap3" data-start="16" data-duration="6.5" data-track-index="1">
+      <div class="kit-cap-head">Three agents each claim *one hypothesis*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded run, replayed</span></div>
+    </div>
+    <div id="cap-h3" class="clip kit-cap kit-cap3" data-start="22.5" data-duration="6.5" data-track-index="1">
+      <div class="kit-cap-head">Every finding cites a *real query result*</div>
+    </div>
+    <div id="cap-h4" class="clip kit-cap kit-cap3" data-start="29" data-duration="7" data-track-index="1">
+      <div class="kit-cap-head">*84%* of bad checkouts explained, computed in code</div>
+    </div>
+
+    <!-- FEATURE 2: skills -->
+    <div id="cap-f2a" class="clip kit-cap kit-cap3" data-start="36" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">Skills write down *what the team knows*</div>
+    </div>
+    <div id="cap-f2b" class="clip kit-cap kit-cap3" data-start="41.5" data-duration="6" data-track-index="1">
+      <div class="kit-cap-head">Skills change *which queries* agents run</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded runs</span></div>
+    </div>
+
+    <!-- FEATURE 3: the eval -->
+    <div id="cap-f3a" class="clip kit-cap kit-cap3" data-start="47.5" data-duration="6" data-track-index="1">
+      <div class="kit-cap-head">Better, or *just different*? The eval says</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Recorded eval</span></div>
+    </div>
+    <div id="cap-f3b" class="clip kit-cap kit-cap3" data-start="53.5" data-duration="6" data-track-index="1">
+      <div class="kit-cap-head">Five planted incidents, *graded in code*</div>
+    </div>
+
+    <!-- PROOF: the eval's own numbers, one line for technical viewers -->
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="59.5" data-duration="6.5" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">14/15</span><span class="kit-stat-l">correct with skills</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">10/15</span><span class="kit-stat-l">without</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">399/401</span><span class="kit-stat-l">figures traced</span></span>
+      </div>
+      <div class="kit-hood">LLM agents pick the queries · code computes every number · a decision model ranks hypotheses</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

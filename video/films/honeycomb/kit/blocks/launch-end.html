@@ -1,0 +1,63 @@
+<!--
+  kit/blocks/launch-end.html — the launch-format end card (kit 2): who built it, ONE action, the url.
+  Slot about 5 s (QA: 4-6 s). The first line lands word by word in ~0.5 s, then the rule, the action line and
+  the url; the rest of the slot is a still hold. No logo of the target company, no closing question, no
+  "If I join" content.
+
+  Host (index.html):
+    <div id="launchend" data-composition-id="launchend" data-composition-src="kit/blocks/launch-end.html"
+      data-kit-role="end-card" data-kit-beat="end" data-start="64.6" data-duration="5" data-track-index="1"
+      data-track-kind="graphics" data-width="1920" data-height="1080"
+      data-variable-values='{"built": "Built for *Acme* by Haider Bokhari",
+        "action": "Try it live: the link is in my message", "url": "haiderb.com"}'></div>
+
+  Variables
+    built    the first line, 88 px; *word* = the accent word (the company)
+    action   the ONE thing to do next, 52 px
+    url      52 px, accent
+  Used by: gc-ai.
+-->
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div
+    id="root"
+    data-composition-id="launchend"
+    data-width="1920"
+    data-height="1080"
+    data-composition-variables='[
+      {"id":"built","type":"string","label":"Built line (*word* = accent)","default":"Built for *Company* by Haider Bokhari"},
+      {"id":"action","type":"string","label":"The one action","default":"Try it live: the link is in my message"},
+      {"id":"url","type":"string","label":"URL","default":"haiderb.com"}
+    ]'
+  >
+    <div id="le-card" class="clip kit-card" data-start="0" data-duration="8" data-track-index="0">
+      <div class="kit-end">
+        <div id="le-built" class="kit-end-built" data-var-text="built">Built for Company by Haider Bokhari</div>
+        <div id="le-rule" class="kit-end-rule"></div>
+        <div id="le-action" class="kit-end-action" data-var-text="action">Try it live: the link is in my message</div>
+        <div id="le-url" class="kit-end-url" data-var-text="url">haiderb.com</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      const inner = document.querySelector('[data-composition-id="launchend"][data-composition-variables]');
+      const v = Kit.blocks.vars(inner, "launchend");
+      Kit.blocks.rich(document.getElementById("le-built"), v.built || "");
+      document.getElementById("le-action").textContent = v.action || "";
+      document.getElementById("le-url").textContent = v.url || "";
+      const landed = Kit.reveal.words(tl, document.getElementById("le-built"), 0.05, { stagger: 0.05, dur: 0.16 });
+      tl.fromTo("#le-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.4, ease: "expo.out" }, Math.min(landed, 0.6));
+      Kit.reveal.blurIn(tl, "#le-action", Math.min(landed, 0.6) + 0.12, { dur: 0.24 });
+      Kit.reveal.blurIn(tl, "#le-url", Math.min(landed, 0.6) + 0.3, { dur: 0.24 });
+      window.__timelines["launchend"] = tl;
+    })();
+  </script>
+</template>

@@ -71,6 +71,7 @@ import {
 } from 'demos/ui';
 import { ApprovalCard, AuditTrail, ChatThread, DocumentScan, McpCallLog, RequestLog, ScheduleStrip, SheetGrid } from 'demos/ui';
 import { CheckList, FieldMap, ToolCall, ToolCallList } from 'demos/ui';
+import { TraceWaterfall } from 'demos/ui';
 import Head from 'next/head';
 import { useState } from 'react';
 import {
@@ -1454,11 +1455,34 @@ export default function UiGallery() {
               label="Sample trial-balance excerpt"
             />
           </Specimen>
+          <Specimen name="TraceWaterfall" note="agent run, memory, two model steps, a failed and a good tool call" wide>
+            <TraceWaterfall spans={TRACE_SPANS} open={['t1']} label="Sample agent trace" />
+          </Specimen>
         </Group>
       </div>
     </DemoLayout>
   );
 }
+
+// --- TraceWaterfall sample (from the Mastra demo) ------------------------------------------
+
+const TRACE_SPANS = [
+  { id: 'run', depth: 0, kind: 'agent', name: 'agent.generate', start: 0, ms: 3120, meta: '2 of 5 steps', tone: 'ok' },
+  { id: 'mem', depth: 1, kind: 'memory', name: 'memory.recall', start: 0, ms: 0, meta: 'kept 3 of 3 messages', tone: 'idle' },
+  { id: 'm1', depth: 1, kind: 'model', name: 'model step 1', start: 4, ms: 1460, meta: '612 in · 31 out', tone: 'ok' },
+  {
+    id: 't1',
+    depth: 2,
+    kind: 'tool',
+    name: 'lookupOrder',
+    start: 1466,
+    ms: 1,
+    meta: 'error',
+    tone: 'bad',
+    detail: <JsonView value={{ args: { orderId: '10431' }, result: { error: 'No order found with id "10431".' } }} />,
+  },
+  { id: 'm2', depth: 1, kind: 'model', name: 'model step 2', start: 1470, ms: 1650, meta: '701 in · 58 out', tone: 'ok' },
+];
 
 // --- McpCallLog and ApprovalCard samples (from the Superhuman demo) ------------------------
 

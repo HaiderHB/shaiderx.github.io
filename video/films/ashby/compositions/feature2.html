@@ -1,0 +1,37 @@
+<template>
+  <!-- Ashby launch film (kit 2.1, launch format). Clip `flow` (see hero.html). Footage plays at 1x.
+       FEATURE 2 36-47.5 s: fairness. Scene time = film time - 36.
+       0-5.5 the guardrail checks, computed in the browser, there from frame 0 (media 82.0) |
+       5.5-11.5 "HR tech or scheduling" switched to Must at 1.5 s (click at media 91.39); the top five re-rank with arrows, held 4.45 s. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="feature2" data-width="1920" data-height="1080">
+    <div id="feature2-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="feature2-cam" class="kit-cam">
+        <video id="feature2-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="5.5" data-media-start="82.0" data-kit-lands="0" data-kit-read="16" data-track-index="0" muted playsinline></video>
+        <video id="feature2-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="5.5" data-duration="6" data-media-start="89.9" data-kit-lands="1.55" data-kit-read="12" data-track-index="0" muted playsinline></video>
+        <div id="feature2-spot1" class="clip kit-spot" data-start="0" data-duration="5.5" data-kit-focus="guardrails" data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="feature2-spot2" class="clip kit-spot" data-start="5.5" data-duration="6" data-kit-focus="[&quot;ovN2&quot;, &quot;miniList&quot;]" data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        {"t": 0, "focus": "guardrails", "cut": true, "window": [0, 5.5], "label": "F2a guardrails, checked in code", "maxZoom": 1.8, "wide": true, "reason": "the five guardrail checks read as one list; the caption restates the point"},
+        {"t": 5.5, "focus": ["ovN2", "miniList"], "cut": true, "window": [5.5, 11.5], "label": "F2b scheduling becomes a must", "maxZoom": 1.8}
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "feature2", tl });
+      window.__timelines["feature2"] = tl;
+    })();
+  </script>
+</template>

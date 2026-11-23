@@ -1,0 +1,42 @@
+<template>
+  <!-- Blackletter launch film (kit 2.1, launch format). Clip `flow`, recorded 2026-11-21 at 1360x765 CSS px, 2x device pixels, from a
+       production build of the demo with a demo key: every model call in the take is live. Footage plays at 1x; waits are cut, never sped up.
+       FEATURE 3 39.5-57.5 s: feedback becomes a harness change, then every document is re-scored. Scene time = film time - 39.5.
+       0-6.5 the playbook's option pool rule with the lawyer's clarification (lands at 0.3 s; the re-run button was clicked 1.2 s before the cut) |
+       6.5-12.5 the score tiles land at 1.1 s (the 19 s the ten live reviews took are cut); held 4.9 s |
+       12.5-18 the flag that changed, marked right against the labels (there from the first frame). -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="feature3" data-width="1920" data-height="1080">
+    <div id="feature3-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="feature3-cam" class="kit-cam">
+        <video id="feature3-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="6.5" data-media-start="58.4" data-kit-lands="0.3" data-kit-read="22" data-track-index="0" muted playsinline></video>
+        <video id="feature3-v2" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="6.5" data-duration="6" data-media-start="76.4" data-kit-lands="1.1" data-kit-read="14" data-track-index="0" muted playsinline></video>
+        <video id="feature3-v3" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="12.5" data-duration="5.5" data-media-start="86.2" data-kit-lands="0" data-kit-read="16" data-track-index="0" muted playsinline></video>
+        <div id="feature3-spot1" class="clip kit-spot" data-start="0" data-duration="6.5" data-kit-window="0.5,6.5" data-kit-focus="ruleChanged" data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="feature3-spot2" class="clip kit-spot" data-start="6.5" data-duration="6" data-kit-window="7.7,12.5" data-kit-focus="scoreTiles" data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+        <div id="feature3-spot3" class="clip kit-spot" data-start="12.5" data-duration="5.5" data-kit-focus="change1" data-kit-pad="8" data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        {"t": 0, "focus": "ruleChanged", "cut": true, "window": [0.5, 6.5], "label": "F3a the clarified rule", "maxZoom": 1.9},
+        {"t": 6.5, "focus": "scoreTiles", "cut": true, "window": [7.7, 12.5], "label": "F3b precision before and after", "maxZoom": 1.7},
+        {"t": 12.5, "focus": "change1", "cut": true, "window": [12.5, 18.0], "label": "F3c the flag that changed", "maxZoom": 1.7}
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "feature3", tl });
+      window.__timelines["feature3"] = tl;
+    })();
+  </script>
+</template>

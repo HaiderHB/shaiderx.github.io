@@ -1,0 +1,64 @@
+<template>
+  <!-- HouseSigma launch film · every line of text except the two statement scenes and the end card.
+       Captions-local time = film time. One cue at a time, one line, <= 8 words, on screen
+       >= max(2.5, 0.5 + 0.6 x words) s and <= 7 s; each cue starts on the cut of its shot. Labels sit under the headline. -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+  </style>
+  <div id="root" data-composition-id="captions" data-width="1920" data-height="1080">
+    <div id="cap-band-hook" class="clip" data-start="0" data-duration="4.2" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-band" class="clip" data-start="10.2" data-duration="54.3" data-track-index="0" data-layout-ignore><div class="kit-band kit-band2"></div></div>
+    <div id="cap-chapters" class="clip kit-chapters" data-start="0" data-duration="64.5" data-track-index="2"
+      data-kit-chapters="The problem:0|Ask and check:10.2|Offer night:35|This week:46" data-layout-ignore></div>
+
+    <div id="cap-hook" class="clip kit-cap kit-cap3 kit-hook" data-start="0" data-duration="4.2" data-track-index="1">
+      <div class="kit-cap-head">Is this home priced fairly? *Underpriced.*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Live run</span><span class="kit-chip">Sample data</span></div>
+    </div>
+    <div id="cap-h1" class="clip kit-cap kit-cap3" data-start="10.2" data-duration="7.0" data-track-index="1">
+      <div class="kit-cap-head">One sentence becomes *filters you can edit*</div>
+    </div>
+    <div id="cap-h2" class="clip kit-cap kit-cap3" data-start="17.2" data-duration="5.8" data-track-index="1">
+      <div class="kit-cap-head">Every match is priced against *sold homes*</div>
+    </div>
+    <div id="cap-h3" class="clip kit-cap kit-cap3" data-start="23.0" data-duration="6.0" data-track-index="1">
+      <div class="kit-cap-head">A fast model gives a verdict, *with odds*</div>
+    </div>
+    <div id="cap-h4" class="clip kit-cap kit-cap3" data-start="29.0" data-duration="6.0" data-track-index="1">
+      <div class="kit-cap-head">Every figure is traced to *real sales*</div>
+    </div>
+    <div id="cap-f2a" class="clip kit-cap kit-cap3" data-start="35.0" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">Offer night: how this area *really sells*</div>
+    </div>
+    <div id="cap-f2b" class="clip kit-cap kit-cap3" data-start="40.5" data-duration="5.5" data-track-index="1">
+      <div class="kit-cap-head">A suggested offer range, *with the reasons*</div>
+      <div class="kit-cap-tags"><span class="kit-chip">Sample data, not advice</span></div>
+    </div>
+    <div id="cap-f3a" class="clip kit-cap kit-cap3" data-start="46.0" data-duration="5.0" data-track-index="1">
+      <div class="kit-cap-head">Your saved search, *watched every week*</div>
+    </div>
+    <div id="cap-f3b" class="clip kit-cap kit-cap3" data-start="51.0" data-duration="7.0" data-track-index="1">
+      <div class="kit-cap-head">The week's changes, written in *plain words*</div>
+    </div>
+
+    <!-- PROOF: the run's own numbers, one line for technical viewers -->
+    <div id="cap-proof" class="clip kit-cap kit-cap3 kit-proof" data-start="58.0" data-duration="6.5" data-track-index="1">
+      <div class="kit-stats">
+        <span class="kit-stat"><span class="kit-stat-n">12/580</span><span class="kit-stat-l">homes matched</span></span>
+        <span class="kit-stat"><span class="kit-stat-n">6</span><span class="kit-stat-l">sold comps per verdict</span></span>
+      </div>
+      <div class="kit-hood">An LLM reads the ask · code picks the comps · a fast decision model decides</div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.captions.animate(tl, "captions");
+      window.__timelines["captions"] = tl;
+    })();
+  </script>
+</template>

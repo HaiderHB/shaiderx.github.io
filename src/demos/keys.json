@@ -156,5 +156,89 @@
       "created": "2026-11-19",
       "expires": "2027-01-03"
     }
+  ],
+  "honeycomb": [
+    {
+      "hash": "962f3336f801bb68ee9f89873ebef8e1803850d882f494213426584ab5d1fd77",
+      "label": "Moses Mendoza (Honeycomb Staff SWE) / LinkedIn / 2026-11-21",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    },
+    {
+      "hash": "6cca681f3ff4e9be49585466b5cfb5e060920f5144af0a92d0e3e9e85745acb2",
+      "label": "honeycomb review (Haider)",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    }
+  ],
+  "blackletter": [
+    {
+      "hash": "1515bb4ce9f5d4e439633dd107c5cfb4b980875f7e899782b4e0f45bee7f407c",
+      "label": "David Stewart (Blackletter co-founder) / LinkedIn / 2026-11-21",
+      "created": "2026-11-21",
+      "expires": "2027-01-05"
+    },
+    {
+      "hash": "71c96c309389b45a9d1179017c09e680f74c4a66c965a6b88d67c7310b9abd3e",
+      "label": "blackletter review (Haider)",
+      "created": "2026-11-21",
+      "expires": "2027-01-05"
+    }
+  ],
+  "housesigma": [
+    {
+      "hash": "27d41a5f3993b2f7c4b72ecf18f008b26436ea8c0b75ad7887aba5ac6ed60330",
+      "label": "Victor Chen (HouseSigma Director of Product) / 2026-11-21",
+      "created": "2026-11-21",
+      "expires": "2027-01-05"
+    },
+    {
+      "hash": "9ccd2a4a1c83948d1cfcea324ddc8e823d9a3bafea0a018406649aff40545003",
+      "label": "housesigma review (Haider)",
+      "created": "2026-11-21",
+      "expires": "2027-01-05"
+    }
+  ],
+  "mastra": [
+    {
+      "hash": "a78ed795346c2ba4acb9eb80471eff1d27535cfa759bdc8b5376ac5fa59febb7",
+      "label": "Abhi Aiyer (Mastra CTO) / 2026-11-21",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    },
+    {
+      "hash": "e974ac7574eec2da0ecbda7f623fa7f855cb30a06b4d833691bd174fb2735447",
+      "label": "mastra review (Haider)",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    }
+  ],
+  "ashby": [
+    {
+      "hash": "5d46e2b08d22e28b4c6c56127af3b28ec8c95c31c7a5fd66d4a71d9a1ed898e2",
+      "label": "Abhik Pramanik (Ashby CTO) / 2026-11-21",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    },
+    {
+      "hash": "9479eab3711879e2db4875e390e3efa1d1fb2290aa0d9f6b6bb03757cf222c87",
+      "label": "ashby review (Haider)",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    }
+  ],
+  "resend": [
+    {
+      "hash": "c15c227997d38b17cb4872ff7f309661e4106654913fb6e47aa9579fa85f06d3",
+      "label": "Resend DevTools lead / 2026-11-21",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    },
+    {
+      "hash": "b32b080997da1b27cdfdc7ce9c46dff9074df557d61ecfeb611a5c84bb3afb04",
+      "label": "resend review (Haider)",
+      "created": "2026-11-22",
+      "expires": "2027-01-06"
+    }
   ]
 }

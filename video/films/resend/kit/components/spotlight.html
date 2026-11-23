@@ -1,0 +1,17 @@
+<!--
+  kit/components/spotlight.html — spotlight (kit 2, launch format): everything outside ONE recorded
+  component is dimmed flat, so the viewer knows where to look. Paste inside .kit-cam, after the footage.
+
+  data-kit-focus   component name from the clip's boxes (or a JSON array of names: their union)
+  data-kit-pad     footage px of air around the box (default 10)
+  data-start / data-duration   keep it inside one camera hold; the box is the union of the component's
+                   boxes over this window, so a clause that grows while changes land stays lit
+  data-kit-window  "a,b": take the box from these scene seconds instead of the time on screen (the state before
+                   a click, while the spotlight stays on until the footage shows the change)
+  class "bare"     no accent outline
+  QA: planned like a callout ring: the box must sit inside the safe area under the shot in force.
+  The dim is --kit-spot-dim (flat, no blur, no glow). One spotlight at a time: one focal point per scene.
+  Used by: gc-ai.
+-->
+<div id="hero-spot-form" class="clip kit-spot" data-start="0.4" data-duration="4.2" data-kit-focus="setup" data-kit-pad="10"
+  data-track-index="2" data-layout-allow-overlap data-layout-allow-occlusion><div class="kit-spot-box"></div></div>

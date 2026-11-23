@@ -1,0 +1,24 @@
+<!--
+  kit/components/voice-subtitle.html — SNIPPET: speech subtitles for a film whose sound is the demo's own
+  recorded voice (e.g. a voice-interview demo). Same look as any caption cue (.kit-cap, animated by
+  Kit.captions.animate); the extra class .kit-voice and data-kit-voice="<utterance id>" mark it as speech.
+
+  Do not time these by hand. Put two marker comments in compositions/captions.html, "kit:voice-cues:start"
+  and "kit:voice-cues:end" (each as an HTML comment with that text), and let kit/scripts/place-audio.mjs
+  write the cues between them from capture/voice.json:
+    - each cue's from/to are FILE seconds of its words in the utterance's audio (from silences or a
+      transcript), so the cue lands where the placed <audio> speaks them, through any footage cut
+    - start = first word - 0.05 s; end = last word + hold (default 0.5 s), never past the next speech cue
+    - it reports cues shorter than reading time (0.3 s per word + 0.5 s)
+  index.html gets the matching sound between "kit:voice:start" / "kit:voice:end" marker comments: one
+  <audio> per continuous piece, data-media-start into the voice file.
+  Rules: words verbatim (what the voice says); one speaker per cue, named in the label; synthetic voices
+  labelled with a .kit-chip ("Simulated participant · Fish voice Selene"); hand-written notes for silent
+  stretches go outside the markers, on another track index. Used by: great-question.
+  What place-audio writes (one cue):
+-->
+<div id="vc-mod2-1" class="clip kit-cap kit-voice" data-start="17.799" data-duration="4.32" data-track-index="1" data-kit-voice="mod2">
+  <div class="kit-cap-label"><span>AI moderator · follow-up probe</span></div>
+  <div class="kit-cap-main">Got it. Who is involved from your side in that kickoff call?</div>
+  <div class="kit-cap-note">Neutral: it reuses the participant's own words. Jev: leading 13%.</div>
+</div>

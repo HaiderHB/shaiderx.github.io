@@ -1,0 +1,31 @@
+<template>
+  <!-- Resend launch film (kit 2.1, launch format). Clip `flow` (see hero.html).
+       PROOF 62-69 s: the report heading and its four stat tiles, wide (media 107.2-114.2). -->
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--kit-ground);
+    }
+  </style>
+  <div id="root" data-composition-id="proof" data-width="1920" data-height="1080">
+    <div id="proof-stage" class="kit-stage" data-layout-allow-overflow>
+      <div id="proof-cam" class="kit-cam">
+        <video id="proof-v1" class="clip kit-footage" src="assets/footage/flow.mp4" data-kit-clip="flow" data-start="0" data-duration="7" data-media-start="107.2" data-track-index="0" muted playsinline></video>
+      </div>
+    </div>
+    <script type="application/json" class="kit-shots">
+      [
+        {"t": 0, "focus": ["reportHead", "reportStats"], "cut": true, "window": [0.05, 7], "label": "the report, wide"}
+      ]
+    </script>
+  </div>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+      Kit.scene.footage({ id: "proof", tl });
+      window.__timelines["proof"] = tl;
+    })();
+  </script>
+</template>
